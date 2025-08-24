@@ -1,0 +1,12 @@
+/BrowserChooser3/obj
+
+/BrowserChooser3/bin
+.vs/BrowserChooser3/BrowserChooser3.scgdat
+/BrowserChooser3.suo
+/BrowserChooser3/BrowserChooser3.vbproj.user
+/SepCombo/obj
+/SepCombo/bin
+/.vs/BrowserChooser3/v14/*.suo
+/BrowserChooser3/Resources/*.lnk
+/.vs
+BrowserChooser3/Resources/BrowserChooser3.XmlSerializers.dll
