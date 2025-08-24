@@ -26,6 +26,9 @@ namespace BrowserChooser3.Forms
         
         // ImageList（Browser Chooser 2互換）
         private ImageList? _imBrowserIcons;
+        
+        // フォーカス設定（Browser Chooser 2互換）
+        private FocusSettings _mFocusSettings = new();
 
         /// <summary>
         /// OptionsFormクラスの新しいインスタンスを初期化します
@@ -1448,8 +1451,7 @@ namespace BrowserChooser3.Forms
             };
             accessibilityButton.Click += (s, e) =>
             {
-                var accessibilityForm = new AccessibilitySettingsForm(_settings);
-                accessibilityForm.ShowDialog(this);
+                OpenAccessibilitySettings();
             };
 
             panel.Controls.Add(label);
@@ -1592,6 +1594,11 @@ namespace BrowserChooser3.Forms
                 // ブラウザ設定の読み込み
                 _mBrowser.Clear();
                 var defaultBrowserGuid = _settings.DefaultBrowserGuid;
+                var listView = Controls.Find("lstBrowsers", true).FirstOrDefault() as ListView;
+                if (listView != null) listView.Items.Clear();
+                
+                if (_imBrowserIcons != null) _imBrowserIcons.Images.Clear();
+                
                 foreach (var browser in _settings.Browsers)
                 {
                     var clonedBrowser = browser.Clone();
@@ -1600,18 +1607,63 @@ namespace BrowserChooser3.Forms
                     // デフォルトブラウザの判定
                     bool isDefault = (defaultBrowserGuid == browser.Guid);
                     
-                    // TODO: ListViewにアイテムを追加
-                    // TODO: ImageListにアイコンを追加
+                    // ListViewにアイテムを追加
+                    if (listView != null)
+                    {
+                        var item = listView.Items.Add(clonedBrowser.Name);
+                        item.Tag = _mBrowser.Count - 1;
+                        item.SubItems.Add(clonedBrowser.Target);
+                        item.SubItems.Add(clonedBrowser.Arguments);
+                        item.SubItems.Add(clonedBrowser.PosY.ToString());
+                        item.SubItems.Add(clonedBrowser.PosX.ToString());
+                        item.SubItems.Add(clonedBrowser.Hotkey.ToString());
+                        item.SubItems.Add(GetBrowserProtocolsAndFileTypes(clonedBrowser));
+                    }
+                    
+                    // ImageListにアイコンを追加
+                    if (_imBrowserIcons != null)
+                    {
+                        _imBrowserIcons.Images.Add(ImageUtilities.GetImage(clonedBrowser, false));
+                    }
                 }
                 _mLastBrowserID = _mBrowser.Count - 1;
 
                 // URL設定の読み込み
                 _mURLs.Clear();
+                var urlListView = Controls.Find("lstURLs", true).FirstOrDefault() as ListView;
+                if (urlListView != null) urlListView.Items.Clear();
+                
                 foreach (var url in _settings.URLs)
                 {
                     _mURLs.Add(_mURLs.Count, url.Clone());
                     
-                    // TODO: ListViewにアイテムを追加
+                    // ListViewにアイテムを追加
+                    if (urlListView != null)
+                    {
+                        var item = urlListView.Items.Add(url.URLValue);
+                        item.Tag = _mURLs.Count - 1;
+                        
+                        // ブラウザ名
+                        if (url.BrowserGuid != Guid.Empty)
+                        {
+                            var browser = _mBrowser.Values.FirstOrDefault(b => b.Guid == url.BrowserGuid);
+                            item.SubItems.Add(browser?.Name ?? "Unknown");
+                        }
+                        else
+                        {
+                            item.SubItems.Add("Default");
+                        }
+                        
+                        // 遅延時間
+                        if (url.DelayTime < 0)
+                        {
+                            item.SubItems.Add("Default");
+                        }
+                        else
+                        {
+                            item.SubItems.Add(url.DelayTime.ToString());
+                        }
+                    }
                 }
                 _mLastURLID = _mURLs.Count - 1;
 
@@ -1711,6 +1763,21 @@ namespace BrowserChooser3.Forms
             var nudYOffset = Controls.Find("nudYOffset", true).FirstOrDefault() as NumericUpDown;
             if (nudYOffset != null) nudYOffset.Value = _settings.OffsetY;
 
+            // 開始位置設定
+            var cmbStartingPosition = Controls.Find("cmbStartingPosition", true).FirstOrDefault() as ComboBox;
+            if (cmbStartingPosition != null)
+            {
+                // 開始位置の選択
+                for (int i = 0; i < cmbStartingPosition.Items.Count; i++)
+                {
+                    if (cmbStartingPosition.Items[i] is DisplayDictionary position && position.Index == _settings.StartingPosition)
+                    {
+                        cmbStartingPosition.SelectedIndex = i;
+                        break;
+                    }
+                }
+            }
+
             // アクセシビリティ設定
             var chkUseAccessibleRendering = Controls.Find("chkUseAccessibleRendering", true).FirstOrDefault() as CheckBox;
             if (chkUseAccessibleRendering != null) chkUseAccessibleRendering.Checked = _settings.UseAccessibleRendering;
@@ -1727,6 +1794,11 @@ namespace BrowserChooser3.Forms
 
             var txtMessage = Controls.Find("txtMessage", true).FirstOrDefault() as TextBox;
             if (txtMessage != null) txtMessage.Text = _settings.DefaultMessage;
+
+            // フォーカス設定
+            _mFocusSettings.ShowFocus = _settings.ShowFocus;
+            _mFocusSettings.BoxColor = Color.FromArgb(_settings.FocusBoxColor);
+            _mFocusSettings.BoxWidth = _settings.FocusBoxLineWidth;
 
             // デフォルトブラウザGUIDの設定
             var hiddenLabel = Controls.Find("lblHiddenBrowserGuid", true).FirstOrDefault() as Label;
@@ -1800,9 +1872,8 @@ namespace BrowserChooser3.Forms
                         "Become default", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                     if (result == DialogResult.Yes)
                     {
-                        // TODO: AddToDefault()とMakeDefault()の実装
-                        // AddToDefault();
-                        // MakeDefault();
+                        AddToDefault();
+                        MakeDefault();
                     }
                 }
 
@@ -1882,12 +1953,11 @@ namespace BrowserChooser3.Forms
                 var cmbStartingPosition = Controls.Find("cmbStartingPosition", true).FirstOrDefault() as ComboBox;
                 if (cmbStartingPosition?.SelectedItem != null)
                 {
-                    // TODO: DisplayDictionaryの実装が必要
-                    // var selectedPosition = cmbStartingPosition.SelectedItem as DisplayDictionary;
-                    // if (selectedPosition != null)
-                    // {
-                    //     _settings.StartingPosition = selectedPosition.Index;
-                    // }
+                    var selectedPosition = cmbStartingPosition.SelectedItem as DisplayDictionary;
+                    if (selectedPosition != null)
+                    {
+                        _settings.StartingPosition = selectedPosition.Index;
+                    }
                 }
 
                 var nudXOffset = Controls.Find("nudXOffset", true).FirstOrDefault() as NumericUpDown;
@@ -1904,10 +1974,9 @@ namespace BrowserChooser3.Forms
                 if (chkUseAero != null) _settings.UseAero = chkUseAero.Checked;
 
                 // フォーカス設定
-                // TODO: mFocusSettingsの実装が必要
-                // _settings.ShowFocus = mFocusSettings.ShowFocus;
-                // _settings.FocusBoxColor = mFocusSettings.BoxColor.ToArgb();
-                // _settings.FocusBoxLineWidth = mFocusSettings.BoxWidth;
+                _settings.ShowFocus = _mFocusSettings.ShowFocus;
+                _settings.FocusBoxColor = _mFocusSettings.BoxColor.ToArgb();
+                _settings.FocusBoxLineWidth = _mFocusSettings.BoxWidth;
 
                 // ショートカット設定
                 var txtOptionsShortcut = Controls.Find("txtOptionsShortcut", true).FirstOrDefault() as TextBox;
@@ -1947,30 +2016,188 @@ namespace BrowserChooser3.Forms
 
         private void AddBrowser_Click(object? sender, EventArgs e)
         {
-            // TODO: ブラウザ追加ダイアログを実装
-            MessageBox.Show("ブラウザ追加機能は未実装です", "情報", 
-                MessageBoxButtons.OK, MessageBoxIcon.Information);
+            try
+            {
+                var addEditForm = new AddEditBrowserForm();
+                if (addEditForm.AddBrowser(_mBrowser, _mProtocols, _mFileTypes, _settings.AdvancedScreens, 
+                    new Point(_settings.GridWidth, _settings.GridHeight)))
+                {
+                    var newBrowser = addEditForm.GetData();
+                    _mBrowser.Add(_mLastBrowserID + 1, newBrowser);
+                    
+                    // ListViewにアイテムを追加
+                    var listView = Controls.Find("lstBrowsers", true).FirstOrDefault() as ListView;
+                    if (listView != null)
+                    {
+                        var item = listView.Items.Add(newBrowser.Name);
+                        item.Tag = _mLastBrowserID + 1;
+                        item.SubItems.Add(newBrowser.Target);
+                        item.SubItems.Add(newBrowser.Arguments);
+                        item.SubItems.Add(newBrowser.PosY.ToString());
+                        item.SubItems.Add(newBrowser.PosX.ToString());
+                        item.SubItems.Add(newBrowser.Hotkey.ToString());
+                        item.SubItems.Add(GetBrowserProtocolsAndFileTypes(newBrowser));
+                    }
+                    
+                    // ImageListにアイコンを追加
+                    if (_imBrowserIcons != null)
+                    {
+                        _imBrowserIcons.Images.Add(ImageUtilities.GetImage(newBrowser, false));
+                    }
+                    
+                    _mLastBrowserID++;
+                    _isModified = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("OptionsForm.AddBrowser_Click", "ブラウザ追加エラー", ex.Message, ex.StackTrace ?? "");
+                MessageBox.Show($"ブラウザ追加に失敗しました: {ex.Message}", "エラー", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void EditBrowser_Click(object? sender, EventArgs e)
         {
-            // TODO: ブラウザ編集ダイアログを実装
-            MessageBox.Show("ブラウザ編集機能は未実装です", "情報", 
-                MessageBoxButtons.OK, MessageBoxIcon.Information);
+            try
+            {
+                var listView = Controls.Find("lstBrowsers", true).FirstOrDefault() as ListView;
+                if (listView?.SelectedItems.Count > 0)
+                {
+                    var selectedIndex = listView.SelectedItems[0].Tag is int tag ? tag : -1;
+                    if (selectedIndex == -1 || !_mBrowser.ContainsKey(selectedIndex)) return;
+                    
+                    var addEditForm = new AddEditBrowserForm();
+                    if (addEditForm.EditBrowser(_mBrowser[selectedIndex], _mBrowser, _mProtocols, _mFileTypes, _settings.AdvancedScreens))
+                    {
+                        var updatedBrowser = addEditForm.GetData();
+                        _mBrowser[selectedIndex] = updatedBrowser;
+                        
+                        // ListViewアイテムの更新
+                        var selectedItem = listView.SelectedItems[0];
+                        selectedItem.Text = updatedBrowser.Name;
+                        selectedItem.SubItems[1].Text = updatedBrowser.Target;
+                        selectedItem.SubItems[2].Text = updatedBrowser.Arguments;
+                        selectedItem.SubItems[3].Text = updatedBrowser.PosY.ToString();
+                        selectedItem.SubItems[4].Text = updatedBrowser.PosX.ToString();
+                        selectedItem.SubItems[5].Text = updatedBrowser.Hotkey.ToString();
+                        selectedItem.SubItems[6].Text = GetBrowserProtocolsAndFileTypes(updatedBrowser);
+                        
+                        // ImageListアイコンの更新
+                        if (_imBrowserIcons != null && selectedItem.Index < _imBrowserIcons.Images.Count)
+                        {
+                            _imBrowserIcons.Images[selectedItem.Index] = ImageUtilities.GetImage(updatedBrowser, false);
+                        }
+                        
+                        _isModified = true;
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("編集するブラウザを選択してください。", "情報", 
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("OptionsForm.EditBrowser_Click", "ブラウザ編集エラー", ex.Message, ex.StackTrace ?? "");
+                MessageBox.Show($"ブラウザ編集に失敗しました: {ex.Message}", "エラー", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void DeleteBrowser_Click(object? sender, EventArgs e)
         {
-            // TODO: ブラウザ削除機能を実装
-            MessageBox.Show("ブラウザ削除機能は未実装です", "情報", 
-                MessageBoxButtons.OK, MessageBoxIcon.Information);
+            try
+            {
+                var listView = Controls.Find("lstBrowsers", true).FirstOrDefault() as ListView;
+                if (listView?.SelectedItems.Count > 0)
+                {
+                    var browserName = listView.SelectedItems[0].Text;
+                    var result = MessageBox.Show($"Are you sure you want to delete the {browserName} browser?", 
+                        "Confirm Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    
+                    if (result == DialogResult.Yes)
+                    {
+                        var selectedIndex = listView.SelectedItems[0].Tag is int tag ? tag : -1;
+                        if (selectedIndex != -1)
+                        {
+                            _mBrowser.Remove(selectedIndex);
+                            listView.Items.Remove(listView.SelectedItems[0]);
+                            _isModified = true;
+                        }
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("削除するブラウザを選択してください。", "情報", 
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("OptionsForm.DeleteBrowser_Click", "ブラウザ削除エラー", ex.Message, ex.StackTrace ?? "");
+                MessageBox.Show($"ブラウザ削除に失敗しました: {ex.Message}", "エラー", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void CloneBrowser_Click(object? sender, EventArgs e)
         {
-            // TODO: ブラウザ複製機能を実装
-            MessageBox.Show("ブラウザ複製機能は未実装です", "情報", 
-                MessageBoxButtons.OK, MessageBoxIcon.Information);
+            try
+            {
+                var listView = Controls.Find("lstBrowsers", true).FirstOrDefault() as ListView;
+                if (listView?.SelectedItems.Count > 0)
+                {
+                    var selectedIndex = listView.SelectedItems[0].Tag is int tag ? tag : -1;
+                    if (selectedIndex == -1 || !_mBrowser.ContainsKey(selectedIndex)) return;
+                    
+                    var templateBrowser = _mBrowser[selectedIndex];
+                    var addEditForm = new AddEditBrowserForm();
+                    if (addEditForm.AddBrowser(_mBrowser, _mProtocols, _mFileTypes, _settings.AdvancedScreens, 
+                        new Point(_settings.GridWidth, _settings.GridHeight), templateBrowser))
+                    {
+                        var clonedBrowser = addEditForm.GetData();
+                        clonedBrowser.Name = $"{clonedBrowser.Name} (Copy)";
+                        clonedBrowser.Guid = Guid.NewGuid();
+                        
+                        _mBrowser.Add(_mLastBrowserID + 1, clonedBrowser);
+                        
+                        // ListViewにアイテムを追加
+                        if (listView != null)
+                        {
+                            var item = listView.Items.Add(clonedBrowser.Name);
+                            item.Tag = _mLastBrowserID + 1;
+                            item.SubItems.Add(clonedBrowser.Target);
+                            item.SubItems.Add(clonedBrowser.Arguments);
+                            item.SubItems.Add(clonedBrowser.PosY.ToString());
+                            item.SubItems.Add(clonedBrowser.PosX.ToString());
+                            item.SubItems.Add(clonedBrowser.Hotkey.ToString());
+                            item.SubItems.Add(GetBrowserProtocolsAndFileTypes(clonedBrowser));
+                        }
+                        
+                        // ImageListにアイコンを追加
+                        if (_imBrowserIcons != null)
+                        {
+                            _imBrowserIcons.Images.Add(ImageUtilities.GetImage(clonedBrowser, false));
+                        }
+                        
+                        _mLastBrowserID++;
+                        _isModified = true;
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("複製するブラウザを選択してください。", "情報", 
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("OptionsForm.CloneBrowser_Click", "ブラウザ複製エラー", ex.Message, ex.StackTrace ?? "");
+                MessageBox.Show($"ブラウザ複製に失敗しました: {ex.Message}", "エラー", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void DetectBrowsers_Click(object? sender, EventArgs e)
@@ -1979,7 +2206,7 @@ namespace BrowserChooser3.Forms
             try
             {
                 // ブラウザ検出を実行
-                var detectedBrowsers = BrowserDetector.DetectBrowsers();
+                var detectedBrowsers = DetectedBrowsers.DoBrowserDetection();
                 var missingBrowsers = new List<Browser>();
 
                 // 既存のブラウザと比較して不足しているものを特定
@@ -2074,8 +2301,37 @@ namespace BrowserChooser3.Forms
                         _mBrowser.Add(_mLastBrowserID + 1, browser);
                         _mLastBrowserID++;
 
-                        // TODO: ListViewにアイテムを追加
-                        // TODO: ImageListにアイコンを追加
+                        // ListViewにアイテムを追加
+                        var listView = Controls.Find("lstBrowsers", true).FirstOrDefault() as ListView;
+                        if (listView != null)
+                        {
+                            var item = listView.Items.Add(browser.Name);
+                            item.Tag = _mLastBrowserID;
+                            
+                            // デフォルトブラウザのチェックマーク
+                            if (_settings.DefaultBrowserGuid == browser.Guid)
+                            {
+                                item.SubItems.Add("✔");
+                            }
+                            else
+                            {
+                                item.SubItems.Add("");
+                            }
+                            
+                            // 位置情報
+                            item.SubItems.Add(browser.PosY.ToString());
+                            item.SubItems.Add(browser.PosX.ToString());
+                            item.SubItems.Add(browser.Hotkey.ToString());
+                            
+                            // プロトコル・ファイルタイプ情報
+                            item.SubItems.Add(GetBrowserProtocolsAndFileTypes(browser));
+                        }
+
+                        // ImageListにアイコンを追加
+                        if (_imBrowserIcons != null)
+                        {
+                            _imBrowserIcons.Images.Add(ImageUtilities.GetImage(browser, false));
+                        }
                     }
 
                     _isModified = true;
@@ -2106,7 +2362,14 @@ namespace BrowserChooser3.Forms
                         var newProtocol = addEditForm.GetData();
                         _mProtocols.Add(_mLastProtocolID + 1, newProtocol);
                         
-                        // TODO: ListViewにアイテムを追加
+                        // ListViewにアイテムを追加
+                        var listView = Controls.Find("lstProtocols", true).FirstOrDefault() as ListView;
+                        if (listView != null)
+                        {
+                            var item = listView.Items.Add(newProtocol.ProtocolName);
+                            item.Tag = _mLastProtocolID + 1;
+                            item.SubItems.Add(newProtocol.Header);
+                        }
                         
                         _mLastProtocolID++;
                         _mProtocolsAreDirty = true;
@@ -2133,7 +2396,10 @@ namespace BrowserChooser3.Forms
                             var updatedProtocol = addEditForm.GetData();
                             _mProtocols[selectedIndex] = updatedProtocol;
                             
-                            // TODO: ListViewアイテムの更新
+                            // ListViewアイテムの更新
+                            var selectedItem = listView.SelectedItems[0];
+                            selectedItem.Text = updatedProtocol.ProtocolName;
+                            selectedItem.SubItems[1].Text = updatedProtocol.Header;
                             
                             _mProtocolsAreDirty = true;
                             _isModified = true;
@@ -2182,7 +2448,14 @@ namespace BrowserChooser3.Forms
                         var newFileType = addEditForm.GetData();
                         _mFileTypes.Add(_mLastFileTypeID + 1, newFileType);
                         
-                        // TODO: ListViewにアイテムを追加
+                        // ListViewにアイテムを追加
+                        var listView = Controls.Find("lstFiletypes", true).FirstOrDefault() as ListView;
+                        if (listView != null)
+                        {
+                            var item = listView.Items.Add(newFileType.FiletypeName);
+                            item.Tag = _mLastFileTypeID + 1;
+                            item.SubItems.Add(newFileType.Extention);
+                        }
                         
                         _mLastFileTypeID++;
                         _mFileTypesAreDirty = true;
@@ -2209,7 +2482,10 @@ namespace BrowserChooser3.Forms
                             var updatedFileType = addEditForm.GetData();
                             _mFileTypes[selectedIndex] = updatedFileType;
                             
-                            // TODO: ListViewアイテムの更新
+                            // ListViewアイテムの更新
+                            var selectedItem = listView.SelectedItems[0];
+                            selectedItem.Text = updatedFileType.FiletypeName;
+                            selectedItem.SubItems[1].Text = updatedFileType.Extention;
                             
                             _mFileTypesAreDirty = true;
                             _isModified = true;
@@ -2264,7 +2540,34 @@ namespace BrowserChooser3.Forms
                         var newURL = addEditForm.GetData();
                         _mURLs.Add(_mLastURLID + 1, newURL);
                         
-                        // TODO: ListViewにアイテムを追加
+                        // ListViewにアイテムを追加
+                        var listView = Controls.Find("lstURLs", true).FirstOrDefault() as ListView;
+                        if (listView != null)
+                        {
+                            var item = listView.Items.Add(newURL.URLValue);
+                            item.Tag = _mLastURLID + 1;
+                            
+                            // ブラウザ名
+                            if (newURL.BrowserGuid != Guid.Empty)
+                            {
+                                var browser = _mBrowser.Values.FirstOrDefault(b => b.Guid == newURL.BrowserGuid);
+                                item.SubItems.Add(browser?.Name ?? "Unknown");
+                            }
+                            else
+                            {
+                                item.SubItems.Add("Default");
+                            }
+                            
+                            // 遅延時間
+                            if (newURL.DelayTime < 0)
+                            {
+                                item.SubItems.Add("Default");
+                            }
+                            else
+                            {
+                                item.SubItems.Add(newURL.DelayTime.ToString());
+                            }
+                        }
                         
                         _mLastURLID++;
                         _isModified = true;
@@ -2290,7 +2593,30 @@ namespace BrowserChooser3.Forms
                             var updatedURL = addEditForm.GetData();
                             _mURLs[selectedIndex] = updatedURL;
                             
-                            // TODO: ListViewアイテムの更新
+                            // ListViewアイテムの更新
+                            var selectedItem = listView.SelectedItems[0];
+                            selectedItem.Text = updatedURL.URLValue;
+                            
+                            // ブラウザ名
+                            if (updatedURL.BrowserGuid != Guid.Empty)
+                            {
+                                var browser = _mBrowser.Values.FirstOrDefault(b => b.Guid == updatedURL.BrowserGuid);
+                                selectedItem.SubItems[1].Text = browser?.Name ?? "Unknown";
+                            }
+                            else
+                            {
+                                selectedItem.SubItems[1].Text = "Default";
+                            }
+                            
+                            // 遅延時間
+                            if (updatedURL.DelayTime < 0)
+                            {
+                                selectedItem.SubItems[2].Text = "Default";
+                            }
+                            else
+                            {
+                                selectedItem.SubItems[2].Text = updatedURL.DelayTime.ToString();
+                            }
                             
                             _isModified = true;
                         }
@@ -2589,12 +2915,12 @@ namespace BrowserChooser3.Forms
                 if (cmdAddToDefault != null)
                 {
                     cmdAddToDefault.FlatStyle = FlatStyle.System;
-                    // TODO: WinAPIs.SendMessage(cmdAddToDefault.Handle, WinAPIs.BCM_SETSHIELD, 0, IntPtr.Zero);
+                    WinAPIs.SendMessage(cmdAddToDefault.Handle, WinAPIs.BCM_SETSHIELD, 0, IntPtr.Zero);
                 }
                 if (cmdMakeDefault != null)
                 {
                     cmdMakeDefault.FlatStyle = FlatStyle.System;
-                    // TODO: WinAPIs.SendMessage(cmdMakeDefault.Handle, WinAPIs.BCM_SETSHIELD, 0, IntPtr.Zero);
+                    WinAPIs.SendMessage(cmdMakeDefault.Handle, WinAPIs.BCM_SETSHIELD, 0, IntPtr.Zero);
                 }
             }
             else if (radioButton.Name == "rbScopeSystem" && radioButton.Checked)
@@ -2603,12 +2929,12 @@ namespace BrowserChooser3.Forms
                 if (cmdAddToDefault != null)
                 {
                     cmdAddToDefault.FlatStyle = FlatStyle.System;
-                    // TODO: WinAPIs.SendMessage(cmdAddToDefault.Handle, WinAPIs.BCM_SETSHIELD, 0, new IntPtr(1));
+                    WinAPIs.SendMessage(cmdAddToDefault.Handle, WinAPIs.BCM_SETSHIELD, 0, new IntPtr(1));
                 }
                 if (cmdMakeDefault != null)
                 {
                     cmdMakeDefault.FlatStyle = FlatStyle.System;
-                    // TODO: WinAPIs.SendMessage(cmdMakeDefault.Handle, WinAPIs.BCM_SETSHIELD, 0, new IntPtr(1));
+                    WinAPIs.SendMessage(cmdMakeDefault.Handle, WinAPIs.BCM_SETSHIELD, 0, new IntPtr(1));
                 }
             }
         }
@@ -2617,9 +2943,25 @@ namespace BrowserChooser3.Forms
 
         private void OpenAccessibilitySettings()
         {
-            // TODO: アクセシビリティ設定ダイアログを実装
-            MessageBox.Show("アクセシビリティ設定機能は未実装です", "情報", 
-                MessageBoxButtons.OK, MessageBoxIcon.Information);
+            try
+            {
+                // アクセシビリティ設定ダイアログを表示
+                var accessibilityForm = new AccessibilitySettingsForm();
+                if (accessibilityForm.ShowDialog() == DialogResult.OK)
+                {
+                    // 設定を更新
+                    _mFocusSettings.ShowFocus = accessibilityForm.ShowFocus;
+                    _mFocusSettings.BoxColor = accessibilityForm.FocusBoxColor;
+                    _mFocusSettings.BoxWidth = accessibilityForm.FocusBoxWidth;
+                    _isModified = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("OptionsForm.OpenAccessibilitySettings", "アクセシビリティ設定エラー", ex.Message, ex.StackTrace ?? "");
+                MessageBox.Show($"アクセシビリティ設定に失敗しました: {ex.Message}", "エラー", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         #region 設定変更検知機能（Browser Chooser 2互換）
@@ -2655,11 +2997,8 @@ namespace BrowserChooser3.Forms
         {
             if (sender is CheckBox checkBox)
             {
-                // TODO: Settings.LogDebugsの設定
-                // if (checkBox.Checked)
-                //     Settings.LogDebugs = TriState.True;
-                // else
-                //     Settings.LogDebugs = TriState.False;
+                // ログ設定を更新
+                _settings.EnableLogging = checkBox.Checked;
             }
             _isModified = true;
         }
@@ -2844,8 +3183,7 @@ namespace BrowserChooser3.Forms
                             // ImageListにアイコンを追加
                             if (_imBrowserIcons != null)
                             {
-                                // TODO: ImageUtilities.GetImage()の実装が必要
-                                // _imBrowserIcons.Images.Add(ImageUtilities.GetImage(newBrowser, false));
+                                _imBrowserIcons.Images.Add(ImageUtilities.GetImage(newBrowser, false));
                             }
 
                             // ListViewにアイテムを追加
@@ -2935,8 +3273,7 @@ namespace BrowserChooser3.Forms
                             // ImageListアイコンの更新
                             if (_imBrowserIcons != null)
                             {
-                                // TODO: ImageUtilities.GetImage()の実装が必要
-                                // _imBrowserIcons.Images[selectedIndex] = ImageUtilities.ScaleImageTo(ImageUtilities.GetImage(updatedBrowser, false), new Size(16, 16));
+                                _imBrowserIcons.Images[selectedIndex] = ImageUtilities.ScaleImageTo(ImageUtilities.GetImage(updatedBrowser, false), new Size(16, 16));
                             }
                             
                             // プロトコル・ファイルタイプの更新
@@ -3000,8 +3337,7 @@ namespace BrowserChooser3.Forms
                             // ImageListにアイコンを追加
                             if (_imBrowserIcons != null)
                             {
-                                // TODO: ImageUtilities.GetImage()の実装が必要
-                                // _imBrowserIcons.Images.Add(ImageUtilities.GetImage(newBrowser, false));
+                                _imBrowserIcons.Images.Add(ImageUtilities.GetImage(newBrowser, false));
                             }
 
                             // ListViewにアイテムを追加
@@ -3359,8 +3695,52 @@ namespace BrowserChooser3.Forms
                     {
                         if (Path.GetExtension(filePath.ToLower()) == ".exe")
                         {
-                            // TODO: ブラウザ追加ダイアログを表示
-                            Logger.LogInfo("OptionsForm.SetupBrowsersDragDrop", $"Dropped executable: {filePath}");
+                            // ブラウザ追加ダイアログを表示
+                            try
+                            {
+                                var addEditForm = new AddEditBrowserForm();
+                                var newBrowser = new Browser
+                                {
+                                    Guid = Guid.NewGuid(),
+                                    Name = Path.GetFileNameWithoutExtension(filePath),
+                                    Target = filePath,
+                                    Arguments = "",
+                                    PosX = 1,
+                                    PosY = 1,
+                                    Hotkey = '\0',
+                                    Category = "Default"
+                                };
+
+                                if (addEditForm.AddBrowser(_mBrowser, _mProtocols, _mFileTypes, _settings.AdvancedScreens, 
+                                    new Point(_settings.GridWidth, _settings.GridHeight), newBrowser))
+                                {
+                                    var browser = addEditForm.GetData();
+                                    _mBrowser.Add(_mLastBrowserID + 1, browser);
+                                    
+                                    // ListViewにアイテムを追加
+                                    var item = listView.Items.Add(browser.Name);
+                                    item.Tag = _mLastBrowserID + 1;
+                                    item.SubItems.Add(browser.Target);
+                                    item.SubItems.Add(browser.Arguments);
+                                    item.SubItems.Add(browser.PosY.ToString());
+                                    item.SubItems.Add(browser.PosX.ToString());
+                                    item.SubItems.Add(browser.Hotkey.ToString());
+                                    item.SubItems.Add(GetBrowserProtocolsAndFileTypes(browser));
+                                    
+                                    // ImageListにアイコンを追加
+                                    if (_imBrowserIcons != null)
+                                    {
+                                        _imBrowserIcons.Images.Add(ImageUtilities.GetImage(browser, false));
+                                    }
+                                    
+                                    _mLastBrowserID++;
+                                    _isModified = true;
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                Logger.LogError("OptionsForm.SetupBrowsersDragDrop", $"ブラウザ追加エラー: {filePath}", ex.Message);
+                            }
                         }
                     }
                 }
@@ -3533,8 +3913,52 @@ namespace BrowserChooser3.Forms
             {
                 if (Path.GetExtension(filePath.ToLower()) == ".exe")
                 {
-                    // TODO: ブラウザ追加ダイアログを表示
-                    Logger.LogInfo("OptionsForm.LstBrowsers_DragDrop", $"Dropped executable: {filePath}");
+                    // ブラウザ追加ダイアログを表示
+                    try
+                    {
+                        var addEditForm = new AddEditBrowserForm();
+                        var newBrowser = new Browser
+                        {
+                            Guid = Guid.NewGuid(),
+                            Name = Path.GetFileNameWithoutExtension(filePath),
+                            Target = filePath,
+                            Arguments = "",
+                            PosX = 1,
+                            PosY = 1,
+                            Hotkey = '\0',
+                            Category = "Default"
+                        };
+
+                        if (addEditForm.AddBrowser(_mBrowser, _mProtocols, _mFileTypes, _settings.AdvancedScreens, 
+                            new Point(_settings.GridWidth, _settings.GridHeight), newBrowser))
+                        {
+                            var browser = addEditForm.GetData();
+                            _mBrowser.Add(_mLastBrowserID + 1, browser);
+                            
+                            // ListViewにアイテムを追加
+                            var item = listView.Items.Add(browser.Name);
+                            item.Tag = _mLastBrowserID + 1;
+                            item.SubItems.Add(browser.Target);
+                            item.SubItems.Add(browser.Arguments);
+                            item.SubItems.Add(browser.PosY.ToString());
+                            item.SubItems.Add(browser.PosX.ToString());
+                            item.SubItems.Add(browser.Hotkey.ToString());
+                            item.SubItems.Add(GetBrowserProtocolsAndFileTypes(browser));
+                            
+                            // ImageListにアイコンを追加
+                            if (_imBrowserIcons != null)
+                            {
+                                _imBrowserIcons.Images.Add(ImageUtilities.GetImage(browser, false));
+                            }
+                            
+                            _mLastBrowserID++;
+                            _isModified = true;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError("OptionsForm.LstBrowsers_DragDrop", $"ブラウザ追加エラー: {filePath}", ex.Message);
+                    }
                 }
             }
 

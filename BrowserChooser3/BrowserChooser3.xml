@@ -189,6 +189,89 @@
             別のリストからGUIDでブラウザを検索します
             </summary>
         </member>
+        <member name="T:BrowserChooser3.Classes.DetectedBrowsers">
+            <summary>
+            ブラウザ検出クラス
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.DetectedBrowsers.DoBrowserDetection">
+            <summary>
+            ブラウザ検出を実行します
+            </summary>
+            <returns>検出されたブラウザのリスト</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.DetectedBrowsers.GetCommonBrowserPaths">
+            <summary>
+            一般的なブラウザのパスを取得します
+            </summary>
+            <returns>ブラウザパスのリスト</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.DetectedBrowsers.GetBrowsersFromRegistry">
+            <summary>
+            レジストリからブラウザを取得します
+            </summary>
+            <returns>ブラウザのリスト</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.DetectedBrowsers.ExtractPathFromCommand(System.String)">
+            <summary>
+            コマンド文字列からパスを抽出します
+            </summary>
+            <param name="command">コマンド文字列</param>
+            <returns>抽出されたパス</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.DetectedBrowsers.CreateBrowserFromPath(System.String)">
+            <summary>
+            パスからブラウザオブジェクトを作成します
+            </summary>
+            <param name="path">ブラウザのパス</param>
+            <returns>ブラウザオブジェクト</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.DetectedBrowsers.GetBrowserDisplayName(System.String)">
+            <summary>
+            ブラウザの表示名を取得します
+            </summary>
+            <param name="fileName">ファイル名</param>
+            <returns>表示名</returns>
+        </member>
+        <member name="T:BrowserChooser3.Classes.DisplayDictionary">
+            <summary>
+            表示位置設定クラス
+            </summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.DisplayDictionary.Index">
+            <summary>
+            表示位置のインデックス
+            </summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.DisplayDictionary.Name">
+            <summary>
+            表示位置の名前
+            </summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.DisplayDictionary.Description">
+            <summary>
+            表示位置の説明
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.DisplayDictionary.#ctor">
+            <summary>
+            表示位置設定の新しいインスタンスを初期化します
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.DisplayDictionary.#ctor(System.Int32,System.String,System.String)">
+            <summary>
+            表示位置設定の新しいインスタンスを初期化します
+            </summary>
+            <param name="index">インデックス</param>
+            <param name="name">名前</param>
+            <param name="description">説明</param>
+        </member>
+        <member name="M:BrowserChooser3.Classes.DisplayDictionary.ToString">
+            <summary>
+            文字列表現を返します
+            </summary>
+            <returns>名前</returns>
+        </member>
         <member name="T:BrowserChooser3.Classes.FileType">
             <summary>
             ファイルタイプ情報を管理するクラス
@@ -224,6 +307,26 @@
         <member name="M:BrowserChooser3.Classes.FileType.Clone">
             <summary>
             ファイルタイプのクローンを作成（Browser Chooser 2互換）
+            </summary>
+        </member>
+        <member name="T:BrowserChooser3.Classes.FocusSettings">
+            <summary>
+            フォーカス設定クラス
+            </summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.FocusSettings.ShowFocus">
+            <summary>
+            フォーカス表示フラグ
+            </summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.FocusSettings.BoxColor">
+            <summary>
+            フォーカスボックスの色
+            </summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.FocusSettings.BoxWidth">
+            <summary>
+            フォーカスボックスの線幅
             </summary>
         </member>
         <member name="T:BrowserChooser3.Classes.GeneralUtilities">
@@ -286,28 +389,27 @@
         <member name="T:BrowserChooser3.Classes.ImageUtilities">
             <summary>
             画像処理ユーティリティクラス
-            Browser Chooser 2のImageUtilitiesと互換性を保ちます
             </summary>
         </member>
         <member name="M:BrowserChooser3.Classes.ImageUtilities.GetImage(BrowserChooser3.Classes.Browser,System.Boolean)">
             <summary>
-            ブラウザのアイコン画像を取得します
+            ブラウザのアイコンを取得します
             </summary>
-            <param name="browser">ブラウザ情報</param>
-            <param name="useCache">キャッシュを使用するかどうか</param>
-            <returns>アイコン画像</returns>
+            <param name="browser">ブラウザオブジェクト</param>
+            <param name="useLargeIcon">大きなアイコンを使用するかどうか</param>
+            <returns>ブラウザのアイコン画像</returns>
         </member>
-        <member name="M:BrowserChooser3.Classes.ImageUtilities.ExtractIconFromFile(System.String,System.Int32)">
+        <member name="M:BrowserChooser3.Classes.ImageUtilities.ScaleImageTo(System.Drawing.Image,System.Drawing.Size)">
             <summary>
-            ファイルからアイコンを抽出します
+            画像を指定サイズにスケールします
             </summary>
-            <param name="filePath">ファイルパス</param>
-            <param name="iconIndex">アイコンインデックス</param>
-            <returns>抽出されたアイコン画像</returns>
+            <param name="image">元画像</param>
+            <param name="size">目標サイズ</param>
+            <returns>スケールされた画像</returns>
         </member>
-        <member name="M:BrowserChooser3.Classes.ImageUtilities.GetDefaultBrowserIcon">
+        <member name="M:BrowserChooser3.Classes.ImageUtilities.GetDefaultIcon">
             <summary>
-            デフォルトブラウザアイコンを取得します
+            デフォルトアイコンを取得します
             </summary>
             <returns>デフォルトアイコン画像</returns>
         </member>
@@ -319,38 +421,6 @@
             <param name="width">新しい幅</param>
             <param name="height">新しい高さ</param>
             <returns>リサイズされた画像</returns>
-        </member>
-        <member name="M:BrowserChooser3.Classes.ImageUtilities.ScaleImage(System.Drawing.Image,System.Double)">
-            <summary>
-            画像をスケールします
-            </summary>
-            <param name="image">元画像</param>
-            <param name="scale">スケール倍率</param>
-            <returns>スケールされた画像</returns>
-        </member>
-        <member name="M:BrowserChooser3.Classes.ImageUtilities.MergeImages(System.Drawing.Image,System.Drawing.Image)">
-            <summary>
-            2つの画像をマージします
-            </summary>
-            <param name="baseImage">ベース画像</param>
-            <param name="overlayImage">オーバーレイ画像</param>
-            <returns>マージされた画像</returns>
-        </member>
-        <member name="M:BrowserChooser3.Classes.ImageUtilities.CreateCircularImage(System.Drawing.Image)">
-            <summary>
-            画像を円形にクリップします
-            </summary>
-            <param name="image">元画像</param>
-            <returns>円形にクリップされた画像</returns>
-        </member>
-        <member name="M:BrowserChooser3.Classes.ImageUtilities.AddDropShadow(System.Drawing.Image,System.Drawing.Point,System.Drawing.Color)">
-            <summary>
-            画像にドロップシャドウ効果を追加します
-            </summary>
-            <param name="image">元画像</param>
-            <param name="shadowOffset">影のオフセット</param>
-            <param name="shadowColor">影の色</param>
-            <returns>ドロップシャドウ付きの画像</returns>
         </member>
         <member name="T:BrowserChooser3.Classes.Logger">
             <summary>
@@ -1015,6 +1085,26 @@
             <param name="url">正規化対象のURL</param>
             <returns>正規化されたURL</returns>
         </member>
+        <member name="T:BrowserChooser3.Classes.WinAPIs">
+            <summary>
+            Windows API呼び出しクラス
+            </summary>
+        </member>
+        <member name="F:BrowserChooser3.Classes.WinAPIs.BCM_SETSHIELD">
+            <summary>
+            BCM_SETSHIELD定数
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.WinAPIs.SendMessage(System.IntPtr,System.Int32,System.Int32,System.IntPtr)">
+            <summary>
+            SendMessage API
+            </summary>
+            <param name="hWnd">ウィンドウハンドル</param>
+            <param name="Msg">メッセージ</param>
+            <param name="wParam">wParam</param>
+            <param name="lParam">lParam</param>
+            <returns>結果</returns>
+        </member>
         <member name="T:BrowserChooser3.Forms.AboutForm">
             <summary>
             About画面フォーム
@@ -1068,44 +1158,32 @@
         </member>
         <member name="T:BrowserChooser3.Forms.AccessibilitySettingsForm">
             <summary>
-            アクセシビリティ設定フォーム
-            視覚的フォーカス表示の設定を管理します
+            アクセシビリティ設定ダイアログ
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Forms.AccessibilitySettingsForm.#ctor(BrowserChooser3.Classes.Settings)">
+        <member name="P:BrowserChooser3.Forms.AccessibilitySettingsForm.ShowFocus">
             <summary>
-            AccessibilitySettingsFormの新しいインスタンスを初期化します
-            </summary>
-            <param name="settings">設定オブジェクト</param>
-        </member>
-        <member name="M:BrowserChooser3.Forms.AccessibilitySettingsForm.LoadSettings">
-            <summary>
-            設定値を読み込み
+            フォーカス表示フラグ
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Forms.AccessibilitySettingsForm.SaveSettings">
+        <member name="P:BrowserChooser3.Forms.AccessibilitySettingsForm.FocusBoxColor">
             <summary>
-            設定値を保存
+            フォーカスボックスの色
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Forms.AccessibilitySettingsForm.UpdateControlStates">
+        <member name="P:BrowserChooser3.Forms.AccessibilitySettingsForm.FocusBoxWidth">
             <summary>
-            コントロールの有効/無効状態を更新
+            フォーカスボックスの線幅
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Forms.AccessibilitySettingsForm.chkShowVisualFocus_CheckedChanged(System.Object,System.EventArgs)">
+        <member name="M:BrowserChooser3.Forms.AccessibilitySettingsForm.#ctor">
             <summary>
-            視覚的フォーカス表示チェックボックスの変更イベント
+            アクセシビリティ設定ダイアログの新しいインスタンスを初期化します
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Forms.AccessibilitySettingsForm.cmdChange_Click(System.Object,System.EventArgs)">
+        <member name="M:BrowserChooser3.Forms.AccessibilitySettingsForm.InitializeComponent">
             <summary>
-            色変更ボタンのクリックイベント
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.AccessibilitySettingsForm.cmdOK_Click(System.Object,System.EventArgs)">
-            <summary>
-            OKボタンのクリックイベント
+            フォームの初期化
             </summary>
         </member>
         <member name="T:BrowserChooser3.Forms.AddEditBrowserForm">

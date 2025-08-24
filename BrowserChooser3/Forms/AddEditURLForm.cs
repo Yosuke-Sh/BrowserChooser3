@@ -59,8 +59,38 @@ namespace BrowserChooser3.Forms
         /// </summary>
         private void LoadURLData()
         {
-            // TODO: コントロールにURLデータを設定
             Text = _isEditMode ? "Edit URL" : "Add URL";
+            
+            var txtURL = Controls.Find("txtURL", true).FirstOrDefault() as TextBox;
+            var cmbBrowser = Controls.Find("cmbBrowser", true).FirstOrDefault() as ComboBox;
+            var nudDelay = Controls.Find("nudDelay", true).FirstOrDefault() as NumericUpDown;
+            var chkActive = Controls.Find("chkActive", true).FirstOrDefault() as CheckBox;
+
+            if (txtURL != null) txtURL.Text = _url.URLValue;
+            if (nudDelay != null) nudDelay.Value = _url.DelayTime;
+            if (chkActive != null) chkActive.Checked = _url.IsActive;
+
+            if (cmbBrowser != null)
+            {
+                // ブラウザの選択
+                if (_url.BrowserGuid == Guid.Empty)
+                {
+                    cmbBrowser.SelectedIndex = 0; // Default
+                }
+                else
+                {
+                    var browserIndex = 1; // Defaultの次から
+                    foreach (var browser in _browsers.Values)
+                    {
+                        if (browser.Guid == _url.BrowserGuid)
+                        {
+                            cmbBrowser.SelectedIndex = browserIndex;
+                            break;
+                        }
+                        browserIndex++;
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -68,7 +98,25 @@ namespace BrowserChooser3.Forms
         /// </summary>
         public URL GetData()
         {
-            // TODO: コントロールからURLデータを取得
+            var txtURL = Controls.Find("txtURL", true).FirstOrDefault() as TextBox;
+            var cmbBrowser = Controls.Find("cmbBrowser", true).FirstOrDefault() as ComboBox;
+            var nudDelay = Controls.Find("nudDelay", true).FirstOrDefault() as NumericUpDown;
+            var chkActive = Controls.Find("chkActive", true).FirstOrDefault() as CheckBox;
+
+            if (txtURL != null) _url.URLValue = txtURL.Text;
+            if (nudDelay != null) _url.DelayTime = (int)nudDelay.Value;
+            if (chkActive != null) _url.IsActive = chkActive.Checked;
+
+            if (cmbBrowser != null && cmbBrowser.SelectedIndex > 0)
+            {
+                var selectedBrowser = _browsers.Values.ElementAt(cmbBrowser.SelectedIndex - 1);
+                _url.BrowserGuid = selectedBrowser.Guid;
+            }
+            else
+            {
+                _url.BrowserGuid = Guid.Empty;
+            }
+
             return _url;
         }
 
@@ -120,7 +168,14 @@ namespace BrowserChooser3.Forms
             // イベントハンドラー
             btnOK.Click += (s, e) =>
             {
-                // TODO: データの検証と保存
+                // データの検証
+                if (string.IsNullOrWhiteSpace(txtURL.Text))
+                {
+                    MessageBox.Show("URLを入力してください。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // データの保存
                 _url.URLValue = txtURL.Text;
                 _url.IsActive = chkActive.Checked;
                 _url.DelayTime = (int)nudDelay.Value;
@@ -129,6 +184,10 @@ namespace BrowserChooser3.Forms
                 {
                     var selectedBrowser = _browsers.Values.ElementAt(cmbBrowser.SelectedIndex - 1);
                     _url.BrowserGuid = selectedBrowser.Guid;
+                }
+                else
+                {
+                    _url.BrowserGuid = Guid.Empty;
                 }
             };
         }

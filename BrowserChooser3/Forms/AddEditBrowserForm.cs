@@ -81,8 +81,19 @@ namespace BrowserChooser3.Forms
         /// </summary>
         private void LoadBrowserData()
         {
-            // TODO: コントロールにブラウザデータを設定
             Text = _isEditMode ? "Edit Browser" : "Add Browser";
+            
+            var txtName = Controls.Find("txtName", true).FirstOrDefault() as TextBox;
+            var txtTarget = Controls.Find("txtTarget", true).FirstOrDefault() as TextBox;
+            var txtArguments = Controls.Find("txtArguments", true).FirstOrDefault() as TextBox;
+            var txtHotkey = Controls.Find("txtHotkey", true).FirstOrDefault() as TextBox;
+            var txtCategory = Controls.Find("txtCategory", true).FirstOrDefault() as TextBox;
+
+            if (txtName != null) txtName.Text = _browser.Name;
+            if (txtTarget != null) txtTarget.Text = _browser.Target;
+            if (txtArguments != null) txtArguments.Text = _browser.Arguments;
+            if (txtHotkey != null) txtHotkey.Text = _browser.Hotkey != '\0' ? _browser.Hotkey.ToString() : "";
+            if (txtCategory != null) txtCategory.Text = _browser.Category;
         }
 
         /// <summary>
@@ -90,7 +101,26 @@ namespace BrowserChooser3.Forms
         /// </summary>
         public Browser GetData()
         {
-            // TODO: コントロールからブラウザデータを取得
+            var txtName = Controls.Find("txtName", true).FirstOrDefault() as TextBox;
+            var txtTarget = Controls.Find("txtTarget", true).FirstOrDefault() as TextBox;
+            var txtArguments = Controls.Find("txtArguments", true).FirstOrDefault() as TextBox;
+            var txtHotkey = Controls.Find("txtHotkey", true).FirstOrDefault() as TextBox;
+            var txtCategory = Controls.Find("txtCategory", true).FirstOrDefault() as TextBox;
+
+            if (txtName != null) _browser.Name = txtName.Text;
+            if (txtTarget != null) _browser.Target = txtTarget.Text;
+            if (txtArguments != null) _browser.Arguments = txtArguments.Text;
+            if (txtCategory != null) _browser.Category = txtCategory.Text;
+            
+            if (txtHotkey != null && txtHotkey.Text.Length > 0)
+            {
+                _browser.Hotkey = txtHotkey.Text[0];
+            }
+            else
+            {
+                _browser.Hotkey = '\0';
+            }
+
             return _browser;
         }
 
@@ -156,7 +186,20 @@ namespace BrowserChooser3.Forms
             // イベントハンドラー
             btnOK.Click += (s, e) =>
             {
-                // TODO: データの検証と保存
+                // データの検証
+                if (string.IsNullOrWhiteSpace(txtName.Text))
+                {
+                    MessageBox.Show("ブラウザ名を入力してください。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(txtTarget.Text))
+                {
+                    MessageBox.Show("実行ファイルパスを入力してください。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // データの保存
                 _browser.Name = txtName.Text;
                 _browser.Target = txtTarget.Text;
                 _browser.Arguments = txtArguments.Text;
@@ -165,6 +208,10 @@ namespace BrowserChooser3.Forms
                 if (txtHotkey.Text.Length > 0)
                 {
                     _browser.Hotkey = txtHotkey.Text[0];
+                }
+                else
+                {
+                    _browser.Hotkey = '\0';
                 }
             };
         }
