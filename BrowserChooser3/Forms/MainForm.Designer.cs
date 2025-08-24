@@ -28,191 +28,207 @@ namespace BrowserChooser3.Forms
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            
-            // メインコントロール
-            this.btnInfo = new System.Windows.Forms.Button();
-            this.btnOptions = new System.Windows.Forms.Button();
-            this.btnCancel = new System.Windows.Forms.Button();
-            this.btnCopyToClipboard = new System.Windows.Forms.Button();
-            this.btnCopyToClipboardAndClose = new System.Windows.Forms.Button();
-            this.chkAutoClose = new System.Windows.Forms.CheckBox();
-            this.chkAutoOpen = new System.Windows.Forms.CheckBox();
-            this.lblShortcutMessage = new System.Windows.Forms.Label();
-            this.tmrDelay = new System.Windows.Forms.Timer(this.components);
-            this.cmOptions = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.miEditMode = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
-            
-            this.cmOptions.SuspendLayout();
-            this.SuspendLayout();
-            
+            components = new System.ComponentModel.Container();
+            btnInfo = new Button();
+            btnOptions = new Button();
+            btnCancel = new Button();
+            btnCopyToClipboard = new Button();
+            btnCopyToClipboardAndClose = new Button();
+            chkAutoClose = new CheckBox();
+            chkAutoOpen = new CheckBox();
+            lblShortcutMessage = new Label();
+            tmrDelay = new System.Windows.Forms.Timer(components);
+            cmOptions = new ContextMenuStrip(components);
+            miEditMode = new ToolStripMenuItem();
+            toolStripSeparator1 = new ToolStripSeparator();
+            toolStripMenuItem2 = new ToolStripMenuItem();
+            toolStripMenuItem3 = new ToolStripMenuItem();
+            cmOptions.SuspendLayout();
+            SuspendLayout();
+            // 
             // btnInfo
-            this.btnInfo.AccessibleName = "About";
-            this.btnInfo.AutoSize = true;
-            this.btnInfo.BackColor = System.Drawing.Color.Transparent;
-            this.btnInfo.FlatAppearance.BorderSize = 0;
-            this.btnInfo.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
-            this.btnInfo.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnInfo.Location = new System.Drawing.Point(14, 52);
-            this.btnInfo.Margin = new System.Windows.Forms.Padding(0);
-            this.btnInfo.Name = "btnInfo";
-            this.btnInfo.Size = new System.Drawing.Size(24, 24);
-            this.btnInfo.TabIndex = 1;
-            this.btnInfo.UseVisualStyleBackColor = false;
-            this.btnInfo.Click += new System.EventHandler(this.btnInfo_Click);
-            
+            // 
+            btnInfo.AccessibleName = "About";
+            btnInfo.AutoSize = true;
+            btnInfo.BackColor = Color.Transparent;
+            btnInfo.FlatAppearance.BorderSize = 0;
+            btnInfo.FlatAppearance.MouseOverBackColor = Color.Transparent;
+            btnInfo.FlatStyle = FlatStyle.Flat;
+            btnInfo.Image = Properties.Resources.Icon122;
+            btnInfo.Location = new Point(852, 161);
+            btnInfo.Margin = new Padding(0);
+            btnInfo.Name = "btnInfo";
+            btnInfo.Size = new Size(40, 46);
+            btnInfo.TabIndex = 1;
+            btnInfo.UseVisualStyleBackColor = false;
+            btnInfo.Click += btnInfo_Click;
+            // 
             // btnOptions
-            this.btnOptions.AccessibleName = "Options";
-            this.btnOptions.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnOptions.AutoSize = true;
-            this.btnOptions.BackColor = System.Drawing.Color.Transparent;
-            this.btnOptions.FlatAppearance.BorderSize = 0;
-            this.btnOptions.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
-            this.btnOptions.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnOptions.Location = new System.Drawing.Point(511, 12);
-            this.btnOptions.Margin = new System.Windows.Forms.Padding(0);
-            this.btnOptions.Name = "btnOptions";
-            this.btnOptions.Size = new System.Drawing.Size(24, 24);
-            this.btnOptions.TabIndex = 2;
-            this.btnOptions.UseVisualStyleBackColor = false;
-            this.btnOptions.Click += new System.EventHandler(this.btnOptions_Click);
-            
+            // 
+            btnOptions.AccessibleName = "Options";
+            btnOptions.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnOptions.AutoSize = true;
+            btnOptions.BackColor = Color.Transparent;
+            btnOptions.FlatAppearance.BorderSize = 0;
+            btnOptions.FlatAppearance.MouseOverBackColor = Color.Transparent;
+            btnOptions.FlatStyle = FlatStyle.Flat;
+            btnOptions.Image = Properties.Resources.SettingsIcon;
+            btnOptions.Location = new Point(852, 23);
+            btnOptions.Margin = new Padding(0);
+            btnOptions.Name = "btnOptions";
+            btnOptions.Size = new Size(40, 46);
+            btnOptions.TabIndex = 2;
+            btnOptions.UseVisualStyleBackColor = false;
+            btnOptions.Click += btnOptions_Click;
+            // 
             // btnCancel
-            this.btnCancel.BackColor = System.Drawing.Color.Transparent;
-            this.btnCancel.FlatAppearance.BorderSize = 0;
-            this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCancel.Location = new System.Drawing.Point(511, 40);
-            this.btnCancel.Margin = new System.Windows.Forms.Padding(0);
-            this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(24, 24);
-            this.btnCancel.TabIndex = 3;
-            this.btnCancel.UseVisualStyleBackColor = false;
-            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
-            
+            // 
+            btnCancel.BackColor = Color.Transparent;
+            btnCancel.FlatAppearance.BorderSize = 0;
+            btnCancel.FlatStyle = FlatStyle.Flat;
+            btnCancel.Image = Properties.Resources.WorldGoIcon;
+            btnCancel.Location = new Point(852, 69);
+            btnCancel.Margin = new Padding(0);
+            btnCancel.Name = "btnCancel";
+            btnCancel.Size = new Size(40, 46);
+            btnCancel.TabIndex = 3;
+            btnCancel.UseVisualStyleBackColor = false;
+            btnCancel.Click += btnCancel_Click;
+            // 
             // btnCopyToClipboard
-            this.btnCopyToClipboard.BackColor = System.Drawing.Color.Transparent;
-            this.btnCopyToClipboard.FlatAppearance.BorderSize = 0;
-            this.btnCopyToClipboard.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCopyToClipboard.Location = new System.Drawing.Point(511, 70);
-            this.btnCopyToClipboard.Margin = new System.Windows.Forms.Padding(0);
-            this.btnCopyToClipboard.Name = "btnCopyToClipboard";
-            this.btnCopyToClipboard.Size = new System.Drawing.Size(24, 24);
-            this.btnCopyToClipboard.TabIndex = 4;
-            this.btnCopyToClipboard.UseVisualStyleBackColor = false;
-            this.btnCopyToClipboard.Click += new System.EventHandler(this.btnCopyToClipboard_Click);
-            
+            // 
+            btnCopyToClipboard.BackColor = Color.Transparent;
+            btnCopyToClipboard.FlatAppearance.BorderSize = 0;
+            btnCopyToClipboard.FlatStyle = FlatStyle.Flat;
+            btnCopyToClipboard.Image = Properties.Resources.PasteIcon;
+            btnCopyToClipboard.Location = new Point(852, 115);
+            btnCopyToClipboard.Margin = new Padding(0);
+            btnCopyToClipboard.Name = "btnCopyToClipboard";
+            btnCopyToClipboard.Size = new Size(40, 46);
+            btnCopyToClipboard.TabIndex = 4;
+            btnCopyToClipboard.UseVisualStyleBackColor = false;
+            btnCopyToClipboard.Click += btnCopyToClipboard_Click;
+            // 
             // btnCopyToClipboardAndClose
-            this.btnCopyToClipboardAndClose.BackColor = System.Drawing.Color.Transparent;
-            this.btnCopyToClipboardAndClose.FlatAppearance.BorderSize = 0;
-            this.btnCopyToClipboardAndClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCopyToClipboardAndClose.Location = new System.Drawing.Point(511, 100);
-            this.btnCopyToClipboardAndClose.Margin = new System.Windows.Forms.Padding(0);
-            this.btnCopyToClipboardAndClose.Name = "btnCopyToClipboardAndClose";
-            this.btnCopyToClipboardAndClose.Size = new System.Drawing.Size(24, 24);
-            this.btnCopyToClipboardAndClose.TabIndex = 5;
-            this.btnCopyToClipboardAndClose.UseVisualStyleBackColor = false;
-            this.btnCopyToClipboardAndClose.Click += new System.EventHandler(this.btnCopyToClipboardAndClose_Click);
-            
+            // 
+            btnCopyToClipboardAndClose.BackColor = Color.Transparent;
+            btnCopyToClipboardAndClose.FlatAppearance.BorderSize = 0;
+            btnCopyToClipboardAndClose.FlatStyle = FlatStyle.Flat;
+            btnCopyToClipboardAndClose.Image = Properties.Resources.PasteAndCloseIcon;
+            btnCopyToClipboardAndClose.Location = new Point(852, 207);
+            btnCopyToClipboardAndClose.Margin = new Padding(0);
+            btnCopyToClipboardAndClose.Name = "btnCopyToClipboardAndClose";
+            btnCopyToClipboardAndClose.Size = new Size(40, 46);
+            btnCopyToClipboardAndClose.TabIndex = 5;
+            btnCopyToClipboardAndClose.UseVisualStyleBackColor = false;
+            btnCopyToClipboardAndClose.Click += btnCopyToClipboardAndClose_Click;
+            // 
             // chkAutoClose
-            this.chkAutoClose.AutoSize = true;
-            this.chkAutoClose.BackColor = System.Drawing.Color.Transparent;
-            this.chkAutoClose.Location = new System.Drawing.Point(14, 120);
-            this.chkAutoClose.Name = "chkAutoClose";
-            this.chkAutoClose.Size = new System.Drawing.Size(80, 17);
-            this.chkAutoClose.TabIndex = 6;
-            this.chkAutoClose.Text = "Auto Close";
-            this.chkAutoClose.UseVisualStyleBackColor = false;
-            this.chkAutoClose.CheckedChanged += new System.EventHandler(this.chkAutoClose_CheckedChanged);
-            
+            // 
+            chkAutoClose.AutoSize = true;
+            chkAutoClose.BackColor = Color.Transparent;
+            chkAutoClose.Location = new Point(23, 231);
+            chkAutoClose.Margin = new Padding(5, 6, 5, 6);
+            chkAutoClose.Name = "chkAutoClose";
+            chkAutoClose.Size = new Size(125, 29);
+            chkAutoClose.TabIndex = 6;
+            chkAutoClose.Text = "Auto Close";
+            chkAutoClose.UseVisualStyleBackColor = false;
+            chkAutoClose.CheckedChanged += chkAutoClose_CheckedChanged;
+            // 
             // chkAutoOpen
-            this.chkAutoOpen.AutoSize = true;
-            this.chkAutoOpen.BackColor = System.Drawing.Color.Transparent;
-            this.chkAutoOpen.Location = new System.Drawing.Point(100, 120);
-            this.chkAutoOpen.Name = "chkAutoOpen";
-            this.chkAutoOpen.Size = new System.Drawing.Size(80, 17);
-            this.chkAutoOpen.TabIndex = 7;
-            this.chkAutoOpen.Text = "Auto Open";
-            this.chkAutoOpen.UseVisualStyleBackColor = false;
-            this.chkAutoOpen.CheckedChanged += new System.EventHandler(this.chkAutoOpen_CheckedChanged);
-            
+            // 
+            chkAutoOpen.AutoSize = true;
+            chkAutoOpen.BackColor = Color.Transparent;
+            chkAutoOpen.Location = new Point(167, 231);
+            chkAutoOpen.Margin = new Padding(5, 6, 5, 6);
+            chkAutoOpen.Name = "chkAutoOpen";
+            chkAutoOpen.Size = new Size(126, 29);
+            chkAutoOpen.TabIndex = 7;
+            chkAutoOpen.Text = "Auto Open";
+            chkAutoOpen.UseVisualStyleBackColor = false;
+            chkAutoOpen.CheckedChanged += chkAutoOpen_CheckedChanged;
+            // 
             // lblShortcutMessage
-            this.lblShortcutMessage.AutoSize = true;
-            this.lblShortcutMessage.BackColor = System.Drawing.Color.Black;
-            this.lblShortcutMessage.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F);
-            this.lblShortcutMessage.ForeColor = System.Drawing.Color.White;
-            this.lblShortcutMessage.Location = new System.Drawing.Point(2, 1);
-            this.lblShortcutMessage.Name = "lblShortcutMessage";
-            this.lblShortcutMessage.Size = new System.Drawing.Size(49, 39);
-            this.lblShortcutMessage.TabIndex = 8;
-            this.lblShortcutMessage.Text = "Shortcut\r\n/ Default\r\n(if set):";
-            this.lblShortcutMessage.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            
+            // 
+            lblShortcutMessage.AutoSize = true;
+            lblShortcutMessage.BackColor = Color.Black;
+            lblShortcutMessage.Font = new Font("Microsoft Sans Serif", 8F);
+            lblShortcutMessage.ForeColor = Color.White;
+            lblShortcutMessage.Location = new Point(3, 2);
+            lblShortcutMessage.Margin = new Padding(5, 0, 5, 0);
+            lblShortcutMessage.Name = "lblShortcutMessage";
+            lblShortcutMessage.Size = new Size(70, 60);
+            lblShortcutMessage.TabIndex = 8;
+            lblShortcutMessage.Text = "Shortcut\r\n/ Default\r\n(if set):";
+            lblShortcutMessage.TextAlign = ContentAlignment.MiddleRight;
+            // 
             // tmrDelay
-            this.tmrDelay.Interval = 1000;
-            this.tmrDelay.Tick += new System.EventHandler(this.tmrDelay_Tick);
-            
+            // 
+            tmrDelay.Interval = 1000;
+            tmrDelay.Tick += tmrDelay_Tick;
+            // 
             // cmOptions
-            this.cmOptions.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-                this.miEditMode,
-                this.toolStripSeparator1,
-                this.toolStripMenuItem2,
-                this.toolStripMenuItem3});
-            this.cmOptions.Name = "cmOptions";
-            this.cmOptions.Size = new System.Drawing.Size(182, 76);
-            
+            // 
+            cmOptions.ImageScalingSize = new Size(24, 24);
+            cmOptions.Items.AddRange(new ToolStripItem[] { miEditMode, toolStripSeparator1, toolStripMenuItem2, toolStripMenuItem3 });
+            cmOptions.Name = "cmOptions";
+            cmOptions.Size = new Size(246, 106);
+            // 
             // miEditMode
-            this.miEditMode.Name = "miEditMode";
-            this.miEditMode.Size = new System.Drawing.Size(181, 22);
-            this.miEditMode.Text = "&Edit";
-            this.miEditMode.Click += new System.EventHandler(this.miEditMode_Click);
-            
+            // 
+            miEditMode.Name = "miEditMode";
+            miEditMode.Size = new Size(245, 32);
+            miEditMode.Text = "&Edit";
+            miEditMode.Click += miEditMode_Click;
+            // 
             // toolStripSeparator1
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(178, 6);
-            
+            // 
+            toolStripSeparator1.Name = "toolStripSeparator1";
+            toolStripSeparator1.Size = new Size(242, 6);
+            // 
             // toolStripMenuItem2
-            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(181, 22);
-            this.toolStripMenuItem2.Text = "ToolStripMenuItem2";
-            
+            // 
+            toolStripMenuItem2.Name = "toolStripMenuItem2";
+            toolStripMenuItem2.Size = new Size(245, 32);
+            toolStripMenuItem2.Text = "ToolStripMenuItem2";
+            // 
             // toolStripMenuItem3
-            this.toolStripMenuItem3.Name = "toolStripMenuItem3";
-            this.toolStripMenuItem3.Size = new System.Drawing.Size(181, 22);
-            this.toolStripMenuItem3.Text = "ToolStripMenuItem3";
-            
+            // 
+            toolStripMenuItem3.Name = "toolStripMenuItem3";
+            toolStripMenuItem3.Size = new Size(245, 32);
+            toolStripMenuItem3.Text = "ToolStripMenuItem3";
+            // 
             // MainForm
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.Gold;
-            this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(542, 157);
-            this.Controls.Add(this.btnInfo);
-            this.Controls.Add(this.lblShortcutMessage);
-            this.Controls.Add(this.btnCopyToClipboardAndClose);
-            this.Controls.Add(this.chkAutoOpen);
-            this.Controls.Add(this.chkAutoClose);
-            this.Controls.Add(this.btnCopyToClipboard);
-            this.Controls.Add(this.btnCancel);
-            this.Controls.Add(this.btnOptions);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.KeyPreview = true;
-            this.MaximizeBox = false;
-            this.MinimizeBox = false;
-            this.Name = "MainForm";
-            this.ShowIcon = false;
-            this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Choose a Browser";
-            this.TopMost = true;
-            this.Load += new System.EventHandler(this.MainForm_Load);
-            this.cmOptions.ResumeLayout(false);
-            this.ResumeLayout(false);
-            this.PerformLayout();
+            // 
+            AutoScaleDimensions = new SizeF(10F, 25F);
+            AutoScaleMode = AutoScaleMode.Font;
+            BackColor = Color.Gold;
+            CancelButton = btnCancel;
+            ClientSize = new Size(903, 302);
+            Controls.Add(btnInfo);
+            Controls.Add(lblShortcutMessage);
+            Controls.Add(btnCopyToClipboardAndClose);
+            Controls.Add(chkAutoOpen);
+            Controls.Add(chkAutoClose);
+            Controls.Add(btnCopyToClipboard);
+            Controls.Add(btnCancel);
+            Controls.Add(btnOptions);
+            FormBorderStyle = FormBorderStyle.Fixed3D;
+            KeyPreview = true;
+            Margin = new Padding(5, 6, 5, 6);
+            MaximizeBox = false;
+            MinimizeBox = false;
+            Name = "MainForm";
+            ShowIcon = false;
+            SizeGripStyle = SizeGripStyle.Hide;
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "Choose a Browser";
+            TopMost = true;
+            Load += MainForm_Load;
+            cmOptions.ResumeLayout(false);
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion

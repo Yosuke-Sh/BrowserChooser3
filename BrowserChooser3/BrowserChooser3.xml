@@ -36,6 +36,12 @@
         <member name="P:BrowserChooser3.Classes.Browser.Y">
             <summary>Y座標</summary>
         </member>
+        <member name="P:BrowserChooser3.Classes.Browser.PosX">
+            <summary>X座標（Browser Chooser 2互換）</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Browser.PosY">
+            <summary>Y座標（Browser Chooser 2互換）</summary>
+        </member>
         <member name="P:BrowserChooser3.Classes.Browser.Visible">
             <summary>表示フラグ</summary>
         </member>
@@ -62,6 +68,11 @@
         </member>
         <member name="P:BrowserChooser3.Classes.Browser.IsDefault">
             <summary>デフォルトブラウザフラグ</summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Browser.Clone">
+            <summary>
+            ブラウザのクローンを作成（Browser Chooser 2互換）
+            </summary>
         </member>
         <member name="T:BrowserChooser3.Classes.BrowserDetector">
             <summary>
@@ -192,6 +203,12 @@
         <member name="P:BrowserChooser3.Classes.FileType.Extension">
             <summary>ファイル拡張子</summary>
         </member>
+        <member name="P:BrowserChooser3.Classes.FileType.Extention">
+            <summary>ファイル拡張子（Browser Chooser 2互換）</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.FileType.FiletypeName">
+            <summary>ファイルタイプ名（Browser Chooser 2互換）</summary>
+        </member>
         <member name="P:BrowserChooser3.Classes.FileType.BrowserGuid">
             <summary>関連するブラウザのGUID</summary>
         </member>
@@ -200,6 +217,14 @@
         </member>
         <member name="P:BrowserChooser3.Classes.FileType.SupportingBrowsers">
             <summary>対応ブラウザのGUIDリスト</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.FileType.DefaultCategories">
+            <summary>デフォルトカテゴリ（Browser Chooser 2互換）</summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.FileType.Clone">
+            <summary>
+            ファイルタイプのクローンを作成（Browser Chooser 2互換）
+            </summary>
         </member>
         <member name="T:BrowserChooser3.Classes.GeneralUtilities">
             <summary>
@@ -448,6 +473,14 @@
         <member name="P:BrowserChooser3.Classes.Protocol.SupportingBrowsers">
             <summary>対応ブラウザのGUIDリスト</summary>
         </member>
+        <member name="P:BrowserChooser3.Classes.Protocol.DefaultCategories">
+            <summary>デフォルトカテゴリ（Browser Chooser 2互換）</summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Protocol.Clone">
+            <summary>
+            プロトコルのクローンを作成（Browser Chooser 2互換）
+            </summary>
+        </member>
         <member name="T:BrowserChooser3.Classes.Settings">
             <summary>
             アプリケーション設定を管理するクラス
@@ -628,8 +661,14 @@
         <member name="P:BrowserChooser3.Classes.Settings.ShowURL">
             <summary>URL表示</summary>
         </member>
+        <member name="P:BrowserChooser3.Classes.Settings.ShowURLs">
+            <summary>URL表示（Browser Chooser 2互換）</summary>
+        </member>
         <member name="P:BrowserChooser3.Classes.Settings.RevealShortURL">
             <summary>短縮URL展開</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Settings.RevealShortURLs">
+            <summary>短縮URL展開（Browser Chooser 2互換）</summary>
         </member>
         <member name="P:BrowserChooser3.Classes.Settings.FileVersion">
             <summary>ファイルバージョン</summary>
@@ -648,6 +687,12 @@
         </member>
         <member name="P:BrowserChooser3.Classes.Settings.Height">
             <summary>高さ</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Settings.GridWidth">
+            <summary>グリッド幅（Browser Chooser 2互換）</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Settings.GridHeight">
+            <summary>グリッド高さ（Browser Chooser 2互換）</summary>
         </member>
         <member name="P:BrowserChooser3.Classes.Settings.IconWidth">
             <summary>アイコン幅</summary>
@@ -694,6 +739,9 @@
         <member name="P:BrowserChooser3.Classes.Settings.UseAero">
             <summary>Aero効果使用</summary>
         </member>
+        <member name="P:BrowserChooser3.Classes.Settings.UseAccessibleRendering">
+            <summary>アクセシブルレンダリング使用</summary>
+        </member>
         <member name="P:BrowserChooser3.Classes.Settings.FocusBoxLineWidth">
             <summary>フォーカスボックス線幅</summary>
         </member>
@@ -718,6 +766,9 @@
         </member>
         <member name="P:BrowserChooser3.Classes.Settings.BackgroundColor">
             <summary>背景色</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Settings.BackgroundColorValue">
+            <summary>背景色（Color型、Browser Chooser 2互換）</summary>
         </member>
         <member name="P:BrowserChooser3.Classes.Settings.StartingPosition">
             <summary>開始位置</summary>
@@ -879,17 +930,28 @@
         <member name="P:BrowserChooser3.Classes.URL.URLPattern">
             <summary>URLパターン</summary>
         </member>
+        <member name="P:BrowserChooser3.Classes.URL.URLValue">
+            <summary>URL（Browser Chooser 2互換）</summary>
+        </member>
         <member name="P:BrowserChooser3.Classes.URL.BrowserGuid">
             <summary>関連するブラウザのGUID</summary>
         </member>
         <member name="P:BrowserChooser3.Classes.URL.Delay">
             <summary>遅延時間</summary>
         </member>
+        <member name="P:BrowserChooser3.Classes.URL.DelayTime">
+            <summary>遅延時間（Browser Chooser 2互換）</summary>
+        </member>
         <member name="P:BrowserChooser3.Classes.URL.IsActive">
             <summary>アクティブ状態</summary>
         </member>
         <member name="P:BrowserChooser3.Classes.URL.AutoClose">
             <summary>自動クローズ</summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.URL.Clone">
+            <summary>
+            URLのクローンを作成（Browser Chooser 2互換）
+            </summary>
         </member>
         <member name="T:BrowserChooser3.Classes.URLUtilities">
             <summary>
@@ -1046,6 +1108,156 @@
             OKボタンのクリックイベント
             </summary>
         </member>
+        <member name="T:BrowserChooser3.Forms.AddEditBrowserForm">
+            <summary>
+            ブラウザ追加・編集ダイアログ
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.AddEditBrowserForm.#ctor">
+            <summary>
+            ブラウザ追加・編集ダイアログの新しいインスタンスを初期化します
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.AddEditBrowserForm.AddBrowser(System.Collections.Generic.Dictionary{System.Int32,BrowserChooser3.Classes.Browser},System.Collections.Generic.Dictionary{System.Int32,BrowserChooser3.Classes.Protocol},System.Collections.Generic.Dictionary{System.Int32,BrowserChooser3.Classes.FileType},System.Boolean,System.Drawing.Point,BrowserChooser3.Classes.Browser)">
+            <summary>
+            ブラウザ追加モードでダイアログを表示
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.AddEditBrowserForm.EditBrowser(BrowserChooser3.Classes.Browser,System.Collections.Generic.Dictionary{System.Int32,BrowserChooser3.Classes.Browser},System.Collections.Generic.Dictionary{System.Int32,BrowserChooser3.Classes.Protocol},System.Collections.Generic.Dictionary{System.Int32,BrowserChooser3.Classes.FileType},System.Boolean)">
+            <summary>
+            ブラウザ編集モードでダイアログを表示
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.AddEditBrowserForm.LoadBrowserData">
+            <summary>
+            ブラウザデータを読み込み
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.AddEditBrowserForm.GetData">
+            <summary>
+            ブラウザデータを取得
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.AddEditBrowserForm.GetProtocols">
+            <summary>
+            プロトコルデータを取得
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.AddEditBrowserForm.GetFileTypes">
+            <summary>
+            ファイルタイプデータを取得
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.AddEditBrowserForm.InitializeComponent">
+            <summary>
+            フォームの初期化
+            </summary>
+        </member>
+        <member name="T:BrowserChooser3.Forms.AddEditFileTypeForm">
+            <summary>
+            ファイルタイプ追加・編集ダイアログ
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.AddEditFileTypeForm.#ctor">
+            <summary>
+            ファイルタイプ追加・編集ダイアログの新しいインスタンスを初期化します
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.AddEditFileTypeForm.AddFileType(System.Collections.Generic.Dictionary{System.Int32,BrowserChooser3.Classes.Browser})">
+            <summary>
+            ファイルタイプ追加モードでダイアログを表示
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.AddEditFileTypeForm.EditFileType(BrowserChooser3.Classes.FileType,System.Collections.Generic.Dictionary{System.Int32,BrowserChooser3.Classes.Browser})">
+            <summary>
+            ファイルタイプ編集モードでダイアログを表示
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.AddEditFileTypeForm.LoadFileTypeData">
+            <summary>
+            ファイルタイプデータを読み込み
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.AddEditFileTypeForm.GetData">
+            <summary>
+            ファイルタイプデータを取得
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.AddEditFileTypeForm.InitializeComponent">
+            <summary>
+            フォームの初期化
+            </summary>
+        </member>
+        <member name="T:BrowserChooser3.Forms.AddEditProtocolForm">
+            <summary>
+            プロトコル追加・編集ダイアログ
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.AddEditProtocolForm.#ctor">
+            <summary>
+            プロトコル追加・編集ダイアログの新しいインスタンスを初期化します
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.AddEditProtocolForm.AddProtocol(System.Collections.Generic.Dictionary{System.Int32,BrowserChooser3.Classes.Browser})">
+            <summary>
+            プロトコル追加モードでダイアログを表示
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.AddEditProtocolForm.EditProtocol(BrowserChooser3.Classes.Protocol,System.Collections.Generic.Dictionary{System.Int32,BrowserChooser3.Classes.Browser})">
+            <summary>
+            プロトコル編集モードでダイアログを表示
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.AddEditProtocolForm.LoadProtocolData">
+            <summary>
+            プロトコルデータを読み込み
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.AddEditProtocolForm.GetData">
+            <summary>
+            プロトコルデータを取得
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.AddEditProtocolForm.InitializeComponent">
+            <summary>
+            フォームの初期化
+            </summary>
+        </member>
+        <member name="T:BrowserChooser3.Forms.AddEditURLForm">
+            <summary>
+            URL追加・編集ダイアログ
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.AddEditURLForm.#ctor">
+            <summary>
+            URL追加・編集ダイアログの新しいインスタンスを初期化します
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.AddEditURLForm.AddURL(System.Collections.Generic.Dictionary{System.Int32,BrowserChooser3.Classes.Browser})">
+            <summary>
+            URL追加モードでダイアログを表示
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.AddEditURLForm.EditURL(BrowserChooser3.Classes.URL,System.Collections.Generic.Dictionary{System.Int32,BrowserChooser3.Classes.Browser})">
+            <summary>
+            URL編集モードでダイアログを表示
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.AddEditURLForm.LoadURLData">
+            <summary>
+            URLデータを読み込み
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.AddEditURLForm.GetData">
+            <summary>
+            URLデータを取得
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.AddEditURLForm.InitializeComponent">
+            <summary>
+            フォームの初期化
+            </summary>
+        </member>
         <member name="T:BrowserChooser3.Forms.IconSelectionForm">
             <summary>
             アイコン選択フォーム
@@ -1124,9 +1336,14 @@
             ブラウザボタンの作成
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Forms.MainForm.GetButtonText(BrowserChooser3.Classes.Browser)">
+        <member name="M:BrowserChooser3.Forms.MainForm.CreateOverlayLabel(System.Windows.Forms.Button,BrowserChooser3.Classes.Browser,System.Int32)">
             <summary>
-            ボタンテキストの取得（ホットキーとデフォルトマーカーを含む）
+            ホットキーとデフォルトブラウザのオーバーレイラベルを作成
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.MainForm.AdjustOverlayLabels">
+            <summary>
+            オーバーレイラベルの位置を調整
             </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.MainForm.OpenOptionsForm">
@@ -1330,7 +1547,7 @@
         </member>
         <member name="M:BrowserChooser3.Forms.OptionsForm.InitializeForm">
             <summary>
-            フォームの初期化
+            フォームの初期化（Browser Chooser 2互換）
             </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.OptionsForm.OptionsForm_Resize(System.Object,System.EventArgs)">
@@ -1365,12 +1582,22 @@
         </member>
         <member name="M:BrowserChooser3.Forms.OptionsForm.CreateProtocolsPanel">
             <summary>
-            プロトコルパネルの作成
+            プロトコルパネルの作成（Browser Chooser 2互換）
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.OptionsForm.CreateCategoriesPanel">
+            <summary>
+            カテゴリパネルの作成（Browser Chooser 2互換）
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.OptionsForm.TabCategories_Enter(System.Object,System.EventArgs)">
+            <summary>
+            カテゴリタブ選択時の処理（Browser Chooser 2互換）
             </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.OptionsForm.CreateFileTypesPanel">
             <summary>
-            ファイルタイプパネルの作成
+            ファイルタイプパネルの作成（Browser Chooser 2互換）
             </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.OptionsForm.CreateDisplayPanel">
@@ -1380,17 +1607,17 @@
         </member>
         <member name="M:BrowserChooser3.Forms.OptionsForm.CreateGridPanel">
             <summary>
-            グリッドパネルの作成
+            グリッドパネルの作成（Browser Chooser 2互換）
             </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.OptionsForm.CreatePrivacyPanel">
             <summary>
-            プライバシーパネルの作成
+            プライバシーパネルの作成（Browser Chooser 2互換）
             </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.OptionsForm.CreateStartupPanel">
             <summary>
-            スタートアップパネルの作成
+            スタートアップパネルの作成（Browser Chooser 2互換）
             </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.OptionsForm.CreateGeneralPanel">
@@ -1400,7 +1627,7 @@
         </member>
         <member name="M:BrowserChooser3.Forms.OptionsForm.CreateOthersPanel">
             <summary>
-            その他パネルの作成
+            その他パネルの作成（Browser Chooser 2互換）
             </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.OptionsForm.CreateAccessibilityPanel">
@@ -1410,17 +1637,147 @@
         </member>
         <member name="M:BrowserChooser3.Forms.OptionsForm.CreateDefaultBrowserPanel">
             <summary>
-            デフォルトブラウザパネルの作成
+            デフォルトブラウザパネルの作成（Browser Chooser 2互換）
             </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.OptionsForm.LoadSettings">
             <summary>
-            設定値の読み込み
+            設定値の読み込み（Browser Chooser 2互換）
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.OptionsForm.LoadSettingsToControls">
+            <summary>
+            設定値をコントロールに設定（Browser Chooser 2互換）
             </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.OptionsForm.SaveSettings">
             <summary>
-            設定値の保存
+            設定値の保存（Browser Chooser 2互換）
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.OptionsForm.SetupProtocolFileTypeManagement">
+            <summary>
+            プロトコル・ファイルタイプ管理機能（Browser Chooser 2互換）
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.OptionsForm.SetupURLManagement">
+            <summary>
+            URL管理機能（Browser Chooser 2互換）
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.OptionsForm.LstBrowsers_SelectedIndexChanged(System.Object,System.EventArgs)">
+            <summary>
+            ブラウザリストの選択変更イベント
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.OptionsForm.LstURLs_SelectedIndexChanged(System.Object,System.EventArgs)">
+            <summary>
+            Auto URLsリストの選択変更イベント
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.OptionsForm.LstProtocols_SelectedIndexChanged(System.Object,System.EventArgs)">
+            <summary>
+            プロトコルリストの選択変更イベント
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.OptionsForm.LstFileTypes_SelectedIndexChanged(System.Object,System.EventArgs)">
+            <summary>
+            ファイルタイプリストの選択変更イベント
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.OptionsForm.AddToDefault">
+            <summary>
+            デフォルトプログラムに追加（Browser Chooser 2互換）
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.OptionsForm.MakeDefault">
+            <summary>
+            デフォルトブラウザに設定（Browser Chooser 2互換）
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.OptionsForm.MakeDefaultSingle(System.String,System.Boolean)">
+            <summary>
+            個別のデフォルト設定（Browser Chooser 2互換）
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.OptionsForm.RbScope_CheckedChanged(System.Object,System.EventArgs)">
+            <summary>
+            スコープ変更時の処理
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.OptionsForm.DetectDirty(System.Object,System.EventArgs)">
+            <summary>
+            設定変更を検知してダーティフラグを設定
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.OptionsForm.ChkCanonicalize_CheckedChanged(System.Object,System.EventArgs)">
+            <summary>
+            正規化設定の変更時の処理
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.OptionsForm.ChkLog_CheckedChanged(System.Object,System.EventArgs)">
+            <summary>
+            ログ設定の変更時の処理
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.OptionsForm.SetTransparentBackground">
+            <summary>
+            透明背景設定
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.OptionsForm.OptionsForm_Shown(System.Object,System.EventArgs)">
+            <summary>
+            フォーム表示時の設定読み込み（Browser Chooser 2互換）
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.OptionsForm.GetBrowserProtocolsAndFileTypes(BrowserChooser3.Classes.Browser)">
+            <summary>
+            ブラウザのプロトコル・ファイルタイプを取得（Browser Chooser 2互換）
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.OptionsForm.SetupBrowserManagement">
+            <summary>
+            ブラウザ管理機能（Browser Chooser 2互換）
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.OptionsForm.SetupDetailedSelectionHandlers">
+            <summary>
+            詳細な選択変更イベントハンドラー（Browser Chooser 2互換）
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.OptionsForm.RebuildAutoURLs">
+            <summary>
+            Auto URLsのドラッグ&amp;ドロップ機能（Browser Chooser 2互換）
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.OptionsForm.SetupAutoURLsDragDrop(System.Windows.Forms.ListView)">
+            <summary>
+            Auto URLsのドラッグ&amp;ドロップ機能を設定（Browser Chooser 2互換）
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.OptionsForm.SetupBrowsersDragDrop(System.Windows.Forms.ListView)">
+            <summary>
+            ブラウザリストへのファイルドロップ機能を設定（Browser Chooser 2互換）
+            </summary>
+        </member>
+        <member name="F:BrowserChooser3.Forms.OptionsForm._mbURLMouseDown">
+            <summary>
+            Auto URLsのドラッグ&amp;ドロップ機能
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.OptionsForm.SetupWindowsCompatibilityWarnings">
+            <summary>
+            Windows 8/10対応の警告表示を設定
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.OptionsForm.IsRunningPost8">
+            <summary>
+            Windows 8以降かどうかを判定
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.OptionsForm.IsRunningPost10">
+            <summary>
+            Windows 10以降かどうかを判定
             </summary>
         </member>
         <member name="M:BrowserChooser3.Program.Main">

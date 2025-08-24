@@ -28,5 +28,26 @@ namespace BrowserChooser3.Classes
         
         /// <summary>対応ブラウザのGUIDリスト</summary>
         public List<Guid> SupportingBrowsers { get; set; } = new();
+        
+        /// <summary>デフォルトカテゴリ（Browser Chooser 2互換）</summary>
+        public List<string> DefaultCategories { get; set; } = new();
+        
+        /// <summary>
+        /// プロトコルのクローンを作成（Browser Chooser 2互換）
+        /// </summary>
+        public Protocol Clone()
+        {
+            return new Protocol
+            {
+                Guid = this.Guid,
+                Name = this.Name,
+                ProtocolName = this.ProtocolName,
+                Header = this.Header,
+                BrowserGuid = this.BrowserGuid,
+                IsActive = this.IsActive,
+                SupportingBrowsers = new List<Guid>(this.SupportingBrowsers),
+                DefaultCategories = new List<string>(this.DefaultCategories)
+            };
+        }
     }
 }

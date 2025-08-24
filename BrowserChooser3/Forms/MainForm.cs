@@ -115,8 +115,8 @@ namespace BrowserChooser3.Forms
             Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0);
             
             // サイズの設定（動的サイズ変更対応）
-            MinimumSize = new Size(450, 220);  // 最小サイズを設定
-            ClientSize = new Size(600, 180);   // 初期サイズ
+            MinimumSize = new Size(600, 300);  // 最小サイズを設定
+            ClientSize = new Size(900, 400);   // 初期サイズ
             
             // サイズ変更イベントの設定
             Resize += MainForm_Resize;
@@ -165,7 +165,7 @@ namespace BrowserChooser3.Forms
             var gapHeight = _settings.IconGapHeight;
             
             // フォーム幅に基づいて列数を計算
-            var availableWidth = ClientSize.Width - 50; // 左右マージン
+            var availableWidth = ClientSize.Width - 80; // 左右マージン（右端ボタン用のスペース確保）
             var columnsPerRow = Math.Max(1, availableWidth / (buttonWidth + gapWidth));
             
             var buttonIndex = 0;
@@ -175,10 +175,22 @@ namespace BrowserChooser3.Forms
                 {
                     var row = buttonIndex / columnsPerRow;
                     var col = buttonIndex % columnsPerRow;
-                                    var x = 25 + (col * (buttonWidth + gapWidth));
-                var y = 25 + (row * (buttonHeight + gapHeight));
+                    var x = 30 + (col * (buttonWidth + gapWidth));
+                    var y = 30 + (row * (buttonHeight + gapHeight));
                     
                     button.Location = new Point(x, y);
+                    
+                    // 対応するオーバーレイラベルの位置も調整
+                    var overlayLabel = Controls.OfType<Label>().FirstOrDefault(l => l.Name == $"lblOverlay_{buttonIndex}");
+                    if (overlayLabel != null)
+                    {
+                        var labelWidth = TextRenderer.MeasureText(overlayLabel.Text, overlayLabel.Font).Width;
+                        overlayLabel.Location = new Point(
+                            x + (buttonWidth / 2) - (labelWidth / 2),
+                            y - 15
+                        );
+                    }
+                    
                     buttonIndex++;
                 }
             }
@@ -191,23 +203,36 @@ namespace BrowserChooser3.Forms
         {
             if (_chkAutoClose != null)
             {
-                _chkAutoClose.Location = new Point(56, ClientSize.Height - 63);
+                _chkAutoClose.Location = new Point(20, ClientSize.Height - 80);
             }
             
             if (_chkAutoOpen != null)
             {
-                _chkAutoOpen.Location = new Point(56, ClientSize.Height - 30);
+                _chkAutoOpen.Location = new Point(20, ClientSize.Height - 50);
+            }
+            
+            if (_btnOptions != null)
+            {
+                _btnOptions.Location = new Point(ClientSize.Width - 35, 15);
             }
             
             if (_btnCopyToClipboard != null)
             {
-                _btnCopyToClipboard.Location = new Point(ClientSize.Width - 40, 45);
+                _btnCopyToClipboard.Location = new Point(ClientSize.Width - 35, 50);
             }
             
             if (_btnCopyToClipboardAndClose != null)
             {
-                _btnCopyToClipboardAndClose.Location = new Point(ClientSize.Width - 40, 80);
+                _btnCopyToClipboardAndClose.Location = new Point(ClientSize.Width - 35, 85);
             }
+            
+            if (_countdownLabel != null)
+            {
+                _countdownLabel.Location = new Point(20, ClientSize.Height - 20);
+            }
+            
+            // オーバーレイラベルの位置も調整
+            AdjustOverlayLabels();
         }
 
         /// <summary>
@@ -224,12 +249,20 @@ namespace BrowserChooser3.Forms
             
             if (_browsers == null) return;
             
-            // 既存のブラウザボタンを削除
+            // 既存のブラウザボタンとオーバーレイラベルを削除
             var buttonsToRemove = Controls.OfType<Button>().Where(b => b.Tag is Browser).ToList();
+            var labelsToRemove = Controls.OfType<Label>().Where(l => l.Name.StartsWith("lblOverlay_")).ToList();
+            
             foreach (var btn in buttonsToRemove)
             {
                 Controls.Remove(btn);
                 btn.Dispose();
+            }
+            
+            foreach (var lbl in labelsToRemove)
+            {
+                Controls.Remove(lbl);
+                lbl.Dispose();
             }
             
             var visibleBrowsers = _browsers.Where(b => b.Visible).ToList();
@@ -241,7 +274,7 @@ namespace BrowserChooser3.Forms
                 var button = new Button
                 {
                     Name = $"btnBrowser_{i}",
-                    Text = GetButtonText(browser),
+                    Text = browser.Name, // テキストはブラウザ名のみ
                     Size = new Size(buttonWidth, buttonHeight),
                     Tag = browser,
                     FlatStyle = FlatStyle.Flat,
@@ -255,6 +288,10 @@ namespace BrowserChooser3.Forms
                 button.Click += BrowserButton_Click;
                 
                 Controls.Add(button);
+                
+                // ホットキーとデフォルトブラウザのオーバーレイラベルを作成
+                CreateOverlayLabel(button, browser, i);
+                
                 Logger.LogTrace("MainForm.CreateBrowserButtons", "ブラウザボタン作成", browser.Name);
             }
             
@@ -265,25 +302,85 @@ namespace BrowserChooser3.Forms
         }
 
         /// <summary>
-        /// ボタンテキストの取得（ホットキーとデフォルトマーカーを含む）
+        /// ホットキーとデフォルトブラウザのオーバーレイラベルを作成
         /// </summary>
-        private string GetButtonText(Browser browser)
+        private void CreateOverlayLabel(Button button, Browser browser, int index)
         {
-            var text = browser.Name;
-            
-            // ホットキーの追加
-            if (browser.Hotkey != '\0')
+            var defaultIndicator = "";
+            if (_settings?.DefaultBrowserGuid == browser.Guid)
             {
-                text += $" ({browser.Hotkey})";
+                defaultIndicator = " / D";
             }
             
-            // デフォルトブラウザのマーカー
-            if (browser.IsDefault)
+            // ホットキーまたはデフォルトブラウザがある場合のみオーバーレイラベルを作成
+            if ((browser.Hotkey != '\0' && char.IsDigit(browser.Hotkey)) || !string.IsNullOrEmpty(defaultIndicator))
             {
-                text += " [D]";
+                var overlayLabel = new Label
+                {
+                    Name = $"lblOverlay_{index}",
+                    AutoSize = true,
+                    BackColor = Color.Black,
+                    ForeColor = Color.White,
+                    Font = new Font("Segoe UI", 8.0f, FontStyle.Bold, GraphicsUnit.Point, 0),
+                    TextAlign = ContentAlignment.MiddleCenter
+                };
+                
+                // テキストの設定
+                if (browser.Hotkey != '\0' && char.IsDigit(browser.Hotkey))
+                {
+                    overlayLabel.Text = browser.Hotkey.ToString() + defaultIndicator;
+                }
+                else if (!string.IsNullOrEmpty(defaultIndicator))
+                {
+                    overlayLabel.Text = "D";
+                }
+                
+                // 位置の計算（ボタンの中央上部に配置）
+                var labelWidth = TextRenderer.MeasureText(overlayLabel.Text, overlayLabel.Font).Width;
+                overlayLabel.Location = new Point(
+                    button.Location.X + (button.Width / 2) - (labelWidth / 2),
+                    button.Location.Y - 15
+                );
+                
+                Controls.Add(overlayLabel);
+                overlayLabel.BringToFront();
+                
+                Logger.LogTrace("MainForm.CreateOverlayLabel", "オーバーレイラベル作成", $"{browser.Name}: {overlayLabel.Text}");
             }
+        }
+
+        /// <summary>
+        /// オーバーレイラベルの位置を調整
+        /// </summary>
+        private void AdjustOverlayLabels()
+        {
+            if (_browsers == null || _settings == null) return;
             
-            return text;
+            var buttonWidth = _settings.IconWidth;
+            var gapWidth = _settings.IconGapWidth;
+            var gapHeight = _settings.IconGapHeight;
+            
+            // フォーム幅に基づいて列数を計算
+            var availableWidth = ClientSize.Width - 80;
+            var columnsPerRow = Math.Max(1, availableWidth / (buttonWidth + gapWidth));
+            
+            var buttonIndex = 0;
+            foreach (Control control in Controls)
+            {
+                if (control is Button button && button.Tag is Browser)
+                {
+                    var overlayLabel = Controls.OfType<Label>().FirstOrDefault(l => l.Name == $"lblOverlay_{buttonIndex}");
+                    if (overlayLabel != null)
+                    {
+                        var labelWidth = TextRenderer.MeasureText(overlayLabel.Text, overlayLabel.Font).Width;
+                        overlayLabel.Location = new Point(
+                            button.Location.X + (buttonWidth / 2) - (labelWidth / 2),
+                            button.Location.Y - 15
+                        );
+                    }
+                    buttonIndex++;
+                }
+            }
         }
 
         /// <summary>
@@ -481,12 +578,13 @@ namespace BrowserChooser3.Forms
                     BackColor = Color.Transparent,
                     FlatAppearance = { BorderSize = 0, MouseOverBackColor = Color.Transparent },
                     FlatStyle = FlatStyle.Flat,
-                    Location = new Point(511, 12),
+                    Location = new Point(ClientSize.Width - 35, 15),
                     Margin = new Padding(0),
                     Name = "btnOptions",
-                    Size = new Size(24, 24),
+                    Size = new Size(28, 28),
                     TabIndex = 2,
-                    UseVisualStyleBackColor = false
+                    UseVisualStyleBackColor = false,
+                    ImageAlign = ContentAlignment.MiddleCenter
                 };
                 
 
@@ -521,11 +619,11 @@ namespace BrowserChooser3.Forms
                     CheckState = CheckState.Checked,
                     Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
                     ForeColor = SystemColors.ActiveCaptionText,
-                    Location = new Point(56, ClientSize.Height - 63),
+                    Location = new Point(20, ClientSize.Height - 80),
                     Name = "chkAutoClose",
-                    Size = new Size(380, 24),
+                    Size = new Size(400, 24),
                     TabIndex = 5,
-                    Text = "Automatically close after selecting a browser",
+                    Text = "ブラウザを選択後に自動的に閉じる",
                     UseCompatibleTextRendering = true,
                     UseVisualStyleBackColor = true
                 };
@@ -540,11 +638,11 @@ namespace BrowserChooser3.Forms
                     BackColor = Color.Transparent,
                     Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
                     ForeColor = SystemColors.ActiveCaptionText,
-                    Location = new Point(56, ClientSize.Height - 30),
+                    Location = new Point(20, ClientSize.Height - 50),
                     Name = "chkAutoOpen",
-                    Size = new Size(420, 22),
+                    Size = new Size(450, 22),
                     TabIndex = 6,
-                    Text = "Open default browser after delay seconds.  [Space: (un/)pause timer]",
+                    Text = "指定秒数後にデフォルトブラウザを開く [space key:Timerの一時停止/再開]",
                     UseVisualStyleBackColor = false
                 };
                 _chkAutoOpen.CheckedChanged += ChkAutoOpen_CheckedChanged;
@@ -558,7 +656,7 @@ namespace BrowserChooser3.Forms
                     BackColor = Color.Transparent,
                     FlatAppearance = { BorderSize = 0, MouseOverBackColor = Color.Transparent },
                     FlatStyle = FlatStyle.Flat,
-                    Location = new Point(ClientSize.Width - 40, 45),
+                    Location = new Point(ClientSize.Width - 35, 50),
                     Margin = new Padding(0),
                     Name = "btnCopyToClipboard",
                     Size = new Size(28, 28),
@@ -580,7 +678,7 @@ namespace BrowserChooser3.Forms
                     BackColor = Color.Transparent,
                     FlatAppearance = { BorderSize = 0, MouseOverBackColor = Color.Transparent },
                     FlatStyle = FlatStyle.Flat,
-                    Location = new Point(ClientSize.Width - 40, 80),
+                    Location = new Point(ClientSize.Width - 35, 85),
                     Margin = new Padding(0),
                     Name = "btnCopyToClipboardAndClose",
                     Size = new Size(28, 28),
@@ -703,8 +801,11 @@ namespace BrowserChooser3.Forms
                 Name = "lblCountdown",
                 Text = "",
                 AutoSize = true,
-                Location = new Point(20, Height - 40),
-                Visible = false
+                Location = new Point(20, ClientSize.Height - 20),
+                Visible = false,
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                ForeColor = Color.DarkBlue,
+                BackColor = Color.LightYellow
             };
             
             Controls.Add(_countdownLabel);

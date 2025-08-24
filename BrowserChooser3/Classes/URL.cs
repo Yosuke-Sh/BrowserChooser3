@@ -17,16 +17,41 @@ namespace BrowserChooser3.Classes
         /// <summary>URLパターン</summary>
         public string URLPattern { get; set; } = string.Empty;
         
+        /// <summary>URL（Browser Chooser 2互換）</summary>
+        public string URLValue { get; set; } = string.Empty;
+        
         /// <summary>関連するブラウザのGUID</summary>
         public Guid BrowserGuid { get; set; } = Guid.Empty;
         
         /// <summary>遅延時間</summary>
         public int Delay { get; set; } = 0;
         
+        /// <summary>遅延時間（Browser Chooser 2互換）</summary>
+        public int DelayTime { get; set; } = 0;
+        
         /// <summary>アクティブ状態</summary>
         public bool IsActive { get; set; } = true;
         
         /// <summary>自動クローズ</summary>
         public bool AutoClose { get; set; } = false;
+        
+        /// <summary>
+        /// URLのクローンを作成（Browser Chooser 2互換）
+        /// </summary>
+        public URL Clone()
+        {
+            return new URL
+            {
+                Guid = this.Guid,
+                Name = this.Name,
+                URLPattern = this.URLPattern,
+                URLValue = this.URLValue,
+                BrowserGuid = this.BrowserGuid,
+                Delay = this.Delay,
+                DelayTime = this.DelayTime,
+                IsActive = this.IsActive,
+                AutoClose = this.AutoClose
+            };
+        }
     }
 }

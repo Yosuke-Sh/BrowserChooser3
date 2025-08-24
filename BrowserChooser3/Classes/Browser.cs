@@ -35,6 +35,12 @@ namespace BrowserChooser3.Classes
         /// <summary>Y座標</summary>
         public int Y { get; set; } = 0;
         
+        /// <summary>X座標（Browser Chooser 2互換）</summary>
+        public int PosX { get; set; } = 0;
+        
+        /// <summary>Y座標（Browser Chooser 2互換）</summary>
+        public int PosY { get; set; } = 0;
+        
         /// <summary>表示フラグ</summary>
         public bool Visible { get; set; } = true;
         
@@ -61,5 +67,35 @@ namespace BrowserChooser3.Classes
         
         /// <summary>デフォルトブラウザフラグ</summary>
         public bool IsDefault { get; set; } = false;
+        
+        /// <summary>
+        /// ブラウザのクローンを作成（Browser Chooser 2互換）
+        /// </summary>
+        public Browser Clone()
+        {
+            return new Browser
+            {
+                Guid = this.Guid,
+                Name = this.Name,
+                Target = this.Target,
+                Arguments = this.Arguments,
+                ImagePath = this.ImagePath,
+                IconIndex = this.IconIndex,
+                Scale = this.Scale,
+                X = this.X,
+                Y = this.Y,
+                PosX = this.PosX,
+                PosY = this.PosY,
+                Visible = this.Visible,
+                IsActive = this.IsActive,
+                IsEdge = this.IsEdge,
+                IEBehaviour = this.IEBehaviour,
+                IsIE = this.IsIE,
+                Standard = this.Standard,
+                Hotkey = this.Hotkey,
+                Category = this.Category,
+                IsDefault = this.IsDefault
+            };
+        }
     }
 }

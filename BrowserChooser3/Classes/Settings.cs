@@ -219,8 +219,14 @@ namespace BrowserChooser3.Classes
         /// <summary>URL表示</summary>
         public bool ShowURL { get; set; } = true;
         
+        /// <summary>URL表示（Browser Chooser 2互換）</summary>
+        public bool ShowURLs { get; set; } = true;
+        
         /// <summary>短縮URL展開</summary>
         public bool RevealShortURL { get; set; } = false;
+        
+        /// <summary>短縮URL展開（Browser Chooser 2互換）</summary>
+        public bool RevealShortURLs { get; set; } = false;
         
         /// <summary>ファイルバージョン</summary>
         public int FileVersion { get; set; } = CURRENT_FILE_VERSION;
@@ -239,6 +245,12 @@ namespace BrowserChooser3.Classes
         
         /// <summary>高さ</summary>
         public int Height { get; set; } = 1;
+        
+        /// <summary>グリッド幅（Browser Chooser 2互換）</summary>
+        public int GridWidth { get; set; } = 5;
+        
+        /// <summary>グリッド高さ（Browser Chooser 2互換）</summary>
+        public int GridHeight { get; set; } = 1;
         
         /// <summary>アイコン幅</summary>
         public int IconWidth { get; set; } = 90;
@@ -285,6 +297,9 @@ namespace BrowserChooser3.Classes
         /// <summary>Aero効果使用</summary>
         public bool UseAero { get; set; } = false;
         
+        /// <summary>アクセシブルレンダリング使用</summary>
+        public bool UseAccessibleRendering { get; set; } = false;
+        
         /// <summary>フォーカスボックス線幅</summary>
         public int FocusBoxLineWidth { get; set; } = 1;
         
@@ -309,6 +324,13 @@ namespace BrowserChooser3.Classes
         
         /// <summary>背景色</summary>
         public int BackgroundColor { get; set; } = Color.Transparent.ToArgb();
+        
+        /// <summary>背景色（Color型、Browser Chooser 2互換）</summary>
+        public Color BackgroundColorValue 
+        { 
+            get => Color.FromArgb(BackgroundColor);
+            set => BackgroundColor = value.ToArgb();
+        }
         
         /// <summary>開始位置</summary>
         public int StartingPosition { get; set; } = (int)AvailableStartingPositions.CenterScreen;

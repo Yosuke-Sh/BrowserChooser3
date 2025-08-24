@@ -17,6 +17,12 @@ namespace BrowserChooser3.Classes
         /// <summary>ファイル拡張子</summary>
         public string Extension { get; set; } = string.Empty;
         
+        /// <summary>ファイル拡張子（Browser Chooser 2互換）</summary>
+        public string Extention { get; set; } = string.Empty;
+        
+        /// <summary>ファイルタイプ名（Browser Chooser 2互換）</summary>
+        public string FiletypeName { get; set; } = string.Empty;
+        
         /// <summary>関連するブラウザのGUID</summary>
         public Guid BrowserGuid { get; set; } = Guid.Empty;
         
@@ -25,5 +31,27 @@ namespace BrowserChooser3.Classes
         
         /// <summary>対応ブラウザのGUIDリスト</summary>
         public List<Guid> SupportingBrowsers { get; set; } = new();
+        
+        /// <summary>デフォルトカテゴリ（Browser Chooser 2互換）</summary>
+        public List<string> DefaultCategories { get; set; } = new();
+        
+        /// <summary>
+        /// ファイルタイプのクローンを作成（Browser Chooser 2互換）
+        /// </summary>
+        public FileType Clone()
+        {
+            return new FileType
+            {
+                Guid = this.Guid,
+                Name = this.Name,
+                Extension = this.Extension,
+                Extention = this.Extention,
+                FiletypeName = this.FiletypeName,
+                BrowserGuid = this.BrowserGuid,
+                IsActive = this.IsActive,
+                SupportingBrowsers = new List<Guid>(this.SupportingBrowsers),
+                DefaultCategories = new List<string>(this.DefaultCategories)
+            };
+        }
     }
 }
