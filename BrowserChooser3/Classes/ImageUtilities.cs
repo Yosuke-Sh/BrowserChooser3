@@ -78,24 +78,19 @@ namespace BrowserChooser3.Classes
         {
             try
             {
-                // 埋め込みリソースからデフォルトアイコンを読み込み
-                var assembly = System.Reflection.Assembly.GetExecutingAssembly();
-                using var stream = assembly.GetManifestResourceStream("BrowserChooser3.Resources.browserchooser.png");
-                if (stream != null)
-                {
-                    return Image.FromStream(stream);
-                }
+                // リソースからデフォルトアイコンを読み込み
+                return Properties.Resources.BrowserChooserIcon;
             }
             catch (Exception ex)
             {
                 Logger.LogError("ImageUtilities.GetDefaultBrowserIcon", "デフォルトアイコン取得エラー", ex.Message, ex.StackTrace ?? "");
+                
+                // フォールバック: 32x32の透明画像を作成
+                var bitmap = new Bitmap(32, 32, PixelFormat.Format32bppArgb);
+                using var g = Graphics.FromImage(bitmap);
+                g.Clear(Color.Transparent);
+                return bitmap;
             }
-
-            // フォールバック: 32x32の透明画像を作成
-            var bitmap = new Bitmap(32, 32, PixelFormat.Format32bppArgb);
-            using var g = Graphics.FromImage(bitmap);
-            g.Clear(Color.Transparent);
-            return bitmap;
         }
 
         /// <summary>
@@ -251,3 +246,4 @@ namespace BrowserChooser3.Classes
         }
     }
 }
+

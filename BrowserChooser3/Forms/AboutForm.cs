@@ -18,306 +18,311 @@ namespace BrowserChooser3.Forms
 
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            // System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AboutForm));
-            
-            // メインコントロール
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.pictureBox2 = new System.Windows.Forms.PictureBox();
-            this.labelProductName = new System.Windows.Forms.Label();
-            this.labelVersion = new System.Windows.Forms.Label();
-            this.labelCopyright = new System.Windows.Forms.Label();
-            this.llHome = new System.Windows.Forms.LinkLabel();
-            this.llLicense = new System.Windows.Forms.LinkLabel();
-            this.btnCopy = new System.Windows.Forms.Button();
-            this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.tpInfo = new System.Windows.Forms.TabPage();
-            this.tpContrib = new System.Windows.Forms.TabPage();
-            this.tpAttributions = new System.Windows.Forms.TabPage();
-            this.tpDiagnostics = new System.Windows.Forms.TabPage();
-            this.lblDiagnostics = new System.Windows.Forms.Label();
-            this.lblContributors = new System.Windows.Forms.Label();
-            this.llSebCboLb = new System.Windows.Forms.LinkLabel();
-
-            this.lblAttributions = new System.Windows.Forms.Label();
-            this.cmdSaveLogs = new System.Windows.Forms.Button();
-            this.lblForkedFrom = new System.Windows.Forms.Label();
-            this.lblThisVersionHere = new System.Windows.Forms.Label();
-            this.lblOriginalVersion = new System.Windows.Forms.LinkLabel();
-            this.OKButton = new System.Windows.Forms.Button();
-            
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
-            this.tabControl1.SuspendLayout();
-            this.tpInfo.SuspendLayout();
-            this.tpContrib.SuspendLayout();
-            this.tpAttributions.SuspendLayout();
-            this.tpDiagnostics.SuspendLayout();
-            this.SuspendLayout();
-            
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AboutForm));
+            pictureBox1 = new PictureBox();
+            pictureBox2 = new PictureBox();
+            labelProductName = new Label();
+            labelVersion = new Label();
+            labelCopyright = new Label();
+            llHome = new LinkLabel();
+            llLicense = new LinkLabel();
+            btnCopy = new Button();
+            tabControl1 = new TabControl();
+            tpInfo = new TabPage();
+            lblForkedFrom = new Label();
+            lblThisVersionHere = new Label();
+            lblOriginalVersion = new LinkLabel();
+            tpContrib = new TabPage();
+            lblContributors = new Label();
+            tpAttributions = new TabPage();
+            lblAttributions = new Label();
+            llSebCboLb = new LinkLabel();
+            tpDiagnostics = new TabPage();
+            cmdSaveLogs = new Button();
+            lblDiagnostics = new Label();
+            OKButton = new Button();
+            ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pictureBox2).BeginInit();
+            tabControl1.SuspendLayout();
+            tpInfo.SuspendLayout();
+            tpContrib.SuspendLayout();
+            tpAttributions.SuspendLayout();
+            tpDiagnostics.SuspendLayout();
+            SuspendLayout();
+            // 
             // pictureBox1
-            this.pictureBox1.Location = new System.Drawing.Point(12, 12);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(48, 48);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-            this.pictureBox1.TabIndex = 0;
-            this.pictureBox1.TabStop = false;
-            
-
-            
+            // 
+            pictureBox1.Location = new Point(12, 12);
+            pictureBox1.Name = "pictureBox1";
+            pictureBox1.Size = new Size(48, 48);
+            pictureBox1.SizeMode = PictureBoxSizeMode.AutoSize;
+            pictureBox1.TabIndex = 0;
+            pictureBox1.TabStop = false;
+            // 
             // pictureBox2
-            this.pictureBox2.Location = new System.Drawing.Point(12, 66);
-            this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(48, 48);
-            this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-            this.pictureBox2.TabIndex = 1;
-            this.pictureBox2.TabStop = false;
-            
-
-            
+            // 
+            pictureBox2.Location = new Point(12, 66);
+            pictureBox2.Name = "pictureBox2";
+            pictureBox2.Size = new Size(48, 48);
+            pictureBox2.SizeMode = PictureBoxSizeMode.AutoSize;
+            pictureBox2.TabIndex = 1;
+            pictureBox2.TabStop = false;
+            // 
             // labelProductName
-            this.labelProductName.AutoSize = true;
-            this.labelProductName.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
-            this.labelProductName.Location = new System.Drawing.Point(66, 12);
-            this.labelProductName.Name = "labelProductName";
-            this.labelProductName.Size = new System.Drawing.Size(120, 21);
-            this.labelProductName.TabIndex = 2;
-            this.labelProductName.Text = "BrowserChooser3";
-            
+            // 
+            labelProductName.AutoSize = true;
+            labelProductName.Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            labelProductName.Location = new Point(66, 12);
+            labelProductName.Name = "labelProductName";
+            labelProductName.Size = new Size(120, 21);
+            labelProductName.TabIndex = 2;
+            labelProductName.Text = "BrowserChooser3";
+            // 
             // labelVersion
-            this.labelVersion.AutoSize = true;
-            this.labelVersion.Location = new System.Drawing.Point(66, 33);
-            this.labelVersion.Name = "labelVersion";
-            this.labelVersion.Size = new System.Drawing.Size(45, 13);
-            this.labelVersion.TabIndex = 3;
-            this.labelVersion.Text = "Version 3.0.0";
-            
+            // 
+            labelVersion.AutoSize = true;
+            labelVersion.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            labelVersion.Location = new Point(66, 33);
+            labelVersion.Name = "labelVersion";
+            labelVersion.Size = new Size(45, 13);
+            labelVersion.TabIndex = 3;
+            labelVersion.Text = "Version 3.0.0";
+            // 
             // labelCopyright
-            this.labelCopyright.AutoSize = true;
-            this.labelCopyright.Location = new System.Drawing.Point(66, 46);
-            this.labelCopyright.Name = "labelCopyright";
-            this.labelCopyright.Size = new System.Drawing.Size(200, 13);
-            this.labelCopyright.TabIndex = 4;
-            this.labelCopyright.Text = "Copyright © 2024 BrowserChooser3 Team";
-            
+            // 
+            labelCopyright.AutoSize = true;
+            labelCopyright.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            labelCopyright.Location = new Point(66, 46);
+            labelCopyright.Name = "labelCopyright";
+            labelCopyright.Size = new Size(200, 13);
+            labelCopyright.TabIndex = 4;
+            labelCopyright.Text = "Copyright © 2024 BrowserChooser3 Team";
+            // 
             // llHome
-            this.llHome.AutoSize = true;
-            this.llHome.Location = new System.Drawing.Point(66, 66);
-            this.llHome.Name = "llHome";
-            this.llHome.Size = new System.Drawing.Size(35, 13);
-            this.llHome.TabIndex = 5;
-            this.llHome.TabStop = true;
-            this.llHome.Text = "Home";
-            this.llHome.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.llHome_LinkClicked);
-            
+            // 
+            llHome.AutoSize = true;
+            llHome.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            llHome.Location = new Point(66, 66);
+            llHome.Name = "llHome";
+            llHome.Size = new Size(35, 13);
+            llHome.TabIndex = 5;
+            llHome.TabStop = true;
+            llHome.Text = "Home";
+            llHome.LinkClicked += llHome_LinkClicked;
+            // 
             // llLicense
-            this.llLicense.AutoSize = true;
-            this.llLicense.Location = new System.Drawing.Point(66, 79);
-            this.llLicense.Name = "llLicense";
-            this.llLicense.Size = new System.Drawing.Size(44, 13);
-            this.llLicense.TabIndex = 6;
-            this.llLicense.TabStop = true;
-            this.llLicense.Text = "License";
-            this.llLicense.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.llLicense_LinkClicked);
-            
+            // 
+            llLicense.AutoSize = true;
+            llLicense.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            llLicense.Location = new Point(66, 79);
+            llLicense.Name = "llLicense";
+            llLicense.Size = new Size(44, 13);
+            llLicense.TabIndex = 6;
+            llLicense.TabStop = true;
+            llLicense.Text = "License";
+            llLicense.LinkClicked += llLicense_LinkClicked;
+            // 
             // btnCopy
-            this.btnCopy.Location = new System.Drawing.Point(216, 194);
-            this.btnCopy.Name = "btnCopy";
-            this.btnCopy.Size = new System.Drawing.Size(133, 32);
-            this.btnCopy.TabIndex = 7;
-            this.btnCopy.Text = "Copy to Clipboard";
-            this.btnCopy.UseVisualStyleBackColor = true;
-            this.btnCopy.Click += new System.EventHandler(this.btnCopy_Click);
-            
+            // 
+            btnCopy.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            btnCopy.Location = new Point(216, 194);
+            btnCopy.Name = "btnCopy";
+            btnCopy.Size = new Size(140, 32);
+            btnCopy.TabIndex = 7;
+            btnCopy.Text = "Copy to Clipboard";
+            btnCopy.UseVisualStyleBackColor = true;
+            btnCopy.Click += btnCopy_Click;
+            // 
             // tabControl1
-            this.tabControl1.Controls.Add(this.tpInfo);
-            this.tabControl1.Controls.Add(this.tpContrib);
-            this.tabControl1.Controls.Add(this.tpAttributions);
-            this.tabControl1.Controls.Add(this.tpDiagnostics);
-            this.tabControl1.Location = new System.Drawing.Point(12, 120);
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(527, 265);
-            this.tabControl1.TabIndex = 8;
-            
+            // 
+            tabControl1.Controls.Add(tpInfo);
+            tabControl1.Controls.Add(tpContrib);
+            tabControl1.Controls.Add(tpAttributions);
+            tabControl1.Controls.Add(tpDiagnostics);
+            tabControl1.Location = new Point(12, 120);
+            tabControl1.Name = "tabControl1";
+            tabControl1.SelectedIndex = 0;
+            tabControl1.Size = new Size(532, 265);
+            tabControl1.TabIndex = 8;
+            // 
             // tpInfo
-            this.tpInfo.Controls.Add(this.lblForkedFrom);
-            this.tpInfo.Controls.Add(this.lblThisVersionHere);
-            this.tpInfo.Controls.Add(this.lblOriginalVersion);
-            this.tpInfo.Location = new System.Drawing.Point(4, 22);
-            this.tpInfo.Name = "tpInfo";
-            this.tpInfo.Padding = new System.Windows.Forms.Padding(3);
-            this.tpInfo.Size = new System.Drawing.Size(519, 239);
-            this.tpInfo.TabIndex = 0;
-            this.tpInfo.Text = "Information";
-            this.tpInfo.UseVisualStyleBackColor = true;
-            
+            // 
+            tpInfo.Controls.Add(lblForkedFrom);
+            tpInfo.Controls.Add(lblThisVersionHere);
+            tpInfo.Controls.Add(lblOriginalVersion);
+            tpInfo.Location = new Point(4, 32);
+            tpInfo.Name = "tpInfo";
+            tpInfo.Padding = new Padding(3);
+            tpInfo.Size = new Size(524, 229);
+            tpInfo.TabIndex = 0;
+            tpInfo.Text = "Information";
+            tpInfo.UseVisualStyleBackColor = true;
+            // 
             // lblForkedFrom
-            this.lblForkedFrom.AutoSize = true;
-            this.lblForkedFrom.Location = new System.Drawing.Point(3, 12);
-            this.lblForkedFrom.Name = "lblForkedFrom";
-            this.lblForkedFrom.Size = new System.Drawing.Size(70, 13);
-            this.lblForkedFrom.TabIndex = 0;
-            this.lblForkedFrom.Text = "Forked from:";
-            
+            // 
+            lblForkedFrom.AutoSize = true;
+            lblForkedFrom.Location = new Point(3, 12);
+            lblForkedFrom.Name = "lblForkedFrom";
+            lblForkedFrom.Size = new Size(106, 23);
+            lblForkedFrom.TabIndex = 0;
+            lblForkedFrom.Text = "Forked from:";
+            // 
             // lblThisVersionHere
-            this.lblThisVersionHere.AutoSize = true;
-            this.lblThisVersionHere.Location = new System.Drawing.Point(3, 35);
-            this.lblThisVersionHere.Name = "lblThisVersionHere";
-            this.lblThisVersionHere.Size = new System.Drawing.Size(90, 13);
-            this.lblThisVersionHere.TabIndex = 1;
-            this.lblThisVersionHere.Text = "Latest version: BrowserChooser3 v3.0.0";
-            
+            // 
+            lblThisVersionHere.AutoSize = true;
+            lblThisVersionHere.Location = new Point(3, 35);
+            lblThisVersionHere.Name = "lblThisVersionHere";
+            lblThisVersionHere.Size = new Size(303, 23);
+            lblThisVersionHere.TabIndex = 1;
+            lblThisVersionHere.Text = "Latest version: BrowserChooser3 v3.0.0";
+            // 
             // lblOriginalVersion
-            this.lblOriginalVersion.AutoSize = true;
-            this.lblOriginalVersion.Location = new System.Drawing.Point(79, 12);
-            this.lblOriginalVersion.Name = "lblOriginalVersion";
-            this.lblOriginalVersion.Size = new System.Drawing.Size(120, 13);
-            this.lblOriginalVersion.TabIndex = 2;
-            this.lblOriginalVersion.TabStop = true;
-            this.lblOriginalVersion.Text = "Browser Chooser 2";
-            this.lblOriginalVersion.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lblOriginalVersion_LinkClicked);
-            
+            // 
+            lblOriginalVersion.AutoSize = true;
+            lblOriginalVersion.Location = new Point(79, 12);
+            lblOriginalVersion.Name = "lblOriginalVersion";
+            lblOriginalVersion.Size = new Size(152, 23);
+            lblOriginalVersion.TabIndex = 2;
+            lblOriginalVersion.TabStop = true;
+            lblOriginalVersion.Text = "Browser Chooser 2";
+            lblOriginalVersion.LinkClicked += lblOriginalVersion_LinkClicked;
+            // 
             // tpContrib
-            this.tpContrib.Controls.Add(this.lblContributors);
-            this.tpContrib.Location = new System.Drawing.Point(4, 22);
-            this.tpContrib.Name = "tpContrib";
-            this.tpContrib.Padding = new System.Windows.Forms.Padding(3);
-            this.tpContrib.Size = new System.Drawing.Size(519, 239);
-            this.tpContrib.TabIndex = 1;
-            this.tpContrib.Text = "Contributors";
-            this.tpContrib.UseVisualStyleBackColor = true;
-            
+            // 
+            tpContrib.Controls.Add(lblContributors);
+            tpContrib.Location = new Point(4, 34);
+            tpContrib.Name = "tpContrib";
+            tpContrib.Padding = new Padding(3);
+            tpContrib.Size = new Size(519, 227);
+            tpContrib.TabIndex = 1;
+            tpContrib.Text = "Contributors";
+            tpContrib.UseVisualStyleBackColor = true;
+            // 
             // lblContributors
-            this.lblContributors.AutoSize = true;
-            this.lblContributors.Location = new System.Drawing.Point(3, 12);
-            this.lblContributors.Name = "lblContributors";
-            this.lblContributors.Size = new System.Drawing.Size(300, 150);
-            this.lblContributors.TabIndex = 0;
-            this.lblContributors.Text = @"BrowserChooser3 Development Team
-• Main Developer - C# Port and Enhancement
-• Original Browser Chooser 2 Authors
-• .NET Community Contributors
-• Icon and UI Design Contributors
-
-Special Thanks to:
-• Browser Chooser 2 original team for the excellent foundation
-• Microsoft for the .NET platform
-• Open source community for feedback and contributions
-
-Join us on GitHub to contribute to BrowserChooser3!";
-            
+            // 
+            lblContributors.AutoSize = true;
+            lblContributors.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblContributors.Location = new Point(3, 12);
+            lblContributors.Name = "lblContributors";
+            lblContributors.Size = new Size(505, 300);
+            lblContributors.TabIndex = 0;
+            lblContributors.Text = resources.GetString("lblContributors.Text");
+            // 
             // tpAttributions
-            this.tpAttributions.Controls.Add(this.lblAttributions);
-            this.tpAttributions.Controls.Add(this.llSebCboLb);
-            this.tpAttributions.Location = new System.Drawing.Point(4, 22);
-            this.tpAttributions.Name = "tpAttributions";
-            this.tpAttributions.Padding = new System.Windows.Forms.Padding(3);
-            this.tpAttributions.Size = new System.Drawing.Size(519, 239);
-            this.tpAttributions.TabIndex = 2;
-            this.tpAttributions.Text = "Attributions";
-            this.tpAttributions.UseVisualStyleBackColor = true;
-            
+            // 
+            tpAttributions.Controls.Add(lblAttributions);
+            tpAttributions.Controls.Add(llSebCboLb);
+            tpAttributions.Location = new Point(4, 34);
+            tpAttributions.Name = "tpAttributions";
+            tpAttributions.Padding = new Padding(3);
+            tpAttributions.Size = new Size(519, 227);
+            tpAttributions.TabIndex = 2;
+            tpAttributions.Text = "Attributions";
+            tpAttributions.UseVisualStyleBackColor = true;
+            // 
             // lblAttributions
-            this.lblAttributions.AutoSize = true;
-            this.lblAttributions.Location = new System.Drawing.Point(3, 12);
-            this.lblAttributions.Name = "lblAttributions";
-            this.lblAttributions.Size = new System.Drawing.Size(400, 80);
-            this.lblAttributions.TabIndex = 0;
-            this.lblAttributions.Text = @"BrowserChooser3 uses the following third-party components:
-
-• .NET 8.0 Framework - Microsoft Corporation
-• Windows Forms - Microsoft Corporation  
-• System.Drawing - Microsoft Corporation
-• Icon resources from Browser Chooser 2 project
-
-All third-party components are used under their respective licenses.";
-            
+            // 
+            lblAttributions.AutoSize = true;
+            lblAttributions.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblAttributions.Location = new Point(3, 12);
+            lblAttributions.Name = "lblAttributions";
+            lblAttributions.Size = new Size(543, 200);
+            lblAttributions.TabIndex = 0;
+            lblAttributions.Text = resources.GetString("lblAttributions.Text");
+            // 
             // llSebCboLb
-            this.llSebCboLb.AutoSize = true;
-            this.llSebCboLb.Location = new System.Drawing.Point(3, 100);
-            this.llSebCboLb.Name = "llSebCboLb";
-            this.llSebCboLb.Size = new System.Drawing.Size(120, 13);
-            this.llSebCboLb.TabIndex = 1;
-            this.llSebCboLb.TabStop = true;
-            this.llSebCboLb.Text = "GitHub Contributors";
-            this.llSebCboLb.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.llSebCboLb_LinkClicked);
-            
-
-            
+            // 
+            llSebCboLb.AutoSize = true;
+            llSebCboLb.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            llSebCboLb.Location = new Point(3, 100);
+            llSebCboLb.Name = "llSebCboLb";
+            llSebCboLb.Size = new Size(173, 25);
+            llSebCboLb.TabIndex = 1;
+            llSebCboLb.TabStop = true;
+            llSebCboLb.Text = "GitHub Contributors";
+            llSebCboLb.LinkClicked += llSebCboLb_LinkClicked;
+            // 
             // tpDiagnostics
-            this.tpDiagnostics.Controls.Add(this.cmdSaveLogs);
-            this.tpDiagnostics.Controls.Add(this.btnCopy);
-            this.tpDiagnostics.Controls.Add(this.lblDiagnostics);
-            this.tpDiagnostics.Location = new System.Drawing.Point(4, 22);
-            this.tpDiagnostics.Name = "tpDiagnostics";
-            this.tpDiagnostics.Padding = new System.Windows.Forms.Padding(3);
-            this.tpDiagnostics.Size = new System.Drawing.Size(519, 239);
-            this.tpDiagnostics.TabIndex = 3;
-            this.tpDiagnostics.Text = "Diagnostics";
-            this.tpDiagnostics.UseVisualStyleBackColor = true;
-            
-            // lblDiagnostics
-            this.lblDiagnostics.BackColor = System.Drawing.Color.White;
-            this.lblDiagnostics.ForeColor = System.Drawing.Color.Navy;
-            this.lblDiagnostics.Location = new System.Drawing.Point(5, 5);
-            this.lblDiagnostics.Name = "lblDiagnostics";
-            this.lblDiagnostics.Size = new System.Drawing.Size(511, 224);
-            this.lblDiagnostics.TabIndex = 13;
-            this.lblDiagnostics.Text = "Diagnostic information will be displayed here...";
-            
+            // 
+            tpDiagnostics.Controls.Add(cmdSaveLogs);
+            tpDiagnostics.Controls.Add(btnCopy);
+            tpDiagnostics.Controls.Add(lblDiagnostics);
+            tpDiagnostics.Location = new Point(4, 34);
+            tpDiagnostics.Name = "tpDiagnostics";
+            tpDiagnostics.Padding = new Padding(3);
+            tpDiagnostics.Size = new Size(519, 227);
+            tpDiagnostics.TabIndex = 3;
+            tpDiagnostics.Text = "Diagnostics";
+            tpDiagnostics.UseVisualStyleBackColor = true;
+            // 
             // cmdSaveLogs
-            this.cmdSaveLogs.Location = new System.Drawing.Point(216, 194);
-            this.cmdSaveLogs.Name = "cmdSaveLogs";
-            this.cmdSaveLogs.Size = new System.Drawing.Size(133, 32);
-            this.cmdSaveLogs.TabIndex = 12;
-            this.cmdSaveLogs.Text = "Enable Logging";
-            this.cmdSaveLogs.UseVisualStyleBackColor = true;
-            this.cmdSaveLogs.Click += new System.EventHandler(this.cmdSaveLogs_Click);
-            
+            // 
+            cmdSaveLogs.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            cmdSaveLogs.Location = new Point(216, 194);
+            cmdSaveLogs.Name = "cmdSaveLogs";
+            cmdSaveLogs.Size = new Size(140, 32);
+            cmdSaveLogs.TabIndex = 12;
+            cmdSaveLogs.Text = "Enable Logging";
+            cmdSaveLogs.UseVisualStyleBackColor = true;
+            cmdSaveLogs.Click += cmdSaveLogs_Click;
+            // 
+            // lblDiagnostics
+            // 
+            lblDiagnostics.BackColor = Color.White;
+            lblDiagnostics.Font = new Font("Consolas", 8.5F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblDiagnostics.ForeColor = Color.Navy;
+            lblDiagnostics.Location = new Point(5, 5);
+            lblDiagnostics.Name = "lblDiagnostics";
+            lblDiagnostics.Size = new Size(511, 224);
+            lblDiagnostics.TabIndex = 13;
+            lblDiagnostics.Text = "Diagnostic information will be displayed here...";
+            // 
             // OKButton
-            this.OKButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.OKButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.OKButton.Location = new System.Drawing.Point(464, 391);
-            this.OKButton.Name = "OKButton";
-            this.OKButton.Size = new System.Drawing.Size(75, 23);
-            this.OKButton.TabIndex = 9;
-            this.OKButton.Text = "OK";
-            this.OKButton.UseVisualStyleBackColor = true;
-            
+            // 
+            OKButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            OKButton.DialogResult = DialogResult.OK;
+            OKButton.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            OKButton.Location = new Point(464, 390);
+            OKButton.Name = "OKButton";
+            OKButton.Size = new Size(80, 28);
+            OKButton.TabIndex = 9;
+            OKButton.Text = "OK";
+            OKButton.UseVisualStyleBackColor = true;
+            // 
             // AboutForm
-            this.AcceptButton = this.OKButton;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.White;
-            this.CancelButton = this.OKButton;
-            this.ClientSize = new System.Drawing.Size(555, 426);
-            this.Controls.Add(this.tabControl1);
-            this.Controls.Add(this.OKButton);
-            this.Controls.Add(this.pictureBox1);
-            this.Font = new System.Drawing.Font("Segoe UI", 8.25F);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            // this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MaximizeBox = false;
-            this.MinimizeBox = false;
-            this.Name = "AboutForm";
-            this.Padding = new System.Windows.Forms.Padding(9);
-            this.ShowInTaskbar = false;
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "About BrowserChooser3";
-            this.TopMost = true;
-            this.Load += new System.EventHandler(this.AboutForm_Load);
-            
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
-            this.tabControl1.ResumeLayout(false);
-            this.tpInfo.ResumeLayout(false);
-            this.tpInfo.PerformLayout();
-            this.tpContrib.ResumeLayout(false);
-            this.tpAttributions.ResumeLayout(false);
-            this.tpAttributions.PerformLayout();
-            this.tpDiagnostics.ResumeLayout(false);
-            this.ResumeLayout(false);
+            // 
+            AcceptButton = OKButton;
+            AutoScaleDimensions = new SizeF(9F, 23F);
+            AutoScaleMode = AutoScaleMode.Font;
+            BackColor = Color.White;
+            CancelButton = OKButton;
+            ClientSize = new Size(555, 426);
+            Controls.Add(tabControl1);
+            Controls.Add(OKButton);
+            Controls.Add(pictureBox1);
+            Font = new Font("Segoe UI", 8.25F);
+            FormBorderStyle = FormBorderStyle.FixedDialog;
+            MaximizeBox = false;
+            MinimizeBox = false;
+            Name = "AboutForm";
+            Padding = new Padding(9);
+            ShowInTaskbar = false;
+            StartPosition = FormStartPosition.CenterParent;
+            Text = "About BrowserChooser3";
+            TopMost = true;
+            Load += AboutForm_Load;
+            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pictureBox2).EndInit();
+            tabControl1.ResumeLayout(false);
+            tpInfo.ResumeLayout(false);
+            tpInfo.PerformLayout();
+            tpContrib.ResumeLayout(false);
+            tpContrib.PerformLayout();
+            tpAttributions.ResumeLayout(false);
+            tpAttributions.PerformLayout();
+            tpDiagnostics.ResumeLayout(false);
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         private System.Windows.Forms.PictureBox pictureBox1 = null!;
@@ -343,7 +348,7 @@ All third-party components are used under their respective licenses.";
         private System.Windows.Forms.Label lblThisVersionHere = null!;
         private System.Windows.Forms.LinkLabel lblOriginalVersion = null!;
         private System.Windows.Forms.Button OKButton = null!;
-        private System.ComponentModel.IContainer components = null!;
+         
 
         /// <summary>
         /// フォーム読み込み時の処理
@@ -400,21 +405,11 @@ All third-party components are used under their respective licenses.";
         {
             try
             {
-                var assembly = System.Reflection.Assembly.GetExecutingAssembly();
-                
                 // pictureBox1のアイコン読み込み
-                using var stream1 = assembly.GetManifestResourceStream("BrowserChooser3.Resources.BrowserChooser2.ico");
-                if (stream1 != null)
-                {
-                    pictureBox1.Image = Image.FromStream(stream1);
-                }
+                pictureBox1.Image = Properties.Resources.BrowserChooser2Icon.ToBitmap();
                 
                 // pictureBox2のアイコン読み込み
-                using var stream2 = assembly.GetManifestResourceStream("BrowserChooser3.Resources.bclogo.ico");
-                if (stream2 != null)
-                {
-                    pictureBox2.Image = Image.FromStream(stream2);
-                }
+                pictureBox2.Image = Properties.Resources.BCLogoIcon.ToBitmap();
                 
                 Logger.LogInfo("AboutForm.LoadIcons", "アイコン読み込み完了");
             }

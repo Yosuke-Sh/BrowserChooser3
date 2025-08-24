@@ -55,6 +55,9 @@ namespace BrowserChooser3.Forms
 
                 // デフォルトブラウザの検索
                 _defaultBrowser = _browsers?.FirstOrDefault(b => b.IsDefault);
+                
+                // カウントダウンの初期値を設定
+                _currentDelay = _settings?.DefaultDelay ?? 5;
 
                 // フォームの設定
                 ConfigureForm();
@@ -75,6 +78,9 @@ namespace BrowserChooser3.Forms
                 KeyPreview = true;
                 KeyDown += MainForm_KeyDown;
                 
+                // 初期テキストの設定
+                UpdateAutoOpenText();
+                
                 Logger.LogInfo("MainForm.InitializeApplication", "End");
             }
             catch (Exception ex)
@@ -92,21 +98,28 @@ namespace BrowserChooser3.Forms
         {
             Logger.LogInfo("MainForm.ConfigureForm", "Start");
             
-            // フォームの基本設定（Browser Chooser 2互換）
+            // フォームの基本設定（動的サイズ変更対応）
             Text = _settings?.DefaultMessage ?? "Choose a Browser";
-            FormBorderStyle = FormBorderStyle.Fixed3D;
-            MaximizeBox = false;
-            MinimizeBox = false;
+            FormBorderStyle = FormBorderStyle.Sizable;  // サイズ変更可能に変更
+            MaximizeBox = true;   // 最大化ボタンを有効
+            MinimizeBox = true;   // 最小化ボタンを有効
             ShowIcon = false;
-            SizeGripStyle = SizeGripStyle.Hide;
+            SizeGripStyle = SizeGripStyle.Show;  // サイズグリップを表示
             StartPosition = FormStartPosition.CenterScreen;
             TopMost = true;
             BackColor = Color.Gold;
             CancelButton = _btnCancel;
             KeyPreview = true;
             
-            // サイズの設定（Browser Chooser 2互換）
-            ClientSize = new Size(542, 157);
+            // フォントの設定（現代的で日本語・英語両対応）
+            Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0);
+            
+            // サイズの設定（動的サイズ変更対応）
+            MinimumSize = new Size(450, 220);  // 最小サイズを設定
+            ClientSize = new Size(600, 180);   // 初期サイズ
+            
+            // サイズ変更イベントの設定
+            Resize += MainForm_Resize;
             
             // Aero効果の適用
             if (_settings?.UseAero == true && GeneralUtilities.IsAeroEnabled())
@@ -119,23 +132,111 @@ namespace BrowserChooser3.Forms
         }
 
         /// <summary>
+        /// フォームサイズ変更時の処理
+        /// </summary>
+        private void MainForm_Resize(object? sender, EventArgs e)
+        {
+            try
+            {
+                // ブラウザボタンの再配置
+                RecalculateButtonLayout();
+                
+                // 互換性UIコントロールの位置調整
+                AdjustCompatibilityUILayout();
+                
+                Logger.LogTrace("MainForm.MainForm_Resize", "フォームサイズ変更完了", ClientSize.Width, ClientSize.Height);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("MainForm.MainForm_Resize", "サイズ変更エラー", ex.Message, ex.StackTrace ?? "");
+            }
+        }
+
+        /// <summary>
+        /// ブラウザボタンのレイアウトを再計算
+        /// </summary>
+        private void RecalculateButtonLayout()
+        {
+            if (_browsers == null || _settings == null) return;
+
+            var buttonWidth = _settings.IconWidth;
+            var buttonHeight = _settings.IconHeight;
+            var gapWidth = _settings.IconGapWidth;
+            var gapHeight = _settings.IconGapHeight;
+            
+            // フォーム幅に基づいて列数を計算
+            var availableWidth = ClientSize.Width - 50; // 左右マージン
+            var columnsPerRow = Math.Max(1, availableWidth / (buttonWidth + gapWidth));
+            
+            var buttonIndex = 0;
+            foreach (Control control in Controls)
+            {
+                if (control is Button button && button.Tag is Browser)
+                {
+                    var row = buttonIndex / columnsPerRow;
+                    var col = buttonIndex % columnsPerRow;
+                                    var x = 25 + (col * (buttonWidth + gapWidth));
+                var y = 25 + (row * (buttonHeight + gapHeight));
+                    
+                    button.Location = new Point(x, y);
+                    buttonIndex++;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 互換性UIコントロールのレイアウトを調整
+        /// </summary>
+        private void AdjustCompatibilityUILayout()
+        {
+            if (_chkAutoClose != null)
+            {
+                _chkAutoClose.Location = new Point(56, ClientSize.Height - 63);
+            }
+            
+            if (_chkAutoOpen != null)
+            {
+                _chkAutoOpen.Location = new Point(56, ClientSize.Height - 30);
+            }
+            
+            if (_btnCopyToClipboard != null)
+            {
+                _btnCopyToClipboard.Location = new Point(ClientSize.Width - 35, 40);
+            }
+            
+            if (_btnCopyToClipboardAndClose != null)
+            {
+                _btnCopyToClipboardAndClose.Location = new Point(ClientSize.Width - 35, 70);
+            }
+        }
+
+        /// <summary>
         /// ブラウザボタンの作成
         /// </summary>
         private void CreateBrowserButtons()
         {
             Logger.LogInfo("MainForm.CreateBrowserButtons", "Start", $"ブラウザ数: {_browsers?.Count ?? 0}");
             
-            var buttonWidth = _settings?.IconWidth ?? 75;
-            var buttonHeight = _settings?.IconHeight ?? 80;
+            var buttonWidth = _settings?.IconWidth ?? 90;
+            var buttonHeight = _settings?.IconHeight ?? 100;
             var gapWidth = _settings?.IconGapWidth ?? 0;
             var gapHeight = _settings?.IconGapHeight ?? 0;
             
             if (_browsers == null) return;
             
-            for (int i = 0; i < _browsers.Count; i++)
+            // 既存のブラウザボタンを削除
+            var buttonsToRemove = Controls.OfType<Button>().Where(b => b.Tag is Browser).ToList();
+            foreach (var btn in buttonsToRemove)
             {
-                var browser = _browsers[i];
-                if (!browser.Visible) continue;
+                Controls.Remove(btn);
+                btn.Dispose();
+            }
+            
+            var visibleBrowsers = _browsers.Where(b => b.Visible).ToList();
+            
+            for (int i = 0; i < visibleBrowsers.Count; i++)
+            {
+                var browser = visibleBrowsers[i];
                 
                 var button = new Button
                 {
@@ -145,23 +246,20 @@ namespace BrowserChooser3.Forms
                     Tag = browser,
                     FlatStyle = FlatStyle.Flat,
                     BackColor = Color.Transparent,
-                    UseVisualStyleBackColor = true
+                    UseVisualStyleBackColor = true,
+                    Font = new Font("Segoe UI", 9.5f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                    TextAlign = ContentAlignment.MiddleCenter
                 };
-                
-                // 位置の計算
-                var width = _settings?.Width ?? 8;
-                var row = i / width;
-                var col = i % width;
-                var x = 20 + (col * (buttonWidth + gapWidth));
-                var y = 20 + (row * (buttonHeight + gapHeight));
-                button.Location = new Point(x, y);
                 
                 // イベントハンドラーの設定
                 button.Click += BrowserButton_Click;
                 
                 Controls.Add(button);
-                Logger.LogTrace("MainForm.CreateBrowserButtons", "ブラウザボタン作成", browser.Name, x, y);
+                Logger.LogTrace("MainForm.CreateBrowserButtons", "ブラウザボタン作成", browser.Name);
             }
+            
+            // レイアウトを再計算
+            RecalculateButtonLayout();
             
             Logger.LogInfo("MainForm.CreateBrowserButtons", "End");
         }
@@ -421,11 +519,11 @@ namespace BrowserChooser3.Forms
                     BackColor = Color.Transparent,
                     Checked = true,
                     CheckState = CheckState.Checked,
-                    Font = new Font("Arial", 12.0f),
+                    Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
                     ForeColor = SystemColors.ActiveCaptionText,
-                    Location = new Point(56, 94),
+                    Location = new Point(56, ClientSize.Height - 63),
                     Name = "chkAutoClose",
-                    Size = new Size(350, 24),
+                    Size = new Size(380, 24),
                     TabIndex = 5,
                     Text = "Automatically close after selecting a browser",
                     UseCompatibleTextRendering = true,
@@ -440,13 +538,13 @@ namespace BrowserChooser3.Forms
                     Anchor = AnchorStyles.Bottom | AnchorStyles.Left,
                     AutoSize = true,
                     BackColor = Color.Transparent,
-                    Font = new Font("Arial", 12.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                    Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
                     ForeColor = SystemColors.ActiveCaptionText,
-                    Location = new Point(56, 127),
+                    Location = new Point(56, ClientSize.Height - 30),
                     Name = "chkAutoOpen",
-                    Size = new Size(403, 22),
+                    Size = new Size(420, 22),
                     TabIndex = 6,
-                    Text = "Open %1 after %2 seconds.  [Space: (un/)pause timer]",
+                    Text = "Open default browser after delay seconds.  [Space: (un/)pause timer]",
                     UseVisualStyleBackColor = false
                 };
                 _chkAutoOpen.CheckedChanged += ChkAutoOpen_CheckedChanged;
@@ -460,10 +558,10 @@ namespace BrowserChooser3.Forms
                     BackColor = Color.Transparent,
                     FlatAppearance = { BorderSize = 0, MouseOverBackColor = Color.Transparent },
                     FlatStyle = FlatStyle.Flat,
-                    Location = new Point(511, 40),
+                    Location = new Point(ClientSize.Width - 35, 40),
                     Margin = new Padding(0),
                     Name = "btnCopyToClipboard",
-                    Size = new Size(24, 24),
+                    Size = new Size(32, 32),
                     TabIndex = 3,
                     UseVisualStyleBackColor = false
                 };
@@ -481,10 +579,10 @@ namespace BrowserChooser3.Forms
                     BackColor = Color.Transparent,
                     FlatAppearance = { BorderSize = 0, MouseOverBackColor = Color.Transparent },
                     FlatStyle = FlatStyle.Flat,
-                    Location = new Point(511, 70),
+                    Location = new Point(ClientSize.Width - 35, 70),
                     Margin = new Padding(0),
                     Name = "btnCopyToClipboardAndClose",
-                    Size = new Size(24, 24),
+                    Size = new Size(32, 32),
                     TabIndex = 4,
                     UseVisualStyleBackColor = false
                 };
@@ -499,11 +597,11 @@ namespace BrowserChooser3.Forms
                 {
                     AutoSize = true,
                     BackColor = Color.Black,
-                    Font = new Font("Microsoft Sans Serif", 8.0f),
+                    Font = new Font("Segoe UI", 8.5f, FontStyle.Regular, GraphicsUnit.Point, 0),
                     ForeColor = Color.White,
                     Location = new Point(2, 1),
                     Name = "lblShortcutMessage",
-                    Size = new Size(49, 39),
+                    Size = new Size(60, 50),
                     TabIndex = 7,
                     Text = "Shortcut\r\n/ Default\r\n(if set):",
                     TextAlign = ContentAlignment.MiddleRight
@@ -535,41 +633,34 @@ namespace BrowserChooser3.Forms
         {
             try
             {
-                var assembly = System.Reflection.Assembly.GetExecutingAssembly();
-                
                 // Aboutボタンのアイコン読み込み
-                using var stream1 = assembly.GetManifestResourceStream("BrowserChooser3.Resources.122.png");
-                if (stream1 != null && _btnInfo != null)
+                if (_btnInfo != null)
                 {
-                    _btnInfo.Image = Image.FromStream(stream1);
+                    _btnInfo.Image = Properties.Resources.Icon122;
                 }
                 
                 // アプリケーションスタブボタンのアイコン読み込み
-                using var streamStub = assembly.GetManifestResourceStream("BrowserChooser3.Resources.browserchooser.png");
-                if (streamStub != null && _btnAppStub != null)
+                if (_btnAppStub != null)
                 {
-                    _btnAppStub.Image = Image.FromStream(streamStub);
+                    _btnAppStub.Image = Properties.Resources.BrowserChooserIcon;
                 }
                 
                 // オプションボタンのアイコン読み込み
-                using var stream2 = assembly.GetManifestResourceStream("BrowserChooser3.Resources.128.png");
-                if (stream2 != null && _btnOptions != null)
+                if (_btnOptions != null)
                 {
-                    _btnOptions.Image = Image.FromStream(stream2);
+                    _btnOptions.Image = Properties.Resources.Icon128;
                 }
                 
                 // コピーボタンのアイコン読み込み
-                using var stream3 = assembly.GetManifestResourceStream("BrowserChooser3.Resources.paste_24x24.png");
-                if (stream3 != null && _btnCopyToClipboard != null)
+                if (_btnCopyToClipboard != null)
                 {
-                    _btnCopyToClipboard.Image = Image.FromStream(stream3);
+                    _btnCopyToClipboard.Image = Properties.Resources.PasteIcon;
                 }
                 
                 // コピー＆クローズボタンのアイコン読み込み
-                using var stream4 = assembly.GetManifestResourceStream("BrowserChooser3.Resources.paste_and_close_24x24.png");
-                if (stream4 != null && _btnCopyToClipboardAndClose != null)
+                if (_btnCopyToClipboardAndClose != null)
                 {
-                    _btnCopyToClipboardAndClose.Image = Image.FromStream(stream4);
+                    _btnCopyToClipboardAndClose.Image = Properties.Resources.PasteAndCloseIcon;
                 }
                 
                 Logger.LogInfo("MainForm.LoadIcons", "アイコン読み込み完了");
@@ -676,7 +767,8 @@ namespace BrowserChooser3.Forms
             if (_chkAutoOpen != null && _defaultBrowser != null)
             {
                 var pauseText = _tmrDelay?.Enabled == false ? "un" : "";
-                _chkAutoOpen.Text = $"Open {_defaultBrowser.Name} in {_currentDelay} seconds. [Space: {pauseText}pause timer]";
+                var browserName = _defaultBrowser.Name ?? "default browser";
+                _chkAutoOpen.Text = $"Open {browserName} after {_currentDelay} seconds.  [Space: ({pauseText}pause) timer]";
             }
         }
 

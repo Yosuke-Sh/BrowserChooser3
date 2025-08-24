@@ -43,6 +43,7 @@ namespace BrowserChooser3.Forms
             
             // chkShowVisualFocus
             this.chkShowVisualFocus.AutoSize = true;
+            this.chkShowVisualFocus.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
             this.chkShowVisualFocus.Location = new System.Drawing.Point(12, 12);
             this.chkShowVisualFocus.Name = "chkShowVisualFocus";
             this.chkShowVisualFocus.Size = new System.Drawing.Size(116, 17);
@@ -57,25 +58,28 @@ namespace BrowserChooser3.Forms
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.nudWidth);
+            this.groupBox1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
             this.groupBox1.Location = new System.Drawing.Point(12, 35);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(190, 71);
+            this.groupBox1.Size = new System.Drawing.Size(200, 80);
             this.groupBox1.TabIndex = 3;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Customize the Focus";
             
             // txtColor
             this.txtColor.Enabled = false;
+            this.txtColor.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
             this.txtColor.Location = new System.Drawing.Point(76, 43);
             this.txtColor.Name = "txtColor";
-            this.txtColor.Size = new System.Drawing.Size(25, 20);
+            this.txtColor.Size = new System.Drawing.Size(30, 23);
             this.txtColor.TabIndex = 3;
             
             // cmdChange
             this.cmdChange.Enabled = false;
-            this.cmdChange.Location = new System.Drawing.Point(107, 41);
+            this.cmdChange.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
+            this.cmdChange.Location = new System.Drawing.Point(112, 41);
             this.cmdChange.Name = "cmdChange";
-            this.cmdChange.Size = new System.Drawing.Size(75, 23);
+            this.cmdChange.Size = new System.Drawing.Size(80, 25);
             this.cmdChange.TabIndex = 4;
             this.cmdChange.Text = "&Change";
             this.cmdChange.UseVisualStyleBackColor = true;
@@ -83,6 +87,7 @@ namespace BrowserChooser3.Forms
             
             // label2
             this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
             this.label2.Location = new System.Drawing.Point(11, 46);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(58, 13);
@@ -91,6 +96,7 @@ namespace BrowserChooser3.Forms
             
             // label1
             this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
             this.label1.Location = new System.Drawing.Point(11, 20);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(59, 13);
@@ -99,19 +105,21 @@ namespace BrowserChooser3.Forms
             
             // nudWidth
             this.nudWidth.Enabled = false;
+            this.nudWidth.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
             this.nudWidth.Location = new System.Drawing.Point(76, 18);
             this.nudWidth.Maximum = new decimal(new int[] { 10, 0, 0, 0 });
             this.nudWidth.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             this.nudWidth.Name = "nudWidth";
-            this.nudWidth.Size = new System.Drawing.Size(106, 20);
+            this.nudWidth.Size = new System.Drawing.Size(110, 23);
             this.nudWidth.TabIndex = 1;
             this.nudWidth.Value = new decimal(new int[] { 2, 0, 0, 0 });
             
             // cmdOK
             this.cmdOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.cmdOK.Location = new System.Drawing.Point(12, 120);
+            this.cmdOK.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
+            this.cmdOK.Location = new System.Drawing.Point(12, 125);
             this.cmdOK.Name = "cmdOK";
-            this.cmdOK.Size = new System.Drawing.Size(75, 23);
+            this.cmdOK.Size = new System.Drawing.Size(80, 28);
             this.cmdOK.TabIndex = 5;
             this.cmdOK.Text = "OK";
             this.cmdOK.UseVisualStyleBackColor = true;
@@ -119,9 +127,10 @@ namespace BrowserChooser3.Forms
             
             // cmdCancel
             this.cmdCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.cmdCancel.Location = new System.Drawing.Point(127, 120);
+            this.cmdCancel.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
+            this.cmdCancel.Location = new System.Drawing.Point(102, 125);
             this.cmdCancel.Name = "cmdCancel";
-            this.cmdCancel.Size = new System.Drawing.Size(75, 23);
+            this.cmdCancel.Size = new System.Drawing.Size(80, 28);
             this.cmdCancel.TabIndex = 6;
             this.cmdCancel.Text = "Cancel";
             this.cmdCancel.UseVisualStyleBackColor = true;
@@ -131,7 +140,8 @@ namespace BrowserChooser3.Forms
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.cmdCancel;
-            this.ClientSize = new System.Drawing.Size(214, 155);
+            this.ClientSize = new System.Drawing.Size(220, 165);
+            this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
             this.Controls.Add(this.cmdCancel);
             this.Controls.Add(this.cmdOK);
             this.Controls.Add(this.groupBox1);
@@ -266,3 +276,4 @@ namespace BrowserChooser3.Forms
         }
     }
 }
+

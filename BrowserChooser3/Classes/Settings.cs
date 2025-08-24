@@ -241,10 +241,10 @@ namespace BrowserChooser3.Classes
         public int Height { get; set; } = 1;
         
         /// <summary>アイコン幅</summary>
-        public int IconWidth { get; set; } = 75;
+        public int IconWidth { get; set; } = 90;
         
         /// <summary>アイコン高さ</summary>
-        public int IconHeight { get; set; } = 80;
+        public int IconHeight { get; set; } = 100;
         
         /// <summary>アイコン間隔幅</summary>
         public int IconGapWidth { get; set; } = 0;

@@ -48,9 +48,10 @@ namespace BrowserChooser3.Forms
             this.lstIcons.DoubleClick += new System.EventHandler(this.lstIcons_DoubleClick);
             
             // btnOK
+            this.btnOK.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
             this.btnOK.Location = new System.Drawing.Point(413, 282);
             this.btnOK.Name = "btnOK";
-            this.btnOK.Size = new System.Drawing.Size(75, 23);
+            this.btnOK.Size = new System.Drawing.Size(80, 28);
             this.btnOK.TabIndex = 1;
             this.btnOK.Text = "&OK";
             this.btnOK.UseVisualStyleBackColor = true;
@@ -58,9 +59,10 @@ namespace BrowserChooser3.Forms
             
             // btnCancel
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(494, 282);
+            this.btnCancel.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
+            this.btnCancel.Location = new System.Drawing.Point(503, 282);
             this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(75, 23);
+            this.btnCancel.Size = new System.Drawing.Size(80, 28);
             this.btnCancel.TabIndex = 2;
             this.btnCancel.Text = "&Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
@@ -71,6 +73,7 @@ namespace BrowserChooser3.Forms
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
             this.ClientSize = new System.Drawing.Size(581, 317);
+            this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOK);
             this.Controls.Add(this.lstIcons);
@@ -100,45 +103,58 @@ namespace BrowserChooser3.Forms
             
             try
             {
-                var assembly = System.Reflection.Assembly.GetExecutingAssembly();
-                var resourceNames = assembly.GetManifestResourceNames();
+                // ImageListの作成
+                var imageList = new ImageList
+                {
+                    ImageSize = new Size(48, 48),
+                    ColorDepth = ColorDepth.Depth32Bit
+                };
                 
-                // アイコンファイルを検索
-                var iconResources = resourceNames.Where(name => 
-                    name.EndsWith(".ico") || name.EndsWith(".png"))
-                    .ToList();
+                // リソースからアイコンを読み込み
+                var iconResources = new Dictionary<string, Image>
+                {
+                    { "Icon122", Properties.Resources.Icon122 },
+                    { "Icon128", Properties.Resources.Icon128 },
+                    { "BrowserChooser", Properties.Resources.BrowserChooserIcon },
+                    { "BrowserChooser2", Properties.Resources.BrowserChooser2Icon.ToBitmap() },
+                    { "BrowserChooser3", Properties.Resources.BrowserChooser3Icon.ToBitmap() },
+                    { "BCLogo", Properties.Resources.BCLogoIcon.ToBitmap() },
+                    { "Paste", Properties.Resources.PasteIcon },
+                    { "PasteAndClose", Properties.Resources.PasteAndCloseIcon },
+                    { "Settings", Properties.Resources.SettingsIcon },
+                    { "WorldGo", Properties.Resources.WorldGoIcon }
+                };
                 
-                foreach (var resourceName in iconResources)
+                foreach (var kvp in iconResources)
                 {
                     try
                     {
-                        using var stream = assembly.GetManifestResourceStream(resourceName);
-                        if (stream != null)
+                        imageList.Images.Add(kvp.Key, kvp.Value);
+                        
+                        var item = new ListViewItem
                         {
-                            var image = Image.FromStream(stream);
-                            var imageList = new ImageList();
-                            imageList.Images.Add(resourceName, image);
-                            
-                            var item = new ListViewItem
-                            {
-                                Text = Path.GetFileNameWithoutExtension(resourceName),
-                                ImageKey = resourceName,
-                                Tag = resourceName
-                            };
-                            
-                            lstIcons.Items.Add(item);
-                        }
+                            Text = kvp.Key,
+                            ImageKey = kvp.Key,
+                            Tag = kvp.Key
+                        };
+                        
+                        lstIcons.Items.Add(item);
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogError("IconSelectionForm.LoadIcons", $"アイコン読み込みエラー: {resourceName}", ex.Message);
+                        Logger.LogError("IconSelectionForm.LoadIcons", $"アイコン読み込みエラー: {kvp.Key}", ex.Message);
                     }
                 }
+                
+                // ImageListをListViewに設定
+                lstIcons.LargeImageList = imageList;
+                lstIcons.SmallImageList = imageList;
                 
                 // デフォルトアイコンを選択
                 if (lstIcons.Items.Count > 0)
                 {
                     lstIcons.Items[0].Selected = true;
+                    _selectedIconPath = lstIcons.Items[0].Tag?.ToString() ?? string.Empty;
                 }
                 
                 Logger.LogInfo("IconSelectionForm.LoadIcons", "End", $"アイコン数: {lstIcons.Items.Count}");
@@ -196,3 +212,4 @@ namespace BrowserChooser3.Forms
         }
     }
 }
+

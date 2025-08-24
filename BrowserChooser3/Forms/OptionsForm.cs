@@ -32,19 +32,24 @@ namespace BrowserChooser3.Forms
             {
                 // フォームの基本設定
                 Text = "Options";
-                Size = new Size(1034, 327);
+                Size = new Size(1100, 400);
                 StartPosition = FormStartPosition.CenterParent;
-                FormBorderStyle = FormBorderStyle.FixedDialog;
-                MaximizeBox = false;
+                FormBorderStyle = FormBorderStyle.Sizable;
+                MaximizeBox = true;
+                MinimizeBox = true;
                 TopMost = true;
                 
+                // フォントの設定（現代的で日本語・英語両対応）
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0);
+                
                 // 最小サイズの設定
-                MinimumSize = new Size(595, 350);
+                MinimumSize = new Size(800, 450);
                 
                 // TreeViewの作成
                 var treeSettings = new TreeView();
                 treeSettings.Location = new Point(10, 10);
-                treeSettings.Size = new Size(173, 270);
+                treeSettings.Size = new Size(200, 320);
+                treeSettings.Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0);
                 treeSettings.AfterSelect += TreeSettings_AfterSelect;
                 
                 // TreeViewノードの作成
@@ -73,8 +78,9 @@ namespace BrowserChooser3.Forms
                 
                 // TabControlの作成
                 var tabSettings = new TabControl();
-                tabSettings.Location = new Point(200, 10);
-                tabSettings.Size = new Size(800, 250);
+                tabSettings.Location = new Point(220, 10);
+                tabSettings.Size = new Size(850, 320);
+                tabSettings.Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0);
                 
                 // タブページの作成
                 var browsersTab = CreateBrowsersPanel();
@@ -104,20 +110,23 @@ namespace BrowserChooser3.Forms
                 // ボタンの作成
                 var saveButton = new Button();
                 saveButton.Text = "Save";
-                saveButton.Location = new Point(800, 270);
-                saveButton.Size = new Size(75, 23);
+                saveButton.Location = new Point(850, 340);
+                saveButton.Size = new Size(90, 32);
+                saveButton.Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0);
                 saveButton.Click += (s, e) => SaveSettings();
                 
                 var cancelButton = new Button();
                 cancelButton.Text = "Cancel";
-                cancelButton.Location = new Point(885, 270);
-                cancelButton.Size = new Size(75, 23);
+                cancelButton.Location = new Point(950, 340);
+                cancelButton.Size = new Size(90, 32);
+                cancelButton.Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0);
                 cancelButton.DialogResult = DialogResult.Cancel;
                 
                 var helpButton = new Button();
                 helpButton.Text = "Help";
-                helpButton.Location = new Point(970, 270);
-                helpButton.Size = new Size(75, 23);
+                helpButton.Location = new Point(1050, 340);
+                helpButton.Size = new Size(90, 32);
+                helpButton.Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0);
                 
                 // コントロールの追加
                 Controls.Add(treeSettings);
@@ -125,6 +134,9 @@ namespace BrowserChooser3.Forms
                 Controls.Add(saveButton);
                 Controls.Add(cancelButton);
                 Controls.Add(helpButton);
+                
+                // サイズ変更イベントの設定
+                Resize += OptionsForm_Resize;
                 
                 // 設定の読み込み
                 LoadSettings();
@@ -136,6 +148,60 @@ namespace BrowserChooser3.Forms
                 Logger.LogError("OptionsForm.InitializeForm", "初期化エラー", ex.Message, ex.StackTrace ?? "");
                 MessageBox.Show($"オプション画面の初期化に失敗しました: {ex.Message}", "エラー",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// フォームサイズ変更時の処理
+        /// </summary>
+        private void OptionsForm_Resize(object? sender, EventArgs e)
+        {
+            try
+            {
+                AdjustLayout();
+                Logger.LogTrace("OptionsForm.OptionsForm_Resize", "フォームサイズ変更完了", ClientSize.Width, ClientSize.Height);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("OptionsForm.OptionsForm_Resize", "サイズ変更エラー", ex.Message, ex.StackTrace ?? "");
+            }
+        }
+
+        /// <summary>
+        /// レイアウトの調整
+        /// </summary>
+        private void AdjustLayout()
+        {
+            var treeSettings = Controls.OfType<TreeView>().FirstOrDefault();
+            var tabSettings = Controls.OfType<TabControl>().FirstOrDefault();
+            var saveButton = Controls.OfType<Button>().FirstOrDefault(b => b.Text == "Save");
+            var cancelButton = Controls.OfType<Button>().FirstOrDefault(b => b.Text == "Cancel");
+            var helpButton = Controls.OfType<Button>().FirstOrDefault(b => b.Text == "Help");
+
+            if (treeSettings != null)
+            {
+                treeSettings.Size = new Size(200, ClientSize.Height - 80);
+            }
+
+            if (tabSettings != null)
+            {
+                tabSettings.Location = new Point(220, 10);
+                tabSettings.Size = new Size(ClientSize.Width - 240, ClientSize.Height - 100);
+            }
+
+            if (saveButton != null)
+            {
+                saveButton.Location = new Point(ClientSize.Width - 280, ClientSize.Height - 50);
+            }
+
+            if (cancelButton != null)
+            {
+                cancelButton.Location = new Point(ClientSize.Width - 180, ClientSize.Height - 50);
+            }
+
+            if (helpButton != null)
+            {
+                helpButton.Location = new Point(ClientSize.Width - 80, ClientSize.Height - 50);
             }
         }
 
@@ -261,7 +327,8 @@ namespace BrowserChooser3.Forms
             {
                 Text = "Add",
                 Location = new Point(0, 5),
-                Size = new Size(80, 30)
+                Size = new Size(80, 30),
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
             addButton.Click += AddBrowser_Click;
 
@@ -269,7 +336,8 @@ namespace BrowserChooser3.Forms
             {
                 Text = "Edit",
                 Location = new Point(90, 5),
-                Size = new Size(80, 30)
+                Size = new Size(80, 30),
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
             editButton.Click += EditBrowser_Click;
 
@@ -277,7 +345,8 @@ namespace BrowserChooser3.Forms
             {
                 Text = "Delete",
                 Location = new Point(180, 5),
-                Size = new Size(80, 30)
+                Size = new Size(80, 30),
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
             deleteButton.Click += DeleteBrowser_Click;
 
@@ -285,7 +354,8 @@ namespace BrowserChooser3.Forms
             {
                 Text = "Clone",
                 Location = new Point(270, 5),
-                Size = new Size(80, 30)
+                Size = new Size(80, 30),
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
             cloneButton.Click += CloneBrowser_Click;
 
@@ -293,7 +363,8 @@ namespace BrowserChooser3.Forms
             {
                 Text = "Detect",
                 Location = new Point(360, 5),
-                Size = new Size(80, 30)
+                Size = new Size(80, 30),
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
             detectButton.Click += DetectBrowsers_Click;
 
@@ -301,7 +372,8 @@ namespace BrowserChooser3.Forms
             {
                 Text = "Default",
                 Location = new Point(450, 5),
-                Size = new Size(80, 30)
+                Size = new Size(80, 30),
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
             defaultButton.Click += SetDefaultBrowser_Click;
 
@@ -365,11 +437,11 @@ namespace BrowserChooser3.Forms
             lstURLs.Columns.Add("Time", 100);
 
             // Buttons
-            var btnAdd = new Button { Text = "Add", Location = new Point(620, 40), Size = new Size(75, 23) };
-            var btnEdit = new Button { Text = "Edit", Location = new Point(620, 70), Size = new Size(75, 23) };
-            var btnDelete = new Button { Text = "Delete", Location = new Point(620, 100), Size = new Size(75, 23) };
-            var btnMoveUp = new Button { Text = "Move Up", Location = new Point(620, 130), Size = new Size(75, 23) };
-            var btnMoveDown = new Button { Text = "Move Down", Location = new Point(620, 160), Size = new Size(75, 23) };
+            var btnAdd = new Button { Text = "Add", Location = new Point(620, 40), Size = new Size(90, 32), Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0) };
+            var btnEdit = new Button { Text = "Edit", Location = new Point(620, 80), Size = new Size(90, 32), Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0) };
+            var btnDelete = new Button { Text = "Delete", Location = new Point(620, 120), Size = new Size(90, 32), Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0) };
+            var btnMoveUp = new Button { Text = "Move Up", Location = new Point(620, 160), Size = new Size(90, 32), Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0) };
+            var btnMoveDown = new Button { Text = "Move Down", Location = new Point(620, 200), Size = new Size(90, 32), Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0) };
 
             var noteLabel = new Label
             {

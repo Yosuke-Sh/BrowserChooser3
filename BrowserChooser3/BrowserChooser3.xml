@@ -1104,6 +1104,21 @@
             フォームの設定
             </summary>
         </member>
+        <member name="M:BrowserChooser3.Forms.MainForm.MainForm_Resize(System.Object,System.EventArgs)">
+            <summary>
+            フォームサイズ変更時の処理
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.MainForm.RecalculateButtonLayout">
+            <summary>
+            ブラウザボタンのレイアウトを再計算
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.MainForm.AdjustCompatibilityUILayout">
+            <summary>
+            互換性UIコントロールのレイアウトを調整
+            </summary>
+        </member>
         <member name="M:BrowserChooser3.Forms.MainForm.CreateBrowserButtons">
             <summary>
             ブラウザボタンの作成
@@ -1318,6 +1333,16 @@
             フォームの初期化
             </summary>
         </member>
+        <member name="M:BrowserChooser3.Forms.OptionsForm.OptionsForm_Resize(System.Object,System.EventArgs)">
+            <summary>
+            フォームサイズ変更時の処理
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.OptionsForm.AdjustLayout">
+            <summary>
+            レイアウトの調整
+            </summary>
+        </member>
         <member name="M:BrowserChooser3.Forms.OptionsForm.TreeSettings_AfterSelect(System.Object,System.Windows.Forms.TreeViewEventArgs)">
             <summary>
             TreeViewの選択変更イベント
@@ -1408,6 +1433,72 @@
             コマンドライン引数を処理
             </summary>
             <param name="args">コマンドライン引数</param>
+        </member>
+        <member name="T:BrowserChooser3.Properties.Resources">
+            <summary>
+              ローカライズされた文字列などを検索するための、厳密に型指定されたリソース クラスです。
+            </summary>
+        </member>
+        <member name="P:BrowserChooser3.Properties.Resources.ResourceManager">
+            <summary>
+              このクラスで使用されているキャッシュされた ResourceManager インスタンスを返します。
+            </summary>
+        </member>
+        <member name="P:BrowserChooser3.Properties.Resources.Culture">
+            <summary>
+              すべてについて、現在のスレッドの CurrentUICulture プロパティをオーバーライドします
+              現在のスレッドの CurrentUICulture プロパティをオーバーライドします。
+            </summary>
+        </member>
+        <member name="P:BrowserChooser3.Properties.Resources.Icon122">
+            <summary>
+              型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
+            </summary>
+        </member>
+        <member name="P:BrowserChooser3.Properties.Resources.Icon128">
+            <summary>
+              型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
+            </summary>
+        </member>
+        <member name="P:BrowserChooser3.Properties.Resources.BrowserChooserIcon">
+            <summary>
+              型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
+            </summary>
+        </member>
+        <member name="P:BrowserChooser3.Properties.Resources.BrowserChooser2Icon">
+            <summary>
+              型 System.Drawing.Icon のローカライズされたリソースを検索します。
+            </summary>
+        </member>
+        <member name="P:BrowserChooser3.Properties.Resources.BrowserChooser3Icon">
+            <summary>
+              型 System.Drawing.Icon のローカライズされたリソースを検索します。
+            </summary>
+        </member>
+        <member name="P:BrowserChooser3.Properties.Resources.BCLogoIcon">
+            <summary>
+              型 System.Drawing.Icon のローカライズされたリソースを検索します。
+            </summary>
+        </member>
+        <member name="P:BrowserChooser3.Properties.Resources.PasteIcon">
+            <summary>
+              型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
+            </summary>
+        </member>
+        <member name="P:BrowserChooser3.Properties.Resources.PasteAndCloseIcon">
+            <summary>
+              型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
+            </summary>
+        </member>
+        <member name="P:BrowserChooser3.Properties.Resources.SettingsIcon">
+            <summary>
+              型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
+            </summary>
+        </member>
+        <member name="P:BrowserChooser3.Properties.Resources.WorldGoIcon">
+            <summary>
+              型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
+            </summary>
         </member>
         <member name="T:BrowserChooser3.ApplicationConfiguration">
             <summary>
