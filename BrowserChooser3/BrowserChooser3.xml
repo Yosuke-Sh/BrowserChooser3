@@ -1085,26 +1085,6 @@
             <param name="url">正規化対象のURL</param>
             <returns>正規化されたURL</returns>
         </member>
-        <member name="T:BrowserChooser3.Classes.WinAPIs">
-            <summary>
-            Windows API呼び出しクラス
-            </summary>
-        </member>
-        <member name="F:BrowserChooser3.Classes.WinAPIs.BCM_SETSHIELD">
-            <summary>
-            BCM_SETSHIELD定数
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Classes.WinAPIs.SendMessage(System.IntPtr,System.Int32,System.Int32,System.IntPtr)">
-            <summary>
-            SendMessage API
-            </summary>
-            <param name="hWnd">ウィンドウハンドル</param>
-            <param name="Msg">メッセージ</param>
-            <param name="wParam">wParam</param>
-            <param name="lParam">lParam</param>
-            <returns>結果</returns>
-        </member>
         <member name="T:BrowserChooser3.Forms.AboutForm">
             <summary>
             About画面フォーム
@@ -1713,11 +1693,6 @@
             アクセシビリティパネルの作成
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.CreateDefaultBrowserPanel">
-            <summary>
-            デフォルトブラウザパネルの作成（Browser Chooser 2互換）
-            </summary>
-        </member>
         <member name="M:BrowserChooser3.Forms.OptionsForm.LoadSettings">
             <summary>
             設定値の読み込み（Browser Chooser 2互換）
@@ -1761,26 +1736,6 @@
         <member name="M:BrowserChooser3.Forms.OptionsForm.LstFileTypes_SelectedIndexChanged(System.Object,System.EventArgs)">
             <summary>
             ファイルタイプリストの選択変更イベント
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.AddToDefault">
-            <summary>
-            デフォルトプログラムに追加（Browser Chooser 2互換）
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.MakeDefault">
-            <summary>
-            デフォルトブラウザに設定（Browser Chooser 2互換）
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.MakeDefaultSingle(System.String,System.Boolean)">
-            <summary>
-            個別のデフォルト設定（Browser Chooser 2互換）
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.RbScope_CheckedChanged(System.Object,System.EventArgs)">
-            <summary>
-            スコープ変更時の処理
             </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.OptionsForm.DetectDirty(System.Object,System.EventArgs)">
@@ -1841,21 +1796,6 @@
         <member name="F:BrowserChooser3.Forms.OptionsForm._mbURLMouseDown">
             <summary>
             Auto URLsのドラッグ&amp;ドロップ機能
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.SetupWindowsCompatibilityWarnings">
-            <summary>
-            Windows 8/10対応の警告表示を設定
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.IsRunningPost8">
-            <summary>
-            Windows 8以降かどうかを判定
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.IsRunningPost10">
-            <summary>
-            Windows 10以降かどうかを判定
             </summary>
         </member>
         <member name="M:BrowserChooser3.Program.Main">

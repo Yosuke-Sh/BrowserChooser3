@@ -71,7 +71,7 @@ namespace BrowserChooser3.Forms
                 MinimumSize = new Size(595, 350);
                 
                 // Windows 8/10対応の警告表示（Browser Chooser 2互換）
-                SetupWindowsCompatibilityWarnings();
+    
                 
                 // PictureBox1（Browser Chooser 2互換）
                 var pictureBox1 = new PictureBox();
@@ -135,7 +135,7 @@ namespace BrowserChooser3.Forms
                 var startupTab = CreateStartupPanel();
                 var othersTab = CreateOthersPanel();
 
-                var defaultBrowserTab = CreateDefaultBrowserPanel();
+    
                 
                 tabSettings.TabPages.Add(browsersTab);
                 tabSettings.TabPages.Add(autoUrlsTab);
@@ -148,7 +148,7 @@ namespace BrowserChooser3.Forms
                 tabSettings.TabPages.Add(startupTab);
                 tabSettings.TabPages.Add(othersTab);
 
-                tabSettings.TabPages.Add(defaultBrowserTab);
+
                 
                 // ボタンの作成（Browser Chooser 2互換）
                 var saveButton = new Button();
@@ -410,15 +410,7 @@ namespace BrowserChooser3.Forms
             };
             cloneButton.Click += CloneBrowser_Click;
 
-            var defaultButton = new Button
-            {
-                Text = "Set default",
-                Location = new Point(6, 93),
-                Size = new Size(75, 23),
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
-                Enabled = false
-            };
-            defaultButton.Click += SetDefaultBrowser_Click;
+
 
             var detectButton = new Button
             {
@@ -458,7 +450,7 @@ namespace BrowserChooser3.Forms
                 bool hasSelection = listView.SelectedItems.Count > 0;
                 editButton.Enabled = hasSelection;
                 cloneButton.Enabled = hasSelection;
-                defaultButton.Enabled = hasSelection;
+
                 deleteButton.Enabled = hasSelection;
                 lblDoubleClickNote.Visible = hasSelection;
                 
@@ -483,7 +475,7 @@ namespace BrowserChooser3.Forms
             panel.Controls.Add(addButton);
             panel.Controls.Add(editButton);
             panel.Controls.Add(cloneButton);
-            panel.Controls.Add(defaultButton);
+
             panel.Controls.Add(detectButton);
             panel.Controls.Add(deleteButton);
             panel.Controls.Add(lblDoubleClickNote);
@@ -1460,111 +1452,7 @@ namespace BrowserChooser3.Forms
             return tabPage;
         }
 
-        /// <summary>
-        /// デフォルトブラウザパネルの作成（Browser Chooser 2互換）
-        /// </summary>
-        private TabPage CreateDefaultBrowserPanel()
-        {
-            var tabPage = new TabPage("Windows Default");
-            tabPage.Name = "tabDefaultBrowser";
-            
-            var panel = new Panel
-            {
-                Dock = DockStyle.Fill,
-                Padding = new Padding(3)
-            };
 
-            // スコープ設定（Browser Chooser 2互換）
-            var grpScope = new GroupBox
-            {
-                Text = "Scope",
-                Location = new Point(3, 3),
-                Size = new Size(274, 45)
-            };
-
-            var rbScopeUser = new RadioButton
-            {
-                Text = "User",
-                Location = new Point(6, 19),
-                AutoSize = true,
-                Checked = true
-            };
-
-            var rbScopeSystem = new RadioButton
-            {
-                Text = "System (Administrator access required)",
-                Location = new Point(59, 19),
-                AutoSize = true
-            };
-
-            grpScope.Controls.Add(rbScopeUser);
-            grpScope.Controls.Add(rbScopeSystem);
-
-            // デフォルトブラウザ設定ボタン（Browser Chooser 2互換）
-            var cmdAddToDefault = new Button
-            {
-                Text = "Add to Default Programs",
-                Location = new Point(9, 54),
-                Size = new Size(202, 23),
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            };
-
-            var cmdMakeDefault = new Button
-            {
-                Text = "Make Default",
-                Location = new Point(9, 83),
-                Size = new Size(202, 23),
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            };
-
-            // 起動時にデフォルトをチェック設定（Browser Chooser 2互換）
-            var chkCheckDefaultOnLaunch = new CheckBox
-            {
-                Text = "Check on launch (Vista/7 Only)",
-                Location = new Point(9, 112),
-                AutoSize = true,
-                Checked = _settings.CheckDefaultOnLaunch
-            };
-
-            var cmdRemoveFromDefaultSettings = new Button
-            {
-                Text = "Remove from Default Programs",
-                Location = new Point(9, 135),
-                Size = new Size(202, 23),
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            };
-
-            // 警告メッセージ（Browser Chooser 2互換）
-            var lblWarnWin10 = new Label
-            {
-                Text = "Note for users of Windows 10+:",
-                Location = new Point(218, 65),
-                AutoSize = true,
-                Font = new Font("Segoe UI", 8.25f, FontStyle.Bold, GraphicsUnit.Point, 0),
-                Visible = false
-            };
-
-            var txtWarnWin10 = new TextBox
-            {
-                Text = "Microsoft no longer allows a program to automatically gain default status of either a a protocol (Browser) or Filetypes.  You must manully assign them via the Defaults App Applet.",
-                Location = new Point(224, 81),
-                Size = new Size(178, 70),
-                Multiline = true,
-                BorderStyle = BorderStyle.None,
-                ReadOnly = true,
-                Visible = false
-            };
-
-            panel.Controls.Add(grpScope);
-            panel.Controls.Add(cmdAddToDefault);
-            panel.Controls.Add(cmdMakeDefault);
-            panel.Controls.Add(chkCheckDefaultOnLaunch);
-            panel.Controls.Add(cmdRemoveFromDefaultSettings);
-            panel.Controls.Add(lblWarnWin10);
-            panel.Controls.Add(txtWarnWin10);
-            tabPage.Controls.Add(panel);
-            return tabPage;
-        }
 
         /// <summary>
         /// 設定値の読み込み（Browser Chooser 2互換）
@@ -1868,13 +1756,8 @@ namespace BrowserChooser3.Forms
                 // プロトコル・ファイルタイプが変更された場合の確認
                 if (_mFileTypesAreDirty || _mProtocolsAreDirty)
                 {
-                    var result = MessageBox.Show("You have changed the accepted Protocols or Filetypes. Do you want to become default for these as well?", 
-                        "Become default", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                    if (result == DialogResult.Yes)
-                    {
-                        AddToDefault();
-                        MakeDefault();
-                    }
+                    var result = MessageBox.Show("You have changed the accepted Protocols or Filetypes.", 
+                        "Protocols/Filetypes Updated", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
 
                 // 各コントロールから設定値を取得して保存
@@ -2860,86 +2743,7 @@ namespace BrowserChooser3.Forms
 
         #endregion
 
-        private void SetDefaultBrowser_Click(object? sender, EventArgs e)
-        {
-            // TODO: デフォルトブラウザ設定機能を実装
-            MessageBox.Show("デフォルトブラウザ設定機能は未実装です", "情報", 
-                MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
 
-        /// <summary>
-        /// デフォルトプログラムに追加（Browser Chooser 2互換）
-        /// </summary>
-        private void AddToDefault()
-        {
-            // TODO: デフォルトプログラムへの追加機能を実装
-            MessageBox.Show("デフォルトプログラムへの追加機能は未実装です", "情報", 
-                MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
-        /// <summary>
-        /// デフォルトブラウザに設定（Browser Chooser 2互換）
-        /// </summary>
-        private void MakeDefault()
-        {
-            // TODO: デフォルトブラウザ設定機能を実装
-            MessageBox.Show("デフォルトブラウザ設定機能は未実装です", "情報", 
-                MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
-        /// <summary>
-        /// 個別のデフォルト設定（Browser Chooser 2互換）
-        /// </summary>
-        private void MakeDefaultSingle(string item, bool isProtocol)
-        {
-            // TODO: 個別のデフォルト設定機能を実装
-            MessageBox.Show($"個別のデフォルト設定機能は未実装です: {item} ({isProtocol})", "情報", 
-                MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
-        #region スコープ変更処理（Browser Chooser 2互換）
-
-        /// <summary>
-        /// スコープ変更時の処理
-        /// </summary>
-        private void RbScope_CheckedChanged(object sender, EventArgs e)
-        {
-            if (sender is not RadioButton radioButton) return;
-
-            var cmdAddToDefault = Controls.Find("cmdAddToDefault", true).FirstOrDefault() as Button;
-            var cmdMakeDefault = Controls.Find("cmdMakeDefault", true).FirstOrDefault() as Button;
-
-            if (radioButton.Name == "rbScopeUser" && radioButton.Checked)
-            {
-                // ユーザースコープの場合、盾アイコンを削除
-                if (cmdAddToDefault != null)
-                {
-                    cmdAddToDefault.FlatStyle = FlatStyle.System;
-                    WinAPIs.SendMessage(cmdAddToDefault.Handle, WinAPIs.BCM_SETSHIELD, 0, IntPtr.Zero);
-                }
-                if (cmdMakeDefault != null)
-                {
-                    cmdMakeDefault.FlatStyle = FlatStyle.System;
-                    WinAPIs.SendMessage(cmdMakeDefault.Handle, WinAPIs.BCM_SETSHIELD, 0, IntPtr.Zero);
-                }
-            }
-            else if (radioButton.Name == "rbScopeSystem" && radioButton.Checked)
-            {
-                // システムスコープの場合、盾アイコンを追加
-                if (cmdAddToDefault != null)
-                {
-                    cmdAddToDefault.FlatStyle = FlatStyle.System;
-                    WinAPIs.SendMessage(cmdAddToDefault.Handle, WinAPIs.BCM_SETSHIELD, 0, new IntPtr(1));
-                }
-                if (cmdMakeDefault != null)
-                {
-                    cmdMakeDefault.FlatStyle = FlatStyle.System;
-                    WinAPIs.SendMessage(cmdMakeDefault.Handle, WinAPIs.BCM_SETSHIELD, 0, new IntPtr(1));
-                }
-            }
-        }
-
-        #endregion
 
         private void OpenAccessibilitySettings()
         {
@@ -3968,113 +3772,6 @@ namespace BrowserChooser3.Forms
         #endregion
         #endregion
 
-        #region Windows 8/10対応機能（Browser Chooser 2互換）
 
-        /// <summary>
-        /// Windows 8/10対応の警告表示を設定
-        /// </summary>
-        private void SetupWindowsCompatibilityWarnings()
-        {
-            // Windows 8以降の判定
-            if (IsRunningPost8())
-            {
-                // ユーザースコープに強制設定
-                var rbScopeUser = Controls.Find("rbScopeUser", true).FirstOrDefault() as RadioButton;
-                var grpScope = Controls.Find("grpScope", true).FirstOrDefault() as GroupBox;
-                
-                if (rbScopeUser != null) rbScopeUser.Checked = true;
-                if (grpScope != null) grpScope.Enabled = false;
-
-                // デフォルトブラウザ設定ボタンのテキスト変更
-                var cmdMakeDefault = Controls.Find("cmdMakeDefault", true).FirstOrDefault() as Button;
-                if (cmdMakeDefault != null) cmdMakeDefault.Text = "Show Defaults Dialog*";
-
-                // Windows 8警告を表示
-                var lblWarnWin8 = Controls.Find("lblWarnWin8", true).FirstOrDefault() as Label;
-                var txtWarnWin8 = Controls.Find("txtWarnWin8", true).FirstOrDefault() as TextBox;
-                
-                if (lblWarnWin8 != null) lblWarnWin8.Visible = true;
-                if (txtWarnWin8 != null) txtWarnWin8.Visible = true;
-
-                // 起動時チェックを無効化
-                var chkCheckDefaultOnLaunch = Controls.Find("chkCheckDefaultOnLaunch", true).FirstOrDefault() as CheckBox;
-                if (chkCheckDefaultOnLaunch != null)
-                {
-                    chkCheckDefaultOnLaunch.Enabled = false;
-                    chkCheckDefaultOnLaunch.Checked = false;
-                }
-            }
-
-            // Windows 10以降の判定
-            if (IsRunningPost10())
-            {
-                // ユーザースコープに強制設定
-                var rbScopeUser = Controls.Find("rbScopeUser", true).FirstOrDefault() as RadioButton;
-                var grpScope = Controls.Find("grpScope", true).FirstOrDefault() as GroupBox;
-                
-                if (rbScopeUser != null) rbScopeUser.Checked = true;
-                if (grpScope != null) grpScope.Enabled = false;
-
-                // デフォルトブラウザ設定ボタンのテキスト変更
-                var cmdMakeDefault = Controls.Find("cmdMakeDefault", true).FirstOrDefault() as Button;
-                if (cmdMakeDefault != null) cmdMakeDefault.Text = "Show Defaults Dialog*";
-
-                // Windows 10警告を表示
-                var lblWarnWin10 = Controls.Find("lblWarnWin10", true).FirstOrDefault() as Label;
-                var txtWarnWin10 = Controls.Find("txtWarnWin10", true).FirstOrDefault() as TextBox;
-                
-                if (lblWarnWin10 != null) lblWarnWin10.Visible = true;
-                if (txtWarnWin10 != null) txtWarnWin10.Visible = true;
-
-                // 起動時チェックを無効化
-                var chkCheckDefaultOnLaunch = Controls.Find("chkCheckDefaultOnLaunch", true).FirstOrDefault() as CheckBox;
-                if (chkCheckDefaultOnLaunch != null)
-                {
-                    chkCheckDefaultOnLaunch.Enabled = false;
-                    chkCheckDefaultOnLaunch.Checked = false;
-                }
-
-                // 個別ファイル関連付けボタンを非表示
-                var cmdOpenDefaultForFile = Controls.Find("cmdOpenDefaultForFile", true).FirstOrDefault() as Button;
-                var cmdOpenDefaultForProtocol = Controls.Find("cmdOpenDefaultForProtocol", true).FirstOrDefault() as Button;
-                
-                if (cmdOpenDefaultForFile != null) cmdOpenDefaultForFile.Visible = false;
-                if (cmdOpenDefaultForProtocol != null) cmdOpenDefaultForProtocol.Visible = false;
-            }
-        }
-
-        /// <summary>
-        /// Windows 8以降かどうかを判定
-        /// </summary>
-        private bool IsRunningPost8()
-        {
-            try
-            {
-                var version = Environment.OSVersion.Version;
-                return version.Major > 6 || (version.Major == 6 && version.Minor >= 2);
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Windows 10以降かどうかを判定
-        /// </summary>
-        private bool IsRunningPost10()
-        {
-            try
-            {
-                var version = Environment.OSVersion.Version;
-                return version.Major > 6 || (version.Major == 6 && version.Minor >= 3);
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        #endregion
     }
 }
