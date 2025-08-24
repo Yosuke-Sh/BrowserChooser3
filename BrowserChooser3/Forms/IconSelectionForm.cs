@@ -106,23 +106,23 @@ namespace BrowserChooser3.Forms
                 // ImageListの作成
                 var imageList = new ImageList
                 {
-                    ImageSize = new Size(48, 48),
+                    ImageSize = new Size(32, 32),
                     ColorDepth = ColorDepth.Depth32Bit
                 };
                 
                 // リソースからアイコンを読み込み
                 var iconResources = new Dictionary<string, Image>
                 {
-                    { "Icon122", Properties.Resources.Icon122 },
-                    { "Icon128", Properties.Resources.Icon128 },
-                    { "BrowserChooser", Properties.Resources.BrowserChooserIcon },
-                    { "BrowserChooser2", Properties.Resources.BrowserChooser2Icon.ToBitmap() },
-                    { "BrowserChooser3", Properties.Resources.BrowserChooser3Icon.ToBitmap() },
-                    { "BCLogo", Properties.Resources.BCLogoIcon.ToBitmap() },
-                    { "Paste", Properties.Resources.PasteIcon },
-                    { "PasteAndClose", Properties.Resources.PasteAndCloseIcon },
-                    { "Settings", Properties.Resources.SettingsIcon },
-                    { "WorldGo", Properties.Resources.WorldGoIcon }
+                    { "Icon122", ImageUtilities.ResizeImage(Properties.Resources.Icon122, 32, 32) },
+                    { "Icon128", ImageUtilities.ResizeImage(Properties.Resources.Icon128, 32, 32) },
+                    { "BrowserChooser", ImageUtilities.ResizeImage(Properties.Resources.BrowserChooserIcon, 32, 32) },
+                    { "BrowserChooser2", ImageUtilities.ResizeImage(Properties.Resources.BrowserChooser2Icon.ToBitmap(), 32, 32) },
+                    { "BrowserChooser3", ImageUtilities.ResizeImage(Properties.Resources.BrowserChooser3Icon.ToBitmap(), 32, 32) },
+                    { "BCLogo", ImageUtilities.ResizeImage(Properties.Resources.BCLogoIcon.ToBitmap(), 32, 32) },
+                    { "Paste", ImageUtilities.ResizeImage(Properties.Resources.PasteIcon, 32, 32) },
+                    { "PasteAndClose", ImageUtilities.ResizeImage(Properties.Resources.PasteAndCloseIcon, 32, 32) },
+                    { "Settings", ImageUtilities.ResizeImage(Properties.Resources.SettingsIcon, 32, 32) },
+                    { "WorldGo", ImageUtilities.ResizeImage(Properties.Resources.WorldGoIcon, 32, 32) }
                 };
                 
                 foreach (var kvp in iconResources)

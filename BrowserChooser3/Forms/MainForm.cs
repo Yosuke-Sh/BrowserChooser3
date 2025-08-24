@@ -201,12 +201,12 @@ namespace BrowserChooser3.Forms
             
             if (_btnCopyToClipboard != null)
             {
-                _btnCopyToClipboard.Location = new Point(ClientSize.Width - 35, 40);
+                _btnCopyToClipboard.Location = new Point(ClientSize.Width - 40, 45);
             }
             
             if (_btnCopyToClipboardAndClose != null)
             {
-                _btnCopyToClipboardAndClose.Location = new Point(ClientSize.Width - 35, 70);
+                _btnCopyToClipboardAndClose.Location = new Point(ClientSize.Width - 40, 80);
             }
         }
 
@@ -558,12 +558,13 @@ namespace BrowserChooser3.Forms
                     BackColor = Color.Transparent,
                     FlatAppearance = { BorderSize = 0, MouseOverBackColor = Color.Transparent },
                     FlatStyle = FlatStyle.Flat,
-                    Location = new Point(ClientSize.Width - 35, 40),
+                    Location = new Point(ClientSize.Width - 40, 45),
                     Margin = new Padding(0),
                     Name = "btnCopyToClipboard",
-                    Size = new Size(32, 32),
+                    Size = new Size(28, 28),
                     TabIndex = 3,
-                    UseVisualStyleBackColor = false
+                    UseVisualStyleBackColor = false,
+                    ImageAlign = ContentAlignment.MiddleCenter
                 };
                 
 
@@ -579,12 +580,13 @@ namespace BrowserChooser3.Forms
                     BackColor = Color.Transparent,
                     FlatAppearance = { BorderSize = 0, MouseOverBackColor = Color.Transparent },
                     FlatStyle = FlatStyle.Flat,
-                    Location = new Point(ClientSize.Width - 35, 70),
+                    Location = new Point(ClientSize.Width - 40, 80),
                     Margin = new Padding(0),
                     Name = "btnCopyToClipboardAndClose",
-                    Size = new Size(32, 32),
+                    Size = new Size(28, 28),
                     TabIndex = 4,
-                    UseVisualStyleBackColor = false
+                    UseVisualStyleBackColor = false,
+                    ImageAlign = ContentAlignment.MiddleCenter
                 };
                 
 
@@ -654,13 +656,15 @@ namespace BrowserChooser3.Forms
                 // コピーボタンのアイコン読み込み
                 if (_btnCopyToClipboard != null)
                 {
-                    _btnCopyToClipboard.Image = Properties.Resources.PasteIcon;
+                    var pasteIcon = Properties.Resources.PasteIcon;
+                    _btnCopyToClipboard.Image = ImageUtilities.ResizeImage(pasteIcon, 20, 20);
                 }
                 
                 // コピー＆クローズボタンのアイコン読み込み
                 if (_btnCopyToClipboardAndClose != null)
                 {
-                    _btnCopyToClipboardAndClose.Image = Properties.Resources.PasteAndCloseIcon;
+                    var pasteAndCloseIcon = Properties.Resources.PasteAndCloseIcon;
+                    _btnCopyToClipboardAndClose.Image = ImageUtilities.ResizeImage(pasteAndCloseIcon, 20, 20);
                 }
                 
                 Logger.LogInfo("MainForm.LoadIcons", "アイコン読み込み完了");

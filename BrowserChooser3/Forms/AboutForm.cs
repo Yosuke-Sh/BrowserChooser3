@@ -52,10 +52,12 @@ namespace BrowserChooser3.Forms
             // 
             // pictureBox1
             // 
+            pictureBox1.ErrorImage = Properties.Resources.BrowserChooserIcon;
+            pictureBox1.InitialImage = Properties.Resources.BrowserChooserIcon;
             pictureBox1.Location = new Point(12, 12);
             pictureBox1.Name = "pictureBox1";
             pictureBox1.Size = new Size(48, 48);
-            pictureBox1.SizeMode = PictureBoxSizeMode.AutoSize;
+            pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBox1.TabIndex = 0;
             pictureBox1.TabStop = false;
             // 
@@ -64,7 +66,7 @@ namespace BrowserChooser3.Forms
             pictureBox2.Location = new Point(12, 66);
             pictureBox2.Name = "pictureBox2";
             pictureBox2.Size = new Size(48, 48);
-            pictureBox2.SizeMode = PictureBoxSizeMode.AutoSize;
+            pictureBox2.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBox2.TabIndex = 1;
             pictureBox2.TabStop = false;
             // 
@@ -193,7 +195,7 @@ namespace BrowserChooser3.Forms
             tpContrib.Location = new Point(4, 34);
             tpContrib.Name = "tpContrib";
             tpContrib.Padding = new Padding(3);
-            tpContrib.Size = new Size(519, 227);
+            tpContrib.Size = new Size(524, 227);
             tpContrib.TabIndex = 1;
             tpContrib.Text = "Contributors";
             tpContrib.UseVisualStyleBackColor = true;
@@ -215,7 +217,7 @@ namespace BrowserChooser3.Forms
             tpAttributions.Location = new Point(4, 34);
             tpAttributions.Name = "tpAttributions";
             tpAttributions.Padding = new Padding(3);
-            tpAttributions.Size = new Size(519, 227);
+            tpAttributions.Size = new Size(524, 227);
             tpAttributions.TabIndex = 2;
             tpAttributions.Text = "Attributions";
             tpAttributions.UseVisualStyleBackColor = true;
@@ -250,7 +252,7 @@ namespace BrowserChooser3.Forms
             tpDiagnostics.Location = new Point(4, 34);
             tpDiagnostics.Name = "tpDiagnostics";
             tpDiagnostics.Padding = new Padding(3);
-            tpDiagnostics.Size = new Size(519, 227);
+            tpDiagnostics.Size = new Size(524, 227);
             tpDiagnostics.TabIndex = 3;
             tpDiagnostics.Text = "Diagnostics";
             tpDiagnostics.UseVisualStyleBackColor = true;
@@ -282,7 +284,7 @@ namespace BrowserChooser3.Forms
             OKButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             OKButton.DialogResult = DialogResult.OK;
             OKButton.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            OKButton.Location = new Point(464, 390);
+            OKButton.Location = new Point(464, 381);
             OKButton.Name = "OKButton";
             OKButton.Size = new Size(80, 28);
             OKButton.TabIndex = 9;
@@ -322,7 +324,6 @@ namespace BrowserChooser3.Forms
             tpAttributions.PerformLayout();
             tpDiagnostics.ResumeLayout(false);
             ResumeLayout(false);
-            PerformLayout();
         }
 
         private System.Windows.Forms.PictureBox pictureBox1 = null!;
@@ -405,11 +406,13 @@ namespace BrowserChooser3.Forms
         {
             try
             {
-                // pictureBox1のアイコン読み込み
-                pictureBox1.Image = Properties.Resources.BrowserChooser2Icon.ToBitmap();
+                // pictureBox1のアイコン読み込み（BrowserChooser3アイコン）
+                var icon1 = Properties.Resources.BrowserChooser3Icon.ToBitmap();
+                pictureBox1.Image = ImageUtilities.ResizeImage(icon1, 48, 48);
                 
-                // pictureBox2のアイコン読み込み
-                pictureBox2.Image = Properties.Resources.BCLogoIcon.ToBitmap();
+                // pictureBox2のアイコン読み込み（BCLogoアイコン）
+                var icon2 = Properties.Resources.BCLogoIcon.ToBitmap();
+                pictureBox2.Image = ImageUtilities.ResizeImage(icon2, 48, 48);
                 
                 Logger.LogInfo("AboutForm.LoadIcons", "アイコン読み込み完了");
             }
