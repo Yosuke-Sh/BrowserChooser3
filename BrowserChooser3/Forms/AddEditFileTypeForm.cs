@@ -1,4 +1,7 @@
 using BrowserChooser3.Classes;
+using BrowserChooser3.Classes.Models;
+using BrowserChooser3.Classes.Services;
+using BrowserChooser3.Classes.Utilities;
 
 namespace BrowserChooser3.Forms
 {
@@ -82,36 +85,6 @@ namespace BrowserChooser3.Forms
             return _fileType;
         }
 
-        /// <summary>
-        /// フォームの初期化
-        /// </summary>
-        private void InitializeComponent()
-        {
-            Text = "Add/Edit File Type";
-            Size = new Size(500, 300);
-            StartPosition = FormStartPosition.CenterParent;
-            FormBorderStyle = FormBorderStyle.FixedDialog;
-            MaximizeBox = false;
-            MinimizeBox = false;
 
-            // 基本設定
-            var lblName = new Label { Text = "File Type Name:", Location = new Point(10, 20), AutoSize = true };
-            var txtName = new TextBox { Name = "txtName", Location = new Point(120, 17), Size = new Size(300, 23) };
-
-            var lblExtension = new Label { Text = "Extension:", Location = new Point(10, 50), AutoSize = true };
-            var txtExtension = new TextBox { Name = "txtExtension", Location = new Point(120, 47), Size = new Size(300, 23) };
-
-            // ボタン
-            var btnOK = new Button { Text = "OK", DialogResult = DialogResult.OK, Location = new Point(300, 220), Size = new Size(75, 23) };
-            var btnCancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, Location = new Point(385, 220), Size = new Size(75, 23) };
-
-            // コントロールの追加
-            Controls.AddRange(new Control[] 
-            {
-                lblName, txtName,
-                lblExtension, txtExtension,
-                btnOK, btnCancel
-            });
-        }
     }
 }

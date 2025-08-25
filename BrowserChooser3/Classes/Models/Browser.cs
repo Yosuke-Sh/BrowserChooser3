@@ -1,6 +1,6 @@
 using System.Xml.Serialization;
 
-namespace BrowserChooser3.Classes
+namespace BrowserChooser3.Classes.Models
 {
     /// <summary>
     /// ブラウザ情報を管理するクラス

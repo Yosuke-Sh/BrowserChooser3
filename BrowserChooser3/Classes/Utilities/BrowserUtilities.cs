@@ -1,7 +1,8 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using BrowserChooser3.Classes.Models;
 
-namespace BrowserChooser3.Classes
+namespace BrowserChooser3.Classes.Utilities
 {
     /// <summary>
     /// ブラウザ起動と管理を担当するユーティリティクラス

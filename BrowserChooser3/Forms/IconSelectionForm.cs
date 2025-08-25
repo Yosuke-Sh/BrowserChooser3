@@ -1,4 +1,7 @@
 using BrowserChooser3.Classes;
+using BrowserChooser3.Classes.Models;
+using BrowserChooser3.Classes.Services;
+using BrowserChooser3.Classes.Utilities;
 using System.Drawing.Imaging;
 
 namespace BrowserChooser3.Forms

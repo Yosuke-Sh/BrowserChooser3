@@ -1,6 +1,8 @@
 using Microsoft.Win32;
+using BrowserChooser3.Classes.Models;
+using BrowserChooser3.Classes.Utilities;
 
-namespace BrowserChooser3.Classes
+namespace BrowserChooser3.Classes.Services
 {
     /// <summary>
     /// システムにインストールされているブラウザを自動検出するクラス

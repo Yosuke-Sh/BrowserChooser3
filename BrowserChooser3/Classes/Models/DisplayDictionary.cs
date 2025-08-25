@@ -1,4 +1,4 @@
-namespace BrowserChooser3.Classes
+namespace BrowserChooser3.Classes.Models
 {
     /// <summary>
     /// 表示位置設定クラス

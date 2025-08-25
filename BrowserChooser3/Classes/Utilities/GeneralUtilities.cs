@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 
-namespace BrowserChooser3.Classes
+namespace BrowserChooser3.Classes.Utilities
 {
     /// <summary>
     /// 一般的なユーティリティ機能を提供するクラス

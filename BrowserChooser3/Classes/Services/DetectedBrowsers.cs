@@ -6,8 +6,10 @@ using System.Net;
 using System.Text.Json;
 using System.Net.Http;
 using System.Diagnostics;
+using BrowserChooser3.Classes.Models;
+using BrowserChooser3.Classes.Utilities;
 
-namespace BrowserChooser3.Classes
+namespace BrowserChooser3.Classes.Services
 {
     /// <summary>
     /// ブラウザ検出クラス

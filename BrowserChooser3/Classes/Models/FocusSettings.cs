@@ -1,6 +1,6 @@
 using System.Drawing;
 
-namespace BrowserChooser3.Classes
+namespace BrowserChooser3.Classes.Models
 {
     /// <summary>
     /// フォーカス設定クラス

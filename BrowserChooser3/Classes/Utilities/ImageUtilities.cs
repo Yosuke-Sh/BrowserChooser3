@@ -2,8 +2,9 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
+using BrowserChooser3.Classes.Models;
 
-namespace BrowserChooser3.Classes
+namespace BrowserChooser3.Classes.Utilities
 {
     /// <summary>
     /// 画像処理ユーティリティクラス

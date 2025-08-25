@@ -1,7 +1,9 @@
 using System.Net;
 using System.Threading;
+using BrowserChooser3.Classes.Models;
+using BrowserChooser3.Classes.Utilities;
 
-namespace BrowserChooser3.Classes
+namespace BrowserChooser3.Classes.Services
 {
     /// <summary>
     /// アプリケーション起動時の初期化とブラウザ起動を管理するクラス

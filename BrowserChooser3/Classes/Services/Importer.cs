@@ -3,8 +3,10 @@ using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
 using System.Collections.Generic; // Added for List
+using BrowserChooser3.Classes.Models;
+using BrowserChooser3.Classes.Utilities;
 
-namespace BrowserChooser3.Classes
+namespace BrowserChooser3.Classes.Services
 {
     /// <summary>
     /// レガシー設定インポート機能を提供するクラス

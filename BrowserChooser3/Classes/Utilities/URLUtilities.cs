@@ -1,6 +1,7 @@
 using System.Net;
+using BrowserChooser3.Classes.Models;
 
-namespace BrowserChooser3.Classes
+namespace BrowserChooser3.Classes.Utilities
 {
     /// <summary>
     /// URLの解析と処理を行うユーティリティクラス

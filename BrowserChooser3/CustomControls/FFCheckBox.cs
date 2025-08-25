@@ -1,8 +1,10 @@
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
+using BrowserChooser3.Classes;
+using BrowserChooser3.Classes.Utilities;
 
-namespace BrowserChooser3.Classes
+namespace BrowserChooser3.CustomControls
 {
     /// <summary>
     /// Browser Chooser 2互換のカスタムチェックボックスコントロール

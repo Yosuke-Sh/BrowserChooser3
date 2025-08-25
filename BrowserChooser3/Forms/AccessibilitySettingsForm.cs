@@ -1,5 +1,8 @@
 using System.Drawing;
 using BrowserChooser3.Classes;
+using BrowserChooser3.Classes.Models;
+using BrowserChooser3.Classes.Services;
+using BrowserChooser3.Classes.Utilities;
 
 namespace BrowserChooser3.Forms
 {
@@ -36,81 +39,28 @@ namespace BrowserChooser3.Forms
         }
 
         /// <summary>
-        /// フォームの初期化
+        /// フォーカスボックス色選択イベント
         /// </summary>
-        private void InitializeComponent()
+        private void pbFocusColor_Click(object sender, EventArgs e)
         {
-            Text = "Accessibility Settings";
-            Size = new Size(400, 300);
-            StartPosition = FormStartPosition.CenterParent;
-            FormBorderStyle = FormBorderStyle.FixedDialog;
-            MaximizeBox = false;
-            MinimizeBox = false;
-
-            // フォーカス表示設定
-            var chkShowFocus = new CheckBox 
-            { 
-                Name = "chkShowFocus", 
-                Text = "Show Focus Box", 
-                Location = new Point(20, 20), 
-                AutoSize = true 
-            };
-
-            // フォーカスボックス色設定
-            var lblFocusColor = new Label { Text = "Focus Box Color:", Location = new Point(20, 60), AutoSize = true };
-            var pbFocusColor = new Panel 
-            { 
-                Name = "pbFocusColor", 
-                Location = new Point(120, 57), 
-                Size = new Size(50, 23), 
-                BackColor = Color.Red,
-                BorderStyle = BorderStyle.FixedSingle
-            };
-
-            // フォーカスボックス線幅設定
-            var lblFocusWidth = new Label { Text = "Focus Box Width:", Location = new Point(20, 100), AutoSize = true };
-            var nudFocusWidth = new NumericUpDown 
-            { 
-                Name = "nudFocusWidth", 
-                Location = new Point(120, 97), 
-                Size = new Size(80, 23), 
-                Minimum = 1, 
-                Maximum = 10, 
-                Value = 2 
-            };
-
-            // ボタン
-            var btnOK = new Button { Text = "OK", DialogResult = DialogResult.OK, Location = new Point(200, 220), Size = new Size(75, 23) };
-            var btnCancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, Location = new Point(285, 220), Size = new Size(75, 23) };
-
-            // コントロールの追加
-            Controls.AddRange(new Control[] 
+            var colorDialog = new ColorDialog
             {
-                chkShowFocus,
-                lblFocusColor, pbFocusColor,
-                lblFocusWidth, nudFocusWidth,
-                btnOK, btnCancel
-            });
-
-            // イベントハンドラー
-            pbFocusColor.Click += (s, e) =>
-            {
-                var colorDialog = new ColorDialog
-                {
-                    Color = pbFocusColor.BackColor
-                };
-                if (colorDialog.ShowDialog() == DialogResult.OK)
-                {
-                    pbFocusColor.BackColor = colorDialog.Color;
-                }
+                Color = pbFocusColor.BackColor
             };
-
-            btnOK.Click += (s, e) =>
+            if (colorDialog.ShowDialog() == DialogResult.OK)
             {
-                _showFocus = chkShowFocus.Checked;
-                _focusBoxColor = pbFocusColor.BackColor;
-                _focusBoxWidth = (int)nudFocusWidth.Value;
-            };
+                pbFocusColor.BackColor = colorDialog.Color;
+            }
+        }
+
+        /// <summary>
+        /// OKボタンクリックイベント
+        /// </summary>
+        private void btnOK_Click(object sender, EventArgs e)
+        {
+            _showFocus = chkShowFocus.Checked;
+            _focusBoxColor = pbFocusColor.BackColor;
+            _focusBoxWidth = (int)nudFocusWidth.Value;
         }
     }
 }

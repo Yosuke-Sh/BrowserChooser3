@@ -1,7 +1,7 @@
 using System.Configuration;
 using System.Text;
 
-namespace BrowserChooser3.Classes
+namespace BrowserChooser3.Classes.Utilities
 {
     /// <summary>
     /// ログ記録を管理するクラス

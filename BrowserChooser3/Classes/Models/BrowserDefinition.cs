@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace BrowserChooser3.Classes
+namespace BrowserChooser3.Classes.Models
 {
     /// <summary>
     /// オンライン定義のブラウザ情報を表すクラス

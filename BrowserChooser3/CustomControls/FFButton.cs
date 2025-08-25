@@ -1,7 +1,7 @@
 using System.Drawing;
 using System.Drawing.Drawing2D;
 
-namespace BrowserChooser3.Controls
+namespace BrowserChooser3.CustomControls
 {
     /// <summary>
     /// カスタムボタンコントロール（Browser Chooser 2互換）
@@ -10,9 +10,24 @@ namespace BrowserChooser3.Controls
     public class FFButton : Button
     {
         /// <summary>
+        /// 矢印キーイベント
+        /// </summary>
+        public event EventHandler<Keys>? ArrowKeyUp;
+
+        /// <summary>
         /// フォーカス表示の有効/無効
         /// </summary>
         public bool ShowFocus { get; set; } = true;
+
+        /// <summary>
+        /// フォーカスボックスの表示設定
+        /// </summary>
+        public bool ShowFocusBox { get; set; } = true;
+
+        /// <summary>
+        /// 矢印キーのトラップ設定
+        /// </summary>
+        public bool TrapArrowKeys { get; set; } = true;
 
         /// <summary>
         /// フォーカスボックスの色
@@ -168,9 +183,18 @@ namespace BrowserChooser3.Controls
                 case Keys.Right:
                 case Keys.Up:
                 case Keys.Down:
-                    // 矢印キーでフォーカス移動
-                    MoveFocus(e.KeyCode);
-                    e.Handled = true;
+                    if (TrapArrowKeys)
+                    {
+                        // 矢印キーイベントを発生
+                        ArrowKeyUp?.Invoke(this, e.KeyCode);
+                        e.Handled = true;
+                    }
+                    else
+                    {
+                        // 矢印キーでフォーカス移動
+                        MoveFocus(e.KeyCode);
+                        e.Handled = true;
+                    }
                     break;
             }
         }
