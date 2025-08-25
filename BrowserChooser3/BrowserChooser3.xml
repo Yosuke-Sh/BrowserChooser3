@@ -933,6 +933,362 @@
         <member name="P:BrowserChooser3.Classes.Services.BC2URL.Active">
             <summary>アクティブフラグ</summary>
         </member>
+        <member name="T:BrowserChooser3.Classes.Services.OptionsFormBrowserHandlers">
+            <summary>
+            OptionsFormのブラウザ管理イベントハンドラーを管理するクラス
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormBrowserHandlers.#ctor(BrowserChooser3.Forms.OptionsForm,BrowserChooser3.Classes.Settings,System.Collections.Generic.Dictionary{System.Int32,BrowserChooser3.Classes.Models.Browser},System.Collections.Generic.Dictionary{System.Int32,BrowserChooser3.Classes.Models.Protocol},System.Collections.Generic.Dictionary{System.Int32,BrowserChooser3.Classes.Models.FileType},System.Windows.Forms.ImageList,System.Action{System.Boolean})">
+            <summary>
+            OptionsFormBrowserHandlersクラスの新しいインスタンスを初期化します
+            </summary>
+            <param name="form">親フォーム</param>
+            <param name="settings">設定オブジェクト</param>
+            <param name="mBrowser">ブラウザ辞書</param>
+            <param name="mProtocols">プロトコル辞書</param>
+            <param name="mFileTypes">ファイルタイプ辞書</param>
+            <param name="imBrowserIcons">ブラウザアイコンリスト</param>
+            <param name="setModified">変更フラグ設定アクション</param>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormBrowserHandlers.AddBrowser_Click(System.Object,System.EventArgs)">
+            <summary>
+            ブラウザ追加ボタンのクリックイベント
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormBrowserHandlers.EditBrowser_Click(System.Object,System.EventArgs)">
+            <summary>
+            ブラウザ編集ボタンのクリックイベント
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormBrowserHandlers.DeleteBrowser_Click(System.Object,System.EventArgs)">
+            <summary>
+            ブラウザ削除ボタンのクリックイベント
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormBrowserHandlers.CloneBrowser_Click(System.Object,System.EventArgs)">
+            <summary>
+            ブラウザ複製ボタンのクリックイベント
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormBrowserHandlers.DetectBrowsers_Click(System.Object,System.EventArgs)">
+            <summary>
+            ブラウザ検出ボタンのクリックイベント
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormBrowserHandlers.GetBrowserProtocolsAndFileTypes(BrowserChooser3.Classes.Models.Browser)">
+            <summary>
+            ブラウザのプロトコルとファイルタイプを取得
+            </summary>
+        </member>
+        <member name="T:BrowserChooser3.Classes.Services.OptionsFormCategoryHandlers">
+            <summary>
+            OptionsFormのカテゴリ管理イベントハンドラーを管理するクラス
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormCategoryHandlers.#ctor(BrowserChooser3.Forms.OptionsForm,System.Action{System.Boolean},System.Action)">
+            <summary>
+            OptionsFormCategoryHandlersクラスの新しいインスタンスを初期化します
+            </summary>
+            <param name="form">親フォーム</param>
+            <param name="setModified">変更フラグ設定アクション</param>
+            <param name="loadCategories">カテゴリ読み込みアクション</param>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormCategoryHandlers.BtnAddCategory_Click(System.Object,System.EventArgs)">
+            <summary>
+            カテゴリ追加ボタンのクリックイベント
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormCategoryHandlers.BtnEditCategory_Click(System.Object,System.EventArgs)">
+            <summary>
+            カテゴリ編集ボタンのクリックイベント
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormCategoryHandlers.BtnDeleteCategory_Click(System.Object,System.EventArgs)">
+            <summary>
+            カテゴリ削除ボタンのクリックイベント
+            </summary>
+        </member>
+        <member name="T:BrowserChooser3.Classes.Services.OptionsFormDragDropHandlers">
+            <summary>
+            OptionsFormのドラッグ&amp;ドロップイベントハンドラーを管理するクラス
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormDragDropHandlers.#ctor(BrowserChooser3.Forms.OptionsForm,BrowserChooser3.Classes.Settings,System.Collections.Generic.Dictionary{System.Int32,BrowserChooser3.Classes.Models.Browser},System.Collections.Generic.Dictionary{System.Int32,BrowserChooser3.Classes.Models.Protocol},System.Collections.Generic.Dictionary{System.Int32,BrowserChooser3.Classes.Models.FileType},System.Action{System.Boolean},System.Action)">
+            <summary>
+            OptionsFormDragDropHandlersクラスの新しいインスタンスを初期化します
+            </summary>
+            <param name="form">親フォーム</param>
+            <param name="settings">設定オブジェクト</param>
+            <param name="mBrowser">ブラウザ辞書</param>
+            <param name="mProtocols">プロトコル辞書</param>
+            <param name="mFileTypes">ファイルタイプ辞書</param>
+            <param name="setModified">変更フラグ設定アクション</param>
+            <param name="rebuildAutoURLs">Auto URLs再構築アクション</param>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormDragDropHandlers.LstURLs_DragEnter(System.Object,System.Windows.Forms.DragEventArgs)">
+            <summary>
+            Auto URLsのドラッグ進入イベント
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormDragDropHandlers.LstURLs_DragOver(System.Object,System.Windows.Forms.DragEventArgs)">
+            <summary>
+            Auto URLsのドラッグオーバーイベント
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormDragDropHandlers.LstURLs_DragDrop(System.Object,System.Windows.Forms.DragEventArgs)">
+            <summary>
+            Auto URLsのドロップイベント
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormDragDropHandlers.LstURLs_MouseDown(System.Object,System.Windows.Forms.MouseEventArgs)">
+            <summary>
+            Auto URLsのマウスダウンイベント
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormDragDropHandlers.LstURLs_MouseMove(System.Object,System.Windows.Forms.MouseEventArgs)">
+            <summary>
+            Auto URLsのマウス移動イベント
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormDragDropHandlers.LstURLs_MouseUp(System.Object,System.Windows.Forms.MouseEventArgs)">
+            <summary>
+            Auto URLsのマウスアップイベント
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormDragDropHandlers.LstBrowsers_DragEnter(System.Object,System.Windows.Forms.DragEventArgs)">
+            <summary>
+            ブラウザリストのドラッグ進入イベント
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormDragDropHandlers.LstBrowsers_DragLeave(System.Object,System.Windows.Forms.DragEventArgs)">
+            <summary>
+            ブラウザリストのドラッグ離脱イベント
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormDragDropHandlers.LstBrowsers_DragDrop(System.Object,System.Windows.Forms.DragEventArgs)">
+            <summary>
+            ブラウザリストのドロップイベント
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormDragDropHandlers.ListViewURLs_DragEnter(System.Object,System.Windows.Forms.DragEventArgs)">
+            <summary>
+            ListView URLsのドラッグ進入イベント
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormDragDropHandlers.ListViewURLs_DragOver(System.Object,System.Windows.Forms.DragEventArgs)">
+            <summary>
+            ListView URLsのドラッグオーバーイベント
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormDragDropHandlers.ListViewURLs_DragLeave(System.Object,System.Windows.Forms.DragEventArgs)">
+            <summary>
+            ListView URLsのドラッグ離脱イベント
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormDragDropHandlers.ListViewURLs_DragDrop(System.Object,System.Windows.Forms.DragEventArgs)">
+            <summary>
+            ListView URLsのドロップイベント
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormDragDropHandlers.ListViewBrowsers_DragEnter(System.Object,System.Windows.Forms.DragEventArgs)">
+            <summary>
+            ブラウザListViewのドラッグ進入イベント
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormDragDropHandlers.ListViewBrowsers_DragLeave(System.Object,System.Windows.Forms.DragEventArgs)">
+            <summary>
+            ブラウザListViewのドラッグ離脱イベント
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormDragDropHandlers.ListViewBrowsers_DragDrop(System.Object,System.Windows.Forms.DragEventArgs)">
+            <summary>
+            ブラウザListViewのドロップイベント
+            </summary>
+        </member>
+        <member name="T:BrowserChooser3.Classes.Services.OptionsFormFormHandlers">
+            <summary>
+            OptionsFormのフォームイベントハンドラーを管理するクラス
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormFormHandlers.#ctor(BrowserChooser3.Forms.OptionsForm,System.Action,System.Action,System.Func{System.Boolean})">
+            <summary>
+            OptionsFormFormHandlersクラスの新しいインスタンスを初期化します
+            </summary>
+            <param name="form">親フォーム</param>
+            <param name="loadSettingsToControls">設定をコントロールに読み込むアクション</param>
+            <param name="saveSettings">設定を保存するアクション</param>
+            <param name="getIsModified">変更フラグを取得する関数</param>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormFormHandlers.SaveButton_Click(System.Object,System.EventArgs)">
+            <summary>
+            保存ボタンのクリックイベント
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormFormHandlers.HelpButton_Click(System.Object,System.EventArgs)">
+            <summary>
+            ヘルプボタンのクリックイベント
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormFormHandlers.OptionsForm_FormClosing(System.Object,System.Windows.Forms.FormClosingEventArgs)">
+            <summary>
+            フォーム閉じる時の確認ダイアログ
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormFormHandlers.OptionsForm_Shown(System.Object,System.EventArgs)">
+            <summary>
+            フォーム表示時の設定読み込み
+            </summary>
+        </member>
+        <member name="T:BrowserChooser3.Classes.Services.OptionsFormListHandlers">
+            <summary>
+            OptionsFormのリスト選択変更イベントハンドラーを管理するクラス
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormListHandlers.#ctor(BrowserChooser3.Forms.OptionsForm)">
+            <summary>
+            OptionsFormListHandlersクラスの新しいインスタンスを初期化します
+            </summary>
+            <param name="form">親フォーム</param>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormListHandlers.LstBrowsers_SelectedIndexChanged(System.Object,System.EventArgs)">
+            <summary>
+            ブラウザリストの選択変更イベント
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormListHandlers.LstURLs_SelectedIndexChanged(System.Object,System.EventArgs)">
+            <summary>
+            Auto URLsリストの選択変更イベント
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormListHandlers.LstProtocols_SelectedIndexChanged(System.Object,System.EventArgs)">
+            <summary>
+            プロトコルリストの選択変更イベント
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormListHandlers.LstFileTypes_SelectedIndexChanged(System.Object,System.EventArgs)">
+            <summary>
+            ファイルタイプリストの選択変更イベント
+            </summary>
+        </member>
+        <member name="T:BrowserChooser3.Classes.Services.OptionsFormPanels">
+            <summary>
+            OptionsFormのUIパネル作成を担当するクラス
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormPanels.#ctor(BrowserChooser3.Classes.Settings)">
+            <summary>
+            OptionsFormPanelsクラスの新しいインスタンスを初期化します
+            </summary>
+            <param name="settings">設定オブジェクト</param>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormPanels.CreateBrowsersPanel(System.EventHandler,System.EventHandler,System.EventHandler,System.EventHandler,System.EventHandler,System.EventHandler,System.EventHandler)">
+            <summary>
+            ブラウザパネルの作成
+            </summary>
+            <param name="addBrowserClick">Addボタンのクリックイベント</param>
+            <param name="editBrowserClick">Editボタンのクリックイベント</param>
+            <param name="cloneBrowserClick">Cloneボタンのクリックイベント</param>
+            <param name="detectBrowsersClick">Detectボタンのクリックイベント</param>
+            <param name="deleteBrowserClick">Deleteボタンのクリックイベント</param>
+            <param name="listViewSelectedIndexChanged">ListViewの選択変更イベント</param>
+            <param name="listViewDoubleClick">ListViewのダブルクリックイベント</param>
+            <returns>作成されたTabPage</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormPanels.CreateAutoURLsPanel(System.EventHandler,System.EventHandler,System.EventHandler,System.EventHandler,System.EventHandler,System.Windows.Forms.ItemDragEventHandler)">
+            <summary>
+            Auto URLsパネルの作成
+            </summary>
+            <param name="addURLClick">Addボタンのクリックイベント</param>
+            <param name="editURLClick">Editボタンのクリックイベント</param>
+            <param name="deleteURLClick">Deleteボタンのクリックイベント</param>
+            <param name="listViewSelectedIndexChanged">ListViewの選択変更イベント</param>
+            <param name="listViewDoubleClick">ListViewのダブルクリックイベント</param>
+            <param name="listViewItemDrag">ListViewのドラッグイベント</param>
+            <returns>作成されたTabPage</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormPanels.CreateProtocolsPanel(System.EventHandler,System.EventHandler,System.EventHandler,System.EventHandler,System.EventHandler)">
+            <summary>
+            プロトコルパネルの作成
+            </summary>
+            <param name="addProtocolClick">Addボタンのクリックイベント</param>
+            <param name="editProtocolClick">Editボタンのクリックイベント</param>
+            <param name="deleteProtocolClick">Deleteボタンのクリックイベント</param>
+            <param name="listViewSelectedIndexChanged">ListViewの選択変更イベント</param>
+            <param name="listViewDoubleClick">ListViewのダブルクリックイベント</param>
+            <returns>作成されたTabPage</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormPanels.CreateFileTypesPanel(System.EventHandler,System.EventHandler,System.EventHandler,System.EventHandler,System.EventHandler)">
+            <summary>
+            ファイルタイプパネルの作成
+            </summary>
+            <param name="addFileTypeClick">Addボタンのクリックイベント</param>
+            <param name="editFileTypeClick">Editボタンのクリックイベント</param>
+            <param name="deleteFileTypeClick">Deleteボタンのクリックイベント</param>
+            <param name="listViewSelectedIndexChanged">ListViewの選択変更イベント</param>
+            <param name="listViewDoubleClick">ListViewのダブルクリックイベント</param>
+            <returns>作成されたTabPage</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormPanels.CreateCategoriesPanel">
+            <summary>
+            カテゴリパネルの作成
+            </summary>
+            <returns>作成されたTabPage</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormPanels.CreateDisplayPanel(BrowserChooser3.Classes.Settings,System.EventHandler,System.EventHandler,System.EventHandler)">
+            <summary>
+            表示パネルの作成
+            </summary>
+            <param name="settings">設定オブジェクト</param>
+            <param name="accessibilityClick">アクセシビリティボタンのクリックイベント</param>
+            <param name="backgroundColorClick">背景色ボタンのクリックイベント</param>
+            <param name="transparentClick">透明背景ボタンのクリックイベント</param>
+            <returns>作成されたTabPage</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormPanels.CreateGridPanel(BrowserChooser3.Classes.Settings)">
+            <summary>
+            グリッドパネルの作成
+            </summary>
+            <param name="settings">設定オブジェクト</param>
+            <returns>作成されたTabPage</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormPanels.CreatePrivacyPanel(BrowserChooser3.Classes.Settings)">
+            <summary>
+            プライバシーパネルの作成
+            </summary>
+            <param name="settings">設定オブジェクト</param>
+            <returns>作成されたTabPage</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormPanels.CreateStartupPanel(BrowserChooser3.Classes.Settings)">
+            <summary>
+            スタートアップパネルの作成
+            </summary>
+            <param name="settings">設定オブジェクト</param>
+            <returns>作成されたTabPage</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormPanels.CreateGeneralPanel">
+            <summary>
+            一般設定パネルの作成
+            </summary>
+            <returns>作成されたTabPage</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormPanels.CreateOthersPanel">
+            <summary>
+            その他パネルの作成
+            </summary>
+            <returns>作成されたTabPage</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormPanels.CreateAccessibilityPanel">
+            <summary>
+            アクセシビリティパネルの作成
+            </summary>
+            <returns>作成されたTabPage</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormPanels.GetBrowserIcons">
+            <summary>
+            ブラウザアイコンリストを取得
+            </summary>
+            <returns>ImageList</returns>
+        </member>
         <member name="T:BrowserChooser3.Classes.Services.Policy">
             <summary>
             ポリシーベース設定を管理するクラス
@@ -3022,11 +3378,6 @@
             透明背景設定
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.OptionsForm_Shown(System.Object,System.EventArgs)">
-            <summary>
-            フォーム表示時の設定読み込み（Browser Chooser 2互換）
-            </summary>
-        </member>
         <member name="M:BrowserChooser3.Forms.OptionsForm.GetBrowserProtocolsAndFileTypes(BrowserChooser3.Classes.Models.Browser)">
             <summary>
             ブラウザのプロトコル・ファイルタイプを取得（Browser Chooser 2互換）
@@ -3121,21 +3472,6 @@
             <param name="category">カテゴリ名</param>
             <returns>アイテム数</returns>
         </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.BtnAddCategory_Click(System.Object,System.EventArgs)">
-            <summary>
-            カテゴリ追加ボタンのクリックイベント
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.BtnEditCategory_Click(System.Object,System.EventArgs)">
-            <summary>
-            カテゴリ編集ボタンのクリックイベント
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.BtnDeleteCategory_Click(System.Object,System.EventArgs)">
-            <summary>
-            カテゴリ削除ボタンのクリックイベント
-            </summary>
-        </member>
         <member name="M:BrowserChooser3.Forms.OptionsForm.SetupBrowserDragDrop">
             <summary>
             ブラウザドラッグ&amp;ドロップ機能の設定
@@ -3162,247 +3498,21 @@
             </summary>
             <param name="filePath">実行ファイルのパス</param>
         </member>
-        <member name="T:BrowserChooser3.Forms.OptionsFormPanels">
+        <member name="F:BrowserChooser3.Forms.OptionsForm.components">
             <summary>
-            OptionsFormの各パネル作成を担当するクラス
+            Required designer variable.
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Forms.OptionsFormPanels.CreateBrowsersPanel">
+        <member name="M:BrowserChooser3.Forms.OptionsForm.Dispose(System.Boolean)">
             <summary>
-            ブラウザ設定パネルを作成
+            Clean up any resources being used.
             </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         </member>
-        <member name="M:BrowserChooser3.Forms.OptionsFormPanels.CreateAutoURLsPanel">
+        <member name="M:BrowserChooser3.Forms.OptionsForm.InitializeComponent">
             <summary>
-            自動URL設定パネルを作成
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsFormPanels.CreateProtocolsPanel">
-            <summary>
-            プロトコル設定パネルを作成
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsFormPanels.CreateFileTypesPanel">
-            <summary>
-            ファイルタイプ設定パネルを作成
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsFormPanels.CreateCategoriesPanel">
-            <summary>
-            カテゴリ設定パネルを作成
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsFormPanels.CreateDisplayPanel">
-            <summary>
-            表示設定パネルを作成
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsFormPanels.CreateGridPanel">
-            <summary>
-            グリッド設定パネルを作成
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsFormPanels.CreatePrivacyPanel">
-            <summary>
-            プライバシー設定パネルを作成
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsFormPanels.CreateStartupPanel">
-            <summary>
-            スタートアップ設定パネルを作成
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsFormPanels.CreateOthersPanel">
-            <summary>
-            その他設定パネルを作成
-            </summary>
-        </member>
-        <member name="T:BrowserChooser3.Forms.OptionsFormSettings">
-            <summary>
-            OptionsFormの設定管理を担当するクラス
-            </summary>
-        </member>
-        <member name="P:BrowserChooser3.Forms.OptionsFormSettings.IsModified">
-            <summary>
-            設定が変更されたかどうか
-            </summary>
-        </member>
-        <member name="P:BrowserChooser3.Forms.OptionsFormSettings.Settings">
-            <summary>
-            設定オブジェクト
-            </summary>
-        </member>
-        <member name="P:BrowserChooser3.Forms.OptionsFormSettings.Browsers">
-            <summary>
-            ブラウザ辞書
-            </summary>
-        </member>
-        <member name="P:BrowserChooser3.Forms.OptionsFormSettings.URLs">
-            <summary>
-            URL辞書
-            </summary>
-        </member>
-        <member name="P:BrowserChooser3.Forms.OptionsFormSettings.Protocols">
-            <summary>
-            プロトコル辞書
-            </summary>
-        </member>
-        <member name="P:BrowserChooser3.Forms.OptionsFormSettings.FileTypes">
-            <summary>
-            ファイルタイプ辞書
-            </summary>
-        </member>
-        <member name="P:BrowserChooser3.Forms.OptionsFormSettings.FocusSettings">
-            <summary>
-            フォーカス設定
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsFormSettings.#ctor(BrowserChooser3.Classes.Settings)">
-            <summary>
-            OptionsFormSettingsクラスの新しいインスタンスを初期化します
-            </summary>
-            <param name="settings">設定オブジェクト</param>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsFormSettings.LoadSettings">
-            <summary>
-            設定を読み込みます
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsFormSettings.SaveSettings">
-            <summary>
-            設定を保存します
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsFormSettings.LoadBrowserSettings">
-            <summary>
-            ブラウザ設定を読み込みます
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsFormSettings.LoadURLSettings">
-            <summary>
-            URL設定を読み込みます
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsFormSettings.LoadProtocolSettings">
-            <summary>
-            プロトコル設定を読み込みます
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsFormSettings.LoadFileTypeSettings">
-            <summary>
-            ファイルタイプ設定を読み込みます
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsFormSettings.LoadFocusSettings">
-            <summary>
-            フォーカス設定を読み込みます
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsFormSettings.SaveBrowserSettings">
-            <summary>
-            ブラウザ設定を保存します
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsFormSettings.SaveURLSettings">
-            <summary>
-            URL設定を保存します
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsFormSettings.SaveProtocolSettings">
-            <summary>
-            プロトコル設定を保存します
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsFormSettings.SaveFileTypeSettings">
-            <summary>
-            ファイルタイプ設定を保存します
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsFormSettings.SaveFocusSettings">
-            <summary>
-            フォーカス設定を保存します
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsFormSettings.AddBrowser(BrowserChooser3.Classes.Models.Browser)">
-            <summary>
-            ブラウザを追加します
-            </summary>
-            <param name="browser">追加するブラウザ</param>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsFormSettings.UpdateBrowser(BrowserChooser3.Classes.Models.Browser)">
-            <summary>
-            ブラウザを更新します
-            </summary>
-            <param name="browser">更新するブラウザ</param>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsFormSettings.RemoveBrowser(System.Guid)">
-            <summary>
-            ブラウザを削除します
-            </summary>
-            <param name="browserGuid">削除するブラウザのGUID</param>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsFormSettings.AddURL(BrowserChooser3.Classes.Models.URL)">
-            <summary>
-            URLを追加します
-            </summary>
-            <param name="url">追加するURL</param>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsFormSettings.UpdateURL(BrowserChooser3.Classes.Models.URL)">
-            <summary>
-            URLを更新します
-            </summary>
-            <param name="url">更新するURL</param>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsFormSettings.RemoveURL(System.Guid)">
-            <summary>
-            URLを削除します
-            </summary>
-            <param name="urlGuid">削除するURLのGUID</param>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsFormSettings.AddProtocol(BrowserChooser3.Classes.Models.Protocol)">
-            <summary>
-            プロトコルを追加します
-            </summary>
-            <param name="protocol">追加するプロトコル</param>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsFormSettings.UpdateProtocol(BrowserChooser3.Classes.Models.Protocol)">
-            <summary>
-            プロトコルを更新します
-            </summary>
-            <param name="protocol">更新するプロトコル</param>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsFormSettings.RemoveProtocol(System.Guid)">
-            <summary>
-            プロトコルを削除します
-            </summary>
-            <param name="protocolGuid">削除するプロトコルのGUID</param>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsFormSettings.AddFileType(BrowserChooser3.Classes.Models.FileType)">
-            <summary>
-            ファイルタイプを追加します
-            </summary>
-            <param name="fileType">追加するファイルタイプ</param>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsFormSettings.UpdateFileType(BrowserChooser3.Classes.Models.FileType)">
-            <summary>
-            ファイルタイプを更新します
-            </summary>
-            <param name="fileType">更新するファイルタイプ</param>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsFormSettings.RemoveFileType(System.Guid)">
-            <summary>
-            ファイルタイプを削除します
-            </summary>
-            <param name="fileTypeGuid">削除するファイルタイプのGUID</param>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsFormSettings.MarkAsModified">
-            <summary>
-            設定が変更されたことをマークします
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsFormSettings.ResetModification">
-            <summary>
-            設定の変更をリセットします
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
             </summary>
         </member>
         <member name="M:BrowserChooser3.Program.Main">

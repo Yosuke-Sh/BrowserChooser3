@@ -16,6 +16,10 @@ namespace BrowserChooser3.Forms
         private bool _isModified = false;
         private bool _isCanceled = false;
         
+        // イベントハンドラークラス
+        private OptionsFormFormHandlers _formHandlers;
+        private OptionsFormCategoryHandlers _categoryHandlers;
+        
         // 内部データ管理（Browser Chooser 2互換）
         private Dictionary<int, Browser> _mBrowser = new();
         private SortedDictionary<int, URL> _mURLs = new();
@@ -41,13 +45,16 @@ namespace BrowserChooser3.Forms
         public OptionsForm(Settings settings)
         {
             _settings = settings;
+            
+            // イベントハンドラークラスの初期化
+            _formHandlers = new OptionsFormFormHandlers(this, LoadSettingsToControls, SaveSettings, () => _isModified);
+            _categoryHandlers = new OptionsFormCategoryHandlers(this, (modified) => _isModified = modified, LoadCategories);
+            
             InitializeForm();
             
-            // フォーム閉じる時の確認ダイアログ
-            FormClosing += OptionsForm_FormClosing;
-            
-            // フォーム表示時の設定読み込み
-            Shown += OptionsForm_Shown;
+            // フォームイベントの設定
+            FormClosing += _formHandlers.OptionsForm_FormClosing;
+            Shown += _formHandlers.OptionsForm_Shown;
         }
 
         /// <summary>
@@ -326,7 +333,7 @@ namespace BrowserChooser3.Forms
                 Location = new Point(buttonPanel.Width - 100, 10),
                 Size = new Size(80, 30)
             };
-            saveButton.Click += SaveButton_Click;
+            saveButton.Click += _formHandlers.SaveButton_Click;
 
             var cancelButton = new Button
             {
@@ -1901,13 +1908,8 @@ namespace BrowserChooser3.Forms
         }
 
         #region Event Handlers
-        private void SaveButton_Click(object? sender, EventArgs e)
-        {
-            if (_isModified)
-            {
-                SaveSettings();
-            }
-        }
+
+        // フォームイベントハンドラーは OptionsFormFormHandlers クラスに移動済み
 
         private void AddBrowser_Click(object? sender, EventArgs e)
         {
@@ -2900,70 +2902,7 @@ namespace BrowserChooser3.Forms
             }
         }
 
-        private void OptionsForm_FormClosing(object? sender, FormClosingEventArgs e)
-        {
-            if (e.CloseReason == CloseReason.UserClosing && !_isCanceled)
-            {
-                if (_isModified)
-                {
-                    var result = MessageBox.Show("Do you want to save your settings?", "Save?", 
-                        MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
-
-                    if (result == DialogResult.Yes)
-                    {
-                        SaveSettings();
-                    }
-                    else if (result == DialogResult.Cancel)
-                    {
-                        e.Cancel = true;
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// フォーム表示時の設定読み込み（Browser Chooser 2互換）
-        /// </summary>
-        private void OptionsForm_Shown(object? sender, EventArgs e)
-        {
-            try
-            {
-                // 設定の読み込み
-                LoadSettings();
-                
-                // TreeViewの展開
-                var treeSettings = Controls.OfType<TreeView>().FirstOrDefault();
-                if (treeSettings != null)
-                {
-                    treeSettings.ExpandAll();
-                }
-
-                // 変更フラグのリセット
-                _isModified = false;
-                
-                // ブラウザ管理機能の設定
-                SetupBrowserManagement();
-                
-                // プロトコル・ファイルタイプ管理機能の設定
-                SetupProtocolFileTypeManagement();
-                
-                // URL管理機能の設定
-                SetupURLManagement();
-                
-                // カテゴリ管理機能の設定
-                SetupCategoryManagement();
-                
-
-                
-                Logger.LogInfo("OptionsForm.OptionsForm_Shown", "設定読み込み完了");
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("OptionsForm.OptionsForm_Shown", "設定読み込みエラー", ex.Message, ex.StackTrace ?? "");
-                MessageBox.Show($"設定の読み込みに失敗しました: {ex.Message}", "エラー", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
+        // OptionsForm_FormClosing と OptionsForm_Shown は OptionsFormFormHandlers クラスに移動済み
 
         /// <summary>
         /// ブラウザのプロトコル・ファイルタイプを取得（Browser Chooser 2互換）
@@ -4029,7 +3968,7 @@ namespace BrowserChooser3.Forms
                 Location = new Point(10, 320),
                 Size = new Size(90, 25)
             };
-            btnAddCategory.Click += BtnAddCategory_Click;
+            btnAddCategory.Click += _categoryHandlers.BtnAddCategory_Click;
 
             // カテゴリ編集ボタン
             var btnEditCategory = new Button
@@ -4039,7 +3978,7 @@ namespace BrowserChooser3.Forms
                 Location = new Point(110, 320),
                 Size = new Size(90, 25)
             };
-            btnEditCategory.Click += BtnEditCategory_Click;
+            btnEditCategory.Click += _categoryHandlers.BtnEditCategory_Click;
 
             // カテゴリ削除ボタン
             var btnDeleteCategory = new Button
@@ -4049,7 +3988,7 @@ namespace BrowserChooser3.Forms
                 Location = new Point(210, 320),
                 Size = new Size(90, 25)
             };
-            btnDeleteCategory.Click += BtnDeleteCategory_Click;
+            btnDeleteCategory.Click += _categoryHandlers.BtnDeleteCategory_Click;
 
             // カテゴリ内アイテムリスト
             var categoryItemsListView = new ListView
@@ -4144,87 +4083,7 @@ namespace BrowserChooser3.Forms
             return count;
         }
 
-        /// <summary>
-        /// カテゴリ追加ボタンのクリックイベント
-        /// </summary>
-        private void BtnAddCategory_Click(object? sender, EventArgs e)
-        {
-            try
-            {
-                var categoryName = Microsoft.VisualBasic.Interaction.InputBox(
-                    "Enter category name:", "Add Category", "");
-                
-                if (!string.IsNullOrEmpty(categoryName))
-                {
-                    // カテゴリを追加（実際の実装では設定に保存）
-                    LoadCategories(); // リストを再読み込み
-                    _isModified = true;
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("OptionsForm.BtnAddCategory_Click", "カテゴリ追加エラー", ex.Message);
-            }
-        }
-
-        /// <summary>
-        /// カテゴリ編集ボタンのクリックイベント
-        /// </summary>
-        private void BtnEditCategory_Click(object? sender, EventArgs e)
-        {
-            try
-            {
-                var categoryListView = Controls.Find("categoryListView", true).FirstOrDefault() as ListView;
-                if (categoryListView?.SelectedItems.Count > 0)
-                {
-                    var selectedCategory = categoryListView.SelectedItems[0].Text;
-                    var newCategoryName = Microsoft.VisualBasic.Interaction.InputBox(
-                        "Enter new category name:", "Edit Category", selectedCategory);
-                    
-                    if (!string.IsNullOrEmpty(newCategoryName) && newCategoryName != selectedCategory)
-                    {
-                        // カテゴリ名を更新（実際の実装では設定に保存）
-                        LoadCategories(); // リストを再読み込み
-                        _isModified = true;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("OptionsForm.BtnEditCategory_Click", "カテゴリ編集エラー", ex.Message);
-            }
-        }
-
-        /// <summary>
-        /// カテゴリ削除ボタンのクリックイベント
-        /// </summary>
-        private void BtnDeleteCategory_Click(object? sender, EventArgs e)
-        {
-            try
-            {
-                var categoryListView = Controls.Find("categoryListView", true).FirstOrDefault() as ListView;
-                if (categoryListView?.SelectedItems.Count > 0)
-                {
-                    var selectedCategory = categoryListView.SelectedItems[0].Text;
-                    var result = MessageBox.Show(
-                        $"Are you sure you want to delete the category '{selectedCategory}'?",
-                        "Confirm Delete",
-                        MessageBoxButtons.YesNo,
-                        MessageBoxIcon.Question);
-                    
-                    if (result == DialogResult.Yes)
-                    {
-                        // カテゴリを削除（実際の実装では設定に保存）
-                        LoadCategories(); // リストを再読み込み
-                        _isModified = true;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("OptionsForm.BtnDeleteCategory_Click", "カテゴリ削除エラー", ex.Message);
-            }
-        }
+        // カテゴリ管理イベントハンドラーは OptionsFormCategoryHandlers クラスに移動済み
 
         /// <summary>
         /// ブラウザドラッグ&amp;ドロップ機能の設定
@@ -4415,6 +4274,7 @@ namespace BrowserChooser3.Forms
                     "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
 
 
     }
