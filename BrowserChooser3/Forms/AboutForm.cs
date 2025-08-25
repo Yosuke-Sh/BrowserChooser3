@@ -152,10 +152,10 @@ namespace BrowserChooser3.Forms
             tpInfo.Controls.Add(lblForkedFrom);
             tpInfo.Controls.Add(lblThisVersionHere);
             tpInfo.Controls.Add(lblOriginalVersion);
-            tpInfo.Location = new Point(4, 32);
+            tpInfo.Location = new Point(8, 44);
             tpInfo.Name = "tpInfo";
             tpInfo.Padding = new Padding(3);
-            tpInfo.Size = new Size(524, 229);
+            tpInfo.Size = new Size(516, 213);
             tpInfo.TabIndex = 0;
             tpInfo.Text = "Information";
             tpInfo.UseVisualStyleBackColor = true;
@@ -165,7 +165,7 @@ namespace BrowserChooser3.Forms
             lblForkedFrom.AutoSize = true;
             lblForkedFrom.Location = new Point(3, 12);
             lblForkedFrom.Name = "lblForkedFrom";
-            lblForkedFrom.Size = new Size(106, 23);
+            lblForkedFrom.Size = new Size(139, 30);
             lblForkedFrom.TabIndex = 0;
             lblForkedFrom.Text = "Forked from:";
             // 
@@ -174,7 +174,7 @@ namespace BrowserChooser3.Forms
             lblThisVersionHere.AutoSize = true;
             lblThisVersionHere.Location = new Point(3, 35);
             lblThisVersionHere.Name = "lblThisVersionHere";
-            lblThisVersionHere.Size = new Size(303, 23);
+            lblThisVersionHere.Size = new Size(391, 30);
             lblThisVersionHere.TabIndex = 1;
             lblThisVersionHere.Text = "Latest version: BrowserChooser3 v3.0.0";
             // 
@@ -183,7 +183,7 @@ namespace BrowserChooser3.Forms
             lblOriginalVersion.AutoSize = true;
             lblOriginalVersion.Location = new Point(79, 12);
             lblOriginalVersion.Name = "lblOriginalVersion";
-            lblOriginalVersion.Size = new Size(152, 23);
+            lblOriginalVersion.Size = new Size(197, 30);
             lblOriginalVersion.TabIndex = 2;
             lblOriginalVersion.TabStop = true;
             lblOriginalVersion.Text = "Browser Chooser 2";
@@ -192,10 +192,10 @@ namespace BrowserChooser3.Forms
             // tpContrib
             // 
             tpContrib.Controls.Add(lblContributors);
-            tpContrib.Location = new Point(4, 34);
+            tpContrib.Location = new Point(8, 44);
             tpContrib.Name = "tpContrib";
             tpContrib.Padding = new Padding(3);
-            tpContrib.Size = new Size(524, 227);
+            tpContrib.Size = new Size(516, 213);
             tpContrib.TabIndex = 1;
             tpContrib.Text = "Contributors";
             tpContrib.UseVisualStyleBackColor = true;
@@ -206,7 +206,7 @@ namespace BrowserChooser3.Forms
             lblContributors.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblContributors.Location = new Point(3, 12);
             lblContributors.Name = "lblContributors";
-            lblContributors.Size = new Size(505, 300);
+            lblContributors.Size = new Size(684, 384);
             lblContributors.TabIndex = 0;
             lblContributors.Text = resources.GetString("lblContributors.Text");
             // 
@@ -214,10 +214,10 @@ namespace BrowserChooser3.Forms
             // 
             tpAttributions.Controls.Add(lblAttributions);
             tpAttributions.Controls.Add(llSebCboLb);
-            tpAttributions.Location = new Point(4, 34);
+            tpAttributions.Location = new Point(8, 44);
             tpAttributions.Name = "tpAttributions";
             tpAttributions.Padding = new Padding(3);
-            tpAttributions.Size = new Size(524, 227);
+            tpAttributions.Size = new Size(516, 213);
             tpAttributions.TabIndex = 2;
             tpAttributions.Text = "Attributions";
             tpAttributions.UseVisualStyleBackColor = true;
@@ -228,7 +228,7 @@ namespace BrowserChooser3.Forms
             lblAttributions.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblAttributions.Location = new Point(3, 12);
             lblAttributions.Name = "lblAttributions";
-            lblAttributions.Size = new Size(543, 200);
+            lblAttributions.Size = new Size(736, 256);
             lblAttributions.TabIndex = 0;
             lblAttributions.Text = resources.GetString("lblAttributions.Text");
             // 
@@ -238,7 +238,7 @@ namespace BrowserChooser3.Forms
             llSebCboLb.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
             llSebCboLb.Location = new Point(3, 100);
             llSebCboLb.Name = "llSebCboLb";
-            llSebCboLb.Size = new Size(173, 25);
+            llSebCboLb.Size = new Size(229, 32);
             llSebCboLb.TabIndex = 1;
             llSebCboLb.TabStop = true;
             llSebCboLb.Text = "GitHub Contributors";
@@ -249,10 +249,10 @@ namespace BrowserChooser3.Forms
             tpDiagnostics.Controls.Add(cmdSaveLogs);
             tpDiagnostics.Controls.Add(btnCopy);
             tpDiagnostics.Controls.Add(lblDiagnostics);
-            tpDiagnostics.Location = new Point(4, 34);
+            tpDiagnostics.Location = new Point(8, 44);
             tpDiagnostics.Name = "tpDiagnostics";
             tpDiagnostics.Padding = new Padding(3);
-            tpDiagnostics.Size = new Size(524, 227);
+            tpDiagnostics.Size = new Size(516, 213);
             tpDiagnostics.TabIndex = 3;
             tpDiagnostics.Text = "Diagnostics";
             tpDiagnostics.UseVisualStyleBackColor = true;
@@ -294,7 +294,7 @@ namespace BrowserChooser3.Forms
             // AboutForm
             // 
             AcceptButton = OKButton;
-            AutoScaleDimensions = new SizeF(9F, 23F);
+            AutoScaleDimensions = new SizeF(12F, 30F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.White;
             CancelButton = OKButton;
@@ -308,6 +308,7 @@ namespace BrowserChooser3.Forms
             MinimizeBox = false;
             Name = "AboutForm";
             Padding = new Padding(9);
+            RightToLeft = RightToLeft.No;
             ShowInTaskbar = false;
             StartPosition = FormStartPosition.CenterParent;
             Text = "About BrowserChooser3";
