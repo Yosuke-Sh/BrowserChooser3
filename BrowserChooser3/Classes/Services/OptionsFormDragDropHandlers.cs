@@ -302,7 +302,7 @@ namespace BrowserChooser3.Classes.Services
         /// <summary>
         /// ListView URLsのドラッグ離脱イベント
         /// </summary>
-        public void ListViewURLs_DragLeave(object? sender, DragEventArgs e)
+        public void ListViewURLs_DragLeave(object? sender, EventArgs e)
         {
             // 必要に応じてハイライトを削除
         }
@@ -360,7 +360,7 @@ namespace BrowserChooser3.Classes.Services
         /// <summary>
         /// ブラウザListViewのドラッグ離脱イベント
         /// </summary>
-        public void ListViewBrowsers_DragLeave(object? sender, DragEventArgs e)
+        public void ListViewBrowsers_DragLeave(object? sender, EventArgs e)
         {
             // 背景色を元に戻す
             if (sender is ListView listView)
@@ -415,6 +415,21 @@ namespace BrowserChooser3.Classes.Services
                 Logger.LogError("OptionsFormDragDropHandlers.ListViewBrowsers_DragDrop", "ブラウザ追加エラー", ex.Message);
                 MessageBox.Show($"ブラウザ追加に失敗しました: {ex.Message}", "エラー", 
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// URLリストビューのドラッグ開始イベント
+        /// </summary>
+        public void ListViewURLs_ItemDrag(object? sender, ItemDragEventArgs e)
+        {
+            if (e.Item is ListViewItem item)
+            {
+                Logger.LogInfo("OptionsFormDragDropHandlers.ListViewURLs_ItemDrag", "URLドラッグ開始", item.Text);
+                if (sender is ListView listView)
+                {
+                    listView.DoDragDrop(item, DragDropEffects.Move);
+                }
             }
         }
 

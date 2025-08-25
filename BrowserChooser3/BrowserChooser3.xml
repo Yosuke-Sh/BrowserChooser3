@@ -1080,7 +1080,7 @@
             ListView URLsのドラッグオーバーイベント
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormDragDropHandlers.ListViewURLs_DragLeave(System.Object,System.Windows.Forms.DragEventArgs)">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormDragDropHandlers.ListViewURLs_DragLeave(System.Object,System.EventArgs)">
             <summary>
             ListView URLsのドラッグ離脱イベント
             </summary>
@@ -1095,7 +1095,7 @@
             ブラウザListViewのドラッグ進入イベント
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormDragDropHandlers.ListViewBrowsers_DragLeave(System.Object,System.Windows.Forms.DragEventArgs)">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormDragDropHandlers.ListViewBrowsers_DragLeave(System.Object,System.EventArgs)">
             <summary>
             ブラウザListViewのドラッグ離脱イベント
             </summary>
@@ -1103,6 +1103,11 @@
         <member name="M:BrowserChooser3.Classes.Services.OptionsFormDragDropHandlers.ListViewBrowsers_DragDrop(System.Object,System.Windows.Forms.DragEventArgs)">
             <summary>
             ブラウザListViewのドロップイベント
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormDragDropHandlers.ListViewURLs_ItemDrag(System.Object,System.Windows.Forms.ItemDragEventArgs)">
+            <summary>
+            URLリストビューのドラッグ開始イベント
             </summary>
         </member>
         <member name="T:BrowserChooser3.Classes.Services.OptionsFormFormHandlers">
@@ -3241,11 +3246,6 @@
             TreeViewの選択変更イベント
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.CreateBrowsersPanel">
-            <summary>
-            ブラウザ設定パネルの作成
-            </summary>
-        </member>
         <member name="M:BrowserChooser3.Forms.OptionsForm.CreateAutoURLsPanel">
             <summary>
             Auto URLsパネルの作成（Browser Chooser 2互換）
@@ -3342,26 +3342,6 @@
             URL管理機能（Browser Chooser 2互換）
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.LstBrowsers_SelectedIndexChanged(System.Object,System.EventArgs)">
-            <summary>
-            ブラウザリストの選択変更イベント
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.LstURLs_SelectedIndexChanged(System.Object,System.EventArgs)">
-            <summary>
-            Auto URLsリストの選択変更イベント
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.LstProtocols_SelectedIndexChanged(System.Object,System.EventArgs)">
-            <summary>
-            プロトコルリストの選択変更イベント
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.LstFileTypes_SelectedIndexChanged(System.Object,System.EventArgs)">
-            <summary>
-            ファイルタイプリストの選択変更イベント
-            </summary>
-        </member>
         <member name="M:BrowserChooser3.Forms.OptionsForm.DetectDirty(System.Object,System.EventArgs)">
             <summary>
             設定変更を検知してダーティフラグを設定
@@ -3407,47 +3387,10 @@
             ブラウザリストへのファイルドロップ機能を設定（Browser Chooser 2互換）
             </summary>
         </member>
-        <member name="F:BrowserChooser3.Forms.OptionsForm._mbURLMouseDown">
-            <summary>
-            Auto URLsのドラッグ&amp;ドロップ機能
-            </summary>
-        </member>
         <member name="M:BrowserChooser3.Forms.OptionsForm.SetupURLDragDrop">
             <summary>
             URLドラッグ&amp;ドロップ機能の設定
             </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.ListViewURLs_ItemDrag(System.Object,System.Windows.Forms.ItemDragEventArgs)">
-            <summary>
-            URLリストビューのドラッグ開始イベント
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.ListViewURLs_DragEnter(System.Object,System.Windows.Forms.DragEventArgs)">
-            <summary>
-            URLリストビューのドラッグ進入イベント
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.ListViewURLs_DragOver(System.Object,System.Windows.Forms.DragEventArgs)">
-            <summary>
-            URLリストビューのドラッグオーバーイベント
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.ListViewURLs_DragLeave(System.Object,System.EventArgs)">
-            <summary>
-            URLリストビューのドラッグ離脱イベント
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.ListViewURLs_DragDrop(System.Object,System.Windows.Forms.DragEventArgs)">
-            <summary>
-            URLリストビューのドロップイベント
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.ReorderURLs(System.Int32,System.Int32)">
-            <summary>
-            URLの順序を変更します
-            </summary>
-            <param name="fromIndex">元のインデックス</param>
-            <param name="toIndex">新しいインデックス</param>
         </member>
         <member name="M:BrowserChooser3.Forms.OptionsForm.SetupCategoryManagement">
             <summary>
@@ -3470,27 +3413,6 @@
             <summary>
             ブラウザドラッグ&amp;ドロップ機能の設定
             </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.ListViewBrowsers_DragEnter(System.Object,System.Windows.Forms.DragEventArgs)">
-            <summary>
-            ブラウザリストビューのドラッグ進入イベント
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.ListViewBrowsers_DragLeave(System.Object,System.EventArgs)">
-            <summary>
-            ブラウザリストビューのドラッグ離脱イベント
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.ListViewBrowsers_DragDrop(System.Object,System.Windows.Forms.DragEventArgs)">
-            <summary>
-            ブラウザリストビューのドロップイベント
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.AddBrowserFromFile(System.String)">
-            <summary>
-            ファイルからブラウザを追加
-            </summary>
-            <param name="filePath">実行ファイルのパス</param>
         </member>
         <member name="F:BrowserChooser3.Forms.OptionsForm.components">
             <summary>
