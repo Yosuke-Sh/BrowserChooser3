@@ -4,7 +4,7 @@ using System.Linq;
 using BrowserChooser3.Classes.Models;
 using BrowserChooser3.Classes.Utilities;
 
-namespace BrowserChooser3.Classes.Services
+namespace BrowserChooser3.Classes.Services.SystemServices
 {
     /// <summary>
     /// コマンドライン引数処理を管理するクラス

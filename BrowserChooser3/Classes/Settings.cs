@@ -1,7 +1,8 @@
 using System.Xml.Serialization;
 using BrowserChooser3.Classes.Models;
 using BrowserChooser3.Classes.Utilities;
-using BrowserChooser3.Classes.Services;
+using BrowserChooser3.Classes.Services.BrowserServices;
+using BrowserChooser3.Classes.Services.SystemServices;
 
 namespace BrowserChooser3.Classes
 {

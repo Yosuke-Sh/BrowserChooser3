@@ -1,10 +1,9 @@
 using BrowserChooser3.Classes;
 using BrowserChooser3.Classes.Models;
-using BrowserChooser3.Classes.Services;
 using BrowserChooser3.Classes.Utilities;
 using BrowserChooser3.Forms;
 
-namespace BrowserChooser3.Classes.Services
+namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
 {
     /// <summary>
     /// OptionsFormのドラッグ&amp;ドロップイベントハンドラーを管理するクラス

@@ -2,7 +2,7 @@ using BrowserChooser3.Classes;
 using BrowserChooser3.Classes.Utilities;
 using BrowserChooser3.Forms;
 
-namespace BrowserChooser3.Classes.Services
+namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
 {
     /// <summary>
     /// OptionsFormのフォームイベントハンドラーを管理するクラス

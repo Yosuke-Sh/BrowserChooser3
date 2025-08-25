@@ -336,63 +336,63 @@
             URLのクローンを作成（Browser Chooser 2互換）
             </summary>
         </member>
-        <member name="T:BrowserChooser3.Classes.Services.BrowserDetector">
+        <member name="T:BrowserChooser3.Classes.Services.BrowserServices.BrowserDetector">
             <summary>
             システムにインストールされているブラウザを自動検出するクラス
             </summary>
         </member>
-        <member name="P:BrowserChooser3.Classes.Services.BrowserDetector.DetectedBrowsers">
+        <member name="P:BrowserChooser3.Classes.Services.BrowserServices.BrowserDetector.DetectedBrowsers">
             <summary>
             検出されたブラウザのリスト
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.BrowserDetector.DetectBrowsers">
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.BrowserDetector.DetectBrowsers">
             <summary>
             ブラウザを検出します
             </summary>
             <returns>検出されたブラウザのリスト</returns>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.BrowserDetector.DetectChrome">
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.BrowserDetector.DetectChrome">
             <summary>
             Chromeを検出
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.BrowserDetector.DetectFirefox">
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.BrowserDetector.DetectFirefox">
             <summary>
             Firefoxを検出
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.BrowserDetector.DetectEdge">
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.BrowserDetector.DetectEdge">
             <summary>
             Edgeを検出
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.BrowserDetector.DetectInternetExplorer">
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.BrowserDetector.DetectInternetExplorer">
             <summary>
             Internet Explorerを検出
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.BrowserDetector.DetectOpera">
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.BrowserDetector.DetectOpera">
             <summary>
             Operaを検出
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.BrowserDetector.DetectSafari">
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.BrowserDetector.DetectSafari">
             <summary>
             Safariを検出
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.BrowserDetector.DetectBrave">
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.BrowserDetector.DetectBrave">
             <summary>
             Braveを検出
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.BrowserDetector.DetectVivaldi">
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.BrowserDetector.DetectVivaldi">
             <summary>
             Vivaldiを検出
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.BrowserDetector.AddCustomBrowser(System.String,System.String,System.String)">
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.BrowserDetector.AddCustomBrowser(System.String,System.String,System.String)">
             <summary>
             カスタムブラウザを追加
             </summary>
@@ -400,152 +400,72 @@
             <param name="path">実行ファイルパス</param>
             <param name="arguments">起動引数</param>
         </member>
-        <member name="T:BrowserChooser3.Classes.Services.CommandLineProcessor">
-            <summary>
-            コマンドライン引数処理を管理するクラス
-            詳細なオプション対応と引数解析を提供します
-            </summary>
-        </member>
-        <member name="T:BrowserChooser3.Classes.Services.CommandLineProcessor.CommandLineArgs">
-            <summary>
-            コマンドライン引数の解析結果
-            </summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.CommandLineProcessor.CommandLineArgs.URL">
-            <summary>処理対象のURL</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.CommandLineProcessor.CommandLineArgs.Delay">
-            <summary>遅延時間（秒）</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.CommandLineProcessor.CommandLineArgs.BrowserGuid">
-            <summary>指定されたブラウザのGUID</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.CommandLineProcessor.CommandLineArgs.UnshortenURL">
-            <summary>URL短縮解除を行うかどうか</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.CommandLineProcessor.CommandLineArgs.DebugLog">
-            <summary>デバッグログを有効にするかどうか</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.CommandLineProcessor.CommandLineArgs.ExtractDLLs">
-            <summary>DLLを抽出するかどうか</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.CommandLineProcessor.CommandLineArgs.PortableMode">
-            <summary>ポータブルモードで起動するかどうか</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.CommandLineProcessor.CommandLineArgs.IgnoreSettings">
-            <summary>設定ファイルを無視するかどうか</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.CommandLineProcessor.CommandLineArgs.ShowHelp">
-            <summary>ヘルプを表示するかどうか</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.CommandLineProcessor.CommandLineArgs.ShowVersion">
-            <summary>バージョン情報を表示するかどうか</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.CommandLineProcessor.CommandLineArgs.SilentMode">
-            <summary>サイレントモードで起動するかどうか</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.CommandLineProcessor.CommandLineArgs.AutoLaunch">
-            <summary>自動起動するかどうか</summary>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Services.CommandLineProcessor.ParseArguments(System.String[])">
-            <summary>
-            コマンドライン引数を解析します
-            </summary>
-            <param name="args">コマンドライン引数</param>
-            <returns>解析結果</returns>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Services.CommandLineProcessor.GetHelpMessage">
-            <summary>
-            ヘルプメッセージを取得します
-            </summary>
-            <returns>ヘルプメッセージ</returns>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Services.CommandLineProcessor.GetVersionInfo">
-            <summary>
-            バージョン情報を取得します
-            </summary>
-            <returns>バージョン情報</returns>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Services.CommandLineProcessor.ValidateArguments(BrowserChooser3.Classes.Services.CommandLineProcessor.CommandLineArgs)">
-            <summary>
-            引数が有効かどうかを検証します
-            </summary>
-            <param name="args">解析された引数</param>
-            <returns>有効な場合はtrue</returns>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Services.CommandLineProcessor.LoadFromEnvironment(BrowserChooser3.Classes.Services.CommandLineProcessor.CommandLineArgs)">
-            <summary>
-            環境変数からコマンドラインオプションを読み込みます
-            </summary>
-            <param name="args">既存の引数</param>
-            <returns>環境変数で更新された引数</returns>
-        </member>
-        <member name="T:BrowserChooser3.Classes.Services.DefaultBrowserChecker">
+        <member name="T:BrowserChooser3.Classes.Services.BrowserServices.DefaultBrowserChecker">
             <summary>
             デフォルトブラウザチェック機能を提供するクラス
             システム設定との同期とデフォルトブラウザの検出を行います
             </summary>
         </member>
-        <member name="T:BrowserChooser3.Classes.Services.DefaultBrowserChecker.DefaultBrowserInfo">
+        <member name="T:BrowserChooser3.Classes.Services.BrowserServices.DefaultBrowserChecker.DefaultBrowserInfo">
             <summary>
             デフォルトブラウザの情報
             </summary>
         </member>
-        <member name="P:BrowserChooser3.Classes.Services.DefaultBrowserChecker.DefaultBrowserInfo.Name">
+        <member name="P:BrowserChooser3.Classes.Services.BrowserServices.DefaultBrowserChecker.DefaultBrowserInfo.Name">
             <summary>ブラウザ名</summary>
         </member>
-        <member name="P:BrowserChooser3.Classes.Services.DefaultBrowserChecker.DefaultBrowserInfo.Path">
+        <member name="P:BrowserChooser3.Classes.Services.BrowserServices.DefaultBrowserChecker.DefaultBrowserInfo.Path">
             <summary>実行ファイルパス</summary>
         </member>
-        <member name="P:BrowserChooser3.Classes.Services.DefaultBrowserChecker.DefaultBrowserInfo.Arguments">
+        <member name="P:BrowserChooser3.Classes.Services.BrowserServices.DefaultBrowserChecker.DefaultBrowserInfo.Arguments">
             <summary>起動引数</summary>
         </member>
-        <member name="P:BrowserChooser3.Classes.Services.DefaultBrowserChecker.DefaultBrowserInfo.Protocol">
+        <member name="P:BrowserChooser3.Classes.Services.BrowserServices.DefaultBrowserChecker.DefaultBrowserInfo.Protocol">
             <summary>プロトコルハンドラー</summary>
         </member>
-        <member name="P:BrowserChooser3.Classes.Services.DefaultBrowserChecker.DefaultBrowserInfo.DetectionMethod">
+        <member name="P:BrowserChooser3.Classes.Services.BrowserServices.DefaultBrowserChecker.DefaultBrowserInfo.DetectionMethod">
             <summary>検出方法</summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.DefaultBrowserChecker.GetDefaultBrowser">
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.DefaultBrowserChecker.GetDefaultBrowser">
             <summary>
             システムのデフォルトブラウザを検出します
             </summary>
             <returns>デフォルトブラウザ情報</returns>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.DefaultBrowserChecker.GetBrowserFromProtocol(System.String)">
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.DefaultBrowserChecker.GetBrowserFromProtocol(System.String)">
             <summary>
             プロトコルハンドラーからブラウザを検出します
             </summary>
             <param name="protocol">プロトコル名</param>
             <returns>ブラウザ情報</returns>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.DefaultBrowserChecker.GetBrowserFromRegistry">
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.DefaultBrowserChecker.GetBrowserFromRegistry">
             <summary>
             レジストリからブラウザを検出します
             </summary>
             <returns>ブラウザ情報</returns>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.DefaultBrowserChecker.ParseCommandString(System.String)">
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.DefaultBrowserChecker.ParseCommandString(System.String)">
             <summary>
             コマンド文字列をパスと引数に分割します
             </summary>
             <param name="command">コマンド文字列</param>
             <returns>(パス, 引数)のタプル</returns>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.DefaultBrowserChecker.GetBrowserNameFromPath(System.String)">
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.DefaultBrowserChecker.GetBrowserNameFromPath(System.String)">
             <summary>
             パスからブラウザ名を取得します
             </summary>
             <param name="path">実行ファイルパス</param>
             <returns>ブラウザ名</returns>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.DefaultBrowserChecker.HasDefaultBrowser">
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.DefaultBrowserChecker.HasDefaultBrowser">
             <summary>
             デフォルトブラウザが設定されているかどうかをチェックします
             </summary>
             <returns>設定されている場合はtrue</returns>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.DefaultBrowserChecker.SetDefaultBrowser(System.String,System.String)">
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.DefaultBrowserChecker.SetDefaultBrowser(System.String,System.String)">
             <summary>
             デフォルトブラウザの設定を更新します
             </summary>
@@ -553,392 +473,155 @@
             <param name="protocol">プロトコル</param>
             <returns>成功した場合はtrue</returns>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.DefaultBrowserChecker.ResetDefaultBrowser(System.String)">
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.DefaultBrowserChecker.ResetDefaultBrowser(System.String)">
             <summary>
             デフォルトブラウザの設定をリセットします
             </summary>
             <param name="protocol">プロトコル</param>
             <returns>成功した場合はtrue</returns>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.DefaultBrowserChecker.GetDefaultBrowserDetails">
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.DefaultBrowserChecker.GetDefaultBrowserDetails">
             <summary>
             デフォルトブラウザの情報を取得します（詳細版）
             </summary>
             <returns>詳細なブラウザ情報</returns>
         </member>
-        <member name="T:BrowserChooser3.Classes.Services.DetectedBrowsers">
+        <member name="T:BrowserChooser3.Classes.Services.BrowserServices.DetectedBrowsers">
             <summary>
             ブラウザ検出クラス
             システムにインストールされているブラウザを検出し、オンライン更新に対応します
             </summary>
         </member>
-        <member name="F:BrowserChooser3.Classes.Services.DetectedBrowsers.ONLINE_DEFINITIONS_URL">
+        <member name="F:BrowserChooser3.Classes.Services.BrowserServices.DetectedBrowsers.ONLINE_DEFINITIONS_URL">
             <summary>
             オンライン定義のURL
             </summary>
         </member>
-        <member name="P:BrowserChooser3.Classes.Services.DetectedBrowsers.LocalDefinitionsPath">
+        <member name="P:BrowserChooser3.Classes.Services.BrowserServices.DetectedBrowsers.LocalDefinitionsPath">
             <summary>
             ローカル定義ファイルのパス
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.DetectedBrowsers.DoBrowserDetection">
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.DetectedBrowsers.DoBrowserDetection">
             <summary>
             ブラウザ検出を実行
             </summary>
             <returns>検出されたブラウザのリスト</returns>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.DetectedBrowsers.DetectFromLocalDefinitions">
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.DetectedBrowsers.DetectFromLocalDefinitions">
             <summary>
             ローカル定義からブラウザを検出
             </summary>
             <returns>検出されたブラウザのリスト</returns>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.DetectedBrowsers.DetectFromOnlineDefinitions">
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.DetectedBrowsers.DetectFromOnlineDefinitions">
             <summary>
             オンライン定義からブラウザを検出
             </summary>
             <returns>検出されたブラウザのリスト</returns>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.DetectedBrowsers.ShouldCheckOnlineDefinitions">
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.DetectedBrowsers.ShouldCheckOnlineDefinitions">
             <summary>
             オンライン定義のチェックが必要かどうかを判定
             </summary>
             <returns>チェックが必要な場合はtrue</returns>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.DetectedBrowsers.GetCommonBrowserPaths">
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.DetectedBrowsers.GetCommonBrowserPaths">
             <summary>
             一般的なブラウザのパスを取得
             </summary>
             <returns>ブラウザパスのリスト</returns>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.DetectedBrowsers.DetectFromRegistry">
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.DetectedBrowsers.DetectFromRegistry">
             <summary>
             レジストリからブラウザを検出
             </summary>
             <returns>検出されたブラウザのリスト</returns>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.DetectedBrowsers.CreateBrowserFromPath(BrowserChooser3.Classes.Services.DetectedBrowsers.BrowserPathInfo)">
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.DetectedBrowsers.CreateBrowserFromPath(BrowserChooser3.Classes.Services.BrowserServices.DetectedBrowsers.BrowserPathInfo)">
             <summary>
             パス情報からブラウザを作成
             </summary>
             <param name="pathInfo">パス情報</param>
             <returns>ブラウザオブジェクト</returns>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.DetectedBrowsers.CreateBrowserFromOnlineDefinition(BrowserChooser3.Classes.Services.DetectedBrowsers.OnlineBrowserDefinition)">
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.DetectedBrowsers.CreateBrowserFromOnlineDefinition(BrowserChooser3.Classes.Services.BrowserServices.DetectedBrowsers.OnlineBrowserDefinition)">
             <summary>
             オンライン定義からブラウザを作成
             </summary>
             <param name="definition">オンライン定義</param>
             <returns>ブラウザオブジェクト</returns>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.DetectedBrowsers.RemoveDuplicates(System.Collections.Generic.List{BrowserChooser3.Classes.Models.Browser})">
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.DetectedBrowsers.RemoveDuplicates(System.Collections.Generic.List{BrowserChooser3.Classes.Models.Browser})">
             <summary>
             重複するブラウザを除去
             </summary>
             <param name="browsers">ブラウザのリスト</param>
             <returns>重複除去されたブラウザのリスト</returns>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.DetectedBrowsers.SaveOnlineDefinitions(System.Collections.Generic.List{BrowserChooser3.Classes.Services.DetectedBrowsers.OnlineBrowserDefinition})">
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.DetectedBrowsers.SaveOnlineDefinitions(System.Collections.Generic.List{BrowserChooser3.Classes.Services.BrowserServices.DetectedBrowsers.OnlineBrowserDefinition})">
             <summary>
             オンライン定義をローカルに保存
             </summary>
             <param name="definitions">オンライン定義</param>
         </member>
-        <member name="T:BrowserChooser3.Classes.Services.DetectedBrowsers.BrowserPathInfo">
+        <member name="T:BrowserChooser3.Classes.Services.BrowserServices.DetectedBrowsers.BrowserPathInfo">
             <summary>
             ブラウザパス情報
             </summary>
         </member>
-        <member name="T:BrowserChooser3.Classes.Services.DetectedBrowsers.OnlineBrowserDefinition">
+        <member name="T:BrowserChooser3.Classes.Services.BrowserServices.DetectedBrowsers.OnlineBrowserDefinition">
             <summary>
             オンライン定義
             </summary>
         </member>
-        <member name="T:BrowserChooser3.Classes.Services.Importer">
+        <member name="T:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormAccessibilityHandlers">
             <summary>
-            レガシー設定インポート機能を提供するクラス
-            Browser Chooser 2の設定ファイルをBrowserChooser3に変換します
+            OptionsFormのアクセシビリティ設定関連イベントハンドラーを管理するクラス
             </summary>
         </member>
-        <member name="F:BrowserChooser3.Classes.Services.Importer.BC2_CONFIG_FILE">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormAccessibilityHandlers.#ctor(BrowserChooser3.Forms.OptionsForm,BrowserChooser3.Classes.Models.FocusSettings,System.Action{System.Boolean})">
             <summary>
-            Browser Chooser 2の設定ファイル名
+            OptionsFormAccessibilityHandlersクラスの新しいインスタンスを初期化します
+            </summary>
+            <param name="form">親フォーム</param>
+            <param name="focusSettings">フォーカス設定オブジェクト</param>
+            <param name="setModified">変更フラグ設定アクション</param>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormAccessibilityHandlers.OpenAccessibilitySettings">
+            <summary>
+            アクセシビリティ設定を開く
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.Importer.ImportLegacySettings(System.String,BrowserChooser3.Classes.Settings)">
+        <member name="T:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormBackgroundHandlers">
             <summary>
-            レガシー設定をインポートします
-            </summary>
-            <param name="sourcePath">ソースパス</param>
-            <param name="targetSettings">ターゲット設定</param>
-            <returns>インポートが成功した場合はtrue</returns>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Services.Importer.LoadBC2Settings(System.String)">
-            <summary>
-            Browser Chooser 2の設定ファイルを読み込みます
-            </summary>
-            <param name="configPath">設定ファイルパス</param>
-            <returns>BC2Settingsオブジェクト</returns>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Services.Importer.ConvertSettings(BrowserChooser3.Classes.Services.BC2Settings,BrowserChooser3.Classes.Settings)">
-            <summary>
-            設定を変換します
-            </summary>
-            <param name="source">ソース設定</param>
-            <param name="target">ターゲット設定</param>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Services.Importer.ConvertBrowsers(BrowserChooser3.Classes.Services.BC2Browser[],System.Collections.Generic.List{BrowserChooser3.Classes.Models.Browser})">
-            <summary>
-            ブラウザ設定を変換します
-            </summary>
-            <param name="source">ソースブラウザリスト</param>
-            <param name="target">ターゲットブラウザリスト</param>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Services.Importer.ConvertProtocols(BrowserChooser3.Classes.Services.BC2Protocol[],System.Collections.Generic.List{BrowserChooser3.Classes.Models.Protocol})">
-            <summary>
-            プロトコル設定を変換します
-            </summary>
-            <param name="source">ソースプロトコルリスト</param>
-            <param name="target">ターゲットプロトコルリスト</param>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Services.Importer.ConvertFileTypes(BrowserChooser3.Classes.Services.BC2FileType[],System.Collections.Generic.List{BrowserChooser3.Classes.Models.FileType})">
-            <summary>
-            ファイルタイプ設定を変換します
-            </summary>
-            <param name="source">ソースファイルタイプリスト</param>
-            <param name="target">ターゲットファイルタイプリスト</param>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Services.Importer.ConvertURLs(BrowserChooser3.Classes.Services.BC2URL[],System.Collections.Generic.List{BrowserChooser3.Classes.Models.URL})">
-            <summary>
-            URL設定を変換します
-            </summary>
-            <param name="source">ソースURLリスト</param>
-            <param name="target">ターゲットURLリスト</param>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Services.Importer.HasLegacySettings(System.String)">
-            <summary>
-            レガシー設定ファイルの存在をチェックします
-            </summary>
-            <param name="path">チェックするパス</param>
-            <returns>存在する場合はtrue</returns>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Services.Importer.CreateBackup(System.String,System.String)">
-            <summary>
-            レガシー設定ファイルのバックアップを作成します
-            </summary>
-            <param name="sourcePath">ソースパス</param>
-            <param name="backupPath">バックアップパス</param>
-            <returns>バックアップが成功した場合はtrue</returns>
-        </member>
-        <member name="T:BrowserChooser3.Classes.Services.BC2Settings">
-            <summary>
-            Browser Chooser 2の設定クラス（XMLデシリアライゼーション用）
+            OptionsFormの背景色関連イベントハンドラーを管理するクラス
             </summary>
         </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2Settings.FileVersion">
-            <summary>ファイルバージョン</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2Settings.IconWidth">
-            <summary>アイコン幅</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2Settings.IconHeight">
-            <summary>アイコン高さ</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2Settings.IconGapWidth">
-            <summary>アイコン間隔（幅）</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2Settings.IconGapHeight">
-            <summary>アイコン間隔（高さ）</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2Settings.IconScale">
-            <summary>アイコンスケール</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2Settings.OptionsShortcut">
-            <summary>オプションショートカットキー</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2Settings.DefaultMessage">
-            <summary>デフォルトメッセージ</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2Settings.DefaultDelay">
-            <summary>デフォルト遅延時間</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2Settings.DefaultBrowserGuid">
-            <summary>デフォルトブラウザのGUID</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2Settings.ShowFocus">
-            <summary>フォーカス表示の有効/無効</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2Settings.UseAero">
-            <summary>Aero効果の有効/無効</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2Settings.FocusBoxLineWidth">
-            <summary>フォーカスボックスの線幅</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2Settings.FocusBoxColor">
-            <summary>フォーカスボックスの色</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2Settings.UserAgent">
-            <summary>ユーザーエージェント</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2Settings.BackgroundColor">
-            <summary>背景色</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2Settings.StartingPosition">
-            <summary>開始位置</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2Settings.OffsetX">
-            <summary>X座標オフセット</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2Settings.OffsetY">
-            <summary>Y座標オフセット</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2Settings.AllowStayOpen">
-            <summary>開いたままにするかどうか</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2Settings.Canonicalize">
-            <summary>正規化の有効/無効</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2Settings.CanonicalizeAppendedText">
-            <summary>正規化時に追加するテキスト</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2Settings.EnableLogging">
-            <summary>ログの有効/無効</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2Settings.LogLevel">
-            <summary>ログレベル</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2Settings.Browsers">
-            <summary>ブラウザリスト</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2Settings.Protocols">
-            <summary>プロトコルリスト</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2Settings.FileTypes">
-            <summary>ファイルタイプリスト</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2Settings.URLs">
-            <summary>URLリスト</summary>
-        </member>
-        <member name="T:BrowserChooser3.Classes.Services.BC2Browser">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormBackgroundHandlers.#ctor(BrowserChooser3.Forms.OptionsForm,BrowserChooser3.Classes.Settings,System.Action{System.Boolean})">
             <summary>
-            Browser Chooser 2のブラウザクラス
+            OptionsFormBackgroundHandlersクラスの新しいインスタンスを初期化します
+            </summary>
+            <param name="form">親フォーム</param>
+            <param name="settings">設定オブジェクト</param>
+            <param name="setModified">変更フラグ設定アクション</param>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormBackgroundHandlers.SetTransparentBackground">
+            <summary>
+            透明背景設定
             </summary>
         </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2Browser.Name">
-            <summary>ブラウザ名</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2Browser.Target">
-            <summary>実行ファイルパス</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2Browser.Arguments">
-            <summary>起動引数</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2Browser.Guid">
-            <summary>ブラウザのGUID</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2Browser.Hotkey">
-            <summary>ホットキー</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2Browser.PosX">
-            <summary>X座標</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2Browser.PosY">
-            <summary>Y座標</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2Browser.Scale">
-            <summary>スケール</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2Browser.IconIndex">
-            <summary>アイコンインデックス</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2Browser.Category">
-            <summary>カテゴリ</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2Browser.Visible">
-            <summary>表示フラグ</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2Browser.IsDefault">
-            <summary>デフォルトブラウザフラグ</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2Browser.CustomImagePath">
-            <summary>カスタム画像パス</summary>
-        </member>
-        <member name="T:BrowserChooser3.Classes.Services.BC2Protocol">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormBackgroundHandlers.ChangeBackgroundColor">
             <summary>
-            Browser Chooser 2のプロトコルクラス
+            背景色変更
             </summary>
         </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2Protocol.Name">
-            <summary>プロトコル名</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2Protocol.Header">
-            <summary>プロトコルヘッダー</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2Protocol.Guid">
-            <summary>プロトコルのGUID</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2Protocol.SupportingBrowsers">
-            <summary>対応ブラウザのGUIDリスト</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2Protocol.Category">
-            <summary>カテゴリ</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2Protocol.Active">
-            <summary>アクティブフラグ</summary>
-        </member>
-        <member name="T:BrowserChooser3.Classes.Services.BC2FileType">
-            <summary>
-            Browser Chooser 2のファイルタイプクラス
-            </summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2FileType.Name">
-            <summary>ファイルタイプ名</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2FileType.Extension">
-            <summary>ファイル拡張子</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2FileType.Guid">
-            <summary>ファイルタイプのGUID</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2FileType.SupportingBrowsers">
-            <summary>対応ブラウザのGUIDリスト</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2FileType.Category">
-            <summary>カテゴリ</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2FileType.Active">
-            <summary>アクティブフラグ</summary>
-        </member>
-        <member name="T:BrowserChooser3.Classes.Services.BC2URL">
-            <summary>
-            Browser Chooser 2のURLクラス
-            </summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2URL.Name">
-            <summary>URL名</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2URL.Pattern">
-            <summary>URLパターン</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2URL.Guid">
-            <summary>URLのGUID</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2URL.SupportingBrowsers">
-            <summary>対応ブラウザのGUIDリスト</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2URL.Category">
-            <summary>カテゴリ</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.BC2URL.Active">
-            <summary>アクティブフラグ</summary>
-        </member>
-        <member name="T:BrowserChooser3.Classes.Services.OptionsFormBrowserHandlers">
+        <member name="T:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormBrowserHandlers">
             <summary>
             OptionsFormのブラウザ管理イベントハンドラーを管理するクラス
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormBrowserHandlers.#ctor(BrowserChooser3.Forms.OptionsForm,BrowserChooser3.Classes.Settings,System.Collections.Generic.Dictionary{System.Int32,BrowserChooser3.Classes.Models.Browser},System.Collections.Generic.Dictionary{System.Int32,BrowserChooser3.Classes.Models.Protocol},System.Collections.Generic.Dictionary{System.Int32,BrowserChooser3.Classes.Models.FileType},System.Windows.Forms.ImageList,System.Action{System.Boolean})">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormBrowserHandlers.#ctor(BrowserChooser3.Forms.OptionsForm,BrowserChooser3.Classes.Settings,System.Collections.Generic.Dictionary{System.Int32,BrowserChooser3.Classes.Models.Browser},System.Collections.Generic.Dictionary{System.Int32,BrowserChooser3.Classes.Models.Protocol},System.Collections.Generic.Dictionary{System.Int32,BrowserChooser3.Classes.Models.FileType},System.Windows.Forms.ImageList,System.Action{System.Boolean})">
             <summary>
             OptionsFormBrowserHandlersクラスの新しいインスタンスを初期化します
             </summary>
@@ -950,42 +633,42 @@
             <param name="imBrowserIcons">ブラウザアイコンリスト</param>
             <param name="setModified">変更フラグ設定アクション</param>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormBrowserHandlers.AddBrowser_Click(System.Object,System.EventArgs)">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormBrowserHandlers.AddBrowser_Click(System.Object,System.EventArgs)">
             <summary>
             ブラウザ追加ボタンのクリックイベント
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormBrowserHandlers.EditBrowser_Click(System.Object,System.EventArgs)">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormBrowserHandlers.EditBrowser_Click(System.Object,System.EventArgs)">
             <summary>
             ブラウザ編集ボタンのクリックイベント
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormBrowserHandlers.DeleteBrowser_Click(System.Object,System.EventArgs)">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormBrowserHandlers.DeleteBrowser_Click(System.Object,System.EventArgs)">
             <summary>
             ブラウザ削除ボタンのクリックイベント
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormBrowserHandlers.CloneBrowser_Click(System.Object,System.EventArgs)">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormBrowserHandlers.CloneBrowser_Click(System.Object,System.EventArgs)">
             <summary>
             ブラウザ複製ボタンのクリックイベント
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormBrowserHandlers.DetectBrowsers_Click(System.Object,System.EventArgs)">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormBrowserHandlers.DetectBrowsers_Click(System.Object,System.EventArgs)">
             <summary>
             ブラウザ検出ボタンのクリックイベント
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormBrowserHandlers.GetBrowserProtocolsAndFileTypes(BrowserChooser3.Classes.Models.Browser)">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormBrowserHandlers.GetBrowserProtocolsAndFileTypes(BrowserChooser3.Classes.Models.Browser)">
             <summary>
             ブラウザのプロトコルとファイルタイプを取得
             </summary>
         </member>
-        <member name="T:BrowserChooser3.Classes.Services.OptionsFormCategoryHandlers">
+        <member name="T:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormCategoryHandlers">
             <summary>
             OptionsFormのカテゴリ管理イベントハンドラーを管理するクラス
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormCategoryHandlers.#ctor(BrowserChooser3.Forms.OptionsForm,System.Action{System.Boolean},System.Action)">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormCategoryHandlers.#ctor(BrowserChooser3.Forms.OptionsForm,System.Action{System.Boolean},System.Action)">
             <summary>
             OptionsFormCategoryHandlersクラスの新しいインスタンスを初期化します
             </summary>
@@ -993,27 +676,55 @@
             <param name="setModified">変更フラグ設定アクション</param>
             <param name="loadCategories">カテゴリ読み込みアクション</param>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormCategoryHandlers.BtnAddCategory_Click(System.Object,System.EventArgs)">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormCategoryHandlers.BtnAddCategory_Click(System.Object,System.EventArgs)">
             <summary>
             カテゴリ追加ボタンのクリックイベント
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormCategoryHandlers.BtnEditCategory_Click(System.Object,System.EventArgs)">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormCategoryHandlers.BtnEditCategory_Click(System.Object,System.EventArgs)">
             <summary>
             カテゴリ編集ボタンのクリックイベント
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormCategoryHandlers.BtnDeleteCategory_Click(System.Object,System.EventArgs)">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormCategoryHandlers.BtnDeleteCategory_Click(System.Object,System.EventArgs)">
             <summary>
             カテゴリ削除ボタンのクリックイベント
             </summary>
         </member>
-        <member name="T:BrowserChooser3.Classes.Services.OptionsFormDragDropHandlers">
+        <member name="T:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormCheckBoxHandlers">
+            <summary>
+            OptionsFormのチェックボックスイベントハンドラーを管理するクラス
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormCheckBoxHandlers.#ctor(BrowserChooser3.Forms.OptionsForm,BrowserChooser3.Classes.Settings,System.Action{System.Boolean})">
+            <summary>
+            OptionsFormCheckBoxHandlersクラスの新しいインスタンスを初期化します
+            </summary>
+            <param name="form">親フォーム</param>
+            <param name="settings">設定オブジェクト</param>
+            <param name="setModified">変更フラグ設定アクション</param>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormCheckBoxHandlers.DetectDirty(System.Object,System.EventArgs)">
+            <summary>
+            設定変更を検知してダーティフラグを設定
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormCheckBoxHandlers.ChkCanonicalize_CheckedChanged(System.Object,System.EventArgs)">
+            <summary>
+            正規化設定の変更時の処理
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormCheckBoxHandlers.ChkLog_CheckedChanged(System.Object,System.EventArgs)">
+            <summary>
+            ログ設定の変更時の処理
+            </summary>
+        </member>
+        <member name="T:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormDragDropHandlers">
             <summary>
             OptionsFormのドラッグ&amp;ドロップイベントハンドラーを管理するクラス
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormDragDropHandlers.#ctor(BrowserChooser3.Forms.OptionsForm,BrowserChooser3.Classes.Settings,System.Collections.Generic.Dictionary{System.Int32,BrowserChooser3.Classes.Models.Browser},System.Collections.Generic.Dictionary{System.Int32,BrowserChooser3.Classes.Models.Protocol},System.Collections.Generic.Dictionary{System.Int32,BrowserChooser3.Classes.Models.FileType},System.Action{System.Boolean},System.Action)">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormDragDropHandlers.#ctor(BrowserChooser3.Forms.OptionsForm,BrowserChooser3.Classes.Settings,System.Collections.Generic.Dictionary{System.Int32,BrowserChooser3.Classes.Models.Browser},System.Collections.Generic.Dictionary{System.Int32,BrowserChooser3.Classes.Models.Protocol},System.Collections.Generic.Dictionary{System.Int32,BrowserChooser3.Classes.Models.FileType},System.Action{System.Boolean},System.Action)">
             <summary>
             OptionsFormDragDropHandlersクラスの新しいインスタンスを初期化します
             </summary>
@@ -1025,97 +736,97 @@
             <param name="setModified">変更フラグ設定アクション</param>
             <param name="rebuildAutoURLs">Auto URLs再構築アクション</param>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormDragDropHandlers.LstURLs_DragEnter(System.Object,System.Windows.Forms.DragEventArgs)">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormDragDropHandlers.LstURLs_DragEnter(System.Object,System.Windows.Forms.DragEventArgs)">
             <summary>
             Auto URLsのドラッグ進入イベント
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormDragDropHandlers.LstURLs_DragOver(System.Object,System.Windows.Forms.DragEventArgs)">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormDragDropHandlers.LstURLs_DragOver(System.Object,System.Windows.Forms.DragEventArgs)">
             <summary>
             Auto URLsのドラッグオーバーイベント
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormDragDropHandlers.LstURLs_DragDrop(System.Object,System.Windows.Forms.DragEventArgs)">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormDragDropHandlers.LstURLs_DragDrop(System.Object,System.Windows.Forms.DragEventArgs)">
             <summary>
             Auto URLsのドロップイベント
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormDragDropHandlers.LstURLs_MouseDown(System.Object,System.Windows.Forms.MouseEventArgs)">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormDragDropHandlers.LstURLs_MouseDown(System.Object,System.Windows.Forms.MouseEventArgs)">
             <summary>
             Auto URLsのマウスダウンイベント
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormDragDropHandlers.LstURLs_MouseMove(System.Object,System.Windows.Forms.MouseEventArgs)">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormDragDropHandlers.LstURLs_MouseMove(System.Object,System.Windows.Forms.MouseEventArgs)">
             <summary>
             Auto URLsのマウス移動イベント
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormDragDropHandlers.LstURLs_MouseUp(System.Object,System.Windows.Forms.MouseEventArgs)">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormDragDropHandlers.LstURLs_MouseUp(System.Object,System.Windows.Forms.MouseEventArgs)">
             <summary>
             Auto URLsのマウスアップイベント
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormDragDropHandlers.LstBrowsers_DragEnter(System.Object,System.Windows.Forms.DragEventArgs)">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormDragDropHandlers.LstBrowsers_DragEnter(System.Object,System.Windows.Forms.DragEventArgs)">
             <summary>
             ブラウザリストのドラッグ進入イベント
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormDragDropHandlers.LstBrowsers_DragLeave(System.Object,System.Windows.Forms.DragEventArgs)">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormDragDropHandlers.LstBrowsers_DragLeave(System.Object,System.Windows.Forms.DragEventArgs)">
             <summary>
             ブラウザリストのドラッグ離脱イベント
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormDragDropHandlers.LstBrowsers_DragDrop(System.Object,System.Windows.Forms.DragEventArgs)">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormDragDropHandlers.LstBrowsers_DragDrop(System.Object,System.Windows.Forms.DragEventArgs)">
             <summary>
             ブラウザリストのドロップイベント
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormDragDropHandlers.ListViewURLs_DragEnter(System.Object,System.Windows.Forms.DragEventArgs)">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormDragDropHandlers.ListViewURLs_DragEnter(System.Object,System.Windows.Forms.DragEventArgs)">
             <summary>
             ListView URLsのドラッグ進入イベント
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormDragDropHandlers.ListViewURLs_DragOver(System.Object,System.Windows.Forms.DragEventArgs)">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormDragDropHandlers.ListViewURLs_DragOver(System.Object,System.Windows.Forms.DragEventArgs)">
             <summary>
             ListView URLsのドラッグオーバーイベント
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormDragDropHandlers.ListViewURLs_DragLeave(System.Object,System.EventArgs)">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormDragDropHandlers.ListViewURLs_DragLeave(System.Object,System.EventArgs)">
             <summary>
             ListView URLsのドラッグ離脱イベント
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormDragDropHandlers.ListViewURLs_DragDrop(System.Object,System.Windows.Forms.DragEventArgs)">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormDragDropHandlers.ListViewURLs_DragDrop(System.Object,System.Windows.Forms.DragEventArgs)">
             <summary>
             ListView URLsのドロップイベント
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormDragDropHandlers.ListViewBrowsers_DragEnter(System.Object,System.Windows.Forms.DragEventArgs)">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormDragDropHandlers.ListViewBrowsers_DragEnter(System.Object,System.Windows.Forms.DragEventArgs)">
             <summary>
             ブラウザListViewのドラッグ進入イベント
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormDragDropHandlers.ListViewBrowsers_DragLeave(System.Object,System.EventArgs)">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormDragDropHandlers.ListViewBrowsers_DragLeave(System.Object,System.EventArgs)">
             <summary>
             ブラウザListViewのドラッグ離脱イベント
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormDragDropHandlers.ListViewBrowsers_DragDrop(System.Object,System.Windows.Forms.DragEventArgs)">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormDragDropHandlers.ListViewBrowsers_DragDrop(System.Object,System.Windows.Forms.DragEventArgs)">
             <summary>
             ブラウザListViewのドロップイベント
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormDragDropHandlers.ListViewURLs_ItemDrag(System.Object,System.Windows.Forms.ItemDragEventArgs)">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormDragDropHandlers.ListViewURLs_ItemDrag(System.Object,System.Windows.Forms.ItemDragEventArgs)">
             <summary>
             URLリストビューのドラッグ開始イベント
             </summary>
         </member>
-        <member name="T:BrowserChooser3.Classes.Services.OptionsFormFormHandlers">
+        <member name="T:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormFormHandlers">
             <summary>
             OptionsFormのフォームイベントハンドラーを管理するクラス
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormFormHandlers.#ctor(BrowserChooser3.Forms.OptionsForm,System.Action,System.Action,System.Func{System.Boolean})">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormFormHandlers.#ctor(BrowserChooser3.Forms.OptionsForm,System.Action,System.Action,System.Func{System.Boolean})">
             <summary>
             OptionsFormFormHandlersクラスの新しいインスタンスを初期化します
             </summary>
@@ -1124,74 +835,90 @@
             <param name="saveSettings">設定を保存するアクション</param>
             <param name="getIsModified">変更フラグを取得する関数</param>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormFormHandlers.SaveButton_Click(System.Object,System.EventArgs)">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormFormHandlers.SaveButton_Click(System.Object,System.EventArgs)">
             <summary>
             保存ボタンのクリックイベント
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormFormHandlers.HelpButton_Click(System.Object,System.EventArgs)">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormFormHandlers.HelpButton_Click(System.Object,System.EventArgs)">
             <summary>
             ヘルプボタンのクリックイベント
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormFormHandlers.OptionsForm_FormClosing(System.Object,System.Windows.Forms.FormClosingEventArgs)">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormFormHandlers.OptionsForm_FormClosing(System.Object,System.Windows.Forms.FormClosingEventArgs)">
             <summary>
             フォーム閉じる時の確認ダイアログ
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormFormHandlers.OptionsForm_Shown(System.Object,System.EventArgs)">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormFormHandlers.OptionsForm_Shown(System.Object,System.EventArgs)">
             <summary>
             フォーム表示時の設定読み込み
             </summary>
         </member>
-        <member name="T:BrowserChooser3.Classes.Services.OptionsFormListHandlers">
+        <member name="T:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormHelpHandlers">
+            <summary>
+            OptionsFormのヘルプ関連イベントハンドラーを管理するクラス
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormHelpHandlers.#ctor(BrowserChooser3.Forms.OptionsForm)">
+            <summary>
+            OptionsFormHelpHandlersクラスの新しいインスタンスを初期化します
+            </summary>
+            <param name="form">親フォーム</param>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormHelpHandlers.OpenHelp">
+            <summary>
+            ヘルプページを開く
+            </summary>
+        </member>
+        <member name="T:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormListHandlers">
             <summary>
             OptionsFormのリスト選択変更イベントハンドラーを管理するクラス
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormListHandlers.#ctor(BrowserChooser3.Forms.OptionsForm)">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormListHandlers.#ctor(BrowserChooser3.Forms.OptionsForm)">
             <summary>
             OptionsFormListHandlersクラスの新しいインスタンスを初期化します
             </summary>
             <param name="form">親フォーム</param>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormListHandlers.LstBrowsers_SelectedIndexChanged(System.Object,System.EventArgs)">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormListHandlers.LstBrowsers_SelectedIndexChanged(System.Object,System.EventArgs)">
             <summary>
             ブラウザリストの選択変更イベント
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormListHandlers.LstURLs_SelectedIndexChanged(System.Object,System.EventArgs)">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormListHandlers.LstURLs_SelectedIndexChanged(System.Object,System.EventArgs)">
             <summary>
             Auto URLsリストの選択変更イベント
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormListHandlers.LstProtocols_SelectedIndexChanged(System.Object,System.EventArgs)">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormListHandlers.LstProtocols_SelectedIndexChanged(System.Object,System.EventArgs)">
             <summary>
             プロトコルリストの選択変更イベント
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormListHandlers.LstFileTypes_SelectedIndexChanged(System.Object,System.EventArgs)">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormListHandlers.LstFileTypes_SelectedIndexChanged(System.Object,System.EventArgs)">
             <summary>
             ファイルタイプリストの選択変更イベント
             </summary>
         </member>
-        <member name="T:BrowserChooser3.Classes.Services.OptionsFormPanels">
+        <member name="T:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormPanels">
             <summary>
             OptionsFormのUIパネル作成を担当するクラス
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormPanels.GetBrowserIcons">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormPanels.GetBrowserIcons">
             <summary>
             ブラウザアイコンリストを取得します
             </summary>
             <returns>ブラウザアイコンリスト</returns>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormPanels.#ctor">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormPanels.#ctor">
             <summary>
             OptionsFormPanelsクラスの新しいインスタンスを初期化します
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormPanels.CreateBrowsersPanel(BrowserChooser3.Classes.Settings,System.Collections.Generic.Dictionary{System.Int32,BrowserChooser3.Classes.Models.Browser},System.Collections.Generic.Dictionary{System.Int32,BrowserChooser3.Classes.Models.Protocol},System.Collections.Generic.Dictionary{System.Int32,BrowserChooser3.Classes.Models.FileType},System.Int32,System.Windows.Forms.ImageList,System.Action{System.Boolean},System.Action)">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormPanels.CreateBrowsersPanel(BrowserChooser3.Classes.Settings,System.Collections.Generic.Dictionary{System.Int32,BrowserChooser3.Classes.Models.Browser},System.Collections.Generic.Dictionary{System.Int32,BrowserChooser3.Classes.Models.Protocol},System.Collections.Generic.Dictionary{System.Int32,BrowserChooser3.Classes.Models.FileType},System.Int32,System.Windows.Forms.ImageList,System.Action{System.Boolean},System.Action)">
             <summary>
             ブラウザパネルの作成
             </summary>
@@ -1205,7 +932,7 @@
             <param name="rebuildAutoURLs">Auto URLs再構築アクション</param>
             <returns>作成されたTabPage</returns>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormPanels.CreateAutoURLsPanel(BrowserChooser3.Classes.Settings,System.Collections.Generic.SortedDictionary{System.Int32,BrowserChooser3.Classes.Models.URL},System.Collections.Generic.Dictionary{System.Int32,BrowserChooser3.Classes.Models.Browser},System.Action{System.Boolean},System.Action)">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormPanels.CreateAutoURLsPanel(BrowserChooser3.Classes.Settings,System.Collections.Generic.SortedDictionary{System.Int32,BrowserChooser3.Classes.Models.URL},System.Collections.Generic.Dictionary{System.Int32,BrowserChooser3.Classes.Models.Browser},System.Action{System.Boolean},System.Action)">
             <summary>
             Auto URLsパネルの作成
             </summary>
@@ -1216,7 +943,7 @@
             <param name="rebuildAutoURLs">Auto URLs再構築アクション</param>
             <returns>作成されたTabPage</returns>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormPanels.CreateProtocolsPanel(BrowserChooser3.Classes.Settings,System.Collections.Generic.Dictionary{System.Int32,BrowserChooser3.Classes.Models.Protocol},System.Collections.Generic.Dictionary{System.Int32,BrowserChooser3.Classes.Models.Browser},System.Action{System.Boolean})">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormPanels.CreateProtocolsPanel(BrowserChooser3.Classes.Settings,System.Collections.Generic.Dictionary{System.Int32,BrowserChooser3.Classes.Models.Protocol},System.Collections.Generic.Dictionary{System.Int32,BrowserChooser3.Classes.Models.Browser},System.Action{System.Boolean})">
             <summary>
             プロトコルパネルの作成
             </summary>
@@ -1226,7 +953,7 @@
             <param name="setModified">変更フラグ設定アクション</param>
             <returns>作成されたTabPage</returns>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormPanels.CreateFileTypesPanel(BrowserChooser3.Classes.Settings,System.Collections.Generic.Dictionary{System.Int32,BrowserChooser3.Classes.Models.FileType},System.Collections.Generic.Dictionary{System.Int32,BrowserChooser3.Classes.Models.Browser},System.Action{System.Boolean})">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormPanels.CreateFileTypesPanel(BrowserChooser3.Classes.Settings,System.Collections.Generic.Dictionary{System.Int32,BrowserChooser3.Classes.Models.FileType},System.Collections.Generic.Dictionary{System.Int32,BrowserChooser3.Classes.Models.Browser},System.Action{System.Boolean})">
             <summary>
             ファイルタイプパネルの作成
             </summary>
@@ -1236,13 +963,13 @@
             <param name="setModified">変更フラグ設定アクション</param>
             <returns>作成されたTabPage</returns>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormPanels.CreateCategoriesPanel">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormPanels.CreateCategoriesPanel">
             <summary>
             カテゴリパネルの作成
             </summary>
             <returns>作成されたTabPage</returns>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormPanels.CreateDisplayPanel(BrowserChooser3.Classes.Settings,System.Action{System.Boolean})">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormPanels.CreateDisplayPanel(BrowserChooser3.Classes.Settings,System.Action{System.Boolean})">
             <summary>
             表示パネルの作成
             </summary>
@@ -1250,7 +977,7 @@
             <param name="setModified">変更フラグ設定アクション</param>
             <returns>作成されたTabPage</returns>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormPanels.CreateGridPanel(BrowserChooser3.Classes.Settings,System.Action{System.Boolean})">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormPanels.CreateGridPanel(BrowserChooser3.Classes.Settings,System.Action{System.Boolean})">
             <summary>
             グリッドパネルの作成
             </summary>
@@ -1258,7 +985,7 @@
             <param name="setModified">変更フラグ設定アクション</param>
             <returns>作成されたTabPage</returns>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormPanels.CreatePrivacyPanel(BrowserChooser3.Classes.Settings,System.Action{System.Boolean})">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormPanels.CreatePrivacyPanel(BrowserChooser3.Classes.Settings,System.Action{System.Boolean})">
             <summary>
             プライバシーパネルの作成
             </summary>
@@ -1266,7 +993,7 @@
             <param name="setModified">変更フラグ設定アクション</param>
             <returns>作成されたTabPage</returns>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormPanels.CreateStartupPanel(BrowserChooser3.Classes.Settings,System.Action{System.Boolean})">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormPanels.CreateStartupPanel(BrowserChooser3.Classes.Settings,System.Action{System.Boolean})">
             <summary>
             スタートアップパネルの作成
             </summary>
@@ -1274,129 +1001,487 @@
             <param name="setModified">変更フラグ設定アクション</param>
             <returns>作成されたTabPage</returns>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormPanels.CreateGeneralPanel">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormPanels.CreateGeneralPanel">
             <summary>
             一般設定パネルの作成
             </summary>
             <returns>作成されたTabPage</returns>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormPanels.CreateOthersPanel">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormPanels.CreateOthersPanel">
             <summary>
             その他パネルの作成
             </summary>
             <returns>作成されたTabPage</returns>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormPanels.CreateAccessibilityPanel">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormPanels.CreateAccessibilityPanel">
             <summary>
             アクセシビリティパネルの作成
             </summary>
             <returns>作成されたTabPage</returns>
         </member>
-        <member name="T:BrowserChooser3.Classes.Services.Policy">
+        <member name="T:BrowserChooser3.Classes.Services.SystemServices.CommandLineProcessor">
+            <summary>
+            コマンドライン引数処理を管理するクラス
+            詳細なオプション対応と引数解析を提供します
+            </summary>
+        </member>
+        <member name="T:BrowserChooser3.Classes.Services.SystemServices.CommandLineProcessor.CommandLineArgs">
+            <summary>
+            コマンドライン引数の解析結果
+            </summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.CommandLineProcessor.CommandLineArgs.URL">
+            <summary>処理対象のURL</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.CommandLineProcessor.CommandLineArgs.Delay">
+            <summary>遅延時間（秒）</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.CommandLineProcessor.CommandLineArgs.BrowserGuid">
+            <summary>指定されたブラウザのGUID</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.CommandLineProcessor.CommandLineArgs.UnshortenURL">
+            <summary>URL短縮解除を行うかどうか</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.CommandLineProcessor.CommandLineArgs.DebugLog">
+            <summary>デバッグログを有効にするかどうか</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.CommandLineProcessor.CommandLineArgs.ExtractDLLs">
+            <summary>DLLを抽出するかどうか</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.CommandLineProcessor.CommandLineArgs.PortableMode">
+            <summary>ポータブルモードで起動するかどうか</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.CommandLineProcessor.CommandLineArgs.IgnoreSettings">
+            <summary>設定ファイルを無視するかどうか</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.CommandLineProcessor.CommandLineArgs.ShowHelp">
+            <summary>ヘルプを表示するかどうか</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.CommandLineProcessor.CommandLineArgs.ShowVersion">
+            <summary>バージョン情報を表示するかどうか</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.CommandLineProcessor.CommandLineArgs.SilentMode">
+            <summary>サイレントモードで起動するかどうか</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.CommandLineProcessor.CommandLineArgs.AutoLaunch">
+            <summary>自動起動するかどうか</summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.SystemServices.CommandLineProcessor.ParseArguments(System.String[])">
+            <summary>
+            コマンドライン引数を解析します
+            </summary>
+            <param name="args">コマンドライン引数</param>
+            <returns>解析結果</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.SystemServices.CommandLineProcessor.GetHelpMessage">
+            <summary>
+            ヘルプメッセージを取得します
+            </summary>
+            <returns>ヘルプメッセージ</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.SystemServices.CommandLineProcessor.GetVersionInfo">
+            <summary>
+            バージョン情報を取得します
+            </summary>
+            <returns>バージョン情報</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.SystemServices.CommandLineProcessor.ValidateArguments(BrowserChooser3.Classes.Services.SystemServices.CommandLineProcessor.CommandLineArgs)">
+            <summary>
+            引数が有効かどうかを検証します
+            </summary>
+            <param name="args">解析された引数</param>
+            <returns>有効な場合はtrue</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.SystemServices.CommandLineProcessor.LoadFromEnvironment(BrowserChooser3.Classes.Services.SystemServices.CommandLineProcessor.CommandLineArgs)">
+            <summary>
+            環境変数からコマンドラインオプションを読み込みます
+            </summary>
+            <param name="args">既存の引数</param>
+            <returns>環境変数で更新された引数</returns>
+        </member>
+        <member name="T:BrowserChooser3.Classes.Services.SystemServices.Importer">
+            <summary>
+            レガシー設定インポート機能を提供するクラス
+            Browser Chooser 2の設定ファイルをBrowserChooser3に変換します
+            </summary>
+        </member>
+        <member name="F:BrowserChooser3.Classes.Services.SystemServices.Importer.BC2_CONFIG_FILE">
+            <summary>
+            Browser Chooser 2の設定ファイル名
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.SystemServices.Importer.ImportLegacySettings(System.String,BrowserChooser3.Classes.Settings)">
+            <summary>
+            レガシー設定をインポートします
+            </summary>
+            <param name="sourcePath">ソースパス</param>
+            <param name="targetSettings">ターゲット設定</param>
+            <returns>インポートが成功した場合はtrue</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.SystemServices.Importer.LoadBC2Settings(System.String)">
+            <summary>
+            Browser Chooser 2の設定ファイルを読み込みます
+            </summary>
+            <param name="configPath">設定ファイルパス</param>
+            <returns>BC2Settingsオブジェクト</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.SystemServices.Importer.ConvertSettings(BrowserChooser3.Classes.Services.SystemServices.BC2Settings,BrowserChooser3.Classes.Settings)">
+            <summary>
+            設定を変換します
+            </summary>
+            <param name="source">ソース設定</param>
+            <param name="target">ターゲット設定</param>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.SystemServices.Importer.ConvertBrowsers(BrowserChooser3.Classes.Services.SystemServices.BC2Browser[],System.Collections.Generic.List{BrowserChooser3.Classes.Models.Browser})">
+            <summary>
+            ブラウザ設定を変換します
+            </summary>
+            <param name="source">ソースブラウザリスト</param>
+            <param name="target">ターゲットブラウザリスト</param>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.SystemServices.Importer.ConvertProtocols(BrowserChooser3.Classes.Services.SystemServices.BC2Protocol[],System.Collections.Generic.List{BrowserChooser3.Classes.Models.Protocol})">
+            <summary>
+            プロトコル設定を変換します
+            </summary>
+            <param name="source">ソースプロトコルリスト</param>
+            <param name="target">ターゲットプロトコルリスト</param>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.SystemServices.Importer.ConvertFileTypes(BrowserChooser3.Classes.Services.SystemServices.BC2FileType[],System.Collections.Generic.List{BrowserChooser3.Classes.Models.FileType})">
+            <summary>
+            ファイルタイプ設定を変換します
+            </summary>
+            <param name="source">ソースファイルタイプリスト</param>
+            <param name="target">ターゲットファイルタイプリスト</param>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.SystemServices.Importer.ConvertURLs(BrowserChooser3.Classes.Services.SystemServices.BC2URL[],System.Collections.Generic.List{BrowserChooser3.Classes.Models.URL})">
+            <summary>
+            URL設定を変換します
+            </summary>
+            <param name="source">ソースURLリスト</param>
+            <param name="target">ターゲットURLリスト</param>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.SystemServices.Importer.HasLegacySettings(System.String)">
+            <summary>
+            レガシー設定ファイルの存在をチェックします
+            </summary>
+            <param name="path">チェックするパス</param>
+            <returns>存在する場合はtrue</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.SystemServices.Importer.CreateBackup(System.String,System.String)">
+            <summary>
+            レガシー設定ファイルのバックアップを作成します
+            </summary>
+            <param name="sourcePath">ソースパス</param>
+            <param name="backupPath">バックアップパス</param>
+            <returns>バックアップが成功した場合はtrue</returns>
+        </member>
+        <member name="T:BrowserChooser3.Classes.Services.SystemServices.BC2Settings">
+            <summary>
+            Browser Chooser 2の設定クラス（XMLデシリアライゼーション用）
+            </summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.FileVersion">
+            <summary>ファイルバージョン</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.IconWidth">
+            <summary>アイコン幅</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.IconHeight">
+            <summary>アイコン高さ</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.IconGapWidth">
+            <summary>アイコン間隔（幅）</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.IconGapHeight">
+            <summary>アイコン間隔（高さ）</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.IconScale">
+            <summary>アイコンスケール</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.OptionsShortcut">
+            <summary>オプションショートカットキー</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.DefaultMessage">
+            <summary>デフォルトメッセージ</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.DefaultDelay">
+            <summary>デフォルト遅延時間</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.DefaultBrowserGuid">
+            <summary>デフォルトブラウザのGUID</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.ShowFocus">
+            <summary>フォーカス表示の有効/無効</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.UseAero">
+            <summary>Aero効果の有効/無効</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.FocusBoxLineWidth">
+            <summary>フォーカスボックスの線幅</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.FocusBoxColor">
+            <summary>フォーカスボックスの色</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.UserAgent">
+            <summary>ユーザーエージェント</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.BackgroundColor">
+            <summary>背景色</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.StartingPosition">
+            <summary>開始位置</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.OffsetX">
+            <summary>X座標オフセット</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.OffsetY">
+            <summary>Y座標オフセット</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.AllowStayOpen">
+            <summary>開いたままにするかどうか</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.Canonicalize">
+            <summary>正規化の有効/無効</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.CanonicalizeAppendedText">
+            <summary>正規化時に追加するテキスト</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.EnableLogging">
+            <summary>ログの有効/無効</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.LogLevel">
+            <summary>ログレベル</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.Browsers">
+            <summary>ブラウザリスト</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.Protocols">
+            <summary>プロトコルリスト</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.FileTypes">
+            <summary>ファイルタイプリスト</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.URLs">
+            <summary>URLリスト</summary>
+        </member>
+        <member name="T:BrowserChooser3.Classes.Services.SystemServices.BC2Browser">
+            <summary>
+            Browser Chooser 2のブラウザクラス
+            </summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Browser.Name">
+            <summary>ブラウザ名</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Browser.Target">
+            <summary>実行ファイルパス</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Browser.Arguments">
+            <summary>起動引数</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Browser.Guid">
+            <summary>ブラウザのGUID</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Browser.Hotkey">
+            <summary>ホットキー</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Browser.PosX">
+            <summary>X座標</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Browser.PosY">
+            <summary>Y座標</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Browser.Scale">
+            <summary>スケール</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Browser.IconIndex">
+            <summary>アイコンインデックス</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Browser.Category">
+            <summary>カテゴリ</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Browser.Visible">
+            <summary>表示フラグ</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Browser.IsDefault">
+            <summary>デフォルトブラウザフラグ</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Browser.CustomImagePath">
+            <summary>カスタム画像パス</summary>
+        </member>
+        <member name="T:BrowserChooser3.Classes.Services.SystemServices.BC2Protocol">
+            <summary>
+            Browser Chooser 2のプロトコルクラス
+            </summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Protocol.Name">
+            <summary>プロトコル名</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Protocol.Header">
+            <summary>プロトコルヘッダー</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Protocol.Guid">
+            <summary>プロトコルのGUID</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Protocol.SupportingBrowsers">
+            <summary>対応ブラウザのGUIDリスト</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Protocol.Category">
+            <summary>カテゴリ</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Protocol.Active">
+            <summary>アクティブフラグ</summary>
+        </member>
+        <member name="T:BrowserChooser3.Classes.Services.SystemServices.BC2FileType">
+            <summary>
+            Browser Chooser 2のファイルタイプクラス
+            </summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2FileType.Name">
+            <summary>ファイルタイプ名</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2FileType.Extension">
+            <summary>ファイル拡張子</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2FileType.Guid">
+            <summary>ファイルタイプのGUID</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2FileType.SupportingBrowsers">
+            <summary>対応ブラウザのGUIDリスト</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2FileType.Category">
+            <summary>カテゴリ</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2FileType.Active">
+            <summary>アクティブフラグ</summary>
+        </member>
+        <member name="T:BrowserChooser3.Classes.Services.SystemServices.BC2URL">
+            <summary>
+            Browser Chooser 2のURLクラス
+            </summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2URL.Name">
+            <summary>URL名</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2URL.Pattern">
+            <summary>URLパターン</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2URL.Guid">
+            <summary>URLのGUID</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2URL.SupportingBrowsers">
+            <summary>対応ブラウザのGUIDリスト</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2URL.Category">
+            <summary>カテゴリ</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2URL.Active">
+            <summary>アクティブフラグ</summary>
+        </member>
+        <member name="T:BrowserChooser3.Classes.Services.SystemServices.Policy">
             <summary>
             ポリシーベース設定を管理するクラス
             レジストリベースのポリシー設定とグループポリシー対応を提供します
             </summary>
         </member>
-        <member name="P:BrowserChooser3.Classes.Services.Policy.IgnoreSettingsFile">
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.Policy.IgnoreSettingsFile">
             <summary>
             設定ファイルを無視するポリシー
             </summary>
         </member>
-        <member name="P:BrowserChooser3.Classes.Services.Policy.IconScale">
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.Policy.IconScale">
             <summary>
             アイコンスケールのポリシー
             </summary>
         </member>
-        <member name="P:BrowserChooser3.Classes.Services.Policy.Canonicalize">
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.Policy.Canonicalize">
             <summary>
             正規化のポリシー
             </summary>
         </member>
-        <member name="P:BrowserChooser3.Classes.Services.Policy.CanonicalizeAppendedText">
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.Policy.CanonicalizeAppendedText">
             <summary>
             正規化追加テキストのポリシー
             </summary>
         </member>
-        <member name="P:BrowserChooser3.Classes.Services.Policy.ShowFocus">
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.Policy.ShowFocus">
             <summary>
             フォーカス表示のポリシー
             </summary>
         </member>
-        <member name="P:BrowserChooser3.Classes.Services.Policy.UseAero">
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.Policy.UseAero">
             <summary>
             Aero効果のポリシー
             </summary>
         </member>
-        <member name="P:BrowserChooser3.Classes.Services.Policy.AccessibleRendering">
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.Policy.AccessibleRendering">
             <summary>
             アクセシビリティレンダリングのポリシー
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.Policy.Initialize">
+        <member name="M:BrowserChooser3.Classes.Services.SystemServices.Policy.Initialize">
             <summary>
             ポリシーを初期化します
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.Policy.LoadRegistryPolicies">
+        <member name="M:BrowserChooser3.Classes.Services.SystemServices.Policy.LoadRegistryPolicies">
             <summary>
             レジストリからポリシー設定を読み込みます
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.Policy.LoadGroupPolicies">
+        <member name="M:BrowserChooser3.Classes.Services.SystemServices.Policy.LoadGroupPolicies">
             <summary>
             グループポリシーから設定を読み込みます
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.Policy.LoadEnvironmentPolicies">
+        <member name="M:BrowserChooser3.Classes.Services.SystemServices.Policy.LoadEnvironmentPolicies">
             <summary>
             環境変数からポリシー設定を読み込みます
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.Policy.Reset">
+        <member name="M:BrowserChooser3.Classes.Services.SystemServices.Policy.Reset">
             <summary>
             ポリシー設定をリセットします
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.Policy.GetPolicySummary">
+        <member name="M:BrowserChooser3.Classes.Services.SystemServices.Policy.GetPolicySummary">
             <summary>
             ポリシー設定の概要を取得します
             </summary>
             <returns>ポリシー設定の概要</returns>
         </member>
-        <member name="T:BrowserChooser3.Classes.Services.StartupLauncher">
+        <member name="T:BrowserChooser3.Classes.Services.SystemServices.StartupLauncher">
             <summary>
             アプリケーション起動時の初期化とブラウザ起動を管理するクラス
             URL処理、ブラウザ検出、遅延起動などを担当します
             </summary>
         </member>
-        <member name="T:BrowserChooser3.Classes.Services.StartupLauncher.UpdateURL">
+        <member name="T:BrowserChooser3.Classes.Services.SystemServices.StartupLauncher.UpdateURL">
             <summary>
             URL更新のデリゲート
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.StartupLauncher.#ctor">
+        <member name="M:BrowserChooser3.Classes.Services.SystemServices.StartupLauncher.#ctor">
             <summary>
             コンストラクタ
             基本的な初期化処理を実行します
             </summary>
         </member>
-        <member name="P:BrowserChooser3.Classes.Services.StartupLauncher.Is64Bit">
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.StartupLauncher.Is64Bit">
             <summary>64ビット環境かどうか</summary>
         </member>
-        <member name="P:BrowserChooser3.Classes.Services.StartupLauncher.URL">
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.StartupLauncher.URL">
             <summary>現在のURL</summary>
         </member>
-        <member name="P:BrowserChooser3.Classes.Services.StartupLauncher.Browser">
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.StartupLauncher.Browser">
             <summary>選択されたブラウザ</summary>
         </member>
-        <member name="P:BrowserChooser3.Classes.Services.StartupLauncher.Delay">
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.StartupLauncher.Delay">
             <summary>遅延時間</summary>
         </member>
-        <member name="P:BrowserChooser3.Classes.Services.StartupLauncher.SupportingBrowsers">
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.StartupLauncher.SupportingBrowsers">
             <summary>対応ブラウザのGUIDリスト</summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.StartupLauncher.SetURL(System.String,System.Boolean,BrowserChooser3.Classes.Services.StartupLauncher.UpdateURL)">
+        <member name="M:BrowserChooser3.Classes.Services.SystemServices.StartupLauncher.SetURL(System.String,System.Boolean,BrowserChooser3.Classes.Services.SystemServices.StartupLauncher.UpdateURL)">
             <summary>
             URLを設定し、対応ブラウザを検出します
             </summary>
@@ -1404,7 +1489,7 @@
             <param name="unShorten">短縮URLを展開するかどうか</param>
             <param name="updateDelegate">URL更新デリゲート</param>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.StartupLauncher.SetURL(System.String,System.Boolean,System.Int32,BrowserChooser3.Classes.Models.Browser,BrowserChooser3.Classes.Services.StartupLauncher.UpdateURL)">
+        <member name="M:BrowserChooser3.Classes.Services.SystemServices.StartupLauncher.SetURL(System.String,System.Boolean,System.Int32,BrowserChooser3.Classes.Models.Browser,BrowserChooser3.Classes.Services.SystemServices.StartupLauncher.UpdateURL)">
             <summary>
             URLを設定し、遅延起動とブラウザを指定します
             </summary>
@@ -1414,7 +1499,7 @@
             <param name="browser">選択されたブラウザ</param>
             <param name="updateDelegate">URL更新デリゲート</param>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.StartupLauncher.ProcessCommandLineArgs(BrowserChooser3.Classes.Services.CommandLineProcessor.CommandLineArgs,BrowserChooser3.Classes.Services.StartupLauncher.UpdateURL)">
+        <member name="M:BrowserChooser3.Classes.Services.SystemServices.StartupLauncher.ProcessCommandLineArgs(BrowserChooser3.Classes.Services.SystemServices.CommandLineProcessor.CommandLineArgs,BrowserChooser3.Classes.Services.SystemServices.StartupLauncher.UpdateURL)">
             <summary>
             コマンドライン引数から起動処理を実行します
             </summary>
@@ -1422,32 +1507,32 @@
             <param name="updateDelegate">URL更新デリゲート</param>
             <returns>処理結果</returns>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.StartupLauncher.DefaultUpdateDelegate(System.String)">
+        <member name="M:BrowserChooser3.Classes.Services.SystemServices.StartupLauncher.DefaultUpdateDelegate(System.String)">
             <summary>
             デフォルトのURL更新デリゲート
             </summary>
             <param name="url">更新されたURL</param>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.StartupLauncher.CheckDefaultBrowser">
+        <member name="M:BrowserChooser3.Classes.Services.SystemServices.StartupLauncher.CheckDefaultBrowser">
             <summary>
             デフォルトブラウザチェックを実行します
             </summary>
             <returns>デフォルトブラウザが設定されている場合はtrue</returns>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.StartupLauncher.Initialize(System.String[])">
+        <member name="M:BrowserChooser3.Classes.Services.SystemServices.StartupLauncher.Initialize(System.String[])">
             <summary>
             起動時の初期化処理を実行します
             </summary>
             <param name="args">コマンドライン引数</param>
             <returns>初期化が成功した場合はtrue</returns>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.StartupLauncher.ProcessParts(BrowserChooser3.Classes.Utilities.URLUtilities.BC2URLParts)">
+        <member name="M:BrowserChooser3.Classes.Services.SystemServices.StartupLauncher.ProcessParts(BrowserChooser3.Classes.Utilities.URLUtilities.BC2URLParts)">
             <summary>
             URLパーツを処理し、対応ブラウザを検出します
             </summary>
             <param name="parts">URLパーツ</param>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.StartupLauncher.Worker_DoWork_HTTP">
+        <member name="M:BrowserChooser3.Classes.Services.SystemServices.StartupLauncher.Worker_DoWork_HTTP">
             <summary>
             HTTP/HTTPS短縮URLの展開処理
             </summary>
@@ -3340,26 +3425,6 @@
         <member name="M:BrowserChooser3.Forms.OptionsForm.SetupURLManagement">
             <summary>
             URL管理機能（Browser Chooser 2互換）
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.DetectDirty(System.Object,System.EventArgs)">
-            <summary>
-            設定変更を検知してダーティフラグを設定
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.ChkCanonicalize_CheckedChanged(System.Object,System.EventArgs)">
-            <summary>
-            正規化設定の変更時の処理
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.ChkLog_CheckedChanged(System.Object,System.EventArgs)">
-            <summary>
-            ログ設定の変更時の処理
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.SetTransparentBackground">
-            <summary>
-            透明背景設定
             </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.OptionsForm.GetBrowserProtocolsAndFileTypes(BrowserChooser3.Classes.Models.Browser)">

@@ -2,7 +2,7 @@ using BrowserChooser3.Classes.Models;
 using BrowserChooser3.Classes.Utilities;
 using BrowserChooser3.CustomControls;
 
-namespace BrowserChooser3.Classes.Services
+namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
 {
     /// <summary>
     /// OptionsFormのUIパネル作成を担当するクラス

@@ -4,7 +4,7 @@ using Microsoft.Win32;
 using BrowserChooser3.Classes.Models;
 using BrowserChooser3.Classes.Utilities;
 
-namespace BrowserChooser3.Classes.Services
+namespace BrowserChooser3.Classes.Services.SystemServices
 {
     /// <summary>
     /// ポリシーベース設定を管理するクラス

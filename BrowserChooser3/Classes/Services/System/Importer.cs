@@ -6,7 +6,7 @@ using System.Collections.Generic; // Added for List
 using BrowserChooser3.Classes.Models;
 using BrowserChooser3.Classes.Utilities;
 
-namespace BrowserChooser3.Classes.Services
+namespace BrowserChooser3.Classes.Services.SystemServices
 {
     /// <summary>
     /// レガシー設定インポート機能を提供するクラス

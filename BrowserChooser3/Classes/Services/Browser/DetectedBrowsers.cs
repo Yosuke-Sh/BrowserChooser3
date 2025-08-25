@@ -9,7 +9,7 @@ using System.Diagnostics;
 using BrowserChooser3.Classes.Models;
 using BrowserChooser3.Classes.Utilities;
 
-namespace BrowserChooser3.Classes.Services
+namespace BrowserChooser3.Classes.Services.BrowserServices
 {
     /// <summary>
     /// ブラウザ検出クラス

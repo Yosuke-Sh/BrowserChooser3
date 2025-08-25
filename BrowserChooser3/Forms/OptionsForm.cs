@@ -1,6 +1,6 @@
 using BrowserChooser3.Classes;
 using BrowserChooser3.Classes.Models;
-using BrowserChooser3.Classes.Services;
+using BrowserChooser3.Classes.Services.OptionsFormHandlers;
 using BrowserChooser3.Classes.Utilities;
 using BrowserChooser3.CustomControls;
 
@@ -24,6 +24,10 @@ namespace BrowserChooser3.Forms
         private OptionsFormBrowserHandlers _browserHandlers;
         private OptionsFormListHandlers _listHandlers;
         private OptionsFormDragDropHandlers _dragDropHandlers;
+        private OptionsFormCheckBoxHandlers _checkBoxHandlers;
+        private OptionsFormBackgroundHandlers _backgroundHandlers;
+        private OptionsFormHelpHandlers _helpHandlers;
+        private OptionsFormAccessibilityHandlers _accessibilityHandlers;
         
         // UIパネル作成クラス
         private OptionsFormPanels _panels;
@@ -60,6 +64,10 @@ namespace BrowserChooser3.Forms
             _browserHandlers = new OptionsFormBrowserHandlers(this, _settings, _mBrowser, _mProtocols, _mFileTypes, _imBrowserIcons, SetModified);
             _listHandlers = new OptionsFormListHandlers(this);
             _dragDropHandlers = new OptionsFormDragDropHandlers(this, _settings, _mBrowser, _mProtocols, _mFileTypes, SetModified, RebuildAutoURLs);
+            _checkBoxHandlers = new OptionsFormCheckBoxHandlers(this, _settings, SetModified);
+            _backgroundHandlers = new OptionsFormBackgroundHandlers(this, _settings, SetModified);
+            _helpHandlers = new OptionsFormHelpHandlers(this);
+            _accessibilityHandlers = new OptionsFormAccessibilityHandlers(this, _mFocusSettings, SetModified);
             
             // UIパネル作成クラスの初期化
             _panels = new OptionsFormPanels();
@@ -570,7 +578,7 @@ namespace BrowserChooser3.Forms
                 Size = new Size(134, 23),
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
-            cmdAccessiblitySettings.Click += (s, e) => OpenAccessibilitySettings();
+            cmdAccessiblitySettings.Click += (s, e) => _accessibilityHandlers.OpenAccessibilitySettings();
 
             var cmdChangeBackgroundColor = new Button
             {
@@ -579,7 +587,7 @@ namespace BrowserChooser3.Forms
                 Size = new Size(149, 23),
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
-            cmdChangeBackgroundColor.Click += (s, e) => ChangeBackgroundColor();
+            cmdChangeBackgroundColor.Click += (s, e) => _backgroundHandlers.ChangeBackgroundColor();
 
             var cmdTransparentBackground = new Button
             {
@@ -589,7 +597,7 @@ namespace BrowserChooser3.Forms
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
                 Visible = false
             };
-            cmdTransparentBackground.Click += (s, e) => SetTransparentBackground();
+            cmdTransparentBackground.Click += (s, e) => _backgroundHandlers.SetTransparentBackground();
 
             // 背景色プレビュー（Browser Chooser 2互換）
             var pbBackgroundColor = new PictureBox
@@ -1184,7 +1192,7 @@ namespace BrowserChooser3.Forms
             };
             accessibilityButton.Click += (s, e) =>
             {
-                OpenAccessibilitySettings();
+                _accessibilityHandlers.OpenAccessibilitySettings();
             };
 
             panel.Controls.Add(label);
@@ -2024,132 +2032,17 @@ namespace BrowserChooser3.Forms
 
 
 
-        private void OpenAccessibilitySettings()
-        {
-            try
-            {
-                // アクセシビリティ設定ダイアログを表示
-                var accessibilityForm = new AccessibilitySettingsForm();
-                if (accessibilityForm.ShowDialog() == DialogResult.OK)
-                {
-                    // 設定を更新
-                    _mFocusSettings.ShowFocus = accessibilityForm.ShowFocus;
-                    _mFocusSettings.BoxColor = accessibilityForm.FocusBoxColor;
-                    _mFocusSettings.BoxWidth = accessibilityForm.FocusBoxWidth;
-                    _isModified = true;
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("OptionsForm.OpenAccessibilitySettings", "アクセシビリティ設定エラー", ex.Message, ex.StackTrace ?? "");
-                MessageBox.Show($"アクセシビリティ設定に失敗しました: {ex.Message}", "エラー", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        #region 設定変更検知機能（Browser Chooser 2互換）
-
-        /// <summary>
-        /// 設定変更を検知してダーティフラグを設定
-        /// </summary>
-        private void DetectDirty(object sender, EventArgs e)
-        {
-            _isModified = true;
-        }
-
-        /// <summary>
-        /// 正規化設定の変更時の処理
-        /// </summary>
-        private void ChkCanonicalize_CheckedChanged(object sender, EventArgs e)
-        {
-            if (sender is CheckBox checkBox)
-            {
-                var txtCanonicalizeAppend = Controls.Find("txtCanonicalizeAppend", true).FirstOrDefault() as TextBox;
-                if (txtCanonicalizeAppend != null)
-                {
-                    txtCanonicalizeAppend.Enabled = checkBox.Checked;
-                }
-            }
-            _isModified = true;
-        }
-
-        /// <summary>
-        /// ログ設定の変更時の処理
-        /// </summary>
-        private void ChkLog_CheckedChanged(object sender, EventArgs e)
-        {
-            if (sender is CheckBox checkBox)
-            {
-                // ログ設定を更新
-                _settings.EnableLogging = checkBox.Checked;
-            }
-            _isModified = true;
-        }
 
 
 
-        /// <summary>
-        /// 透明背景設定
-        /// </summary>
-        private void SetTransparentBackground()
-        {
-            var pbBackgroundColor = Controls.Find("pbBackgroundColor", true).FirstOrDefault() as PictureBox;
-            if (pbBackgroundColor != null)
-            {
-                pbBackgroundColor.BackColor = Color.Transparent;
-            }
-            _isModified = true;
-        }
-
-        #endregion
-
-        private void ChangeBackgroundColor()
-        {
-            try
-            {
-                var colorDialog = new ColorDialog();
-                colorDialog.AnyColor = true;
-                colorDialog.Color = _settings.BackgroundColorValue;
-
-                if (colorDialog.ShowDialog() == DialogResult.OK)
-                {
-                    _settings.BackgroundColorValue = colorDialog.Color;
-                    
-                    var pbBackgroundColor = Controls.Find("pbBackgroundColor", true).FirstOrDefault() as PictureBox;
-                    if (pbBackgroundColor != null)
-                    {
-                        pbBackgroundColor.BackColor = colorDialog.Color;
-                    }
-                    _isModified = true;
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("OptionsForm.ChangeBackgroundColor", "背景色変更エラー", ex.Message, ex.StackTrace ?? "");
-                MessageBox.Show($"背景色の変更に失敗しました: {ex.Message}", "エラー", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
 
 
 
-        private void OpenHelp()
-        {
-            try
-            {
-                // Browser Chooser 2のヘルプページを開く
-                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
-                {
-                    FileName = "https://bitbucket.org/gmyx/browserchooser2/wiki/Home",
-                    UseShellExecute = true
-                });
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Help page cannot be reached!\n\n{ex.Message}", "Error", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
+
+
+
+
+
 
         // OptionsForm_FormClosing と OptionsForm_Shown は OptionsFormFormHandlers クラスに移動済み
 
