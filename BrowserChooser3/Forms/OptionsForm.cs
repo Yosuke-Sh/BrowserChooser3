@@ -14,11 +14,16 @@ namespace BrowserChooser3.Forms
     {
         private Settings _settings;
         private bool _isModified = false;
+        #pragma warning disable CS0414
         private bool _isCanceled = false;
+        #pragma warning restore CS0414
         
         // イベントハンドラークラス
         private OptionsFormFormHandlers _formHandlers;
         private OptionsFormCategoryHandlers _categoryHandlers;
+        
+        // UIパネル作成クラス
+        private OptionsFormPanels _panels;
         
         // 内部データ管理（Browser Chooser 2互換）
         private Dictionary<int, Browser> _mBrowser = new();
@@ -33,7 +38,7 @@ namespace BrowserChooser3.Forms
         private int _mLastFileTypeID = 0;
         
         // ImageList（Browser Chooser 2互換）
-        private ImageList? _imBrowserIcons;
+        private ImageList? _imBrowserIcons => _panels?.GetBrowserIcons();
         
         // フォーカス設定（Browser Chooser 2互換）
         private FocusSettings _mFocusSettings = new();
@@ -49,6 +54,9 @@ namespace BrowserChooser3.Forms
             // イベントハンドラークラスの初期化
             _formHandlers = new OptionsFormFormHandlers(this, LoadSettingsToControls, SaveSettings, () => _isModified);
             _categoryHandlers = new OptionsFormCategoryHandlers(this, (modified) => _isModified = modified, LoadCategories);
+            
+            // UIパネル作成クラスの初期化
+            _panels = new OptionsFormPanels();
             
             InitializeForm();
             
@@ -66,39 +74,8 @@ namespace BrowserChooser3.Forms
             
             try
             {
-                // フォームの基本設定（Browser Chooser 2互換）
-                Text = "Options";
-                Size = new Size(1034, 327);
-                StartPosition = FormStartPosition.CenterParent;
-                FormBorderStyle = FormBorderStyle.Sizable;
-                MaximizeBox = false;
-                MinimizeBox = true;
-                TopMost = true;
-                
-                // フォントの設定（現代的で日本語・英語両対応）
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0);
-                
-                // 最小サイズの設定（Browser Chooser 2互換）
-                MinimumSize = new Size(595, 350);
-                
-                // Windows 8/10対応の警告表示（Browser Chooser 2互換）
-    
-                
-                // PictureBox1（Browser Chooser 2互換）
-                var pictureBox1 = new PictureBox();
-                pictureBox1.Image = Properties.Resources.BrowserChooser3Icon.ToBitmap();
-                pictureBox1.Location = new Point(12, 79);
-                pictureBox1.Size = new Size(161, 161);
-                pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
-                pictureBox1.TabIndex = 0;
-                pictureBox1.TabStop = false;
-
-                // TreeViewの作成（Browser Chooser 2互換）
-                var treeSettings = new TreeView();
-                treeSettings.Location = new Point(12, 12);
-                treeSettings.Size = new Size(173, 270);
-                treeSettings.Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0);
-                treeSettings.AfterSelect += TreeSettings_AfterSelect;
+                // Designerで定義されたコンポーネントを初期化
+                InitializeComponent();
                 
                 // TreeViewノードの作成
                 var commonNode = new TreeNode("Common");
@@ -117,7 +94,6 @@ namespace BrowserChooser3.Forms
                 settingsNode.Nodes.Add(new TreeNode("Startup") { Tag = "tabStartup" });
                 settingsNode.Nodes.Add(new TreeNode("Others") { Tag = "tabOthers" });
 
-                
                 var defaultBrowserNode = new TreeNode("Windows Default") { Tag = "tabDefaultBrowser" };
                 
                 treeSettings.Nodes.Add(commonNode);
@@ -125,29 +101,18 @@ namespace BrowserChooser3.Forms
                 treeSettings.Nodes.Add(settingsNode);
                 treeSettings.Nodes.Add(defaultBrowserNode);
                 
-                // TabControlの作成（Browser Chooser 2互換）
-                var tabSettings = new TabControl();
-                tabSettings.Location = new Point(179, 12);
-                tabSettings.Size = new Size(852, 274);
-                tabSettings.Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0);
-                tabSettings.Appearance = TabAppearance.FlatButtons;
-                tabSettings.ItemSize = new Size(0, 1);
-                tabSettings.SizeMode = TabSizeMode.Fixed;
-                
                 // タブページの作成
-                var browsersTab = CreateBrowsersPanel();
-                var autoUrlsTab = CreateAutoURLsPanel();
-                var protocolsTab = CreateProtocolsPanel();
-                var fileTypesTab = CreateFileTypesPanel();
-                var categoriesTab = CreateCategoriesPanel();
-                var displayTab = CreateDisplayPanel();
-                var gridTab = CreateGridPanel();
-                var privacyTab = CreatePrivacyPanel();
-                var startupTab = CreateStartupPanel();
-                var othersTab = CreateOthersPanel();
+                var browsersTab = _panels.CreateBrowsersPanel(_settings, _mBrowser, _mProtocols, _mFileTypes, _mLastBrowserID, null, SetModified, RebuildAutoURLs);
+                var autoUrlsTab = _panels.CreateAutoURLsPanel(_settings, _mURLs, _mBrowser, SetModified, RebuildAutoURLs);
+                var protocolsTab = _panels.CreateProtocolsPanel(_settings, _mProtocols, _mBrowser, SetModified);
+                var fileTypesTab = _panels.CreateFileTypesPanel(_settings, _mFileTypes, _mBrowser, SetModified);
+                var categoriesTab = _panels.CreateCategoriesPanel();
+                var displayTab = _panels.CreateDisplayPanel(_settings, SetModified);
+                var gridTab = _panels.CreateGridPanel(_settings, SetModified);
+                var privacyTab = _panels.CreatePrivacyPanel(_settings, SetModified);
+                var startupTab = _panels.CreateStartupPanel(_settings, SetModified);
+                var othersTab = _panels.CreateOthersPanel();
 
-    
-                
                 tabSettings.TabPages.Add(browsersTab);
                 tabSettings.TabPages.Add(autoUrlsTab);
                 tabSettings.TabPages.Add(protocolsTab);
@@ -158,44 +123,6 @@ namespace BrowserChooser3.Forms
                 tabSettings.TabPages.Add(privacyTab);
                 tabSettings.TabPages.Add(startupTab);
                 tabSettings.TabPages.Add(othersTab);
-
-
-                
-                // ボタンの作成（Browser Chooser 2互換）
-                var saveButton = new Button();
-                saveButton.Text = "Save";
-                saveButton.Location = new Point(790, 292);
-                saveButton.Size = new Size(75, 23);
-                saveButton.Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0);
-                saveButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-                saveButton.Click += (s, e) => SaveSettings();
-                
-                var cancelButton = new Button();
-                cancelButton.Text = "Cancel";
-                cancelButton.Location = new Point(952, 292);
-                cancelButton.Size = new Size(75, 23);
-                cancelButton.Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0);
-                cancelButton.DialogResult = DialogResult.Cancel;
-                cancelButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-                
-                var helpButton = new Button();
-                helpButton.Text = "Help";
-                helpButton.Location = new Point(871, 292);
-                helpButton.Size = new Size(75, 23);
-                helpButton.Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0);
-                helpButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-                helpButton.Click += (s, e) => OpenHelp();
-                
-                // コントロールの追加（Browser Chooser 2互換）
-                Controls.Add(pictureBox1);
-                Controls.Add(treeSettings);
-                Controls.Add(tabSettings);
-                Controls.Add(saveButton);
-                Controls.Add(cancelButton);
-                Controls.Add(helpButton);
-                
-                // サイズ変更イベントの設定
-                Resize += OptionsForm_Resize;
                 
                 // TreeViewを展開
                 treeSettings.ExpandAll();
@@ -279,76 +206,16 @@ namespace BrowserChooser3.Forms
             if (e.Node?.Tag is string tabName)
             {
                 // 対応するタブを選択
-                var tabControl = Controls.OfType<TabControl>().FirstOrDefault();
-                if (tabControl != null)
+                var tabPage = tabSettings.TabPages.Cast<TabPage>()
+                    .FirstOrDefault(tp => tp.Name == tabName);
+                if (tabPage != null)
                 {
-                    var tabPage = tabControl.TabPages.Cast<TabPage>()
-                        .FirstOrDefault(tp => tp.Name == tabName);
-                    if (tabPage != null)
-                    {
-                        tabControl.SelectedTab = tabPage;
-                    }
+                    tabSettings.SelectedTab = tabPage;
                 }
             }
         }
 
-        /// <summary>
-        /// コントロールの作成
-        /// </summary>
-        private void CreateControls()
-        {
-            // タブコントロールの作成
-            var tabControl = new TabControl
-            {
-                Dock = DockStyle.Fill
-            };
 
-            // ブラウザタブ
-            var browsersTab = new TabPage("ブラウザ");
-            browsersTab.Controls.Add(CreateBrowsersPanel());
-            tabControl.TabPages.Add(browsersTab);
-
-            // URLタブ
-            var urlsTab = new TabPage("URL設定");
-            urlsTab.Controls.Add(CreateAutoURLsPanel());
-            tabControl.TabPages.Add(urlsTab);
-
-            // 一般設定タブ
-            var generalTab = new TabPage("一般設定");
-            generalTab.Controls.Add(CreateGeneralPanel());
-            tabControl.TabPages.Add(generalTab);
-
-            // ボタンパネル
-            var buttonPanel = new Panel
-            {
-                Dock = DockStyle.Bottom,
-                Height = 50,
-                Padding = new Padding(10)
-            };
-
-            var saveButton = new Button
-            {
-                Text = "保存",
-                DialogResult = DialogResult.OK,
-                Location = new Point(buttonPanel.Width - 100, 10),
-                Size = new Size(80, 30)
-            };
-            saveButton.Click += _formHandlers.SaveButton_Click;
-
-            var cancelButton = new Button
-            {
-                Text = "キャンセル",
-                DialogResult = DialogResult.Cancel,
-                Location = new Point(buttonPanel.Width - 190, 10),
-                Size = new Size(80, 30)
-            };
-
-            buttonPanel.Controls.Add(saveButton);
-            buttonPanel.Controls.Add(cancelButton);
-
-            Controls.Add(tabControl);
-            Controls.Add(buttonPanel);
-        }
 
         /// <summary>
         /// ブラウザ設定パネルの作成
@@ -364,13 +231,7 @@ namespace BrowserChooser3.Forms
                 Padding = new Padding(10)
             };
 
-            // アイコンリスト（Browser Chooser 2互換）
-            _imBrowserIcons = new ImageList
-            {
-                ColorDepth = ColorDepth.Depth8Bit,
-                ImageSize = new Size(16, 16),
-                TransparentColor = Color.Transparent
-            };
+
 
             // ブラウザリストビュー（Browser Chooser 2互換）
             var listView = new ListView
@@ -476,16 +337,6 @@ namespace BrowserChooser3.Forms
                 }
             };
 
-            // 隠しブラウザGUID（Browser Chooser 2互換）
-            var lblHiddenBrowserGuid = new Label
-            {
-                Text = "Hidden Browser default Guid",
-                Location = new Point(18, 227),
-                Size = new Size(142, 13),
-                Tag = " ",
-                Visible = false
-            };
-
             panel.Controls.Add(listView);
             panel.Controls.Add(addButton);
             panel.Controls.Add(editButton);
@@ -494,7 +345,6 @@ namespace BrowserChooser3.Forms
             panel.Controls.Add(detectButton);
             panel.Controls.Add(deleteButton);
             panel.Controls.Add(lblDoubleClickNote);
-            panel.Controls.Add(lblHiddenBrowserGuid);
             tabPage.Controls.Add(panel);
             return tabPage;
         }
@@ -1588,6 +1438,24 @@ namespace BrowserChooser3.Forms
         }
 
         /// <summary>
+        /// 変更フラグを設定するメソッド
+        /// </summary>
+        /// <param name="modified">変更フラグ</param>
+        private void SetModified(bool modified)
+        {
+            _isModified = modified;
+        }
+
+        /// <summary>
+        /// Auto URLsを再構築するメソッド
+        /// </summary>
+        private void RebuildAutoURLs()
+        {
+            // Auto URLsの再構築処理
+            // 必要に応じて実装
+        }
+
+        /// <summary>
         /// 設定値をコントロールに設定（Browser Chooser 2互換）
         /// </summary>
         private void LoadSettingsToControls()
@@ -1708,7 +1576,7 @@ namespace BrowserChooser3.Forms
             _mFocusSettings.BoxWidth = _settings.FocusBoxLineWidth;
 
             // デフォルトブラウザGUIDの設定
-            var hiddenLabel = Controls.Find("lblHiddenBrowserGuid", true).FirstOrDefault() as Label;
+                                var hiddenLabel = lblHiddenBrowserGuid;
             if (hiddenLabel != null && _settings.DefaultBrowserGuid != Guid.Empty)
             {
                 hiddenLabel.Tag = _settings.DefaultBrowserGuid.ToString();
@@ -1732,7 +1600,7 @@ namespace BrowserChooser3.Forms
                 }
 
                 // デフォルトブラウザの設定
-                var hiddenGuidLabel = Controls.Find("lblHiddenBrowserGuid", true).FirstOrDefault() as Label;
+                                        var hiddenGuidLabel = lblHiddenBrowserGuid;
                 if (hiddenGuidLabel?.Tag != null && !string.IsNullOrEmpty(hiddenGuidLabel.Tag.ToString()?.Trim()))
                 {
                     try
@@ -3183,7 +3051,7 @@ namespace BrowserChooser3.Forms
                         var selectedBrowser = _mBrowser[selectedIndex];
                         
                         // 隠しラベルにGUIDを設定
-                        var hiddenLabel = Controls.Find("lblHiddenBrowserGuid", true).FirstOrDefault() as Label;
+                        var hiddenLabel = lblHiddenBrowserGuid;
                         if (hiddenLabel != null)
                         {
                             hiddenLabel.Tag = selectedBrowser.Guid.ToString();
@@ -3309,30 +3177,7 @@ namespace BrowserChooser3.Forms
             }
         }
 
-        /// <summary>
-        /// Auto URLsのドラッグ&amp;ドロップ機能（Browser Chooser 2互換）
-        /// </summary>
-        private void RebuildAutoURLs()
-        {
-            var newURLs = new SortedDictionary<int, URL>();
 
-            // ListViewのアイテム順序に基づいてURLリストを再構築
-            var listView = Controls.Find("lstURLs", true).FirstOrDefault() as ListView;
-            if (listView != null)
-            {
-                foreach (ListViewItem item in listView.Items)
-                {
-                    if (item.Tag is int tag && _mURLs.ContainsKey(tag))
-                    {
-                        var oldURL = _mURLs[tag];
-                        newURLs.Add(item.Index, oldURL);
-                    }
-                }
-            }
-
-            _mURLs = newURLs;
-            _isModified = true;
-        }
 
 
 
@@ -3919,8 +3764,11 @@ namespace BrowserChooser3.Forms
 
             try
             {
-                // カテゴリ管理用のコントロールを作成
-                CreateCategoryControls();
+                // カテゴリ管理用のコントロールは Designer で定義済み
+                // イベントハンドラーの設定
+                btnAddCategory.Click += _categoryHandlers.BtnAddCategory_Click;
+                btnEditCategory.Click += _categoryHandlers.BtnEditCategory_Click;
+                btnDeleteCategory.Click += _categoryHandlers.BtnDeleteCategory_Click;
                 
                 // カテゴリデータの読み込み
                 LoadCategories();
@@ -3933,86 +3781,7 @@ namespace BrowserChooser3.Forms
             }
         }
 
-        /// <summary>
-        /// カテゴリ管理用のコントロールを作成します
-        /// </summary>
-        private void CreateCategoryControls()
-        {
-            // カテゴリ管理用のパネル
-            var categoryPanel = new Panel
-            {
-                Name = "categoryPanel",
-                Location = new Point(200, 50),
-                Size = new Size(600, 400),
-                Visible = false
-            };
 
-            // カテゴリリスト
-            var categoryListView = new ListView
-            {
-                Name = "categoryListView",
-                Location = new Point(10, 10),
-                Size = new Size(200, 300),
-                View = View.Details,
-                FullRowSelect = true,
-                GridLines = true
-            };
-            categoryListView.Columns.Add("Name", 150);
-            categoryListView.Columns.Add("Count", 50);
-
-            // カテゴリ追加ボタン
-            var btnAddCategory = new Button
-            {
-                Name = "btnAddCategory",
-                Text = "Add Category",
-                Location = new Point(10, 320),
-                Size = new Size(90, 25)
-            };
-            btnAddCategory.Click += _categoryHandlers.BtnAddCategory_Click;
-
-            // カテゴリ編集ボタン
-            var btnEditCategory = new Button
-            {
-                Name = "btnEditCategory",
-                Text = "Edit Category",
-                Location = new Point(110, 320),
-                Size = new Size(90, 25)
-            };
-            btnEditCategory.Click += _categoryHandlers.BtnEditCategory_Click;
-
-            // カテゴリ削除ボタン
-            var btnDeleteCategory = new Button
-            {
-                Name = "btnDeleteCategory",
-                Text = "Delete Category",
-                Location = new Point(210, 320),
-                Size = new Size(90, 25)
-            };
-            btnDeleteCategory.Click += _categoryHandlers.BtnDeleteCategory_Click;
-
-            // カテゴリ内アイテムリスト
-            var categoryItemsListView = new ListView
-            {
-                Name = "categoryItemsListView",
-                Location = new Point(320, 10),
-                Size = new Size(270, 300),
-                View = View.Details,
-                FullRowSelect = true,
-                GridLines = true
-            };
-            categoryItemsListView.Columns.Add("Type", 60);
-            categoryItemsListView.Columns.Add("Name", 200);
-
-            // コントロールをパネルに追加
-            categoryPanel.Controls.Add(categoryListView);
-            categoryPanel.Controls.Add(btnAddCategory);
-            categoryPanel.Controls.Add(btnEditCategory);
-            categoryPanel.Controls.Add(btnDeleteCategory);
-            categoryPanel.Controls.Add(categoryItemsListView);
-
-            // メインフォームに追加
-            Controls.Add(categoryPanel);
-        }
 
         /// <summary>
         /// カテゴリデータを読み込みます
@@ -4021,45 +3790,41 @@ namespace BrowserChooser3.Forms
         {
             try
             {
-                var categoryListView = Controls.Find("categoryListView", true).FirstOrDefault() as ListView;
-                if (categoryListView != null)
+                categoryListView.Items.Clear();
+
+                // ブラウザからカテゴリを収集
+                var categories = _mBrowser.Values
+                    .Select(b => b.Category)
+                    .Where(c => !string.IsNullOrEmpty(c))
+                    .Distinct()
+                    .ToList();
+
+                // URLからカテゴリを収集
+                categories.AddRange(_mURLs.Values
+                    .Select(u => u.Category)
+                    .Where(c => !string.IsNullOrEmpty(c))
+                    .Distinct());
+
+                // プロトコルからカテゴリを収集
+                categories.AddRange(_mProtocols.Values
+                    .Select(p => p.Category)
+                    .Where(c => !string.IsNullOrEmpty(c))
+                    .Distinct());
+
+                // ファイルタイプからカテゴリを収集
+                categories.AddRange(_mFileTypes.Values
+                    .Select(f => f.Category)
+                    .Where(c => !string.IsNullOrEmpty(c))
+                    .Distinct());
+
+                // 重複を除去してソート
+                categories = categories.Distinct().OrderBy(c => c).ToList();
+
+                foreach (var category in categories)
                 {
-                    categoryListView.Items.Clear();
-
-                    // ブラウザからカテゴリを収集
-                    var categories = _mBrowser.Values
-                        .Select(b => b.Category)
-                        .Where(c => !string.IsNullOrEmpty(c))
-                        .Distinct()
-                        .ToList();
-
-                    // URLからカテゴリを収集
-                    categories.AddRange(_mURLs.Values
-                        .Select(u => u.Category)
-                        .Where(c => !string.IsNullOrEmpty(c))
-                        .Distinct());
-
-                    // プロトコルからカテゴリを収集
-                    categories.AddRange(_mProtocols.Values
-                        .Select(p => p.Category)
-                        .Where(c => !string.IsNullOrEmpty(c))
-                        .Distinct());
-
-                    // ファイルタイプからカテゴリを収集
-                    categories.AddRange(_mFileTypes.Values
-                        .Select(f => f.Category)
-                        .Where(c => !string.IsNullOrEmpty(c))
-                        .Distinct());
-
-                    // 重複を除去してソート
-                    categories = categories.Distinct().OrderBy(c => c).ToList();
-
-                    foreach (var category in categories)
-                    {
-                        var item = categoryListView.Items.Add(category);
-                        var count = GetCategoryItemCount(category);
-                        item.SubItems.Add(count.ToString());
-                    }
+                    var item = categoryListView.Items.Add(category);
+                    var count = GetCategoryItemCount(category);
+                    item.SubItems.Add(count.ToString());
                 }
             }
             catch (Exception ex)

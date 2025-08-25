@@ -9,37 +9,46 @@ namespace BrowserChooser3.Classes.Services
     /// </summary>
     public class OptionsFormPanels
     {
-        private readonly Settings _settings;
+
         private ImageList? _imBrowserIcons;
+
+        /// <summary>
+        /// ブラウザアイコンリストを取得します
+        /// </summary>
+        /// <returns>ブラウザアイコンリスト</returns>
+        public ImageList? GetBrowserIcons()
+        {
+            return _imBrowserIcons;
+        }
 
         /// <summary>
         /// OptionsFormPanelsクラスの新しいインスタンスを初期化します
         /// </summary>
-        /// <param name="settings">設定オブジェクト</param>
-        public OptionsFormPanels(Settings settings)
+        public OptionsFormPanels()
         {
-            _settings = settings;
         }
 
         /// <summary>
         /// ブラウザパネルの作成
         /// </summary>
-        /// <param name="addBrowserClick">Addボタンのクリックイベント</param>
-        /// <param name="editBrowserClick">Editボタンのクリックイベント</param>
-        /// <param name="cloneBrowserClick">Cloneボタンのクリックイベント</param>
-        /// <param name="detectBrowsersClick">Detectボタンのクリックイベント</param>
-        /// <param name="deleteBrowserClick">Deleteボタンのクリックイベント</param>
-        /// <param name="listViewSelectedIndexChanged">ListViewの選択変更イベント</param>
-        /// <param name="listViewDoubleClick">ListViewのダブルクリックイベント</param>
+        /// <param name="settings">設定オブジェクト</param>
+        /// <param name="mBrowser">ブラウザ辞書</param>
+        /// <param name="mProtocols">プロトコル辞書</param>
+        /// <param name="mFileTypes">ファイルタイプ辞書</param>
+        /// <param name="mLastBrowserID">最後のブラウザID</param>
+        /// <param name="imBrowserIcons">ブラウザアイコンリスト</param>
+        /// <param name="setModified">変更フラグ設定アクション</param>
+        /// <param name="rebuildAutoURLs">Auto URLs再構築アクション</param>
         /// <returns>作成されたTabPage</returns>
         public TabPage CreateBrowsersPanel(
-            EventHandler addBrowserClick,
-            EventHandler editBrowserClick,
-            EventHandler cloneBrowserClick,
-            EventHandler detectBrowsersClick,
-            EventHandler deleteBrowserClick,
-            EventHandler listViewSelectedIndexChanged,
-            EventHandler listViewDoubleClick)
+            Settings settings,
+            Dictionary<int, Browser> mBrowser,
+            Dictionary<int, Protocol> mProtocols,
+            Dictionary<int, FileType> mFileTypes,
+            int mLastBrowserID,
+            ImageList? imBrowserIcons,
+            Action<bool> setModified,
+            Action rebuildAutoURLs)
         {
             var tabPage = new TabPage("Browsers & applications");
             tabPage.Name = "tabBrowsers";
@@ -89,7 +98,6 @@ namespace BrowserChooser3.Classes.Services
                 Size = new Size(75, 23),
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
-            addButton.Click += addBrowserClick;
 
             var editButton = new Button
             {
@@ -99,7 +107,6 @@ namespace BrowserChooser3.Classes.Services
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
                 Enabled = false
             };
-            editButton.Click += editBrowserClick;
 
             var cloneButton = new Button
             {
@@ -109,7 +116,6 @@ namespace BrowserChooser3.Classes.Services
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
                 Enabled = false
             };
-            cloneButton.Click += cloneBrowserClick;
 
             var detectButton = new Button
             {
@@ -118,7 +124,6 @@ namespace BrowserChooser3.Classes.Services
                 Size = new Size(75, 23),
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
-            detectButton.Click += detectBrowsersClick;
 
             var deleteButton = new Button
             {
@@ -128,11 +133,6 @@ namespace BrowserChooser3.Classes.Services
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
                 Enabled = false
             };
-            deleteButton.Click += deleteBrowserClick;
-
-            // イベントハンドラーの設定
-            listView.SelectedIndexChanged += listViewSelectedIndexChanged;
-            listView.DoubleClick += listViewDoubleClick;
 
             // コントロールの追加
             panel.Controls.Add(listView);
@@ -149,20 +149,18 @@ namespace BrowserChooser3.Classes.Services
         /// <summary>
         /// Auto URLsパネルの作成
         /// </summary>
-        /// <param name="addURLClick">Addボタンのクリックイベント</param>
-        /// <param name="editURLClick">Editボタンのクリックイベント</param>
-        /// <param name="deleteURLClick">Deleteボタンのクリックイベント</param>
-        /// <param name="listViewSelectedIndexChanged">ListViewの選択変更イベント</param>
-        /// <param name="listViewDoubleClick">ListViewのダブルクリックイベント</param>
-        /// <param name="listViewItemDrag">ListViewのドラッグイベント</param>
+        /// <param name="settings">設定オブジェクト</param>
+        /// <param name="mURLs">URL辞書</param>
+        /// <param name="mBrowser">ブラウザ辞書</param>
+        /// <param name="setModified">変更フラグ設定アクション</param>
+        /// <param name="rebuildAutoURLs">Auto URLs再構築アクション</param>
         /// <returns>作成されたTabPage</returns>
         public TabPage CreateAutoURLsPanel(
-            EventHandler addURLClick,
-            EventHandler editURLClick,
-            EventHandler deleteURLClick,
-            EventHandler listViewSelectedIndexChanged,
-            EventHandler listViewDoubleClick,
-            ItemDragEventHandler listViewItemDrag)
+            Settings settings,
+            SortedDictionary<int, URL> mURLs,
+            Dictionary<int, Browser> mBrowser,
+            Action<bool> setModified,
+            Action rebuildAutoURLs)
         {
             var tabPage = new TabPage("Auto URLs");
             tabPage.Name = "tabAutoURLs";
@@ -201,8 +199,6 @@ namespace BrowserChooser3.Classes.Services
                 Size = new Size(75, 23),
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
-            addButton.Click += addURLClick;
-
             var editButton = new Button
             {
                 Text = "Edit",
@@ -211,7 +207,6 @@ namespace BrowserChooser3.Classes.Services
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
                 Enabled = false
             };
-            editButton.Click += editURLClick;
 
             var deleteButton = new Button
             {
@@ -221,7 +216,6 @@ namespace BrowserChooser3.Classes.Services
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
                 Enabled = false
             };
-            deleteButton.Click += deleteURLClick;
 
             var moveUpButton = new Button
             {
@@ -241,10 +235,7 @@ namespace BrowserChooser3.Classes.Services
                 Enabled = false
             };
 
-            // イベントハンドラーの設定
-            listView.SelectedIndexChanged += listViewSelectedIndexChanged;
-            listView.DoubleClick += listViewDoubleClick;
-            listView.ItemDrag += listViewItemDrag;
+
 
             // コントロールの追加
             panel.Controls.Add(listView);
@@ -261,18 +252,16 @@ namespace BrowserChooser3.Classes.Services
         /// <summary>
         /// プロトコルパネルの作成
         /// </summary>
-        /// <param name="addProtocolClick">Addボタンのクリックイベント</param>
-        /// <param name="editProtocolClick">Editボタンのクリックイベント</param>
-        /// <param name="deleteProtocolClick">Deleteボタンのクリックイベント</param>
-        /// <param name="listViewSelectedIndexChanged">ListViewの選択変更イベント</param>
-        /// <param name="listViewDoubleClick">ListViewのダブルクリックイベント</param>
+        /// <param name="settings">設定オブジェクト</param>
+        /// <param name="mProtocols">プロトコル辞書</param>
+        /// <param name="mBrowser">ブラウザ辞書</param>
+        /// <param name="setModified">変更フラグ設定アクション</param>
         /// <returns>作成されたTabPage</returns>
         public TabPage CreateProtocolsPanel(
-            EventHandler addProtocolClick,
-            EventHandler editProtocolClick,
-            EventHandler deleteProtocolClick,
-            EventHandler listViewSelectedIndexChanged,
-            EventHandler listViewDoubleClick)
+            Settings settings,
+            Dictionary<int, Protocol> mProtocols,
+            Dictionary<int, Browser> mBrowser,
+            Action<bool> setModified)
         {
             var tabPage = new TabPage("Protocols");
             tabPage.Name = "tabProtocols";
@@ -309,8 +298,6 @@ namespace BrowserChooser3.Classes.Services
                 Size = new Size(75, 23),
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
-            addButton.Click += addProtocolClick;
-
             var editButton = new Button
             {
                 Text = "Edit",
@@ -319,7 +306,6 @@ namespace BrowserChooser3.Classes.Services
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
                 Enabled = false
             };
-            editButton.Click += editProtocolClick;
 
             var deleteButton = new Button
             {
@@ -329,7 +315,6 @@ namespace BrowserChooser3.Classes.Services
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
                 Enabled = false
             };
-            deleteButton.Click += deleteProtocolClick;
 
             var selectDefaultButton = new Button
             {
@@ -340,9 +325,7 @@ namespace BrowserChooser3.Classes.Services
                 Enabled = false
             };
 
-            // イベントハンドラーの設定
-            listView.SelectedIndexChanged += listViewSelectedIndexChanged;
-            listView.DoubleClick += listViewDoubleClick;
+
 
             // コントロールの追加
             panel.Controls.Add(listView);
@@ -358,18 +341,16 @@ namespace BrowserChooser3.Classes.Services
         /// <summary>
         /// ファイルタイプパネルの作成
         /// </summary>
-        /// <param name="addFileTypeClick">Addボタンのクリックイベント</param>
-        /// <param name="editFileTypeClick">Editボタンのクリックイベント</param>
-        /// <param name="deleteFileTypeClick">Deleteボタンのクリックイベント</param>
-        /// <param name="listViewSelectedIndexChanged">ListViewの選択変更イベント</param>
-        /// <param name="listViewDoubleClick">ListViewのダブルクリックイベント</param>
+        /// <param name="settings">設定オブジェクト</param>
+        /// <param name="mFileTypes">ファイルタイプ辞書</param>
+        /// <param name="mBrowser">ブラウザ辞書</param>
+        /// <param name="setModified">変更フラグ設定アクション</param>
         /// <returns>作成されたTabPage</returns>
         public TabPage CreateFileTypesPanel(
-            EventHandler addFileTypeClick,
-            EventHandler editFileTypeClick,
-            EventHandler deleteFileTypeClick,
-            EventHandler listViewSelectedIndexChanged,
-            EventHandler listViewDoubleClick)
+            Settings settings,
+            Dictionary<int, FileType> mFileTypes,
+            Dictionary<int, Browser> mBrowser,
+            Action<bool> setModified)
         {
             var tabPage = new TabPage("File Types");
             tabPage.Name = "tabFileTypes";
@@ -406,8 +387,6 @@ namespace BrowserChooser3.Classes.Services
                 Size = new Size(75, 23),
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
-            addButton.Click += addFileTypeClick;
-
             var editButton = new Button
             {
                 Text = "Edit",
@@ -416,7 +395,6 @@ namespace BrowserChooser3.Classes.Services
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
                 Enabled = false
             };
-            editButton.Click += editFileTypeClick;
 
             var deleteButton = new Button
             {
@@ -426,7 +404,6 @@ namespace BrowserChooser3.Classes.Services
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
                 Enabled = false
             };
-            deleteButton.Click += deleteFileTypeClick;
 
             var selectDefaultButton = new Button
             {
@@ -437,9 +414,7 @@ namespace BrowserChooser3.Classes.Services
                 Enabled = false
             };
 
-            // イベントハンドラーの設定
-            listView.SelectedIndexChanged += listViewSelectedIndexChanged;
-            listView.DoubleClick += listViewDoubleClick;
+
 
             // コントロールの追加
             panel.Controls.Add(listView);
@@ -495,15 +470,9 @@ namespace BrowserChooser3.Classes.Services
         /// 表示パネルの作成
         /// </summary>
         /// <param name="settings">設定オブジェクト</param>
-        /// <param name="accessibilityClick">アクセシビリティボタンのクリックイベント</param>
-        /// <param name="backgroundColorClick">背景色ボタンのクリックイベント</param>
-        /// <param name="transparentClick">透明背景ボタンのクリックイベント</param>
+        /// <param name="setModified">変更フラグ設定アクション</param>
         /// <returns>作成されたTabPage</returns>
-        public TabPage CreateDisplayPanel(
-            Settings settings,
-            EventHandler accessibilityClick,
-            EventHandler backgroundColorClick,
-            EventHandler transparentClick)
+        public TabPage CreateDisplayPanel(Settings settings, Action<bool> setModified)
         {
             var tabPage = new TabPage("Display");
             tabPage.Name = "tabDisplay";
@@ -522,7 +491,6 @@ namespace BrowserChooser3.Classes.Services
                 Size = new Size(150, 23),
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
-            accessibilityButton.Click += accessibilityClick;
 
             // 背景色ボタン
             var backgroundColorButton = new Button
@@ -532,7 +500,6 @@ namespace BrowserChooser3.Classes.Services
                 Size = new Size(150, 23),
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
-            backgroundColorButton.Click += backgroundColorClick;
 
             // 透明背景ボタン
             var transparentButton = new Button
@@ -542,7 +509,6 @@ namespace BrowserChooser3.Classes.Services
                 Size = new Size(150, 23),
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
-            transparentButton.Click += transparentClick;
 
             // コントロールの追加
             panel.Controls.Add(accessibilityButton);
@@ -557,8 +523,9 @@ namespace BrowserChooser3.Classes.Services
         /// グリッドパネルの作成
         /// </summary>
         /// <param name="settings">設定オブジェクト</param>
+        /// <param name="setModified">変更フラグ設定アクション</param>
         /// <returns>作成されたTabPage</returns>
-        public TabPage CreateGridPanel(Settings settings)
+        public TabPage CreateGridPanel(Settings settings, Action<bool> setModified)
         {
             var tabPage = new TabPage("Grid");
             tabPage.Name = "tabGrid";
@@ -588,8 +555,9 @@ namespace BrowserChooser3.Classes.Services
         /// プライバシーパネルの作成
         /// </summary>
         /// <param name="settings">設定オブジェクト</param>
+        /// <param name="setModified">変更フラグ設定アクション</param>
         /// <returns>作成されたTabPage</returns>
-        public TabPage CreatePrivacyPanel(Settings settings)
+        public TabPage CreatePrivacyPanel(Settings settings, Action<bool> setModified)
         {
             var tabPage = new TabPage("Privacy");
             tabPage.Name = "tabPrivacy";
@@ -619,8 +587,9 @@ namespace BrowserChooser3.Classes.Services
         /// スタートアップパネルの作成
         /// </summary>
         /// <param name="settings">設定オブジェクト</param>
+        /// <param name="setModified">変更フラグ設定アクション</param>
         /// <returns>作成されたTabPage</returns>
-        public TabPage CreateStartupPanel(Settings settings)
+        public TabPage CreateStartupPanel(Settings settings, Action<bool> setModified)
         {
             var tabPage = new TabPage("Startup");
             tabPage.Name = "tabStartup";
@@ -736,13 +705,6 @@ namespace BrowserChooser3.Classes.Services
             return tabPage;
         }
 
-        /// <summary>
-        /// ブラウザアイコンリストを取得
-        /// </summary>
-        /// <returns>ImageList</returns>
-        public ImageList? GetBrowserIcons()
-        {
-            return _imBrowserIcons;
-        }
+
     }
 }
