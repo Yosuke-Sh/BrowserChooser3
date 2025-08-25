@@ -60,6 +60,12 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                     new Point(_settings.GridWidth, _settings.GridHeight)))
                 {
                     var newBrowser = addEditForm.GetData();
+                    
+                    // rowとcolを自動設定（重複を避ける）
+                    var maxRow = _mBrowser.Values.Max(b => b.PosY);
+                    newBrowser.PosY = maxRow + 1;
+                    newBrowser.PosX = 0;
+                    
                     var newIndex = _mBrowser.Count + 1;
                     _mBrowser.Add(newIndex, newBrowser);
                     
@@ -323,31 +329,37 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                         var listView = browsersTab?.Controls.Find("lstBrowsers", true).FirstOrDefault() as ListView;
                         Logger.LogInfo("OptionsFormBrowserHandlers.DetectBrowsers_Click", $"ListView: {(listView != null ? "見つかりました" : "見つかりませんでした")}");
                         
-                        if (listView != null)
-                        {
-                            foreach (var browser in missingBrowsers)
-                            {
-                                var newIndex = _mBrowser.Count + 1;
-                                _mBrowser.Add(newIndex, browser);
-                                
-                                var item = listView.Items.Add(browser.Name);
-                                item.Tag = newIndex;
-                                item.SubItems.Add(""); // Default column
-                                item.SubItems.Add(browser.PosY.ToString());
-                                item.SubItems.Add(browser.PosX.ToString());
-                                item.SubItems.Add(browser.Hotkey.ToString());
-                                item.SubItems.Add(GetBrowserProtocolsAndFileTypes(browser));
-                                
-                                // ImageListにアイコンを追加
-                                if (_imBrowserIcons != null)
-                                {
-                                    var image = ImageUtilities.GetImage(browser, false);
-                                    if (image != null)
-                                    {
-                                        _imBrowserIcons.Images.Add(image);
-                                    }
-                                }
-                            }
+                                                 if (listView != null)
+                         {
+                             int rowIndex = 0;
+                             foreach (var browser in missingBrowsers)
+                             {
+                                 // rowとcolを自動設定（重複を避ける）
+                                 browser.PosY = rowIndex;
+                                 browser.PosX = 0;
+                                 rowIndex++;
+                                 
+                                 var newIndex = _mBrowser.Count + 1;
+                                 _mBrowser.Add(newIndex, browser);
+                                 
+                                 var item = listView.Items.Add(browser.Name);
+                                 item.Tag = newIndex;
+                                 item.SubItems.Add(""); // Default column
+                                 item.SubItems.Add(browser.PosY.ToString());
+                                 item.SubItems.Add(browser.PosX.ToString());
+                                 item.SubItems.Add(browser.Hotkey.ToString());
+                                 item.SubItems.Add(GetBrowserProtocolsAndFileTypes(browser));
+                                 
+                                 // ImageListにアイコンを追加
+                                 if (_imBrowserIcons != null)
+                                 {
+                                     var image = ImageUtilities.GetImage(browser, false);
+                                     if (image != null)
+                                     {
+                                         _imBrowserIcons.Images.Add(image);
+                                     }
+                                 }
+                             }
                             
                             _setModified(true);
                             MessageBox.Show($"{missingBrowsers.Count}個のブラウザを追加しました。", "完了", 

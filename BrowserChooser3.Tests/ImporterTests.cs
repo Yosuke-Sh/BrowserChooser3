@@ -125,7 +125,7 @@ namespace BrowserChooser3.Tests
             var validXml = @"<Settings>
                 <FileVersion>2</FileVersion>
                 <IconWidth>90</IconWidth>
-                <IconHeight>90</IconHeight>
+                <IconHeight>90</IconHeight>W
                 <IconGapWidth>10</IconGapWidth>
                 <IconGapHeight>10</IconGapHeight>
                 <IconScale>1.0</IconScale>

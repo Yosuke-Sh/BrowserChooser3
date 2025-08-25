@@ -36,14 +36,16 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
         {
             try
             {
-                var categoryName = Microsoft.VisualBasic.Interaction.InputBox(
-                    "Enter category name:", "Add Category", "");
-                
-                if (!string.IsNullOrEmpty(categoryName))
+                var addEditForm = new AddEditCategoryForm();
+                if (addEditForm.AddCategory(_form))
                 {
-                    // カテゴリを追加（実際の実装では設定に保存）
-                    _loadCategories(); // リストを再読み込み
-                    _setModified(true);
+                    var categoryName = addEditForm.GetCategoryName();
+                    if (!string.IsNullOrEmpty(categoryName))
+                    {
+                        // カテゴリを追加（実際の実装では設定に保存）
+                        _loadCategories(); // リストを再読み込み
+                        _setModified(true);
+                    }
                 }
             }
             catch (Exception ex)
@@ -63,14 +65,16 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 if (categoryListView?.SelectedItems.Count > 0)
                 {
                     var selectedCategory = categoryListView.SelectedItems[0].Text;
-                    var newCategoryName = Microsoft.VisualBasic.Interaction.InputBox(
-                        "Enter new category name:", "Edit Category", selectedCategory);
-                    
-                    if (!string.IsNullOrEmpty(newCategoryName) && newCategoryName != selectedCategory)
+                    var addEditForm = new AddEditCategoryForm();
+                    if (addEditForm.EditCategory(selectedCategory, _form))
                     {
-                        // カテゴリ名を更新（実際の実装では設定に保存）
-                        _loadCategories(); // リストを再読み込み
-                        _setModified(true);
+                        var newCategoryName = addEditForm.GetCategoryName();
+                        if (!string.IsNullOrEmpty(newCategoryName) && newCategoryName != selectedCategory)
+                        {
+                            // カテゴリ名を更新（実際の実装では設定に保存）
+                            _loadCategories(); // リストを再読み込み
+                            _setModified(true);
+                        }
                     }
                 }
             }

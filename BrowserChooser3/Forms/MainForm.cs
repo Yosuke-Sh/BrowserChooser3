@@ -391,7 +391,7 @@ namespace BrowserChooser3.Forms
                 var button = new FFButton
                 {
                     Name = $"btnBrowser_{i}",
-                    Text = "", // テキストは空にして、オーバーレイラベルで表示
+                    Text = " ", // スペース1文字を設定してアイコンが表示されるようにする
                     Size = new Size(buttonWidth, buttonHeight),
                     Tag = browser,
                     FlatStyle = FlatStyle.Flat,
@@ -406,6 +406,8 @@ namespace BrowserChooser3.Forms
                 // ブラウザアイコンの設定
                 try
                 {
+                    Logger.LogInfo("MainForm.CreateBrowserButtons", "アイコン取得開始", browser.Name, browser.Target);
+                    
                     var browserIcon = ImageUtilities.GetImage(browser, true);
                     if (browserIcon != null)
                     {
@@ -414,19 +416,19 @@ namespace BrowserChooser3.Forms
                         var resizedIcon = new Bitmap(browserIcon, new Size(iconSize, iconSize));
                         
                         button.Image = resizedIcon;
-                        button.ImageAlign = ContentAlignment.TopCenter;
-                        button.TextImageRelation = TextImageRelation.ImageAboveText;
+                        button.ImageAlign = ContentAlignment.MiddleCenter;
+                        button.TextImageRelation = TextImageRelation.Overlay;
                         
-                        Logger.LogTrace("MainForm.CreateBrowserButtons", "アイコン設定成功", browser.Name, iconSize);
+                        Logger.LogInfo("MainForm.CreateBrowserButtons", "アイコン設定成功", browser.Name, iconSize, browser.Target);
                     }
                     else
                     {
-                        Logger.LogWarning("MainForm.CreateBrowserButtons", "アイコンが取得できませんでした", browser.Name);
+                        Logger.LogWarning("MainForm.CreateBrowserButtons", "アイコンが取得できませんでした", browser.Name, browser.Target);
                     }
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogWarning("MainForm.CreateBrowserButtons", "アイコン設定エラー", browser.Name, ex.Message);
+                    Logger.LogWarning("MainForm.CreateBrowserButtons", "アイコン設定エラー", browser.Name, ex.Message, browser.Target);
                 }
                 
                 // イベントハンドラーの設定
@@ -594,10 +596,20 @@ namespace BrowserChooser3.Forms
             
             try
             {
-                // 設定を再読み込み
-                _settings = Settings.Load(Application.StartupPath);
-                Settings.Current = _settings;
-                _browsers = _settings?.Browsers ?? new List<Browser>();
+                // 設定を再読み込み（既存の設定を保持）
+                var newSettings = Settings.Load(Application.StartupPath);
+                if (newSettings != null)
+                {
+                    _settings = newSettings;
+                    Settings.Current = _settings;
+                    _browsers = _settings?.Browsers ?? new List<Browser>();
+                    
+                    Logger.LogInfo("MainForm.RefreshForm", "設定再読み込み完了", _browsers?.Count ?? 0);
+                }
+                else
+                {
+                    Logger.LogWarning("MainForm.RefreshForm", "設定の再読み込みに失敗しました");
+                }
                 
                 // デフォルトブラウザの再検索
                 _defaultBrowser = _browsers?.FirstOrDefault(b => b.IsDefault);

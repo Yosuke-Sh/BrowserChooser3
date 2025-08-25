@@ -61,7 +61,7 @@ namespace BrowserChooser3.Forms
             treeSettings.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point, 0);
             treeSettings.Location = new Point(12, 12);
             treeSettings.Name = "treeSettings";
-            treeSettings.Size = new Size(200, 350);
+            treeSettings.Size = new Size(200, 420);
             treeSettings.TabIndex = 1;
             treeSettings.AfterSelect += TreeSettings_AfterSelect;
             // 
@@ -73,7 +73,7 @@ namespace BrowserChooser3.Forms
             tabSettings.Location = new Point(220, 12);
             tabSettings.Name = "tabSettings";
             tabSettings.SelectedIndex = 0;
-            tabSettings.Size = new Size(950, 400);
+            tabSettings.Size = new Size(800, 293);
             tabSettings.SizeMode = TabSizeMode.Fixed;
             tabSettings.TabIndex = 2;
             // 
@@ -81,20 +81,19 @@ namespace BrowserChooser3.Forms
             // 
             saveButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             saveButton.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            saveButton.Location = new Point(1000, 450);
+            saveButton.Location = new Point(550, 450);
             saveButton.Name = "saveButton";
             saveButton.Size = new Size(85, 35);
             saveButton.TabIndex = 3;
             saveButton.Text = "Save";
             saveButton.UseVisualStyleBackColor = true;
-            // saveButton.Click += _formHandlers.SaveButton_Click; // イベントハンドラーは SetupButtonEventHandlers で設定
             // 
             // cancelButton
             // 
             cancelButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             cancelButton.DialogResult = DialogResult.Cancel;
             cancelButton.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            cancelButton.Location = new Point(1095, 450);
+            cancelButton.Location = new Point(650, 450);
             cancelButton.Name = "cancelButton";
             cancelButton.Size = new Size(85, 35);
             cancelButton.TabIndex = 4;
@@ -105,13 +104,12 @@ namespace BrowserChooser3.Forms
             // 
             helpButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             helpButton.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            helpButton.Location = new Point(905, 450);
+            helpButton.Location = new Point(750, 450);
             helpButton.Name = "helpButton";
             helpButton.Size = new Size(85, 35);
             helpButton.TabIndex = 5;
             helpButton.Text = "Help";
             helpButton.UseVisualStyleBackColor = true;
-            // helpButton.Click += _formHandlers.HelpButton_Click; // イベントハンドラーは SetupButtonEventHandlers で設定
             // 
             // categoryPanel
             // 
@@ -120,9 +118,9 @@ namespace BrowserChooser3.Forms
             categoryPanel.Controls.Add(btnEditCategory);
             categoryPanel.Controls.Add(btnAddCategory);
             categoryPanel.Controls.Add(categoryListView);
-            categoryPanel.Location = new Point(200, 50);
+            categoryPanel.Location = new Point(230, 15);
             categoryPanel.Name = "categoryPanel";
-            categoryPanel.Size = new Size(600, 360);
+            categoryPanel.Size = new Size(600, 380);
             categoryPanel.TabIndex = 6;
             categoryPanel.Visible = false;
             // 
@@ -141,7 +139,7 @@ namespace BrowserChooser3.Forms
             // 
             btnDeleteCategory.Location = new Point(210, 320);
             btnDeleteCategory.Name = "btnDeleteCategory";
-            btnDeleteCategory.Size = new Size(90, 28);
+            btnDeleteCategory.Size = new Size(90, 40);
             btnDeleteCategory.TabIndex = 3;
             btnDeleteCategory.Text = "Delete Category";
             btnDeleteCategory.UseVisualStyleBackColor = true;
@@ -150,7 +148,7 @@ namespace BrowserChooser3.Forms
             // 
             btnEditCategory.Location = new Point(110, 320);
             btnEditCategory.Name = "btnEditCategory";
-            btnEditCategory.Size = new Size(90, 28);
+            btnEditCategory.Size = new Size(90, 40);
             btnEditCategory.TabIndex = 2;
             btnEditCategory.Text = "Edit Category";
             btnEditCategory.UseVisualStyleBackColor = true;
@@ -159,7 +157,7 @@ namespace BrowserChooser3.Forms
             // 
             btnAddCategory.Location = new Point(10, 320);
             btnAddCategory.Name = "btnAddCategory";
-            btnAddCategory.Size = new Size(90, 28);
+            btnAddCategory.Size = new Size(90, 40);
             btnAddCategory.TabIndex = 1;
             btnAddCategory.Text = "Add Category";
             btnAddCategory.UseVisualStyleBackColor = true;
@@ -180,15 +178,15 @@ namespace BrowserChooser3.Forms
             lblHiddenBrowserGuid.AutoSize = true;
             lblHiddenBrowserGuid.Location = new Point(0, 0);
             lblHiddenBrowserGuid.Name = "lblHiddenBrowserGuid";
-            lblHiddenBrowserGuid.Size = new Size(0, 20);
+            lblHiddenBrowserGuid.Size = new Size(0, 28);
             lblHiddenBrowserGuid.TabIndex = 7;
             lblHiddenBrowserGuid.Visible = false;
             // 
             // OptionsForm
             // 
-            AutoScaleDimensions = new SizeF(8F, 20F);
+            AutoScaleDimensions = new SizeF(11F, 28F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1200, 500);
+            ClientSize = new Size(878, 494);
             Controls.Add(lblHiddenBrowserGuid);
             Controls.Add(categoryPanel);
             Controls.Add(helpButton);
@@ -199,7 +197,7 @@ namespace BrowserChooser3.Forms
             Controls.Add(pictureBox1);
             Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point, 0);
             MaximizeBox = false;
-            MinimumSize = new Size(800, 600);
+            MinimumSize = new Size(600, 400);
             Name = "OptionsForm";
             StartPosition = FormStartPosition.CenterParent;
             Text = "Options";

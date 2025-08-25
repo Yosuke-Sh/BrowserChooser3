@@ -462,8 +462,17 @@ namespace BrowserChooser3.Classes
             Width = 8; // default
             Height = 1; // default
             
-            // ブラウザの自動検出
-            DetectBrowsers();
+            // 設定ファイルが存在する場合は自動検出をスキップ
+            var configPath = Path.Combine(Application.StartupPath, BrowserChooserConfigFileName);
+            if (File.Exists(configPath))
+            {
+                Logger.LogInfo("Settings.SharedNew", "設定ファイルが存在するため自動検出をスキップ", configPath);
+            }
+            else
+            {
+                // ブラウザの自動検出（初回のみ）
+                DetectBrowsers();
+            }
             
             Logger.LogInfo("Settings.SharedNew", "End");
         }
@@ -475,6 +484,13 @@ namespace BrowserChooser3.Classes
         {
             Logger.LogInfo("Settings.DetectBrowsers", "Start");
             
+            // 既存のブラウザがある場合は自動検出をスキップ
+            if (Browsers.Count > 0)
+            {
+                Logger.LogInfo("Settings.DetectBrowsers", "既存のブラウザが存在するため自動検出をスキップ", Browsers.Count);
+                return;
+            }
+            
             // 初回のみブラウザ検出を実行
             if (BrowserDetector.DetectedBrowsers.Count == 0)
             {
@@ -484,13 +500,19 @@ namespace BrowserChooser3.Classes
             var detectedBrowsers = BrowserDetector.DetectedBrowsers.ToList(); // コピーを作成
             
             // 既存のブラウザとマージ
+            int rowIndex = 0;
             foreach (var detectedBrowser in detectedBrowsers)
             {
                 var existingBrowser = Browsers.FirstOrDefault(b => b.Name == detectedBrowser.Name);
                 if (existingBrowser == null)
                 {
+                    // rowとcolを自動設定
+                    detectedBrowser.PosY = rowIndex;
+                    detectedBrowser.PosX = 0;
+                    rowIndex++;
+                    
                     Browsers.Add(detectedBrowser);
-                    Logger.LogInfo("Settings.DetectBrowsers", "ブラウザ追加", detectedBrowser.Name);
+                    Logger.LogInfo("Settings.DetectBrowsers", "ブラウザ追加", detectedBrowser.Name, detectedBrowser.PosY, detectedBrowser.PosX);
                 }
             }
             
@@ -606,8 +628,8 @@ namespace BrowserChooser3.Classes
                         output = MigrateSettings(output, path);
                     }
 
-                    Logger.LogInfo("Settings.Load", "End", path);
-                    return output ?? new Settings(false);
+                    Logger.LogInfo("Settings.Load", "設定ファイル読み込み成功", path, output?.Browsers?.Count ?? 0);
+                    return output!;
                 }
                 catch (Exception ex)
                 {
@@ -629,8 +651,10 @@ namespace BrowserChooser3.Classes
                 }
             }
 
-            Logger.LogInfo("Settings.Load", "Exception: Failed to load settings file. Default settings used.", path);
-            return new Settings(false);
+            Logger.LogInfo("Settings.Load", "設定ファイルが存在しないためデフォルト設定を使用", path);
+            var defaultSettings = new Settings(false);
+            Logger.LogInfo("Settings.Load", "デフォルト設定作成完了", defaultSettings.Browsers?.Count ?? 0);
+            return defaultSettings;
         }
 
         /// <summary>

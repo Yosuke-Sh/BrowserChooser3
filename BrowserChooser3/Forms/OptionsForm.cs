@@ -452,10 +452,22 @@ namespace BrowserChooser3.Forms
                     var addButton = protocolsTab.Controls.Find("btnAdd", true).FirstOrDefault() as Button;
                     var editButton = protocolsTab.Controls.Find("btnEdit", true).FirstOrDefault() as Button;
                     var deleteButton = protocolsTab.Controls.Find("btnDelete", true).FirstOrDefault() as Button;
+                    var listView = protocolsTab.Controls.Find("lstProtocols", true).FirstOrDefault() as ListView;
 
                     if (addButton != null) addButton.Click += _protocolHandlers.AddProtocol_Click;
                     if (editButton != null) editButton.Click += _protocolHandlers.EditProtocol_Click;
                     if (deleteButton != null) deleteButton.Click += _protocolHandlers.DeleteProtocol_Click;
+                    
+                    // ListViewの選択変更イベントを設定
+                    if (listView != null)
+                    {
+                        listView.SelectedIndexChanged += (sender, e) =>
+                        {
+                            var hasSelection = listView.SelectedItems.Count > 0;
+                            if (editButton != null) editButton.Enabled = hasSelection;
+                            if (deleteButton != null) deleteButton.Enabled = hasSelection;
+                        };
+                    }
                 }
             }
             catch (Exception ex)
@@ -477,10 +489,22 @@ namespace BrowserChooser3.Forms
                     var addButton = fileTypesTab.Controls.Find("btnAdd", true).FirstOrDefault() as Button;
                     var editButton = fileTypesTab.Controls.Find("btnEdit", true).FirstOrDefault() as Button;
                     var deleteButton = fileTypesTab.Controls.Find("btnDelete", true).FirstOrDefault() as Button;
+                    var listView = fileTypesTab.Controls.Find("lstFileTypes", true).FirstOrDefault() as ListView;
 
                     if (addButton != null) addButton.Click += _fileTypeHandlers.AddFileType_Click;
                     if (editButton != null) editButton.Click += _fileTypeHandlers.EditFileType_Click;
                     if (deleteButton != null) deleteButton.Click += _fileTypeHandlers.DeleteFileType_Click;
+                    
+                    // ListViewの選択変更イベントを設定
+                    if (listView != null)
+                    {
+                        listView.SelectedIndexChanged += (sender, e) =>
+                        {
+                            var hasSelection = listView.SelectedItems.Count > 0;
+                            if (editButton != null) editButton.Enabled = hasSelection;
+                            if (deleteButton != null) deleteButton.Enabled = hasSelection;
+                        };
+                    }
                 }
             }
             catch (Exception ex)

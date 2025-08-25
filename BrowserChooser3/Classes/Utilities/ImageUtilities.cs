@@ -32,9 +32,11 @@ namespace BrowserChooser3.Classes.Utilities
                     ? browser.CustomImagePath 
                     : browser.Target;
 
+                Logger.LogInfo("ImageUtilities.GetImage", "アイコン取得開始", browser.Name, filePath, useCustomPath);
+
                 if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath))
                 {
-                    Logger.LogWarning("ImageUtilities.GetImage", "ファイルが存在しません", filePath);
+                    Logger.LogWarning("ImageUtilities.GetImage", "ファイルが存在しません", filePath, browser.Name);
                     return null;
                 }
 
@@ -42,6 +44,7 @@ namespace BrowserChooser3.Classes.Utilities
                 var icon = ExtractIconFromFile(filePath, browser.IconIndex);
                 if (icon != null)
                 {
+                    Logger.LogInfo("ImageUtilities.GetImage", "アイコン抽出成功", browser.Name, filePath);
                     return icon.ToBitmap();
                 }
 

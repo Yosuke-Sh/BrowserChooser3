@@ -93,12 +93,16 @@ namespace BrowserChooser3.Forms
             var txtArguments = Controls.Find("txtArguments", true).FirstOrDefault() as TextBox;
             var txtHotkey = Controls.Find("txtHotkey", true).FirstOrDefault() as TextBox;
             var txtCategory = Controls.Find("txtCategory", true).FirstOrDefault() as TextBox;
+            var nudRow = Controls.Find("nudRow", true).FirstOrDefault() as NumericUpDown;
+            var nudCol = Controls.Find("nudCol", true).FirstOrDefault() as NumericUpDown;
 
             if (txtName != null) txtName.Text = _browser.Name;
             if (txtTarget != null) txtTarget.Text = _browser.Target;
             if (txtArguments != null) txtArguments.Text = _browser.Arguments;
             if (txtHotkey != null) txtHotkey.Text = _browser.Hotkey != '\0' ? _browser.Hotkey.ToString() : "";
             if (txtCategory != null) txtCategory.Text = _browser.Category;
+            if (nudRow != null) nudRow.Value = _browser.PosY;
+            if (nudCol != null) nudCol.Value = _browser.PosX;
         }
 
         /// <summary>
@@ -111,11 +115,15 @@ namespace BrowserChooser3.Forms
             var txtArguments = Controls.Find("txtArguments", true).FirstOrDefault() as TextBox;
             var txtHotkey = Controls.Find("txtHotkey", true).FirstOrDefault() as TextBox;
             var txtCategory = Controls.Find("txtCategory", true).FirstOrDefault() as TextBox;
+            var nudRow = Controls.Find("nudRow", true).FirstOrDefault() as NumericUpDown;
+            var nudCol = Controls.Find("nudCol", true).FirstOrDefault() as NumericUpDown;
 
             if (txtName != null) _browser.Name = txtName.Text;
             if (txtTarget != null) _browser.Target = txtTarget.Text;
             if (txtArguments != null) _browser.Arguments = txtArguments.Text;
             if (txtCategory != null) _browser.Category = txtCategory.Text;
+            if (nudRow != null) _browser.PosY = (int)nudRow.Value;
+            if (nudCol != null) _browser.PosX = (int)nudCol.Value;
             
             if (txtHotkey != null && txtHotkey.Text.Length > 0)
             {
@@ -151,7 +159,7 @@ namespace BrowserChooser3.Forms
         private void InitializeComponent()
         {
             Text = "Add/Edit Browser";
-            Size = new Size(500, 400);
+            Size = new Size(500, 430);
             StartPosition = FormStartPosition.CenterParent;
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
@@ -174,9 +182,15 @@ namespace BrowserChooser3.Forms
             var lblCategory = new Label { Text = "Category:", Location = new Point(10, 140), AutoSize = true };
             var txtCategory = new TextBox { Name = "txtCategory", Location = new Point(120, 137), Size = new Size(300, 23) };
 
+            var lblRow = new Label { Text = "Row:", Location = new Point(10, 170), AutoSize = true };
+            var nudRow = new NumericUpDown { Name = "nudRow", Location = new Point(120, 167), Size = new Size(80, 23), Minimum = 0, Maximum = 100 };
+
+            var lblCol = new Label { Text = "Column:", Location = new Point(220, 170), AutoSize = true };
+            var nudCol = new NumericUpDown { Name = "nudCol", Location = new Point(280, 167), Size = new Size(80, 23), Minimum = 0, Maximum = 100 };
+
             // ボタン
-            var btnOK = new Button { Text = "OK", DialogResult = DialogResult.OK, Location = new Point(300, 320), Size = new Size(85, 28) };
-            var btnCancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, Location = new Point(395, 320), Size = new Size(85, 28) };
+            var btnOK = new Button { Text = "OK", DialogResult = DialogResult.OK, Location = new Point(300, 350), Size = new Size(85, 28) };
+            var btnCancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, Location = new Point(395, 350), Size = new Size(85, 28) };
 
             // コントロールの追加
             Controls.AddRange(new Control[] 
@@ -186,6 +200,8 @@ namespace BrowserChooser3.Forms
                 lblArguments, txtArguments,
                 lblHotkey, txtHotkey,
                 lblCategory, txtCategory,
+                lblRow, nudRow,
+                lblCol, nudCol,
                 btnOK, btnCancel
             });
 

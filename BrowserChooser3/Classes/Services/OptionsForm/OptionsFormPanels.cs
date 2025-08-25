@@ -75,7 +75,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 FullRowSelect = true,
                 GridLines = true,
                 Location = new Point(97, 6),
-                Size = new Size(741, 218),
+                Size = new Size(741, 420),
                 Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom,
                 AllowDrop = true,
                 MultiSelect = false,
@@ -120,7 +120,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 Name = "btnAdd",
                 Text = "Add",
                 Location = new Point(6, 6),
-                Size = new Size(85, 28),
+                Size = new Size(85, 40),
                 Font = new Font("Segoe UI", 9.5f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
 
@@ -129,7 +129,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 Name = "btnEdit",
                 Text = "Edit",
                 Location = new Point(6, 40),
-                Size = new Size(85, 28),
+                Size = new Size(85, 40),
                 Font = new Font("Segoe UI", 9.5f, FontStyle.Regular, GraphicsUnit.Point, 0),
                 Enabled = false
             };
@@ -139,7 +139,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 Name = "btnClone",
                 Text = "Clone",
                 Location = new Point(6, 74),
-                Size = new Size(85, 28),
+                Size = new Size(85, 40),
                 Font = new Font("Segoe UI", 9.5f, FontStyle.Regular, GraphicsUnit.Point, 0),
                 Enabled = false
             };
@@ -149,7 +149,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 Name = "btnDetect",
                 Text = "Detect",
                 Location = new Point(6, 108),
-                Size = new Size(85, 28),
+                Size = new Size(85, 40),
                 Font = new Font("Segoe UI", 9.5f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
 
@@ -158,7 +158,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 Name = "btnDelete",
                 Text = "Delete",
                 Location = new Point(6, 142),
-                Size = new Size(85, 28),
+                Size = new Size(85, 40),
                 Font = new Font("Segoe UI", 9.5f, FontStyle.Regular, GraphicsUnit.Point, 0),
                 Enabled = false
             };
@@ -208,7 +208,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 FullRowSelect = true,
                 GridLines = true,
                 Location = new Point(97, 6),
-                Size = new Size(741, 218),
+                Size = new Size(741, 420),
                 Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom,
                 AllowDrop = true,
                 MultiSelect = false,
@@ -227,15 +227,15 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 Name = "btnAdd",
                 Text = "Add",
                 Location = new Point(6, 6),
-                Size = new Size(85, 28),
+                Size = new Size(85, 40),
                 Font = new Font("Segoe UI", 9.5f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
             var editButton = new Button
             {
                 Name = "btnEdit",
                 Text = "Edit",
-                Location = new Point(6, 40),
-                Size = new Size(85, 28),
+                Location = new Point(6, 52),
+                Size = new Size(85, 40),
                 Font = new Font("Segoe UI", 9.5f, FontStyle.Regular, GraphicsUnit.Point, 0),
                 Enabled = false
             };
@@ -244,8 +244,8 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             {
                 Name = "btnDelete",
                 Text = "Delete",
-                Location = new Point(6, 74),
-                Size = new Size(85, 28),
+                Location = new Point(6, 98),
+                Size = new Size(85, 40),
                 Font = new Font("Segoe UI", 9.5f, FontStyle.Regular, GraphicsUnit.Point, 0),
                 Enabled = false
             };
@@ -253,8 +253,8 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var moveUpButton = new Button
             {
                 Text = "Move Up",
-                Location = new Point(6, 108),
-                Size = new Size(85, 28),
+                Location = new Point(6, 144),
+                Size = new Size(85, 40),
                 Font = new Font("Segoe UI", 9.5f, FontStyle.Regular, GraphicsUnit.Point, 0),
                 Enabled = false
             };
@@ -262,8 +262,8 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var moveDownButton = new Button
             {
                 Text = "Move Down",
-                Location = new Point(6, 142),
-                Size = new Size(85, 28),
+                Location = new Point(6, 188),
+                Size = new Size(85, 40),
                 Font = new Font("Segoe UI", 9.5f, FontStyle.Regular, GraphicsUnit.Point, 0),
                 Enabled = false
             };
@@ -313,7 +313,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 FullRowSelect = true,
                 GridLines = true,
                 Location = new Point(97, 6),
-                Size = new Size(741, 218),
+                Size = new Size(741, 420),
                 Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom,
                 MultiSelect = false,
                 HideSelection = false,
@@ -331,15 +331,15 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 Name = "btnAdd",
                 Text = "Add",
                 Location = new Point(6, 6),
-                Size = new Size(85, 28),
+                Size = new Size(85, 40),
                 Font = new Font("Segoe UI", 9.5f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
             var editButton = new Button
             {
                 Name = "btnEdit",
                 Text = "Edit",
-                Location = new Point(6, 35),
-                Size = new Size(85, 28),
+                Location = new Point(6, 52),
+                Size = new Size(85, 40),
                 Font = new Font("Segoe UI", 9.5f, FontStyle.Regular, GraphicsUnit.Point, 0),
                 Enabled = false
             };
@@ -348,8 +348,8 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             {
                 Name = "btnDelete",
                 Text = "Delete",
-                Location = new Point(6, 64),
-                Size = new Size(85, 28),
+                Location = new Point(6, 98),
+                Size = new Size(85, 40),
                 Font = new Font("Segoe UI", 9.5f, FontStyle.Regular, GraphicsUnit.Point, 0),
                 Enabled = false
             };
@@ -357,8 +357,8 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var selectDefaultButton = new Button
             {
                 Text = "Select Default App",
-                Location = new Point(6, 93),
-                Size = new Size(85, 28),
+                Location = new Point(6, 144),
+                Size = new Size(85, 40),
                 Font = new Font("Segoe UI", 9.5f, FontStyle.Regular, GraphicsUnit.Point, 0),
                 Enabled = false
             };
@@ -407,7 +407,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 FullRowSelect = true,
                 GridLines = true,
                 Location = new Point(97, 6),
-                Size = new Size(741, 218),
+                Size = new Size(741, 420),
                 Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom,
                 MultiSelect = false,
                 HideSelection = false,
@@ -425,15 +425,15 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 Name = "btnAdd",
                 Text = "Add",
                 Location = new Point(6, 6),
-                Size = new Size(85, 28),
+                Size = new Size(85, 40),
                 Font = new Font("Segoe UI", 9.5f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
             var editButton = new Button
             {
                 Name = "btnEdit",
                 Text = "Edit",
-                Location = new Point(6, 35),
-                Size = new Size(85, 28),
+                Location = new Point(6, 52),
+                Size = new Size(85, 40),
                 Font = new Font("Segoe UI", 9.5f, FontStyle.Regular, GraphicsUnit.Point, 0),
                 Enabled = false
             };
@@ -442,8 +442,8 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             {
                 Name = "btnDelete",
                 Text = "Delete",
-                Location = new Point(6, 64),
-                Size = new Size(85, 28),
+                Location = new Point(6, 98),
+                Size = new Size(85, 40),
                 Font = new Font("Segoe UI", 9.5f, FontStyle.Regular, GraphicsUnit.Point, 0),
                 Enabled = false
             };
@@ -451,8 +451,8 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var selectDefaultButton = new Button
             {
                 Text = "Select Default App",
-                Location = new Point(6, 93),
-                Size = new Size(85, 28),
+                Location = new Point(6, 144),
+                Size = new Size(85, 40),
                 Font = new Font("Segoe UI", 9.5f, FontStyle.Regular, GraphicsUnit.Point, 0),
                 Enabled = false
             };
@@ -510,7 +510,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 Name = "btnAccessibility",
                 Text = "Accessibility Settings",
                 Location = new Point(6, 6),
-                Size = new Size(200, 28),
+                Size = new Size(200, 40),
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
 
@@ -519,8 +519,8 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             {
                 Name = "btnBackgroundColor",
                 Text = "Change Background Color",
-                Location = new Point(6, 40),
-                Size = new Size(200, 28),
+                Location = new Point(6, 52),
+                Size = new Size(200, 40),
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
 
@@ -529,8 +529,8 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             {
                 Name = "btnTransparent",
                 Text = "Set Transparent Background",
-                Location = new Point(6, 74),
-                Size = new Size(200, 28),
+                Location = new Point(6, 94),
+                Size = new Size(200, 40),
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
 
@@ -713,7 +713,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var lblLogLevel = new Label
             {
                 Text = "Log Level:",
-                Location = new Point(6, 35),
+                Location = new Point(6, 55),
                 Size = new Size(80, 23),
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
@@ -721,7 +721,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var cmbLogLevel = new ComboBox
             {
                 Name = "cmbLogLevel",
-                Location = new Point(90, 32),
+                Location = new Point(90, 52),
                 Size = new Size(120, 23),
                 DropDownStyle = ComboBoxStyle.DropDownList,
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
@@ -735,7 +735,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             {
                 Name = "chkKeepHistory",
                 Text = "Keep Browser History",
-                Location = new Point(6, 65),
+                Location = new Point(6, 100),
                 Size = new Size(150, 23),
                 Checked = settings.KeepHistory,
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
@@ -746,7 +746,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var lblHistoryDays = new Label
             {
                 Text = "History Days:",
-                Location = new Point(6, 94),
+                Location = new Point(6, 145),
                 Size = new Size(80, 23),
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
@@ -754,7 +754,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var nudHistoryDays = new NumericUpDown
             {
                 Name = "nudHistoryDays",
-                Location = new Point(90, 91),
+                Location = new Point(90, 142),
                 Size = new Size(80, 23),
                 Minimum = 1,
                 Maximum = 365,
@@ -768,7 +768,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             {
                 Name = "chkPrivacyMode",
                 Text = "Privacy Mode (Clear on Exit)",
-                Location = new Point(6, 123),
+                Location = new Point(6, 190),
                 Size = new Size(200, 23),
                 Checked = settings.PrivacyMode,
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
@@ -780,7 +780,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             {
                 Name = "chkAllowDataCollection",
                 Text = "Allow Data Collection",
-                Location = new Point(6, 152),
+                Location = new Point(6, 235),
                 Size = new Size(150, 23),
                 Checked = settings.AllowDataCollection,
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
@@ -835,7 +835,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             {
                 Name = "chkStartMinimized",
                 Text = "Start Minimized",
-                Location = new Point(6, 35),
+                Location = new Point(6, 55),
                 Size = new Size(150, 23),
                 Checked = settings.StartMinimized,
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
@@ -847,7 +847,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             {
                 Name = "chkStartInTray",
                 Text = "Start in System Tray",
-                Location = new Point(6, 64),
+                Location = new Point(6, 95),
                 Size = new Size(150, 23),
                 Checked = settings.StartInTray,
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
@@ -859,7 +859,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             {
                 Name = "chkCheckDefaultOnStartup",
                 Text = "Check Default Browser on Startup",
-                Location = new Point(6, 93),
+                Location = new Point(6, 135),
                 Size = new Size(200, 23),
                 Checked = settings.CheckDefaultOnLaunch,
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
@@ -870,7 +870,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var lblStartupDelay = new Label
             {
                 Text = "Startup Delay (ms):",
-                Location = new Point(6, 122),
+                Location = new Point(6, 175),
                 Size = new Size(120, 23),
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
@@ -878,7 +878,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var nudStartupDelay = new NumericUpDown
             {
                 Name = "nudStartupDelay",
-                Location = new Point(130, 119),
+                Location = new Point(130, 172),
                 Size = new Size(80, 23),
                 Minimum = 0,
                 Maximum = 10000,
@@ -891,7 +891,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var lblStartupMessage = new Label
             {
                 Text = "Startup Message:",
-                Location = new Point(6, 151),
+                Location = new Point(6, 215),
                 Size = new Size(100, 23),
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
@@ -899,7 +899,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var txtStartupMessage = new TextBox
             {
                 Name = "txtStartupMessage",
-                Location = new Point(110, 148),
+                Location = new Point(110, 212),
                 Size = new Size(200, 23),
                 Text = settings.StartupMessage,
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
@@ -984,7 +984,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             {
                 Name = "chkAutoCheckUpdate",
                 Text = "Check for Updates Automatically",
-                Location = new Point(6, 35),
+                Location = new Point(6, 45),
                 Size = new Size(200, 23),
                 Checked = settings.AutomaticUpdates,
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
@@ -996,7 +996,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             {
                 Name = "chkAdvanced",
                 Text = "Show Advanced Options",
-                Location = new Point(6, 64),
+                Location = new Point(6, 80),
                 Size = new Size(150, 23),
                 Checked = settings.AdvancedScreens,
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
@@ -1007,7 +1007,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var lblDefaultDelay = new Label
             {
                 Text = "Default Delay (ms):",
-                Location = new Point(6, 93),
+                Location = new Point(6, 115),
                 Size = new Size(120, 23),
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
@@ -1015,7 +1015,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var nudDefaultDelay = new NumericUpDown
             {
                 Name = "nudDefaultDelay",
-                Location = new Point(130, 90),
+                Location = new Point(130, 112),
                 Size = new Size(80, 23),
                 Minimum = 0,
                 Maximum = 10000,
@@ -1028,7 +1028,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var lblSeparator = new Label
             {
                 Text = "Separator:",
-                Location = new Point(6, 122),
+                Location = new Point(6, 150),
                 Size = new Size(80, 23),
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
@@ -1036,7 +1036,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var txtSeparator = new TextBox
             {
                 Name = "txtSeparator",
-                Location = new Point(90, 119),
+                Location = new Point(90, 147),
                 Size = new Size(50, 23),
                 Text = settings.Separator,
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
@@ -1048,7 +1048,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             {
                 Name = "chkAllowStayOpen",
                 Text = "Allow Window to Stay Open",
-                Location = new Point(6, 151),
+                Location = new Point(6, 185),
                 Size = new Size(180, 23),
                 Checked = settings.AllowStayOpen,
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
@@ -1059,7 +1059,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var lblUserAgent = new Label
             {
                 Text = "User Agent:",
-                Location = new Point(6, 180),
+                Location = new Point(6, 220),
                 Size = new Size(80, 23),
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
@@ -1067,7 +1067,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var txtUserAgent = new TextBox
             {
                 Name = "txtUserAgent",
-                Location = new Point(90, 177),
+                Location = new Point(90, 217),
                 Size = new Size(200, 23),
                 Text = settings.UserAgent,
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)

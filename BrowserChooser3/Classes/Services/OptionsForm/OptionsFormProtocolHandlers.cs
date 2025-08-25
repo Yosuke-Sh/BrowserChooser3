@@ -56,8 +56,23 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 _mProtocols.Add(newId, newProtocol);
                 _setModified(true);
 
-                // ListViewを更新
-                RefreshProtocolsListView();
+                // ListViewに直接アイテムを追加
+                var protocolsTab = _form.tabSettings.TabPages["tabProtocols"];
+                if (protocolsTab != null)
+                {
+                    var listView = protocolsTab.Controls.Find("lstProtocols", true).FirstOrDefault() as ListView;
+                    if (listView != null)
+                    {
+                        var browser = _mBrowser.Values.FirstOrDefault(b => b.Guid == newProtocol.BrowserGuid);
+                        var item = new ListViewItem(newProtocol.Name)
+                        {
+                            Tag = newProtocol
+                        };
+                        item.SubItems.Add(browser?.Name ?? "Unknown");
+                        item.SubItems.Add("Default App");
+                        listView.Items.Add(item);
+                    }
+                }
 
                 Logger.LogInfo("OptionsFormProtocolHandlers.AddProtocol_Click", "プロトコル追加完了", newId);
             }
@@ -133,21 +148,19 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                     if (listView?.SelectedItems.Count > 0)
                     {
                         var selectedItem = listView.SelectedItems[0];
-                        if (selectedItem.Tag is Protocol protocol)
+                        var selectedIndex = selectedItem.Tag is int tag ? tag : -1;
+                        if (selectedIndex != -1 && _mProtocols.ContainsKey(selectedIndex))
                         {
+                            var protocol = _mProtocols[selectedIndex];
                             var result = MessageBox.Show($"プロトコル '{protocol.Name}' を削除しますか？", "確認",
                                 MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
                             if (result == DialogResult.Yes)
                             {
-                                var keyToRemove = _mProtocols.FirstOrDefault(kvp => kvp.Value.Guid == protocol.Guid).Key;
-                                if (keyToRemove != 0)
-                                {
-                                    _mProtocols.Remove(keyToRemove);
-                                    _setModified(true);
-                                    RefreshProtocolsListView();
-                                    Logger.LogInfo("OptionsFormProtocolHandlers.DeleteProtocol_Click", "プロトコル削除完了", protocol.Guid);
-                                }
+                                _mProtocols.Remove(selectedIndex);
+                                listView.Items.Remove(selectedItem);
+                                _setModified(true);
+                                Logger.LogInfo("OptionsFormProtocolHandlers.DeleteProtocol_Click", "プロトコル削除完了", protocol.Guid);
                             }
                         }
                     }

@@ -2848,6 +2848,47 @@
             フォームの初期化
             </summary>
         </member>
+        <member name="T:BrowserChooser3.Forms.AddEditCategoryForm">
+            <summary>
+            カテゴリの追加・編集用フォーム
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.AddEditCategoryForm.#ctor">
+            <summary>
+            AddEditCategoryFormクラスの新しいインスタンスを初期化します
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.AddEditCategoryForm.AddCategory(System.Windows.Forms.Form)">
+            <summary>
+            カテゴリを追加します
+            </summary>
+            <param name="parentForm">親フォーム</param>
+            <returns>追加が成功した場合はtrue</returns>
+        </member>
+        <member name="M:BrowserChooser3.Forms.AddEditCategoryForm.EditCategory(System.String,System.Windows.Forms.Form)">
+            <summary>
+            カテゴリを編集します
+            </summary>
+            <param name="categoryName">編集するカテゴリ名</param>
+            <param name="parentForm">親フォーム</param>
+            <returns>編集が成功した場合はtrue</returns>
+        </member>
+        <member name="M:BrowserChooser3.Forms.AddEditCategoryForm.GetCategoryName">
+            <summary>
+            入力されたカテゴリ名を取得します
+            </summary>
+            <returns>カテゴリ名</returns>
+        </member>
+        <member name="M:BrowserChooser3.Forms.AddEditCategoryForm.InitializeComponent">
+            <summary>
+            フォームの初期化
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.AddEditCategoryForm.btnOK_Click(System.Object,System.EventArgs)">
+            <summary>
+            OKボタンのクリックイベント
+            </summary>
+        </member>
         <member name="T:BrowserChooser3.Forms.AddEditFileTypeForm">
             <summary>
             ファイルタイプ追加・編集ダイアログ

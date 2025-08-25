@@ -14,7 +14,7 @@ namespace BrowserChooser3.Classes.Utilities
         [DllImport("user32.dll")]
         private static extern bool SetForegroundWindow(IntPtr hWnd);
 
-        [DllImport("user32.dll")]
+        [DllImport("kernel32.dll")]
         private static extern bool GetFileAttributesEx(string lpFileName, int fInfoLevelId, out WIN32_FILE_ATTRIBUTE_DATA fileData);
 
         [StructLayout(LayoutKind.Sequential)]
@@ -39,7 +39,7 @@ namespace BrowserChooser3.Classes.Utilities
         /// <param name="terminate">起動後にアプリケーションを終了するか</param>
         public static void LaunchBrowser(Browser browser, string url, bool terminate)
         {
-            Logger.LogInfo("BrowserUtilities.LaunchBrowser", "Start", browser.Name, url, terminate);
+            Logger.LogInfo("BrowserUtilities.LaunchBrowser", "Start", browser.Name, browser.Target, url, terminate);
 
             try
             {
