@@ -25,9 +25,13 @@ namespace BrowserChooser3
                 var args = Environment.GetCommandLineArgs();
                 Logger.LogTrace("Program.Main", "起動パラメータ", $"引数数={args.Length - 1}");
 
-                if (args.Length > 1)
+                // 起動時初期化処理
+                var startupArgs = args.Skip(1).ToArray();
+                var startupResult = StartupLauncher.Initialize(startupArgs);
+                
+                if (!startupResult)
                 {
-                    ProcessCommandLineArgs(args.Skip(1).ToArray());
+                    Logger.LogWarning("Program.Main", "起動時初期化に失敗しましたが、アプリケーションを続行します");
                 }
 
                 // Windows Forms アプリケーションの設定
@@ -39,13 +43,21 @@ namespace BrowserChooser3
                 var mainForm = new MainForm();
                 Logger.LogInfo("Program.Main", "メインフォーム作成完了");
 
-                // コマンドライン引数からURLを取得
+                // コマンドライン引数からURLを取得（従来の処理）
                 string url = string.Empty;
                 if (args.Length > 1)
                 {
-                    url = args[1];
-                    mainForm.UpdateURL(url);
-                    Logger.LogInfo("Program.Main", "URL設定", url);
+                    // 最初の非オプション引数をURLとして扱う
+                    var firstNonOptionArg = startupArgs.FirstOrDefault(arg => 
+                        !arg.StartsWith("-") && !arg.StartsWith("/") && 
+                        !arg.StartsWith("--") && !arg.StartsWith("--"));
+                    
+                    if (!string.IsNullOrEmpty(firstNonOptionArg))
+                    {
+                        url = firstNonOptionArg;
+                        mainForm.UpdateURL(url);
+                        Logger.LogInfo("Program.Main", "URL設定", url);
+                    }
                 }
 
                 Logger.LogInfo("Program.Main", "Application.Run開始");
@@ -63,7 +75,7 @@ namespace BrowserChooser3
         }
 
         /// <summary>
-        /// コマンドライン引数を処理
+        /// コマンドライン引数を処理（従来の処理 - 後方互換性のため保持）
         /// </summary>
         /// <param name="args">コマンドライン引数</param>
         private static void ProcessCommandLineArgs(string[] args)

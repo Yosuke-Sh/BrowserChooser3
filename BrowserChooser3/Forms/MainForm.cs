@@ -1,4 +1,5 @@
 using BrowserChooser3.Classes;
+using System.Drawing.Drawing2D;
 
 namespace BrowserChooser3.Forms
 {
@@ -16,6 +17,10 @@ namespace BrowserChooser3.Forms
         private Browser? _defaultBrowser;
         private Label? _countdownLabel;
         private bool _isPaused = false;
+
+        // Aero効果関連
+        private bool _hasAero = false;
+        private string _currentText = string.Empty;
 
         // Browser Chooser 2互換のUI要素
         private Button? _btnInfo;
@@ -79,7 +84,10 @@ namespace BrowserChooser3.Forms
                 KeyDown += MainForm_KeyDown;
                 
                 // 初期テキストの設定
-                UpdateAutoOpenText();
+                UpdateAutoOpenTextWithSpaceKey();
+                
+                // URL短縮解除の設定
+                SetupURLUnshortening();
                 
                 Logger.LogInfo("MainForm.InitializeApplication", "End");
             }
@@ -90,6 +98,35 @@ namespace BrowserChooser3.Forms
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        /// <summary>
+        /// URL短縮解除の設定
+        /// </summary>
+        private void SetupURLUnshortening()
+        {
+            if (_settings?.RevealShortURL == true && !string.IsNullOrEmpty(_currentUrl))
+            {
+                var parts = URLUtilities.DetermineParts(_currentUrl);
+                if (parts.IsProtocol == Settings.TriState.True && 
+                    (parts.Protocol == "http" || parts.Protocol == "https"))
+                {
+                    var userAgent = _settings.UserAgent ?? "Mozilla/5.0";
+                    URLUtilities.UnshortenURLAsync(_currentUrl, userAgent, (expandedUrl) =>
+                    {
+                        if (InvokeRequired)
+                        {
+                            Invoke(new Action(() => UpdateURL(expandedUrl)));
+                        }
+                        else
+                        {
+                            UpdateURL(expandedUrl);
+                        }
+                    });
+                }
+            }
+        }
+
+
 
         /// <summary>
         /// フォームの設定
@@ -107,7 +144,6 @@ namespace BrowserChooser3.Forms
             SizeGripStyle = SizeGripStyle.Show;  // サイズグリップを表示
             StartPosition = FormStartPosition.CenterScreen;
             TopMost = true;
-            BackColor = Color.Gold;
             CancelButton = _btnCancel;
             KeyPreview = true;
             
@@ -125,7 +161,14 @@ namespace BrowserChooser3.Forms
             if (_settings?.UseAero == true && GeneralUtilities.IsAeroEnabled())
             {
                 GeneralUtilities.MakeFormGlassy(this);
+                _hasAero = true; // Aero効果が有効な場合のフラグを立てる
                 Logger.LogInfo("MainForm.ConfigureForm", "Aero効果を適用");
+            }
+            else
+            {
+                // Aero効果が無効の場合の背景色設定
+                BackColor = Color.FromArgb(185, 209, 234);
+                StyleXP(); // Aero効果が無効の場合のスタイル設定
             }
             
             Logger.LogInfo("MainForm.ConfigureForm", "End");
@@ -194,6 +237,50 @@ namespace BrowserChooser3.Forms
                     buttonIndex++;
                 }
             }
+        }
+
+        /// <summary>
+        /// フォームの描画処理
+        /// Aero効果の有無に応じて背景を描画します
+        /// </summary>
+        /// <param name="e">描画イベント引数</param>
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            if (!_hasAero)
+            {
+                // Aero効果が無効の場合: グラデーション背景を描画
+                using var brush = new LinearGradientBrush(
+                    DisplayRectangle,
+                    Color.FromArgb(185, 209, 234),
+                    Color.FromArgb(132, 151, 173),
+                    LinearGradientMode.Vertical);
+                e.Graphics.FillRectangle(brush, DisplayRectangle);
+            }
+            else if (_hasAero && _settings?.BackgroundColor != Color.Transparent.ToArgb())
+            {
+                // カスタム背景色を使用
+                using var brush = new LinearGradientBrush(
+                    DisplayRectangle,
+                    Color.FromArgb(185, 209, 234),
+                    Color.FromArgb(_settings?.BackgroundColor ?? Color.White.ToArgb()),
+                    LinearGradientMode.Vertical);
+                e.Graphics.FillRectangle(brush, DisplayRectangle);
+            }
+
+            base.OnPaint(e);
+        }
+
+        /// <summary>
+        /// XPスタイルの設定
+        /// Aero効果が無効の場合のフォームスタイルを設定します
+        /// </summary>
+        private void StyleXP()
+        {
+            FormBorderStyle = FormBorderStyle.FixedDialog;
+            if (_chkAutoClose != null)
+                _chkAutoClose.BackColor = Color.Transparent;
+            if (_chkAutoOpen != null)
+                _chkAutoOpen.BackColor = Color.Transparent;
         }
 
         /// <summary>
@@ -271,7 +358,7 @@ namespace BrowserChooser3.Forms
             {
                 var browser = visibleBrowsers[i];
                 
-                var button = new Button
+                var button = new FFButton
                 {
                     Name = $"btnBrowser_{i}",
                     Text = browser.Name, // テキストはブラウザ名のみ
@@ -281,11 +368,19 @@ namespace BrowserChooser3.Forms
                     BackColor = Color.Transparent,
                     UseVisualStyleBackColor = true,
                     Font = new Font("Segoe UI", 9.5f, FontStyle.Regular, GraphicsUnit.Point, 0),
-                    TextAlign = ContentAlignment.MiddleCenter
+                    TextAlign = ContentAlignment.MiddleCenter,
+                    ShowFocusBox = _settings?.ShowFocus ?? true,
+                    TrapArrowKeys = true
                 };
                 
                 // イベントハンドラーの設定
                 button.Click += BrowserButton_Click;
+                
+                // FFButtonの矢印キーイベントハンドラーを設定
+                if (button is FFButton ffButton)
+                {
+                    ffButton.ArrowKeyUp += FFButton_ArrowKeyUp;
+                }
                 
                 Controls.Add(button);
                 
@@ -610,7 +705,7 @@ namespace BrowserChooser3.Forms
                 Controls.Add(_btnCancel);
 
                 // 自動閉じるチェックボックス（Browser Chooser 2互換）
-                _chkAutoClose = new CheckBox
+                _chkAutoClose = new FFCheckBox
                 {
                     Anchor = AnchorStyles.Bottom | AnchorStyles.Left,
                     AutoSize = true,
@@ -625,13 +720,15 @@ namespace BrowserChooser3.Forms
                     TabIndex = 5,
                     Text = "ブラウザを選択後に自動的に閉じる",
                     UseCompatibleTextRendering = true,
-                    UseVisualStyleBackColor = true
+                    UseVisualStyleBackColor = true,
+                    ShowFocusBox = _settings?.ShowFocus ?? true,
+                    UsesAero = _settings?.UseAero ?? true
                 };
                 _chkAutoClose.CheckedChanged += ChkAutoClose_CheckedChanged;
                 Controls.Add(_chkAutoClose);
 
                 // 自動開くチェックボックス（Browser Chooser 2互換）
-                _chkAutoOpen = new CheckBox
+                _chkAutoOpen = new FFCheckBox
                 {
                     Anchor = AnchorStyles.Bottom | AnchorStyles.Left,
                     AutoSize = true,
@@ -643,7 +740,9 @@ namespace BrowserChooser3.Forms
                     Size = new Size(450, 22),
                     TabIndex = 6,
                     Text = "指定秒数後にデフォルトブラウザを開く [space key:Timerの一時停止/再開]",
-                    UseVisualStyleBackColor = false
+                    UseVisualStyleBackColor = false,
+                    ShowFocusBox = _settings?.ShowFocus ?? true,
+                    UsesAero = _settings?.UseAero ?? true
                 };
                 _chkAutoOpen.CheckedChanged += ChkAutoOpen_CheckedChanged;
                 Controls.Add(_chkAutoOpen);
@@ -1009,6 +1108,7 @@ namespace BrowserChooser3.Forms
             {
                 e.Handled = true;
                 e.SuppressKeyPress = true;
+                HandleArrowKeyUp(e.KeyCode);
                 return;
             }
             
@@ -1017,7 +1117,7 @@ namespace BrowserChooser3.Forms
             {
                 e.Handled = true;
                 e.SuppressKeyPress = true;
-                _chkAutoOpen!.Checked = !_chkAutoOpen.Checked;
+                _isPaused = !_isPaused;
                 UpdateAutoOpenText();
                 return;
             }
@@ -1040,6 +1140,87 @@ namespace BrowserChooser3.Forms
                 }
                 return;
             }
+        }
+
+        /// <summary>
+        /// 矢印キーによるフォーカス移動（Browser Chooser 2互換）
+        /// </summary>
+        private void HandleArrowKeyUp(Keys keyData)
+        {
+            if (_browsers == null || _settings == null) return;
+
+            var currentButton = ActiveControl as Button;
+            if (currentButton?.Tag is not Browser currentBrowser) return;
+
+            // 現在のボタンの位置を取得
+            var currentIndex = _browsers.IndexOf(currentBrowser);
+            if (currentIndex == -1) return;
+
+            var buttonWidth = _settings.IconWidth;
+            var buttonHeight = _settings.IconHeight;
+            var gapWidth = _settings.IconGapWidth;
+            var gapHeight = _settings.IconGapHeight;
+            
+            // フォーム幅に基づいて列数を計算
+            var availableWidth = ClientSize.Width - 80;
+            var columnsPerRow = Math.Max(1, availableWidth / (buttonWidth + gapWidth));
+            var rows = (_browsers.Count + columnsPerRow - 1) / columnsPerRow;
+
+            var currentRow = currentIndex / columnsPerRow;
+            var currentCol = currentIndex % columnsPerRow;
+
+            int targetRow = currentRow;
+            int targetCol = currentCol;
+
+            switch (keyData)
+            {
+                case Keys.Up:
+                    targetRow = MinusLoop(currentRow, rows);
+                    break;
+                case Keys.Down:
+                    targetRow = AddLoop(currentRow, rows);
+                    break;
+                case Keys.Left:
+                    targetCol = MinusLoop(currentCol, columnsPerRow);
+                    break;
+                case Keys.Right:
+                    targetCol = AddLoop(targetCol, columnsPerRow);
+                    break;
+            }
+
+            // ターゲット位置のブラウザを探す
+            var targetIndex = targetRow * columnsPerRow + targetCol;
+            if (targetIndex < _browsers.Count)
+            {
+                var targetBrowser = _browsers[targetIndex];
+                var targetButton = Controls.OfType<Button>().FirstOrDefault(b => b.Tag == targetBrowser);
+                if (targetButton != null)
+                {
+                    targetButton.Focus();
+                    Logger.LogTrace("MainForm.HandleArrowKeyUp", "フォーカス移動", 
+                        $"{currentBrowser.Name} -> {targetBrowser.Name}");
+                }
+            }
+        }
+
+        /// <summary>
+        /// ループ減算（Browser Chooser 2互換）
+        /// </summary>
+        private int MinusLoop(int start, int max)
+        {
+            start = start - 1;
+            if (start == 0) return max;
+            return start;
+        }
+
+        /// <summary>
+        /// ループ加算（Browser Chooser 2互換）
+        /// </summary>
+        private int AddLoop(int start, int max)
+        {
+            start = start + 1;
+            if (start > max) return 1;
+            return start;
         }
 
         #region Browser Chooser 2互換イベントハンドラー
@@ -1200,6 +1381,135 @@ namespace BrowserChooser3.Forms
             // 編集モードの処理を実装
         }
 
+        /// <summary>
+        /// FFButtonの矢印キーイベントハンドラー
+        /// </summary>
+        private void FFButton_ArrowKeyUp(object? sender, Keys keyData)
+        {
+            Logger.LogTrace("MainForm.FFButton_ArrowKeyUp", $"矢印キー: {keyData}");
+            HandleArrowKeyUp(keyData);
+        }
+
         #endregion
+
+        /// <summary>
+        /// フォーカス表示の処理
+        /// </summary>
+        /// <param name="sender">イベント送信者</param>
+        /// <param name="e">イベント引数</param>
+        public void HandleGotFocus(object sender, EventArgs e)
+        {
+            var title = _settings?.DefaultMessage ?? "Browser Chooser 3"; // フォールバック
+
+            if (sender is Button button)
+            {
+                if (button.Tag == null)
+                {
+                    title = button.AccessibleName ?? title;
+                    _currentText = title;
+                }
+                else if (button.Tag is int index && _browsers != null && index < _browsers.Count)
+                {
+                    var browser = _browsers[index];
+                    _currentText = $"Open {browser.Name}";
+
+                    if (_settings?.ShowURL == true)
+                    {
+                        title = $"{_currentText}{_settings.Separator}{_currentUrl}";
+                    }
+                    else
+                    {
+                        title = _currentText;
+                    }
+                }
+            }
+
+            Text = title.Length > 256 ? title.Substring(0, 256) : title;
+        }
+
+        /// <summary>
+        /// フォーカス喪失の処理
+        /// </summary>
+        /// <param name="sender">イベント送信者</param>
+        /// <param name="e">イベント引数</param>
+        public void HandleLostFocus(object sender, EventArgs e)
+        {
+            _currentText = _settings?.DefaultMessage ?? "Browser Chooser 3";
+            
+            if (_settings?.ShowURL == true)
+            {
+                if (string.IsNullOrEmpty(_currentText))
+                {
+                    Text = _currentUrl.Length > 256 ? _currentUrl.Substring(0, 256) : _currentUrl;
+                }
+                else
+                {
+                    var fullText = $"{_currentText}{_settings.Separator}{_currentUrl}";
+                    Text = fullText.Length > 256 ? fullText.Substring(0, 256) : fullText;
+                }
+            }
+            else
+            {
+                Text = _currentText.Length > 256 ? _currentText.Substring(0, 256) : _currentText;
+            }
+        }
+
+        /// <summary>
+        /// キーアップイベントの処理
+        /// 矢印キーとTabキーでフォーカスを移動します
+        /// </summary>
+        /// <param name="sender">イベント送信者</param>
+        /// <param name="e">キーイベント引数</param>
+        /// <returns>処理された場合はtrue</returns>
+        protected bool HandleKeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Up || e.KeyCode == Keys.Down || 
+                e.KeyCode == Keys.Left || e.KeyCode == Keys.Right || 
+                e.KeyCode == Keys.Tab)
+            {
+                // フォーカスを移動
+                e.SuppressKeyPress = true;
+                e.Handled = true;
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// スペースキーによるタイマー一時停止/再開の処理
+        /// </summary>
+        /// <param name="e">キーイベント引数</param>
+        private void HandleSpaceKey(KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Space && _tmrDelay != null && _defaultBrowser != null)
+            {
+                if (_tmrDelay.Enabled)
+                {
+                    _isPaused = true;
+                    _tmrDelay.Stop();
+                }
+                else
+                {
+                    _isPaused = false;
+                    _tmrDelay.Start();
+                }
+
+                UpdateAutoOpenText();
+                e.SuppressKeyPress = true;
+                e.Handled = true;
+            }
+        }
+
+        /// <summary>
+        /// 自動オープンテキストを更新します（スペースキー対応版）
+        /// </summary>
+        private void UpdateAutoOpenTextWithSpaceKey()
+        {
+            if (_chkAutoOpen != null && _defaultBrowser != null)
+            {
+                var pauseStatus = _tmrDelay?.Enabled == false ? "un" : "";
+                _chkAutoOpen.Text = $"Open {_defaultBrowser.Name} in {_currentDelay} seconds. [Space: {pauseStatus}pause timer]";
+            }
+        }
     }
 }

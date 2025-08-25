@@ -502,6 +502,17 @@ namespace BrowserChooser3.Classes
         public static Settings Load(string path)
         {
             Logger.LogInfo("Settings.Load", "Start", path);
+            
+            // ポリシーを初期化
+            Policy.Initialize();
+            
+            // ポリシーで設定ファイルが無視される場合
+            if (Policy.IgnoreSettingsFile)
+            {
+                Logger.LogInfo("Settings.Load", "ポリシーにより設定ファイルが無視されます");
+                return new Settings(false);
+            }
+
             var serializer = new XmlSerializer(typeof(Settings));
             Settings output;
 
@@ -541,6 +552,12 @@ namespace BrowserChooser3.Classes
                     else if (output?.Height < 1)
                         output.Height = 1;
 
+                    // 設定ファイルのバージョン管理と自動マイグレーション
+                    if (output != null)
+                    {
+                        output = MigrateSettings(output, path);
+                    }
+
                     Logger.LogInfo("Settings.Load", "End", path);
                     return output ?? new Settings(false);
                 }
@@ -549,9 +566,206 @@ namespace BrowserChooser3.Classes
                     Logger.LogError("Settings.Load", "Exception: Failed to load settings file. Default settings used.", path, ex.Message, ex.StackTrace ?? "");
                 }
             }
+            else
+            {
+                // レガシー設定ファイルのインポートを試行
+                if (Importer.HasLegacySettings(path))
+                {
+                    Logger.LogInfo("Settings.Load", "レガシー設定ファイルを検出", path);
+                    var newSettings = new Settings(false);
+                    if (Importer.ImportLegacySettings(path, newSettings))
+                    {
+                        Logger.LogInfo("Settings.Load", "レガシー設定のインポートが完了しました");
+                        return newSettings;
+                    }
+                }
+            }
 
             Logger.LogInfo("Settings.Load", "Exception: Failed to load settings file. Default settings used.", path);
             return new Settings(false);
+        }
+
+        /// <summary>
+        /// 設定ファイルのバージョン管理と自動マイグレーション
+        /// </summary>
+        /// <param name="settings">設定オブジェクト</param>
+        /// <param name="path">設定ファイルパス</param>
+        /// <returns>マイグレーション後の設定オブジェクト</returns>
+        private static Settings MigrateSettings(Settings settings, string path)
+        {
+            Logger.LogInfo("Settings.MigrateSettings", "マイグレーション開始", settings.FileVersion);
+
+            try
+            {
+                // バージョン1から2へのマイグレーション
+                if (settings.FileVersion == 1)
+                {
+                    Logger.LogInfo("Settings.MigrateSettings", "バージョン1から2へのマイグレーション");
+                    MigrateFromVersion1(settings);
+                    settings.FileVersion = 2;
+                }
+
+                // バージョン2から3へのマイグレーション
+                if (settings.FileVersion == 2)
+                {
+                    Logger.LogInfo("Settings.MigrateSettings", "バージョン2から3へのマイグレーション");
+                    MigrateFromVersion2(settings);
+                    settings.FileVersion = 3;
+                }
+
+                // バージョン3から4へのマイグレーション
+                if (settings.FileVersion == 3)
+                {
+                    Logger.LogInfo("Settings.MigrateSettings", "バージョン3から4へのマイグレーション");
+                    MigrateFromVersion3(settings);
+                    settings.FileVersion = 4;
+                }
+
+                // バージョン4から5へのマイグレーション
+                if (settings.FileVersion == 4)
+                {
+                    Logger.LogInfo("Settings.MigrateSettings", "バージョン4から5へのマイグレーション");
+                    MigrateFromVersion4(settings);
+                    settings.FileVersion = 5;
+                }
+
+                // 最新バージョンに更新
+                if (settings.FileVersion < CURRENT_FILE_VERSION)
+                {
+                    Logger.LogInfo("Settings.MigrateSettings", $"バージョン{settings.FileVersion}から{CURRENT_FILE_VERSION}へのマイグレーション");
+                    settings.FileVersion = CURRENT_FILE_VERSION;
+                }
+
+                // マイグレーション後に保存
+                if (settings.FileVersion != CURRENT_FILE_VERSION)
+                {
+                    settings.DoSave(true);
+                }
+
+                Logger.LogInfo("Settings.MigrateSettings", "マイグレーション完了", settings.FileVersion);
+                return settings;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("Settings.MigrateSettings", "マイグレーションエラー", ex.Message);
+                return settings;
+            }
+        }
+
+        /// <summary>
+        /// バージョン1から2へのマイグレーション
+        /// </summary>
+        /// <param name="settings">設定オブジェクト</param>
+        private static void MigrateFromVersion1(Settings settings)
+        {
+            // プロトコルとファイルタイプの追加
+            if (settings.Protocols == null || settings.Protocols.Count == 0)
+            {
+                settings.Protocols = new List<Protocol>();
+                CreateDefaultProtocols(settings);
+            }
+
+            if (settings.FileTypes == null || settings.FileTypes.Count == 0)
+            {
+                settings.FileTypes = new List<FileType>();
+                CreateDefaultFileTypes(settings);
+            }
+
+            // ブラウザのGUID生成と位置調整
+            foreach (var browser in settings.Browsers)
+            {
+                if (browser.Guid == Guid.Empty)
+                {
+                    browser.Guid = Guid.NewGuid();
+                }
+
+                // 位置の調整
+                if (browser.PosX > 5)
+                {
+                    browser.PosY = (int)Math.Ceiling((double)browser.PosX / 5);
+                    browser.PosX = browser.PosX % 5;
+                    if (browser.PosX == 0) browser.PosX = 5;
+                }
+            }
+        }
+
+        /// <summary>
+        /// バージョン2から3へのマイグレーション
+        /// </summary>
+        /// <param name="settings">設定オブジェクト</param>
+        private static void MigrateFromVersion2(Settings settings)
+        {
+            // アクセシビリティ設定の追加
+            if (string.IsNullOrEmpty(settings.Separator))
+            {
+                settings.Separator = " - ";
+            }
+
+            // スクリーンリーダーの検出
+            var hasScreenReader = GeneralUtilities.HasScreenReader();
+            settings.UseAccessibleRendering = hasScreenReader;
+            if (hasScreenReader)
+            {
+                settings.ShowFocus = true;
+            }
+        }
+
+        /// <summary>
+        /// バージョン3から4へのマイグレーション
+        /// </summary>
+        /// <param name="settings">設定オブジェクト</param>
+        private static void MigrateFromVersion3(Settings settings)
+        {
+            // アクセシビリティ設定の再構築
+            // 既存の設定を保持
+        }
+
+        /// <summary>
+        /// バージョン4から5へのマイグレーション
+        /// </summary>
+        /// <param name="settings">設定オブジェクト</param>
+        private static void MigrateFromVersion4(Settings settings)
+        {
+            // レジストリチェック機能の追加
+            // 既存の設定を保持
+        }
+
+        /// <summary>
+        /// デフォルトプロトコルを作成します
+        /// </summary>
+        /// <param name="settings">設定オブジェクト</param>
+        private static void CreateDefaultProtocols(Settings settings)
+        {
+            var browserGuids = settings.Browsers.Select(b => b.Guid).ToList();
+            var defaultCategories = new List<string> { "Default" };
+
+            settings.Protocols.AddRange(new[]
+            {
+                new Protocol("HTTP", "http", browserGuids, defaultCategories),
+                new Protocol("Secure HTTP", "https", browserGuids, defaultCategories),
+                new Protocol("FTP", "ftp", browserGuids, defaultCategories),
+                new Protocol("Secure FTP", "ftps", browserGuids, defaultCategories),
+                new Protocol("URL Shortcut", "url", browserGuids, defaultCategories)
+            });
+        }
+
+        /// <summary>
+        /// デフォルトファイルタイプを作成します
+        /// </summary>
+        /// <param name="settings">設定オブジェクト</param>
+        private static void CreateDefaultFileTypes(Settings settings)
+        {
+            var browserGuids = settings.Browsers.Select(b => b.Guid).ToList();
+            var defaultCategories = new List<string> { "Default" };
+
+            settings.FileTypes.AddRange(new[]
+            {
+                new FileType("XHTML", "xhtml", browserGuids, defaultCategories),
+                new FileType("XHT", "xht", browserGuids, defaultCategories),
+                new FileType("SHTML", "shtml", browserGuids, defaultCategories),
+                new FileType("HTML", "html", browserGuids, defaultCategories),
+                new FileType("HTM", "htm", browserGuids, defaultCategories)
+            });
         }
     }
 }

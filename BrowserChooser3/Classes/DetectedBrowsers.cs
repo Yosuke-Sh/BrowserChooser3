@@ -2,240 +2,481 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.Win32;
+using System.Net;
+using System.Text.Json;
+using System.Net.Http;
+using System.Diagnostics;
 
 namespace BrowserChooser3.Classes
 {
     /// <summary>
     /// ブラウザ検出クラス
+    /// システムにインストールされているブラウザを検出し、オンライン更新に対応します
     /// </summary>
     public static class DetectedBrowsers
     {
         /// <summary>
-        /// ブラウザ検出を実行します
+        /// オンライン定義のURL
+        /// </summary>
+        private const string ONLINE_DEFINITIONS_URL = "https://raw.githubusercontent.com/browserchooser/browser-definitions/main/browsers.json";
+
+        /// <summary>
+        /// ローカル定義ファイルのパス
+        /// </summary>
+        private static string LocalDefinitionsPath => Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            "BrowserChooser3",
+            "browser-definitions.json");
+
+        /// <summary>
+        /// ブラウザ検出を実行
         /// </summary>
         /// <returns>検出されたブラウザのリスト</returns>
         public static List<Browser> DoBrowserDetection()
         {
-            var detectedBrowsers = new List<Browser>();
+            Logger.LogInfo("DetectedBrowsers.DoBrowserDetection", "ブラウザ検出開始");
 
             try
             {
-                Logger.LogInfo("DetectedBrowsers.DoBrowserDetection", "ブラウザ検出開始");
+                var detectedBrowsers = new List<Browser>();
 
-                // 一般的なブラウザのパスを検索
-                var commonPaths = GetCommonBrowserPaths();
-                foreach (var path in commonPaths)
+                // ローカル定義から検出
+                var localBrowsers = DetectFromLocalDefinitions();
+                detectedBrowsers.AddRange(localBrowsers);
+
+                // オンライン定義から検出（オプション）
+                if (ShouldCheckOnlineDefinitions())
                 {
-                    if (File.Exists(path))
-                    {
-                        var browser = CreateBrowserFromPath(path);
-                        if (browser != null)
-                        {
-                            detectedBrowsers.Add(browser);
-                        }
-                    }
+                    var onlineBrowsers = DetectFromOnlineDefinitions();
+                    detectedBrowsers.AddRange(onlineBrowsers);
                 }
 
-                // レジストリからブラウザを検索
-                var registryBrowsers = GetBrowsersFromRegistry();
-                foreach (var browser in registryBrowsers)
-                {
-                    if (!detectedBrowsers.Exists(b => b.Target == browser.Target))
-                    {
-                        detectedBrowsers.Add(browser);
-                    }
-                }
+                // 重複を除去
+                var uniqueBrowsers = RemoveDuplicates(detectedBrowsers);
 
-                Logger.LogInfo("DetectedBrowsers.DoBrowserDetection", $"検出完了: {detectedBrowsers.Count}個のブラウザを検出");
-                return detectedBrowsers;
+                Logger.LogInfo("DetectedBrowsers.DoBrowserDetection", "ブラウザ検出完了", uniqueBrowsers.Count);
+                return uniqueBrowsers;
             }
             catch (Exception ex)
             {
                 Logger.LogError("DetectedBrowsers.DoBrowserDetection", "ブラウザ検出エラー", ex.Message);
-                return detectedBrowsers;
+                return new List<Browser>();
             }
         }
 
         /// <summary>
-        /// 一般的なブラウザのパスを取得します
+        /// ローカル定義からブラウザを検出
         /// </summary>
-        /// <returns>ブラウザパスのリスト</returns>
-        private static List<string> GetCommonBrowserPaths()
-        {
-            var paths = new List<string>();
-
-            // Program Files (x86) のパス
-            var programFilesX86 = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
-            var programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
-
-            // Chrome
-            paths.Add(Path.Combine(programFilesX86, "Google\\Chrome\\Application\\chrome.exe"));
-            paths.Add(Path.Combine(programFiles, "Google\\Chrome\\Application\\chrome.exe"));
-
-            // Firefox
-            paths.Add(Path.Combine(programFilesX86, "Mozilla Firefox\\firefox.exe"));
-            paths.Add(Path.Combine(programFiles, "Mozilla Firefox\\firefox.exe"));
-
-            // Edge
-            paths.Add(Path.Combine(programFilesX86, "Microsoft\\Edge\\Application\\msedge.exe"));
-            paths.Add(Path.Combine(programFiles, "Microsoft\\Edge\\Application\\msedge.exe"));
-
-            // Internet Explorer
-            paths.Add(Path.Combine(programFiles, "Internet Explorer\\iexplore.exe"));
-
-            // Opera
-            paths.Add(Path.Combine(programFilesX86, "Opera\\launcher.exe"));
-            paths.Add(Path.Combine(programFiles, "Opera\\launcher.exe"));
-
-            // Safari
-            paths.Add(Path.Combine(programFiles, "Safari\\Safari.exe"));
-
-            return paths;
-        }
-
-        /// <summary>
-        /// レジストリからブラウザを取得します
-        /// </summary>
-        /// <returns>ブラウザのリスト</returns>
-        private static List<Browser> GetBrowsersFromRegistry()
+        /// <returns>検出されたブラウザのリスト</returns>
+        private static List<Browser> DetectFromLocalDefinitions()
         {
             var browsers = new List<Browser>();
 
             try
             {
-                // HTTP プロトコルハンドラーからブラウザを検索
-                using (var key = Registry.ClassesRoot.OpenSubKey("http\\shell\\open\\command"))
+                // 一般的なブラウザのインストールパスをチェック
+                var commonPaths = GetCommonBrowserPaths();
+                
+                foreach (var path in commonPaths)
                 {
-                    if (key != null)
+                    if (File.Exists(path.ExecutablePath))
                     {
-                        var value = key.GetValue("") as string;
-                        if (!string.IsNullOrEmpty(value))
+                        var browser = CreateBrowserFromPath(path);
+                        if (browser != null)
                         {
-                            var path = ExtractPathFromCommand(value);
-                            if (!string.IsNullOrEmpty(path) && File.Exists(path))
-                            {
-                                var browser = CreateBrowserFromPath(path);
-                                if (browser != null)
-                                {
-                                    browsers.Add(browser);
-                                }
-                            }
+                            browsers.Add(browser);
                         }
                     }
                 }
 
-                // HTTPS プロトコルハンドラーからブラウザを検索
-                using (var key = Registry.ClassesRoot.OpenSubKey("https\\shell\\open\\command"))
-                {
-                    if (key != null)
-                    {
-                        var value = key.GetValue("") as string;
-                        if (!string.IsNullOrEmpty(value))
-                        {
-                            var path = ExtractPathFromCommand(value);
-                            if (!string.IsNullOrEmpty(path) && File.Exists(path))
-                            {
-                                var browser = CreateBrowserFromPath(path);
-                                if (browser != null && !browsers.Exists(b => b.Target == browser.Target))
-                                {
-                                    browsers.Add(browser);
-                                }
-                            }
-                        }
-                    }
-                }
+                // レジストリから検出
+                var registryBrowsers = DetectFromRegistry();
+                browsers.AddRange(registryBrowsers);
+
+                Logger.LogInfo("DetectedBrowsers.DetectFromLocalDefinitions", "ローカル検出完了", browsers.Count);
             }
             catch (Exception ex)
             {
-                Logger.LogError("DetectedBrowsers.GetBrowsersFromRegistry", "レジストリ検索エラー", ex.Message);
+                Logger.LogError("DetectedBrowsers.DetectFromLocalDefinitions", "ローカル検出エラー", ex.Message);
             }
 
             return browsers;
         }
 
         /// <summary>
-        /// コマンド文字列からパスを抽出します
+        /// オンライン定義からブラウザを検出
         /// </summary>
-        /// <param name="command">コマンド文字列</param>
-        /// <returns>抽出されたパス</returns>
-        private static string ExtractPathFromCommand(string command)
+        /// <returns>検出されたブラウザのリスト</returns>
+        private static List<Browser> DetectFromOnlineDefinitions()
         {
+            var browsers = new List<Browser>();
+
             try
             {
-                // ダブルクォートで囲まれたパスを抽出
-                if (command.StartsWith("\"") && command.Contains("\""))
+                using var httpClient = new HttpClient();
+                httpClient.Timeout = TimeSpan.FromSeconds(10);
+
+                var response = httpClient.GetStringAsync(ONLINE_DEFINITIONS_URL).Result;
+                var onlineDefinitions = JsonSerializer.Deserialize<List<OnlineBrowserDefinition>>(response);
+
+                if (onlineDefinitions != null)
                 {
-                    var endQuote = command.IndexOf("\"", 1);
-                    if (endQuote > 1)
+                    foreach (var definition in onlineDefinitions)
                     {
-                        return command.Substring(1, endQuote - 1);
+                        var browser = CreateBrowserFromOnlineDefinition(definition);
+                        if (browser != null)
+                        {
+                            browsers.Add(browser);
+                        }
                     }
+
+                    // オンライン定義をローカルに保存
+                    SaveOnlineDefinitions(onlineDefinitions);
                 }
 
-                // スペースで区切られた最初の部分を取得
-                var parts = command.Split(' ');
-                if (parts.Length > 0)
-                {
-                    return parts[0];
-                }
+                Logger.LogInfo("DetectedBrowsers.DetectFromOnlineDefinitions", "オンライン検出完了", browsers.Count);
             }
             catch (Exception ex)
             {
-                Logger.LogError("DetectedBrowsers.ExtractPathFromCommand", "パス抽出エラー", ex.Message);
+                Logger.LogError("DetectedBrowsers.DetectFromOnlineDefinitions", "オンライン検出エラー", ex.Message);
             }
 
-            return string.Empty;
+            return browsers;
         }
 
         /// <summary>
-        /// パスからブラウザオブジェクトを作成します
+        /// オンライン定義のチェックが必要かどうかを判定
         /// </summary>
-        /// <param name="path">ブラウザのパス</param>
-        /// <returns>ブラウザオブジェクト</returns>
-        private static Browser? CreateBrowserFromPath(string path)
+        /// <returns>チェックが必要な場合はtrue</returns>
+        private static bool ShouldCheckOnlineDefinitions()
         {
             try
             {
-                if (!File.Exists(path))
-                    return null;
+                // 最後のチェック時刻を確認
+                var lastCheckFile = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                    "BrowserChooser3",
+                    "last-online-check.txt");
 
-                var fileName = Path.GetFileNameWithoutExtension(path);
-                var browser = new Browser
+                if (File.Exists(lastCheckFile))
                 {
-                    Name = GetBrowserDisplayName(fileName),
-                    Target = path,
-                    Guid = Guid.NewGuid(),
-                    Hotkey = '\0',
-                    PosX = 1,
-                    PosY = 1
-                };
+                    var lastCheckText = File.ReadAllText(lastCheckFile);
+                    if (DateTime.TryParse(lastCheckText, out var lastCheck))
+                    {
+                        // 24時間以内にチェック済みの場合はスキップ
+                        if (DateTime.Now - lastCheck < TimeSpan.FromHours(24))
+                        {
+                            return false;
+                        }
+                    }
+                }
 
-                return browser;
+                // チェック時刻を記録
+                var directory = Path.GetDirectoryName(lastCheckFile);
+                if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                }
+                File.WriteAllText(lastCheckFile, DateTime.Now.ToString("O"));
+
+                return true;
             }
             catch (Exception ex)
             {
-                Logger.LogError("DetectedBrowsers.CreateBrowserFromPath", $"ブラウザ作成エラー: {path}", ex.Message);
+                Logger.LogError("DetectedBrowsers.ShouldCheckOnlineDefinitions", "オンライン定義チェック判定エラー", ex.Message);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 一般的なブラウザのパスを取得
+        /// </summary>
+        /// <returns>ブラウザパスのリスト</returns>
+        private static List<BrowserPathInfo> GetCommonBrowserPaths()
+        {
+            var paths = new List<BrowserPathInfo>();
+
+            // Chrome
+            paths.Add(new BrowserPathInfo
+            {
+                Name = "Google Chrome",
+                ExecutablePath = @"C:\Program Files\Google\Chrome\Application\chrome.exe",
+                Arguments = "",
+                Category = "Popular"
+            });
+
+            paths.Add(new BrowserPathInfo
+            {
+                Name = "Google Chrome",
+                ExecutablePath = @"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe",
+                Arguments = "",
+                Category = "Popular"
+            });
+
+            // Firefox
+            paths.Add(new BrowserPathInfo
+            {
+                Name = "Mozilla Firefox",
+                ExecutablePath = @"C:\Program Files\Mozilla Firefox\firefox.exe",
+                Arguments = "",
+                Category = "Popular"
+            });
+
+            paths.Add(new BrowserPathInfo
+            {
+                Name = "Mozilla Firefox",
+                ExecutablePath = @"C:\Program Files (x86)\Mozilla Firefox\firefox.exe",
+                Arguments = "",
+                Category = "Popular"
+            });
+
+            // Edge
+            paths.Add(new BrowserPathInfo
+            {
+                Name = "Microsoft Edge",
+                ExecutablePath = @"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
+                Arguments = "",
+                Category = "Popular"
+            });
+
+            // Opera
+            paths.Add(new BrowserPathInfo
+            {
+                Name = "Opera",
+                ExecutablePath = @"C:\Program Files\Opera\launcher.exe",
+                Arguments = "",
+                Category = "Alternative"
+            });
+
+            paths.Add(new BrowserPathInfo
+            {
+                Name = "Opera",
+                ExecutablePath = @"C:\Program Files (x86)\Opera\launcher.exe",
+                Arguments = "",
+                Category = "Alternative"
+            });
+
+            // Safari
+            paths.Add(new BrowserPathInfo
+            {
+                Name = "Safari",
+                ExecutablePath = @"C:\Program Files\Safari\Safari.exe",
+                Arguments = "",
+                Category = "Alternative"
+            });
+
+            // Brave
+            paths.Add(new BrowserPathInfo
+            {
+                Name = "Brave Browser",
+                ExecutablePath = @"C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe",
+                Arguments = "",
+                Category = "Alternative"
+            });
+
+            return paths;
+        }
+
+        /// <summary>
+        /// レジストリからブラウザを検出
+        /// </summary>
+        /// <returns>検出されたブラウザのリスト</returns>
+        private static List<Browser> DetectFromRegistry()
+        {
+            var browsers = new List<Browser>();
+
+            try
+            {
+                // アプリケーションのレジストリキーをチェック
+                var appPaths = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths");
+                if (appPaths != null)
+                {
+                    foreach (var subKeyName in appPaths.GetSubKeyNames())
+                    {
+                        if (subKeyName.EndsWith(".exe"))
+                        {
+                            var subKey = appPaths.OpenSubKey(subKeyName);
+                            if (subKey != null)
+                            {
+                                var defaultValue = subKey.GetValue("") as string;
+                                if (!string.IsNullOrEmpty(defaultValue) && File.Exists(defaultValue))
+                                {
+                                    var browser = CreateBrowserFromPath(new BrowserPathInfo
+                                    {
+                                        Name = Path.GetFileNameWithoutExtension(subKeyName),
+                                        ExecutablePath = defaultValue,
+                                        Arguments = "",
+                                        Category = "Registry"
+                                    });
+                                    if (browser != null)
+                                    {
+                                        browsers.Add(browser);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("DetectedBrowsers.DetectFromRegistry", "レジストリ検出エラー", ex.Message);
+            }
+
+            return browsers;
+        }
+
+        /// <summary>
+        /// パス情報からブラウザを作成
+        /// </summary>
+        /// <param name="pathInfo">パス情報</param>
+        /// <returns>ブラウザオブジェクト</returns>
+        private static Browser? CreateBrowserFromPath(BrowserPathInfo pathInfo)
+        {
+            try
+            {
+                if (!File.Exists(pathInfo.ExecutablePath))
+                {
+                    return null;
+                }
+
+                var fileInfo = new FileInfo(pathInfo.ExecutablePath);
+                var versionInfo = FileVersionInfo.GetVersionInfo(pathInfo.ExecutablePath);
+
+                return new Browser
+                {
+                    Name = !string.IsNullOrEmpty(versionInfo.ProductName) ? versionInfo.ProductName : pathInfo.Name,
+                    Target = pathInfo.ExecutablePath,
+                    Arguments = pathInfo.Arguments,
+                    Guid = Guid.NewGuid(),
+                    Hotkey = '\0',
+                    PosX = 1,
+                    PosY = 1,
+                    Scale = 1.0,
+                    IconIndex = 0,
+                    Category = pathInfo.Category,
+                    Visible = true,
+                    IsDefault = false
+                };
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("DetectedBrowsers.CreateBrowserFromPath", "ブラウザ作成エラー", ex.Message);
                 return null;
             }
         }
 
         /// <summary>
-        /// ブラウザの表示名を取得します
+        /// オンライン定義からブラウザを作成
         /// </summary>
-        /// <param name="fileName">ファイル名</param>
-        /// <returns>表示名</returns>
-        private static string GetBrowserDisplayName(string fileName)
+        /// <param name="definition">オンライン定義</param>
+        /// <returns>ブラウザオブジェクト</returns>
+        private static Browser? CreateBrowserFromOnlineDefinition(OnlineBrowserDefinition definition)
         {
-            return fileName.ToLower() switch
+            try
             {
-                "chrome" => "Google Chrome",
-                "firefox" => "Mozilla Firefox",
-                "msedge" => "Microsoft Edge",
-                "iexplore" => "Internet Explorer",
-                "opera" => "Opera",
-                "safari" => "Safari",
-                _ => fileName
-            };
+                // オンライン定義のパスが実際に存在するかチェック
+                if (!File.Exists(definition.ExecutablePath))
+                {
+                    return null;
+                }
+
+                return new Browser
+                {
+                    Name = definition.Name,
+                    Target = definition.ExecutablePath,
+                    Arguments = definition.Arguments ?? "",
+                    Guid = Guid.NewGuid(),
+                    Hotkey = !string.IsNullOrEmpty(definition.Hotkey) ? definition.Hotkey[0] : '\0',
+                    PosX = definition.PosX ?? 1,
+                    PosY = definition.PosY ?? 1,
+                    Scale = definition.Scale ?? 1.0,
+                    IconIndex = definition.IconIndex ?? 0,
+                    Category = definition.Category ?? "Online",
+                    Visible = definition.Visible ?? true,
+                    IsDefault = false
+                };
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("DetectedBrowsers.CreateBrowserFromOnlineDefinition", "オンライン定義からブラウザ作成エラー", ex.Message);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// 重複するブラウザを除去
+        /// </summary>
+        /// <param name="browsers">ブラウザのリスト</param>
+        /// <returns>重複除去されたブラウザのリスト</returns>
+        private static List<Browser> RemoveDuplicates(List<Browser> browsers)
+        {
+            var uniqueBrowsers = new List<Browser>();
+            var seenPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var browser in browsers)
+            {
+                if (!string.IsNullOrEmpty(browser.Target) && !seenPaths.Contains(browser.Target))
+                {
+                    seenPaths.Add(browser.Target);
+                    uniqueBrowsers.Add(browser);
+                }
+            }
+
+            return uniqueBrowsers;
+        }
+
+        /// <summary>
+        /// オンライン定義をローカルに保存
+        /// </summary>
+        /// <param name="definitions">オンライン定義</param>
+        private static void SaveOnlineDefinitions(List<OnlineBrowserDefinition> definitions)
+        {
+            try
+            {
+                var directory = Path.GetDirectoryName(LocalDefinitionsPath);
+                if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                }
+
+                var json = JsonSerializer.Serialize(definitions, new JsonSerializerOptions { WriteIndented = true });
+                File.WriteAllText(LocalDefinitionsPath, json);
+
+                Logger.LogInfo("DetectedBrowsers.SaveOnlineDefinitions", "オンライン定義保存完了");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("DetectedBrowsers.SaveOnlineDefinitions", "オンライン定義保存エラー", ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// ブラウザパス情報
+        /// </summary>
+        private class BrowserPathInfo
+        {
+            public string Name { get; set; } = "";
+            public string ExecutablePath { get; set; } = "";
+            public string Arguments { get; set; } = "";
+            public string Category { get; set; } = "";
+        }
+
+        /// <summary>
+        /// オンライン定義
+        /// </summary>
+        private class OnlineBrowserDefinition
+        {
+            public string Name { get; set; } = "";
+            public string ExecutablePath { get; set; } = "";
+            public string? Arguments { get; set; }
+            public string? Hotkey { get; set; }
+            public int? PosX { get; set; }
+            public int? PosY { get; set; }
+            public double? Scale { get; set; }
+            public int? IconIndex { get; set; }
+            public string? Category { get; set; }
+            public bool? Visible { get; set; }
         }
     }
 }

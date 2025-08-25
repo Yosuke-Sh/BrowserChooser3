@@ -192,6 +192,10 @@ namespace BrowserChooser3.Forms
                 // 設定の読み込み
                 LoadSettings();
                 
+                // ドラッグ&ドロップ機能の設定
+                SetupURLDragDrop();
+                SetupBrowserDragDrop();
+                
                 Logger.LogInfo("OptionsForm.InitializeForm", "End");
             }
             catch (Exception ex)
@@ -890,7 +894,7 @@ namespace BrowserChooser3.Forms
                 Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
             };
 
-            var txtSeperator = new TextBox
+            var txtSeparator = new TextBox
             {
                 Text = _settings.Separator,
                 Location = new Point(232, 99),
@@ -912,7 +916,7 @@ namespace BrowserChooser3.Forms
             panel.Controls.Add(label5);
             panel.Controls.Add(label6);
             panel.Controls.Add(txtMessage);
-            panel.Controls.Add(txtSeperator);
+            panel.Controls.Add(txtSeparator);
             
             tabPage.Controls.Add(panel);
             return tabPage;
@@ -1511,7 +1515,11 @@ namespace BrowserChooser3.Forms
                     // ImageListにアイコンを追加
                     if (_imBrowserIcons != null)
                     {
-                        _imBrowserIcons.Images.Add(ImageUtilities.GetImage(clonedBrowser, false));
+                        var image = ImageUtilities.GetImage(clonedBrowser, false);
+                        if (image != null)
+                        {
+                            _imBrowserIcons.Images.Add(image);
+                        }
                     }
                 }
                 _mLastBrowserID = _mBrowser.Count - 1;
@@ -1925,7 +1933,11 @@ namespace BrowserChooser3.Forms
                     // ImageListにアイコンを追加
                     if (_imBrowserIcons != null)
                     {
-                        _imBrowserIcons.Images.Add(ImageUtilities.GetImage(newBrowser, false));
+                        var image = ImageUtilities.GetImage(newBrowser, false);
+                        if (image != null)
+                        {
+                            _imBrowserIcons.Images.Add(image);
+                        }
                     }
                     
                     _mLastBrowserID++;
@@ -1969,7 +1981,11 @@ namespace BrowserChooser3.Forms
                         // ImageListアイコンの更新
                         if (_imBrowserIcons != null && selectedItem.Index < _imBrowserIcons.Images.Count)
                         {
-                            _imBrowserIcons.Images[selectedItem.Index] = ImageUtilities.GetImage(updatedBrowser, false);
+                            var image = ImageUtilities.GetImage(updatedBrowser, false);
+                            if (image != null)
+                            {
+                                _imBrowserIcons.Images[selectedItem.Index] = image;
+                            }
                         }
                         
                         _isModified = true;
@@ -2062,7 +2078,11 @@ namespace BrowserChooser3.Forms
                         // ImageListにアイコンを追加
                         if (_imBrowserIcons != null)
                         {
-                            _imBrowserIcons.Images.Add(ImageUtilities.GetImage(clonedBrowser, false));
+                            var image = ImageUtilities.GetImage(clonedBrowser, false);
+                            if (image != null)
+                            {
+                                _imBrowserIcons.Images.Add(image);
+                            }
                         }
                         
                         _mLastBrowserID++;
@@ -2213,7 +2233,11 @@ namespace BrowserChooser3.Forms
                         // ImageListにアイコンを追加
                         if (_imBrowserIcons != null)
                         {
-                            _imBrowserIcons.Images.Add(ImageUtilities.GetImage(browser, false));
+                            var image = ImageUtilities.GetImage(browser, false);
+                            if (image != null)
+                            {
+                                _imBrowserIcons.Images.Add(image);
+                            }
                         }
                     }
 
@@ -2922,6 +2946,9 @@ namespace BrowserChooser3.Forms
                 // URL管理機能の設定
                 SetupURLManagement();
                 
+                // カテゴリ管理機能の設定
+                SetupCategoryManagement();
+                
 
                 
                 Logger.LogInfo("OptionsForm.OptionsForm_Shown", "設定読み込み完了");
@@ -2987,7 +3014,11 @@ namespace BrowserChooser3.Forms
                             // ImageListにアイコンを追加
                             if (_imBrowserIcons != null)
                             {
-                                _imBrowserIcons.Images.Add(ImageUtilities.GetImage(newBrowser, false));
+                                var image = ImageUtilities.GetImage(newBrowser, false);
+                                if (image != null)
+                                {
+                                    _imBrowserIcons.Images.Add(image);
+                                }
                             }
 
                             // ListViewにアイテムを追加
@@ -3077,7 +3108,15 @@ namespace BrowserChooser3.Forms
                             // ImageListアイコンの更新
                             if (_imBrowserIcons != null)
                             {
-                                _imBrowserIcons.Images[selectedIndex] = ImageUtilities.ScaleImageTo(ImageUtilities.GetImage(updatedBrowser, false), new Size(16, 16));
+                                var image = ImageUtilities.GetImage(updatedBrowser, false);
+                                if (image != null)
+                                {
+                                    var scaledImage = ImageUtilities.ScaleImageTo(image, new Size(16, 16));
+                                    if (scaledImage != null)
+                                    {
+                                        _imBrowserIcons.Images[selectedIndex] = scaledImage;
+                                    }
+                                }
                             }
                             
                             // プロトコル・ファイルタイプの更新
@@ -3141,7 +3180,11 @@ namespace BrowserChooser3.Forms
                             // ImageListにアイコンを追加
                             if (_imBrowserIcons != null)
                             {
-                                _imBrowserIcons.Images.Add(ImageUtilities.GetImage(newBrowser, false));
+                                var image = ImageUtilities.GetImage(newBrowser, false);
+                                if (image != null)
+                                {
+                                    _imBrowserIcons.Images.Add(image);
+                                }
                             }
 
                             // ListViewにアイテムを追加
@@ -3534,7 +3577,11 @@ namespace BrowserChooser3.Forms
                                     // ImageListにアイコンを追加
                                     if (_imBrowserIcons != null)
                                     {
-                                        _imBrowserIcons.Images.Add(ImageUtilities.GetImage(browser, false));
+                                        var image = ImageUtilities.GetImage(browser, false);
+                                        if (image != null)
+                                        {
+                                            _imBrowserIcons.Images.Add(image);
+                                        }
                                     }
                                     
                                     _mLastBrowserID++;
@@ -3752,7 +3799,11 @@ namespace BrowserChooser3.Forms
                             // ImageListにアイコンを追加
                             if (_imBrowserIcons != null)
                             {
-                                _imBrowserIcons.Images.Add(ImageUtilities.GetImage(browser, false));
+                                var image = ImageUtilities.GetImage(browser, false);
+                                if (image != null)
+                                {
+                                    _imBrowserIcons.Images.Add(image);
+                                }
                             }
                             
                             _mLastBrowserID++;
@@ -3770,7 +3821,596 @@ namespace BrowserChooser3.Forms
         }
 
         #endregion
+
+        /// <summary>
+        /// URLドラッグ&amp;ドロップ機能の設定
+        /// </summary>
+        private void SetupURLDragDrop()
+        {
+            Logger.LogInfo("OptionsForm.SetupURLDragDrop", "URLドラッグ&ドロップ機能設定開始");
+
+            try
+            {
+                // URLリストビューにドラッグ&ドロップを設定
+                var listViewURLs = Controls.Find("lstURLs", true).FirstOrDefault() as ListView;
+                if (listViewURLs != null)
+                {
+                    listViewURLs.AllowDrop = true;
+                    listViewURLs.DragEnter += ListViewURLs_DragEnter;
+                    listViewURLs.DragDrop += ListViewURLs_DragDrop;
+                    listViewURLs.DragOver += ListViewURLs_DragOver;
+                    listViewURLs.ItemDrag += ListViewURLs_ItemDrag;
+                    listViewURLs.DragLeave += ListViewURLs_DragLeave;
+                }
+
+                Logger.LogInfo("OptionsForm.SetupURLDragDrop", "URLドラッグ&ドロップ機能設定完了");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("OptionsForm.SetupURLDragDrop", "URLドラッグ&ドロップ機能設定エラー", ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// URLリストビューのドラッグ開始イベント
+        /// </summary>
+        private void ListViewURLs_ItemDrag(object? sender, ItemDragEventArgs e)
+        {
+            if (e.Item is ListViewItem item)
+            {
+                Logger.LogInfo("OptionsForm.ListViewURLs_ItemDrag", "URLドラッグ開始", item.Text);
+                DoDragDrop(item, DragDropEffects.Move);
+            }
+        }
+
+        /// <summary>
+        /// URLリストビューのドラッグ進入イベント
+        /// </summary>
+        private void ListViewURLs_DragEnter(object? sender, DragEventArgs e)
+        {
+            if (e.Data?.GetDataPresent(typeof(ListViewItem)) == true)
+            {
+                e.Effect = DragDropEffects.Move;
+            }
+        }
+
+        /// <summary>
+        /// URLリストビューのドラッグオーバーイベント
+        /// </summary>
+        private void ListViewURLs_DragOver(object? sender, DragEventArgs e)
+        {
+            if (e.Data?.GetDataPresent(typeof(ListViewItem)) == true)
+            {
+                e.Effect = DragDropEffects.Move;
+            }
+        }
+
+        /// <summary>
+        /// URLリストビューのドラッグ離脱イベント
+        /// </summary>
+        private void ListViewURLs_DragLeave(object? sender, EventArgs e)
+        {
+            // ドラッグ離脱時の処理（必要に応じて実装）
+        }
+
+        /// <summary>
+        /// URLリストビューのドロップイベント
+        /// </summary>
+        private void ListViewURLs_DragDrop(object? sender, DragEventArgs e)
+        {
+            try
+            {
+                if (e.Data?.GetDataPresent(typeof(ListViewItem)) == true && sender is ListView listView)
+                {
+                    var draggedItem = e.Data.GetData(typeof(ListViewItem)) as ListViewItem;
+                    var dropPoint = listView.PointToClient(new Point(e.X, e.Y));
+                    var dropItem = listView.GetItemAt(dropPoint.X, dropPoint.Y);
+
+                    if (draggedItem != null && dropItem != null && draggedItem != dropItem)
+                    {
+                        // ドラッグされたアイテムとドロップ先アイテムの順序を変更
+                        var draggedIndex = draggedItem.Index;
+                        var dropIndex = dropItem.Index;
+
+                        // リストビューアイテムの順序を変更
+                        listView.Items.Remove(draggedItem);
+                        listView.Items.Insert(dropIndex, draggedItem);
+
+                        // 内部データの順序も変更
+                        ReorderURLs(draggedIndex, dropIndex);
+
+                        Logger.LogInfo("OptionsForm.ListViewURLs_DragDrop", "URL順序変更完了", 
+                            $"from {draggedIndex} to {dropIndex}");
+                        
+                        _isModified = true;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("OptionsForm.ListViewURLs_DragDrop", "URLドロップ処理エラー", ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// URLの順序を変更します
+        /// </summary>
+        /// <param name="fromIndex">元のインデックス</param>
+        /// <param name="toIndex">新しいインデックス</param>
+        private void ReorderURLs(int fromIndex, int toIndex)
+        {
+            try
+            {
+                var urlList = _mURLs.Values.ToList();
+                if (fromIndex < urlList.Count && toIndex < urlList.Count)
+                {
+                    var movedUrl = urlList[fromIndex];
+                    urlList.RemoveAt(fromIndex);
+                    urlList.Insert(toIndex, movedUrl);
+
+                    // 内部データを更新
+                    _mURLs.Clear();
+                    for (int i = 0; i < urlList.Count; i++)
+                    {
+                        _mURLs[i] = urlList[i];
+                    }
+
+                    Logger.LogInfo("OptionsForm.ReorderURLs", "URL順序変更", 
+                        $"from {fromIndex} to {toIndex}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("OptionsForm.ReorderURLs", "URL順序変更エラー", ex.Message);
+            }
+        }
+
         #endregion
+
+        /// <summary>
+        /// カテゴリ管理機能の設定
+        /// </summary>
+        private void SetupCategoryManagement()
+        {
+            Logger.LogInfo("OptionsForm.SetupCategoryManagement", "カテゴリ管理機能設定開始");
+
+            try
+            {
+                // カテゴリ管理用のコントロールを作成
+                CreateCategoryControls();
+                
+                // カテゴリデータの読み込み
+                LoadCategories();
+                
+                Logger.LogInfo("OptionsForm.SetupCategoryManagement", "カテゴリ管理機能設定完了");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("OptionsForm.SetupCategoryManagement", "カテゴリ管理機能設定エラー", ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// カテゴリ管理用のコントロールを作成します
+        /// </summary>
+        private void CreateCategoryControls()
+        {
+            // カテゴリ管理用のパネル
+            var categoryPanel = new Panel
+            {
+                Name = "categoryPanel",
+                Location = new Point(200, 50),
+                Size = new Size(600, 400),
+                Visible = false
+            };
+
+            // カテゴリリスト
+            var categoryListView = new ListView
+            {
+                Name = "categoryListView",
+                Location = new Point(10, 10),
+                Size = new Size(200, 300),
+                View = View.Details,
+                FullRowSelect = true,
+                GridLines = true
+            };
+            categoryListView.Columns.Add("Name", 150);
+            categoryListView.Columns.Add("Count", 50);
+
+            // カテゴリ追加ボタン
+            var btnAddCategory = new Button
+            {
+                Name = "btnAddCategory",
+                Text = "Add Category",
+                Location = new Point(10, 320),
+                Size = new Size(90, 25)
+            };
+            btnAddCategory.Click += BtnAddCategory_Click;
+
+            // カテゴリ編集ボタン
+            var btnEditCategory = new Button
+            {
+                Name = "btnEditCategory",
+                Text = "Edit Category",
+                Location = new Point(110, 320),
+                Size = new Size(90, 25)
+            };
+            btnEditCategory.Click += BtnEditCategory_Click;
+
+            // カテゴリ削除ボタン
+            var btnDeleteCategory = new Button
+            {
+                Name = "btnDeleteCategory",
+                Text = "Delete Category",
+                Location = new Point(210, 320),
+                Size = new Size(90, 25)
+            };
+            btnDeleteCategory.Click += BtnDeleteCategory_Click;
+
+            // カテゴリ内アイテムリスト
+            var categoryItemsListView = new ListView
+            {
+                Name = "categoryItemsListView",
+                Location = new Point(320, 10),
+                Size = new Size(270, 300),
+                View = View.Details,
+                FullRowSelect = true,
+                GridLines = true
+            };
+            categoryItemsListView.Columns.Add("Type", 60);
+            categoryItemsListView.Columns.Add("Name", 200);
+
+            // コントロールをパネルに追加
+            categoryPanel.Controls.Add(categoryListView);
+            categoryPanel.Controls.Add(btnAddCategory);
+            categoryPanel.Controls.Add(btnEditCategory);
+            categoryPanel.Controls.Add(btnDeleteCategory);
+            categoryPanel.Controls.Add(categoryItemsListView);
+
+            // メインフォームに追加
+            Controls.Add(categoryPanel);
+        }
+
+        /// <summary>
+        /// カテゴリデータを読み込みます
+        /// </summary>
+        private void LoadCategories()
+        {
+            try
+            {
+                var categoryListView = Controls.Find("categoryListView", true).FirstOrDefault() as ListView;
+                if (categoryListView != null)
+                {
+                    categoryListView.Items.Clear();
+
+                    // ブラウザからカテゴリを収集
+                    var categories = _mBrowser.Values
+                        .Select(b => b.Category)
+                        .Where(c => !string.IsNullOrEmpty(c))
+                        .Distinct()
+                        .ToList();
+
+                    // URLからカテゴリを収集
+                    categories.AddRange(_mURLs.Values
+                        .Select(u => u.Category)
+                        .Where(c => !string.IsNullOrEmpty(c))
+                        .Distinct());
+
+                    // プロトコルからカテゴリを収集
+                    categories.AddRange(_mProtocols.Values
+                        .Select(p => p.Category)
+                        .Where(c => !string.IsNullOrEmpty(c))
+                        .Distinct());
+
+                    // ファイルタイプからカテゴリを収集
+                    categories.AddRange(_mFileTypes.Values
+                        .Select(f => f.Category)
+                        .Where(c => !string.IsNullOrEmpty(c))
+                        .Distinct());
+
+                    // 重複を除去してソート
+                    categories = categories.Distinct().OrderBy(c => c).ToList();
+
+                    foreach (var category in categories)
+                    {
+                        var item = categoryListView.Items.Add(category);
+                        var count = GetCategoryItemCount(category);
+                        item.SubItems.Add(count.ToString());
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("OptionsForm.LoadCategories", "カテゴリ読み込みエラー", ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// カテゴリ内のアイテム数を取得します
+        /// </summary>
+        /// <param name="category">カテゴリ名</param>
+        /// <returns>アイテム数</returns>
+        private int GetCategoryItemCount(string category)
+        {
+            var count = 0;
+            count += _mBrowser.Values.Count(b => b.Category == category);
+            count += _mURLs.Values.Count(u => u.Category == category);
+            count += _mProtocols.Values.Count(p => p.Category == category);
+            count += _mFileTypes.Values.Count(f => f.Category == category);
+            return count;
+        }
+
+        /// <summary>
+        /// カテゴリ追加ボタンのクリックイベント
+        /// </summary>
+        private void BtnAddCategory_Click(object? sender, EventArgs e)
+        {
+            try
+            {
+                var categoryName = Microsoft.VisualBasic.Interaction.InputBox(
+                    "Enter category name:", "Add Category", "");
+                
+                if (!string.IsNullOrEmpty(categoryName))
+                {
+                    // カテゴリを追加（実際の実装では設定に保存）
+                    LoadCategories(); // リストを再読み込み
+                    _isModified = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("OptionsForm.BtnAddCategory_Click", "カテゴリ追加エラー", ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// カテゴリ編集ボタンのクリックイベント
+        /// </summary>
+        private void BtnEditCategory_Click(object? sender, EventArgs e)
+        {
+            try
+            {
+                var categoryListView = Controls.Find("categoryListView", true).FirstOrDefault() as ListView;
+                if (categoryListView?.SelectedItems.Count > 0)
+                {
+                    var selectedCategory = categoryListView.SelectedItems[0].Text;
+                    var newCategoryName = Microsoft.VisualBasic.Interaction.InputBox(
+                        "Enter new category name:", "Edit Category", selectedCategory);
+                    
+                    if (!string.IsNullOrEmpty(newCategoryName) && newCategoryName != selectedCategory)
+                    {
+                        // カテゴリ名を更新（実際の実装では設定に保存）
+                        LoadCategories(); // リストを再読み込み
+                        _isModified = true;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("OptionsForm.BtnEditCategory_Click", "カテゴリ編集エラー", ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// カテゴリ削除ボタンのクリックイベント
+        /// </summary>
+        private void BtnDeleteCategory_Click(object? sender, EventArgs e)
+        {
+            try
+            {
+                var categoryListView = Controls.Find("categoryListView", true).FirstOrDefault() as ListView;
+                if (categoryListView?.SelectedItems.Count > 0)
+                {
+                    var selectedCategory = categoryListView.SelectedItems[0].Text;
+                    var result = MessageBox.Show(
+                        $"Are you sure you want to delete the category '{selectedCategory}'?",
+                        "Confirm Delete",
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Question);
+                    
+                    if (result == DialogResult.Yes)
+                    {
+                        // カテゴリを削除（実際の実装では設定に保存）
+                        LoadCategories(); // リストを再読み込み
+                        _isModified = true;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("OptionsForm.BtnDeleteCategory_Click", "カテゴリ削除エラー", ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// ブラウザドラッグ&amp;ドロップ機能の設定
+        /// </summary>
+        private void SetupBrowserDragDrop()
+        {
+            Logger.LogInfo("OptionsForm.SetupBrowserDragDrop", "ブラウザドラッグ&ドロップ機能設定開始");
+
+            try
+            {
+                // ブラウザリストビューにドラッグ&ドロップを設定
+                var listViewBrowsers = Controls.Find("lstBrowsers", true).FirstOrDefault() as ListView;
+                if (listViewBrowsers != null)
+                {
+                    listViewBrowsers.AllowDrop = true;
+                    listViewBrowsers.DragEnter += ListViewBrowsers_DragEnter;
+                    listViewBrowsers.DragDrop += ListViewBrowsers_DragDrop;
+                    listViewBrowsers.DragLeave += ListViewBrowsers_DragLeave;
+                }
+
+                Logger.LogInfo("OptionsForm.SetupBrowserDragDrop", "ブラウザドラッグ&ドロップ機能設定完了");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("OptionsForm.SetupBrowserDragDrop", "ブラウザドラッグ&ドロップ機能設定エラー", ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// ブラウザリストビューのドラッグ進入イベント
+        /// </summary>
+        private void ListViewBrowsers_DragEnter(object? sender, DragEventArgs e)
+        {
+            // ファイルドロップかどうかをチェック
+            if (e.Data?.GetDataPresent(DataFormats.FileDrop) == true)
+            {
+                e.Effect = DragDropEffects.Copy;
+                if (sender is ListView listView)
+                {
+                    listView.BackColor = Color.FromKnownColor(KnownColor.Highlight);
+                }
+            }
+            else
+            {
+                e.Effect = DragDropEffects.None;
+            }
+        }
+
+        /// <summary>
+        /// ブラウザリストビューのドラッグ離脱イベント
+        /// </summary>
+        private void ListViewBrowsers_DragLeave(object? sender, EventArgs e)
+        {
+            // 背景色を元に戻す
+            if (sender is ListView listView)
+            {
+                listView.BackColor = Color.FromKnownColor(KnownColor.Window);
+            }
+        }
+
+        /// <summary>
+        /// ブラウザリストビューのドロップイベント
+        /// </summary>
+        private void ListViewBrowsers_DragDrop(object? sender, DragEventArgs e)
+        {
+            try
+            {
+                if (e.Data?.GetDataPresent(DataFormats.FileDrop) == true && sender is ListView listView)
+                {
+                    var files = e.Data.GetData(DataFormats.FileDrop) as string[];
+                    
+                    if (files != null)
+                    {
+                        foreach (var filePath in files)
+                    {
+                        // .exeファイルかどうかを確認
+                        if (Path.GetExtension(filePath.ToLower()) == ".exe")
+                        {
+                            Logger.LogInfo("OptionsForm.ListViewBrowsers_DragDrop", "実行ファイルドロップ検出", filePath);
+                            
+                            // ブラウザとして追加
+                            AddBrowserFromFile(filePath);
+                        }
+                    }
+                    }
+
+                    // 背景色を元に戻す
+                    listView.BackColor = Color.FromKnownColor(KnownColor.Window);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("OptionsForm.ListViewBrowsers_DragDrop", "ブラウザドロップ処理エラー", ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// ファイルからブラウザを追加
+        /// </summary>
+        /// <param name="filePath">実行ファイルのパス</param>
+        private void AddBrowserFromFile(string filePath)
+        {
+            try
+            {
+                // 既存のブラウザと重複していないかチェック
+                var existingBrowser = _mBrowser.Values.FirstOrDefault(b => 
+                    string.Equals(b.Target, filePath, StringComparison.OrdinalIgnoreCase));
+                
+                if (existingBrowser != null)
+                {
+                    MessageBox.Show($"ブラウザ '{existingBrowser.Name}' は既に登録されています。", 
+                        "重複エラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // 新しいブラウザを作成
+                var newBrowser = new Browser
+                {
+                    Name = Path.GetFileNameWithoutExtension(filePath),
+                    Target = filePath,
+                    Arguments = "",
+                    Guid = Guid.NewGuid(),
+                    Hotkey = '\0',
+                    PosX = 1,
+                    PosY = 1,
+                    Scale = 1.0,
+                    IconIndex = 0,
+                    Category = "",
+                    Visible = true,
+                    IsDefault = false
+                };
+
+                // アイコンを取得
+                var icon = ImageUtilities.GetImage(newBrowser, false);
+                if (icon != null)
+                {
+                    // ImageListにアイコンを追加（実装が必要）
+                    // imBrowserIcons.Images.Add(icon);
+                }
+
+                // 内部データに追加
+                _mBrowser.Add(_mLastBrowserID + 1, newBrowser);
+                _mLastBrowserID++;
+
+                // リストビューに追加
+                var listViewBrowsers = Controls.Find("lstBrowsers", true).FirstOrDefault() as ListView;
+                if (listViewBrowsers != null)
+                {
+                    var item = new ListViewItem(newBrowser.Name);
+                    item.Tag = _mLastBrowserID;
+                    item.SubItems.Add(""); // デフォルトブラウザマーク
+                    item.SubItems.Add(newBrowser.PosY.ToString());
+                    item.SubItems.Add(newBrowser.PosX.ToString());
+                    item.SubItems.Add(newBrowser.Hotkey.ToString());
+                    item.SubItems.Add(GetBrowserProtocolsAndFileTypes(newBrowser));
+                    
+                    listViewBrowsers.Items.Add(item);
+                }
+
+                // プロトコルとファイルタイプのデフォルトカテゴリに追加
+                foreach (var protocol in _mProtocols.Values)
+                {
+                    if (protocol.DefaultCategories.Contains("Default"))
+                    {
+                        protocol.SupportingBrowsers.Add(newBrowser.Guid);
+                    }
+                }
+
+                foreach (var fileType in _mFileTypes.Values)
+                {
+                    if (fileType.DefaultCategories.Contains("Default"))
+                    {
+                        fileType.SupportingBrowsers.Add(newBrowser.Guid);
+                    }
+                }
+
+                _isModified = true;
+                
+                Logger.LogInfo("OptionsForm.AddBrowserFromFile", "ブラウザ追加完了", newBrowser.Name);
+                
+                MessageBox.Show($"ブラウザ '{newBrowser.Name}' を追加しました。", 
+                    "追加完了", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("OptionsForm.AddBrowserFromFile", "ブラウザ追加エラー", ex.Message);
+                MessageBox.Show($"ブラウザの追加に失敗しました: {ex.Message}", 
+                    "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
 
 
     }

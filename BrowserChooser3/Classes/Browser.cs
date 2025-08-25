@@ -68,6 +68,9 @@ namespace BrowserChooser3.Classes
         /// <summary>デフォルトブラウザフラグ</summary>
         public bool IsDefault { get; set; } = false;
         
+        /// <summary>カスタム画像パス（Browser Chooser 2互換）</summary>
+        public string CustomImagePath { get; set; } = string.Empty;
+        
         /// <summary>
         /// ブラウザのクローンを作成（Browser Chooser 2互換）
         /// </summary>

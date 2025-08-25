@@ -35,6 +35,37 @@ namespace BrowserChooser3.Classes
         /// <summary>デフォルトカテゴリ（Browser Chooser 2互換）</summary>
         public List<string> DefaultCategories { get; set; } = new();
         
+        /// <summary>カテゴリ（Browser Chooser 2互換）</summary>
+        public string Category { get; set; } = string.Empty;
+        
+        /// <summary>アクティブ状態（Browser Chooser 2互換）</summary>
+        public bool Active { get; set; } = true;
+
+        /// <summary>
+        /// FileTypeクラスの新しいインスタンスを初期化します
+        /// </summary>
+        public FileType()
+        {
+        }
+
+        /// <summary>
+        /// FileTypeクラスの新しいインスタンスを初期化します（Browser Chooser 2互換）
+        /// </summary>
+        /// <param name="name">ファイルタイプ名</param>
+        /// <param name="extension">拡張子</param>
+        /// <param name="supportingBrowsers">対応ブラウザのGUIDリスト</param>
+        /// <param name="categories">カテゴリリスト</param>
+        public FileType(string name, string extension, List<Guid> supportingBrowsers, List<string> categories)
+        {
+            Name = name;
+            Extension = extension;
+            Extention = extension; // Browser Chooser 2互換
+            SupportingBrowsers = new List<Guid>(supportingBrowsers);
+            DefaultCategories = new List<string>(categories);
+            Category = categories.FirstOrDefault() ?? "Default";
+            Active = true;
+        }
+        
         /// <summary>
         /// ファイルタイプのクローンを作成（Browser Chooser 2互換）
         /// </summary>

@@ -1,3 +1,5 @@
+using System.Net;
+
 namespace BrowserChooser3.Classes
 {
     /// <summary>
@@ -6,27 +8,21 @@ namespace BrowserChooser3.Classes
     public static class URLUtilities
     {
         /// <summary>
-        /// URLパーツを表す構造体
+        /// Browser Chooser 2互換のURLパーツ構造体
         /// </summary>
-        public struct URLParts
+        public struct BC2URLParts
         {
+            /// <summary>プロトコルかどうか</summary>
+            public Settings.TriState IsProtocol;
+            
             /// <summary>プロトコル</summary>
             public string Protocol;
-            
-            /// <summary>ドメイン</summary>
-            public string Domain;
-            
-            /// <summary>パス</summary>
-            public string Path;
             
             /// <summary>拡張子</summary>
             public string Extension;
             
             /// <summary>残りの部分</summary>
             public string Remainder;
-            
-            /// <summary>プロトコルかどうか</summary>
-            public Settings.TriState IsProtocol;
 
             /// <summary>
             /// URLパーツを文字列に変換します
@@ -36,84 +32,13 @@ namespace BrowserChooser3.Classes
             {
                 if (IsProtocol == Settings.TriState.True)
                 {
-                    return $"{Protocol}://{Domain}{Path}";
+                    return $"{Protocol}://{Remainder}";
                 }
                 else
                 {
-                    return $"{Domain}{Path}";
+                    return $"{Extension}.{Remainder}";
                 }
             }
-        }
-
-        /// <summary>
-        /// URLの各部分を解析します
-        /// </summary>
-        /// <param name="url">解析対象のURL</param>
-        /// <returns>URLパーツ</returns>
-        public static URLParts DetermineParts(string url)
-        {
-            var parts = new URLParts();
-            
-            if (string.IsNullOrEmpty(url))
-            {
-                parts.IsProtocol = Settings.TriState.UseDefault;
-                return parts;
-            }
-
-            // プロトコルの検出
-            var colonIndex = url.IndexOf(':');
-            if (colonIndex > 0 && colonIndex < url.Length - 2)
-            {
-                var protocol = url.Substring(0, colonIndex).ToLower();
-                if (url.Substring(colonIndex + 1, 2) == "//")
-                {
-                    // プロトコル付きURL
-                    parts.Protocol = protocol;
-                    parts.IsProtocol = Settings.TriState.True;
-                    
-                    var pathStart = url.IndexOf('/', colonIndex + 3);
-                    if (pathStart > 0)
-                    {
-                        parts.Domain = url.Substring(colonIndex + 3, pathStart - colonIndex - 3);
-                        parts.Path = url.Substring(pathStart);
-                        parts.Remainder = parts.Domain + parts.Path;
-                    }
-                    else
-                    {
-                        parts.Domain = url.Substring(colonIndex + 3);
-                        parts.Path = "/";
-                        parts.Remainder = parts.Domain + parts.Path;
-                    }
-                }
-                else
-                {
-                    // ファイル拡張子の可能性
-                    parts.IsProtocol = Settings.TriState.False;
-                    parts.Extension = protocol;
-                    parts.Domain = url;
-                    parts.Remainder = url;
-                }
-            }
-            else
-            {
-                // プロトコルなしURL
-                parts.IsProtocol = Settings.TriState.False;
-                parts.Domain = url;
-                parts.Remainder = url;
-                
-                // 拡張子の検出
-                var lastDotIndex = url.LastIndexOf('.');
-                if (lastDotIndex > 0 && lastDotIndex < url.Length - 1)
-                {
-                    var lastSlashIndex = url.LastIndexOf('/');
-                    if (lastSlashIndex < lastDotIndex)
-                    {
-                        parts.Extension = url.Substring(lastDotIndex + 1);
-                    }
-                }
-            }
-
-            return parts;
         }
 
         /// <summary>
@@ -173,6 +98,224 @@ namespace BrowserChooser3.Classes
             catch
             {
                 return url;
+            }
+        }
+
+        /// <summary>
+        /// URL短縮解除を実行します（バックグラウンド処理）
+        /// </summary>
+        /// <param name="url">短縮URL</param>
+        /// <param name="userAgent">User-Agent文字列</param>
+        /// <param name="callback">完了時のコールバック</param>
+        public static void UnshortenURLAsync(string url, string userAgent, Action<string> callback)
+        {
+            if (string.IsNullOrEmpty(url))
+            {
+                callback?.Invoke(url);
+                return;
+            }
+
+            Task.Run(() =>
+            {
+                try
+                {
+                    var expandedUrl = UnshortenURL(url, userAgent);
+                    callback?.Invoke(expandedUrl);
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError("URLUtilities.UnshortenURLAsync", "URL短縮解除エラー", ex.Message, ex.StackTrace ?? "");
+                    callback?.Invoke(url); // エラーの場合は元のURLを返す
+                }
+            });
+        }
+
+        /// <summary>
+        /// URL短縮解除を実行します（同期処理）
+        /// </summary>
+        /// <param name="url">短縮URL</param>
+        /// <param name="userAgent">User-Agent文字列</param>
+        /// <returns>展開されたURL</returns>
+        public static string UnshortenURL(string url, string userAgent)
+        {
+            if (string.IsNullOrEmpty(url))
+                return url;
+
+            try
+            {
+                using var httpClient = new HttpClient();
+                httpClient.Timeout = TimeSpan.FromSeconds(10);
+                httpClient.DefaultRequestHeaders.Add("User-Agent", userAgent);
+
+                // HEADリクエストを試行
+                var headRequest = new HttpRequestMessage(HttpMethod.Head, url);
+                var headResponse = httpClient.Send(headRequest);
+                
+                // リダイレクト先のURLを取得
+                if (headResponse.StatusCode == HttpStatusCode.Redirect || 
+                    headResponse.StatusCode == HttpStatusCode.Moved || 
+                    headResponse.StatusCode == HttpStatusCode.MovedPermanently)
+                {
+                    var location = headResponse.Headers.Location?.ToString();
+                    if (!string.IsNullOrEmpty(location))
+                    {
+                        Logger.LogInfo("URLUtilities.UnshortenURL", "URL短縮解除成功", url, location);
+                        return location;
+                    }
+                }
+
+                // HEADメソッドが失敗した場合、GETメソッドを試行
+                var getResponse = httpClient.GetAsync(url).Result;
+                var finalUrl = getResponse.RequestMessage?.RequestUri?.ToString() ?? url;
+                
+                Logger.LogInfo("URLUtilities.UnshortenURL", "URL短縮解除成功（GET）", url, finalUrl);
+                return finalUrl;
+            }
+            catch (WebException ex)
+            {
+                Logger.LogError("URLUtilities.UnshortenURL", "WebException", ex.Message, ex.StackTrace ?? "");
+                return url; // エラーの場合は元のURLを返す
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("URLUtilities.UnshortenURL", "URL短縮解除エラー", ex.Message, ex.StackTrace ?? "");
+                return url; // エラーの場合は元のURLを返す
+            }
+        }
+
+        /// <summary>
+        /// Browser Chooser 2互換のURLパーツ解析
+        /// </summary>
+        /// <param name="url">解析対象のURL</param>
+        /// <returns>URLパーツ</returns>
+        public static BC2URLParts DetermineParts(string url)
+        {
+            Logger.LogInfo("URLUtilities.DetermineParts", "Start", url);
+            var parts = new BC2URLParts();
+
+            if (string.IsNullOrEmpty(url))
+            {
+                parts.IsProtocol = Settings.TriState.UseDefault;
+                return Canonicalize(parts);
+            }
+
+            // プロトコルの検出
+            var protocolIndex = url.IndexOf("://");
+            if (protocolIndex > 0)
+            {
+                parts.IsProtocol = Settings.TriState.True;
+                parts.Protocol = url.Substring(0, protocolIndex);
+                parts.Remainder = url.Substring(protocolIndex + 3);
+            }
+            else if (url.Contains('.'))
+            {
+                // ファイル拡張子
+                parts.IsProtocol = Settings.TriState.False;
+                var lastDotIndex = url.LastIndexOf('.');
+                parts.Extension = url.Substring(lastDotIndex + 1);
+                parts.Remainder = url.Substring(0, lastDotIndex);
+            }
+            else if (url.Contains('/'))
+            {
+                // ドメインなしのプロトコル
+                parts.IsProtocol = Settings.TriState.True;
+                parts.Protocol = "https";
+                parts.Remainder = url;
+            }
+            else
+            {
+                parts.IsProtocol = Settings.TriState.UseDefault;
+            }
+
+            Logger.LogInfo("URLUtilities.DetermineParts", "End", parts.IsProtocol, parts.Protocol ?? "", parts.Extension ?? "", parts.Remainder ?? "");
+            return Canonicalize(parts);
+        }
+
+        /// <summary>
+        /// Browser Chooser 2互換のURL正規化
+        /// </summary>
+        /// <param name="url">正規化対象のURLパーツ</param>
+        /// <returns>正規化されたURLパーツ</returns>
+        public static BC2URLParts Canonicalize(BC2URLParts url)
+        {
+            var settings = Settings.Current;
+            
+            // 正規化が有効で、プロトコルが設定されている場合
+            if (url.IsProtocol == Settings.TriState.True && settings?.Canonicalize == true)
+            {
+                var firstSlash = url.Remainder.IndexOf('/');
+                var firstQuestion = url.Remainder.IndexOf('?');
+                var firstDot = url.Remainder.IndexOf('.');
+
+                string subIn;
+                
+                if (firstDot == -1 && firstSlash > 0 && (firstQuestion == -1 || firstQuestion > firstSlash))
+                {
+                    // ドットなし、スラッシュが最初の疑問符より前
+                    Logger.LogInfo("URLUtilities.Canonicalize", "Select 1", firstSlash, firstQuestion, firstDot);
+                    subIn = $"{url.Remainder.Substring(0, firstSlash)}{settings.CanonicalizeAppendedText}{url.Remainder.Substring(firstSlash)}";
+                }
+                else if (firstDot == -1 && firstQuestion > 0 && (firstSlash == -1 || firstSlash > firstQuestion))
+                {
+                    // ドットなし、疑問符が最初のスラッシュより前
+                    Logger.LogInfo("URLUtilities.Canonicalize", "Select 2", firstSlash, firstQuestion, firstDot);
+                    subIn = $"{url.Remainder.Substring(0, firstQuestion)}{settings.CanonicalizeAppendedText}{url.Remainder.Substring(firstQuestion)}";
+                }
+                else if (firstDot == -1 && firstSlash == -1 && firstQuestion == -1)
+                {
+                    // ドット、スラッシュ、疑問符なし
+                    Logger.LogInfo("URLUtilities.Canonicalize", "Select 3", firstSlash, firstQuestion, firstDot);
+                    subIn = $"{url.Remainder}.{settings.CanonicalizeAppendedText}";
+                }
+                else if (firstSlash > 0 && firstSlash < firstDot && (firstQuestion == -1 || firstQuestion > firstSlash))
+                {
+                    // ドットがあるが、スラッシュがドットより前で、疑問符より前
+                    Logger.LogInfo("URLUtilities.Canonicalize", "Select 4", firstSlash, firstQuestion, firstDot);
+                    subIn = $"{url.Remainder.Substring(0, firstSlash)}{settings.CanonicalizeAppendedText}{url.Remainder.Substring(firstSlash)}";
+                }
+                else if (firstQuestion > 0 && firstQuestion < firstDot && (firstSlash == -1 || firstSlash > firstQuestion))
+                {
+                    // 疑問符がドットより前で、スラッシュより前
+                    Logger.LogInfo("URLUtilities.Canonicalize", "Select 5", firstSlash, firstQuestion, firstDot);
+                    subIn = $"{url.Remainder.Substring(0, firstQuestion)}{settings.CanonicalizeAppendedText}{url.Remainder.Substring(firstQuestion)}";
+                }
+                else
+                {
+                    // その他の場合（ドットがスラッシュや疑問符より前）
+                    Logger.LogInfo("URLUtilities.Canonicalize", "Select 6", firstSlash, firstQuestion, firstDot);
+                    subIn = url.Remainder;
+                }
+
+                url.Remainder = subIn;
+            }
+
+            return url;
+        }
+
+        /// <summary>
+        /// URLマッチング（Browser Chooser 2互換）
+        /// </summary>
+        /// <param name="source">ソースURL</param>
+        /// <param name="target">ターゲットURL</param>
+        /// <returns>マッチする場合はtrue</returns>
+        public static bool MatchURLs(string source, string target)
+        {
+            Logger.LogInfo("URLUtilities.MatchURLs", "Start", source, target);
+            
+            // http(s)://とwwwを除去
+            var lsSource = source.Replace("http://", "").Replace("https://", "").Replace("www.", "");
+            var lsTarget = target.Replace("http://", "").Replace("https://", "").Replace("www.", "");
+
+            // 基本的なワイルドカードマッチング（後で正規表現に変更予定）
+            if (lsTarget.Contains(lsSource) || lsSource.Contains(lsTarget))
+            {
+                Logger.LogInfo("URLUtilities.MatchURLs", "End", source, target, true);
+                return true;
+            }
+            else
+            {
+                Logger.LogInfo("URLUtilities.MatchURLs", "End", source, target, false);
+                return false;
             }
         }
     }

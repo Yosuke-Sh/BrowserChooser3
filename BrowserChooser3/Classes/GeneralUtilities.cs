@@ -111,6 +111,42 @@ namespace BrowserChooser3.Classes
         }
 
         /// <summary>
+        /// スクリーンリーダーが有効かどうかをチェックします
+        /// </summary>
+        /// <returns>スクリーンリーダーが有効な場合はtrue</returns>
+        public static bool HasScreenReader()
+        {
+            try
+            {
+                const int SPI_GETSCREENREADER = 0x0046;
+                bool hasScreenReader = false;
+                
+                if (SystemParametersInfo(SPI_GETSCREENREADER, 0, ref hasScreenReader, 0))
+                {
+                    return hasScreenReader;
+                }
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWarning("GeneralUtilities.HasScreenReader", "スクリーンリーダー検出に失敗", ex.Message);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// システムパラメータ情報を取得します
+        /// </summary>
+        /// <param name="uiAction">アクション</param>
+        /// <param name="uiParam">パラメータ</param>
+        /// <param name="pvParam">出力パラメータ</param>
+        /// <param name="fWinIni">WinIniフラグ</param>
+        /// <returns>成功した場合はtrue</returns>
+        [DllImport("user32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool SystemParametersInfo(uint uiAction, uint uiParam, ref bool pvParam, uint fWinIni);
+
+        /// <summary>
         /// 一意のIDを生成します
         /// </summary>
         /// <returns>一意のGUID</returns>

@@ -1,215 +1,306 @@
 using BrowserChooser3.Classes;
+using System.Drawing.Imaging;
 
 namespace BrowserChooser3.Forms
 {
     /// <summary>
     /// アイコン選択フォーム
-    /// ブラウザアイコンの選択を管理します
+    /// 実行ファイルからのアイコン抽出と選択を提供します
     /// </summary>
     public partial class IconSelectionForm : Form
     {
-        private Settings _settings;
-        private string _selectedIconPath = string.Empty;
+        private List<Icon> _icons = new();
+        private Icon? _selectedIcon = null;
+        private string _filePath = string.Empty;
 
         /// <summary>
-        /// IconSelectionFormの新しいインスタンスを初期化します
+        /// 選択されたアイコン
         /// </summary>
-        /// <param name="settings">設定オブジェクト</param>
-        public IconSelectionForm(Settings settings)
+        public Icon? SelectedIcon => _selectedIcon;
+
+        /// <summary>
+        /// アイコン選択フォームクラスの新しいインスタンスを初期化します
+        /// </summary>
+        /// <param name="filePath">アイコンを抽出するファイルパス</param>
+        public IconSelectionForm(string filePath)
         {
-            _settings = settings;
+            _filePath = filePath;
             InitializeComponent();
             LoadIcons();
         }
 
+        /// <summary>
+        /// フォームの初期化
+        /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            
-            // メインコントロール
-            this.lstIcons = new System.Windows.Forms.ListView();
-            this.btnOK = new System.Windows.Forms.Button();
-            this.btnCancel = new System.Windows.Forms.Button();
-            
-            this.SuspendLayout();
-            
-            // lstIcons
-            this.lstIcons.AccessibleName = "Icons List";
-            this.lstIcons.Dock = System.Windows.Forms.DockStyle.Top;
-            this.lstIcons.GridLines = true;
-            this.lstIcons.Location = new System.Drawing.Point(0, 0);
-            this.lstIcons.Name = "lstIcons";
-            this.lstIcons.Size = new System.Drawing.Size(581, 276);
-            this.lstIcons.TabIndex = 0;
-            this.lstIcons.TileSize = new System.Drawing.Size(96, 96);
-            this.lstIcons.UseCompatibleStateImageBehavior = false;
-            this.lstIcons.View = System.Windows.Forms.View.Tile;
-            this.lstIcons.SelectedIndexChanged += new System.EventHandler(this.lstIcons_SelectedIndexChanged);
-            this.lstIcons.DoubleClick += new System.EventHandler(this.lstIcons_DoubleClick);
-            
-            // btnOK
-            this.btnOK.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
-            this.btnOK.Location = new System.Drawing.Point(413, 282);
-            this.btnOK.Name = "btnOK";
-            this.btnOK.Size = new System.Drawing.Size(80, 28);
-            this.btnOK.TabIndex = 1;
-            this.btnOK.Text = "&OK";
-            this.btnOK.UseVisualStyleBackColor = true;
-            this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
-            
-            // btnCancel
-            this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
-            this.btnCancel.Location = new System.Drawing.Point(503, 282);
-            this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(80, 28);
-            this.btnCancel.TabIndex = 2;
-            this.btnCancel.Text = "&Cancel";
-            this.btnCancel.UseVisualStyleBackColor = true;
-            
-            // IconSelectionForm
-            this.AcceptButton = this.btnOK;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(581, 317);
-            this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
-            this.Controls.Add(this.btnCancel);
-            this.Controls.Add(this.btnOK);
-            this.Controls.Add(this.lstIcons);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.MaximizeBox = false;
-            this.MinimizeBox = false;
-            this.Name = "IconSelectionForm";
-            this.ShowInTaskbar = false;
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Choose your icon";
-            this.TopMost = true;
-            
-            this.ResumeLayout(false);
+            Text = "Icon Selection";
+            Size = new Size(600, 400);
+            StartPosition = FormStartPosition.CenterParent;
+            FormBorderStyle = FormBorderStyle.FixedDialog;
+            MaximizeBox = false;
+            MinimizeBox = true;
+
+            // アイコンリストビュー
+            var iconListView = new ListView
+            {
+                Name = "iconListView",
+                Location = new Point(10, 10),
+                Size = new Size(400, 300),
+                View = View.LargeIcon,
+                MultiSelect = false,
+                FullRowSelect = true
+            };
+            iconListView.SelectedIndexChanged += IconListView_SelectedIndexChanged;
+            iconListView.DoubleClick += IconListView_DoubleClick;
+
+            // アイコンImageList
+            var iconImageList = new ImageList
+            {
+                ImageSize = new Size(32, 32),
+                ColorDepth = ColorDepth.Depth32Bit
+            };
+            iconListView.LargeImageList = iconImageList;
+
+            // プレビューピクチャボックス
+            var previewPictureBox = new PictureBox
+            {
+                Name = "previewPictureBox",
+                Location = new Point(420, 10),
+                Size = new Size(150, 150),
+                SizeMode = PictureBoxSizeMode.Zoom,
+                BorderStyle = BorderStyle.FixedSingle
+            };
+
+            // ファイルパスラベル
+            var filePathLabel = new Label
+            {
+                Name = "filePathLabel",
+                Location = new Point(10, 320),
+                Size = new Size(560, 20),
+                Text = $"File: {_filePath}"
+            };
+
+            // OKボタン
+            var btnOK = new Button
+            {
+                Name = "btnOK",
+                Text = "OK",
+                Location = new Point(420, 320),
+                Size = new Size(75, 25),
+                DialogResult = DialogResult.OK,
+                Enabled = false
+            };
+            btnOK.Click += BtnOK_Click;
+
+            // キャンセルボタン
+            var btnCancel = new Button
+            {
+                Name = "btnCancel",
+                Text = "Cancel",
+                Location = new Point(505, 320),
+                Size = new Size(75, 25),
+                DialogResult = DialogResult.Cancel
+            };
+
+            // コントロールを追加
+            Controls.Add(iconListView);
+            Controls.Add(previewPictureBox);
+            Controls.Add(filePathLabel);
+            Controls.Add(btnOK);
+            Controls.Add(btnCancel);
+
+            // フォームのAcceptButtonとCancelButtonを設定
+            AcceptButton = btnOK;
+            CancelButton = btnCancel;
         }
 
-        private System.Windows.Forms.ListView lstIcons = null!;
-        private System.Windows.Forms.Button btnOK = null!;
-        private System.Windows.Forms.Button btnCancel = null!;
-        private System.ComponentModel.IContainer components = null!;
-
         /// <summary>
-        /// アイコンを読み込み
+        /// アイコンを読み込みます
         /// </summary>
         private void LoadIcons()
         {
-            Logger.LogInfo("IconSelectionForm.LoadIcons", "Start");
-            
             try
             {
-                // ImageListの作成
-                var imageList = new ImageList
-                {
-                    ImageSize = new Size(32, 32),
-                    ColorDepth = ColorDepth.Depth32Bit
-                };
+                Logger.LogInfo("IconSelectionForm.LoadIcons", "アイコン読み込み開始", _filePath);
+
+                var iconListView = Controls.Find("iconListView", true).FirstOrDefault() as ListView;
+                if (iconListView?.LargeImageList == null) return;
+
+                // 実行ファイルからアイコンを抽出
+                var icons = ExtractIconsFromFile(_filePath);
                 
-                // リソースからアイコンを読み込み
-                var iconResources = new Dictionary<string, Image>
+                foreach (var icon in icons)
                 {
-                    { "Icon122", ImageUtilities.ResizeImage(Properties.Resources.Icon122, 32, 32) },
-                    { "Icon128", ImageUtilities.ResizeImage(Properties.Resources.Icon128, 32, 32) },
-                    { "BrowserChooser", ImageUtilities.ResizeImage(Properties.Resources.BrowserChooserIcon, 32, 32) },
-                    { "BrowserChooser2", ImageUtilities.ResizeImage(Properties.Resources.BrowserChooser2Icon.ToBitmap(), 32, 32) },
-                    { "BrowserChooser3", ImageUtilities.ResizeImage(Properties.Resources.BrowserChooser3Icon.ToBitmap(), 32, 32) },
-                    { "BCLogo", ImageUtilities.ResizeImage(Properties.Resources.BCLogoIcon.ToBitmap(), 32, 32) },
-                    { "Paste", ImageUtilities.ResizeImage(Properties.Resources.PasteIcon, 32, 32) },
-                    { "PasteAndClose", ImageUtilities.ResizeImage(Properties.Resources.PasteAndCloseIcon, 32, 32) },
-                    { "Settings", ImageUtilities.ResizeImage(Properties.Resources.SettingsIcon, 32, 32) },
-                    { "WorldGo", ImageUtilities.ResizeImage(Properties.Resources.WorldGoIcon, 32, 32) }
-                };
-                
-                foreach (var kvp in iconResources)
-                {
-                    try
-                    {
-                        imageList.Images.Add(kvp.Key, kvp.Value);
-                        
-                        var item = new ListViewItem
-                        {
-                            Text = kvp.Key,
-                            ImageKey = kvp.Key,
-                            Tag = kvp.Key
-                        };
-                        
-                        lstIcons.Items.Add(item);
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.LogError("IconSelectionForm.LoadIcons", $"アイコン読み込みエラー: {kvp.Key}", ex.Message);
-                    }
+                    _icons.Add(icon);
+                    
+                    // ImageListにアイコンを追加
+                    var bitmap = icon.ToBitmap();
+                    iconListView.LargeImageList.Images.Add(bitmap);
+                    
+                    // ListViewItemを追加
+                    var item = iconListView.Items.Add($"Icon {iconListView.Items.Count + 1}");
+                    item.ImageIndex = iconListView.LargeImageList.Images.Count - 1;
+                    item.Tag = icon;
                 }
-                
-                // ImageListをListViewに設定
-                lstIcons.LargeImageList = imageList;
-                lstIcons.SmallImageList = imageList;
-                
-                // デフォルトアイコンを選択
-                if (lstIcons.Items.Count > 0)
-                {
-                    lstIcons.Items[0].Selected = true;
-                    _selectedIconPath = lstIcons.Items[0].Tag?.ToString() ?? string.Empty;
-                }
-                
-                Logger.LogInfo("IconSelectionForm.LoadIcons", "End", $"アイコン数: {lstIcons.Items.Count}");
+
+                Logger.LogInfo("IconSelectionForm.LoadIcons", "アイコン読み込み完了", $"Count: {_icons.Count}");
             }
             catch (Exception ex)
             {
-                Logger.LogError("IconSelectionForm.LoadIcons", "アイコン読み込みエラー", ex.Message, ex.StackTrace ?? "");
+                Logger.LogError("IconSelectionForm.LoadIcons", "アイコン読み込みエラー", ex.Message);
+                MessageBox.Show($"アイコンの読み込みに失敗しました: {ex.Message}", "エラー", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         /// <summary>
-        /// 選択されたアイコンのパスを取得
+        /// ファイルからアイコンを抽出します
         /// </summary>
-        public string SelectedIconPath => _selectedIconPath;
+        /// <param name="filePath">ファイルパス</param>
+        /// <returns>抽出されたアイコンのリスト</returns>
+        private List<Icon> ExtractIconsFromFile(string filePath)
+        {
+            var icons = new List<Icon>();
+
+            try
+            {
+                // 実行ファイルからアイコンを抽出
+                var iconCount = ExtractIconEx(filePath, -1, (IntPtr[]?)null!, (IntPtr[]?)null!, 0);
+                
+                if (iconCount > 0)
+                {
+                    var largeIcons = new IntPtr[iconCount];
+                    var smallIcons = new IntPtr[iconCount];
+                    
+                    ExtractIconEx(filePath, 0, largeIcons, smallIcons, iconCount);
+                    
+                    for (int i = 0; i < iconCount; i++)
+                    {
+                        if (largeIcons[i] != IntPtr.Zero)
+                        {
+                            var icon = Icon.FromHandle(largeIcons[i]);
+                            icons.Add(icon);
+                        }
+                    }
+                }
+                else
+                {
+                    // フォールバック: 関連付けられたアイコンを取得
+                    var icon = Icon.ExtractAssociatedIcon(filePath);
+                    if (icon != null)
+                    {
+                        icons.Add(icon);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("IconSelectionForm.ExtractIconsFromFile", "アイコン抽出エラー", ex.Message);
+                
+                // フォールバック: 関連付けられたアイコンを取得
+                try
+                {
+                    var icon = Icon.ExtractAssociatedIcon(filePath);
+                    if (icon != null)
+                    {
+                        icons.Add(icon);
+                    }
+                }
+                catch (Exception fallbackEx)
+                {
+                    Logger.LogError("IconSelectionForm.ExtractIconsFromFile", "フォールバックアイコン抽出エラー", fallbackEx.Message);
+                }
+            }
+
+            return icons;
+        }
 
         /// <summary>
-        /// アイコンリストの選択変更イベント
+        /// アイコンリストビューの選択変更イベント
         /// </summary>
-        private void lstIcons_SelectedIndexChanged(object? sender, EventArgs e)
+        private void IconListView_SelectedIndexChanged(object? sender, EventArgs e)
         {
-            if (lstIcons.SelectedItems.Count > 0)
+            try
             {
-                _selectedIconPath = lstIcons.SelectedItems[0].Tag?.ToString() ?? string.Empty;
-                Logger.LogInfo("IconSelectionForm.lstIcons_SelectedIndexChanged", "アイコン選択", _selectedIconPath);
+                var iconListView = sender as ListView;
+                var previewPictureBox = Controls.Find("previewPictureBox", true).FirstOrDefault() as PictureBox;
+                var btnOK = Controls.Find("btnOK", true).FirstOrDefault() as Button;
+
+                if (iconListView?.SelectedItems.Count > 0)
+                {
+                    var selectedItem = iconListView.SelectedItems[0];
+                    if (selectedItem.Tag is Icon icon)
+                    {
+                        _selectedIcon = icon;
+                        
+                        // プレビューを更新
+                        if (previewPictureBox != null)
+                        {
+                            previewPictureBox.Image = icon.ToBitmap();
+                        }
+                        
+                        // OKボタンを有効化
+                        if (btnOK != null)
+                        {
+                            btnOK.Enabled = true;
+                        }
+                    }
+                }
+                else
+                {
+                    _selectedIcon = null;
+                    
+                    // プレビューをクリア
+                    if (previewPictureBox != null)
+                    {
+                        previewPictureBox.Image = null;
+                    }
+                    
+                    // OKボタンを無効化
+                    if (btnOK != null)
+                    {
+                        btnOK.Enabled = false;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("IconSelectionForm.IconListView_SelectedIndexChanged", "選択変更処理エラー", ex.Message);
             }
         }
 
         /// <summary>
-        /// アイコンリストのダブルクリックイベント
+        /// アイコンリストビューのダブルクリックイベント
         /// </summary>
-        private void lstIcons_DoubleClick(object? sender, EventArgs e)
+        private void IconListView_DoubleClick(object? sender, EventArgs e)
         {
-            if (lstIcons.SelectedItems.Count > 0)
+            if (_selectedIcon != null)
             {
-                btnOK_Click(sender, e);
+                DialogResult = DialogResult.OK;
+                Close();
             }
         }
 
         /// <summary>
         /// OKボタンのクリックイベント
         /// </summary>
-        private void btnOK_Click(object? sender, EventArgs e)
+        private void BtnOK_Click(object? sender, EventArgs e)
         {
-            if (!string.IsNullOrEmpty(_selectedIconPath))
+            if (_selectedIcon != null)
             {
-                Logger.LogInfo("IconSelectionForm.btnOK_Click", "アイコン選択完了", _selectedIconPath);
                 DialogResult = DialogResult.OK;
                 Close();
             }
-            else
-            {
-                MessageBox.Show("アイコンを選択してください。", "警告", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
         }
+
+        #region Win32 API
+        [System.Runtime.InteropServices.DllImport("shell32.dll", CharSet = System.Runtime.InteropServices.CharSet.Auto)]
+        private static extern int ExtractIconEx(string szFileName, int nIconIndex, IntPtr[] phiconLarge, IntPtr[] phiconSmall, int nIcons);
+
+        [System.Runtime.InteropServices.DllImport("shell32.dll", CharSet = System.Runtime.InteropServices.CharSet.Auto)]
+        private static extern int ExtractIconEx(string szFileName, int nIconIndex, out IntPtr phiconLarge, out IntPtr phiconSmall, int nIcons);
+        #endregion
     }
 }
 

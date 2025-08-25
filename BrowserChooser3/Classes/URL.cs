@@ -35,6 +35,18 @@ namespace BrowserChooser3.Classes
         /// <summary>自動クローズ</summary>
         public bool AutoClose { get; set; } = false;
         
+        /// <summary>URLパターン（Browser Chooser 2互換）</summary>
+        public string Pattern { get; set; } = string.Empty;
+        
+        /// <summary>対応ブラウザのGUIDリスト（Browser Chooser 2互換）</summary>
+        public List<Guid> SupportingBrowsers { get; set; } = new();
+        
+        /// <summary>カテゴリ（Browser Chooser 2互換）</summary>
+        public string Category { get; set; } = string.Empty;
+        
+        /// <summary>アクティブ状態（Browser Chooser 2互換）</summary>
+        public bool Active { get; set; } = true;
+        
         /// <summary>
         /// URLのクローンを作成（Browser Chooser 2互換）
         /// </summary>

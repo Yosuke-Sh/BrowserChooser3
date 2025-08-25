@@ -112,7 +112,7 @@ namespace BrowserChooser3.Classes
 
         /// <summary>
         /// Edge専用の起動処理
-        /// microsoft-edge:プロトコルを使用します
+        /// microsoft-edge:プロトコルでの起動をサポートします
         /// </summary>
         private static void LaunchEdge(Browser browser, string url, bool terminate)
         {
@@ -120,33 +120,39 @@ namespace BrowserChooser3.Classes
 
             try
             {
-                Process? process = null;
-                if (!string.IsNullOrEmpty(url))
+                // microsoft-edge:プロトコルを使用した起動
+                if (url.StartsWith("http://") || url.StartsWith("https://"))
                 {
-                    process = Process.Start("microsoft-edge:" + url);
+                    var edgeUrl = $"microsoft-edge:{url}";
+                    Logger.LogInfo("BrowserUtilities.LaunchEdge", "microsoft-edge:プロトコルを使用", edgeUrl);
+                    
+                    if (DoLaunch(browser, edgeUrl, terminate))
+                    {
+                        if (terminate)
+                        {
+                            Logger.LogInfo("BrowserUtilities.LaunchEdge", "Terminate", browser.Name, url, terminate);
+                            Environment.Exit(0);
+                        }
+                    }
                 }
                 else
                 {
-                    process = Process.Start("microsoft-edge:");
-                }
-
-                if (terminate)
-                {
-                    Logger.LogInfo("BrowserUtilities.LaunchEdge", "Terminate", browser.Name, url, terminate);
-                    Environment.Exit(0);
+                    // 通常の起動処理
+                    if (DoLaunch(browser, url, terminate))
+                    {
+                        if (terminate)
+                        {
+                            Logger.LogInfo("BrowserUtilities.LaunchEdge", "Terminate", browser.Name, url, terminate);
+                            Environment.Exit(0);
+                        }
+                    }
                 }
             }
             catch (Exception ex)
             {
                 Logger.LogError("BrowserUtilities.LaunchEdge", "Edge起動エラー", ex.Message, ex.StackTrace ?? "");
-                // フォールバック: 一般的な起動処理
-                if (DoLaunch(browser, url, terminate))
-                {
-                    if (terminate)
-                    {
-                        Environment.Exit(0);
-                    }
-                }
+                MessageBox.Show($"Edge {browser.Name} の起動に失敗しました。", "起動エラー", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
             Logger.LogInfo("BrowserUtilities.LaunchEdge", "End", browser.Name, url, terminate);

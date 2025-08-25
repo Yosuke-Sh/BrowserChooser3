@@ -32,6 +32,36 @@ namespace BrowserChooser3.Classes
         /// <summary>デフォルトカテゴリ（Browser Chooser 2互換）</summary>
         public List<string> DefaultCategories { get; set; } = new();
         
+        /// <summary>カテゴリ（Browser Chooser 2互換）</summary>
+        public string Category { get; set; } = string.Empty;
+        
+        /// <summary>アクティブ状態（Browser Chooser 2互換）</summary>
+        public bool Active { get; set; } = true;
+
+        /// <summary>
+        /// Protocolクラスの新しいインスタンスを初期化します
+        /// </summary>
+        public Protocol()
+        {
+        }
+
+        /// <summary>
+        /// Protocolクラスの新しいインスタンスを初期化します（Browser Chooser 2互換）
+        /// </summary>
+        /// <param name="name">プロトコル名</param>
+        /// <param name="header">プロトコルヘッダー</param>
+        /// <param name="supportingBrowsers">対応ブラウザのGUIDリスト</param>
+        /// <param name="categories">カテゴリリスト</param>
+        public Protocol(string name, string header, List<Guid> supportingBrowsers, List<string> categories)
+        {
+            Name = name;
+            Header = header;
+            SupportingBrowsers = new List<Guid>(supportingBrowsers);
+            DefaultCategories = new List<string>(categories);
+            Category = categories.FirstOrDefault() ?? "Default";
+            Active = true;
+        }
+        
         /// <summary>
         /// プロトコルのクローンを作成（Browser Chooser 2互換）
         /// </summary>
