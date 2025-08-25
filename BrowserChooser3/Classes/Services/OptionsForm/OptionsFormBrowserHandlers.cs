@@ -348,7 +348,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
         /// <summary>
         /// ブラウザのプロトコルとファイルタイプを取得
         /// </summary>
-        private string GetBrowserProtocolsAndFileTypes(Browser browser)
+        public string GetBrowserProtocolsAndFileTypes(Browser browser)
         {
             var protocols = _mProtocols.Values.Where(p => p.BrowserGuid == browser.Guid).Select(p => p.Name);
             var fileTypes = _mFileTypes.Values.Where(f => f.BrowserGuid == browser.Guid).Select(f => f.Name);

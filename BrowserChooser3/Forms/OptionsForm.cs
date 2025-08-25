@@ -2,7 +2,6 @@ using BrowserChooser3.Classes;
 using BrowserChooser3.Classes.Models;
 using BrowserChooser3.Classes.Services.OptionsFormHandlers;
 using BrowserChooser3.Classes.Utilities;
-using BrowserChooser3.CustomControls;
 
 namespace BrowserChooser3.Forms
 {
@@ -14,10 +13,10 @@ namespace BrowserChooser3.Forms
     {
         private Settings _settings;
         private bool _isModified = false;
-        #pragma warning disable CS0414
+#pragma warning disable CS0414
         private bool _isCanceled = false;
-        #pragma warning restore CS0414
-        
+#pragma warning restore CS0414
+
         // イベントハンドラークラス
         private OptionsFormFormHandlers _formHandlers;
         private OptionsFormCategoryHandlers _categoryHandlers;
@@ -28,10 +27,10 @@ namespace BrowserChooser3.Forms
         private OptionsFormBackgroundHandlers _backgroundHandlers;
         private OptionsFormHelpHandlers _helpHandlers;
         private OptionsFormAccessibilityHandlers _accessibilityHandlers;
-        
+
         // UIパネル作成クラス
         private OptionsFormPanels _panels;
-        
+
         // 内部データ管理（Browser Chooser 2互換）
         private Dictionary<int, Browser> _mBrowser = new();
         private SortedDictionary<int, URL> _mURLs = new();
@@ -43,10 +42,10 @@ namespace BrowserChooser3.Forms
         private int _mLastURLID = 0;
         private int _mLastProtocolID = 0;
         private int _mLastFileTypeID = 0;
-        
+
         // ImageList（Browser Chooser 2互換）
         private ImageList? _imBrowserIcons => _panels?.GetBrowserIcons();
-        
+
         // フォーカス設定（Browser Chooser 2互換）
         private FocusSettings _mFocusSettings = new();
 
@@ -57,7 +56,7 @@ namespace BrowserChooser3.Forms
         public OptionsForm(Settings settings)
         {
             _settings = settings;
-            
+
             // イベントハンドラークラスの初期化
             _formHandlers = new OptionsFormFormHandlers(this, LoadSettingsToControls, SaveSettings, () => _isModified);
             _categoryHandlers = new OptionsFormCategoryHandlers(this, (modified) => _isModified = modified, LoadCategories);
@@ -68,12 +67,12 @@ namespace BrowserChooser3.Forms
             _backgroundHandlers = new OptionsFormBackgroundHandlers(this, _settings, SetModified);
             _helpHandlers = new OptionsFormHelpHandlers(this);
             _accessibilityHandlers = new OptionsFormAccessibilityHandlers(this, _mFocusSettings, SetModified);
-            
+
             // UIパネル作成クラスの初期化
             _panels = new OptionsFormPanels();
-            
+
             InitializeForm();
-            
+
             // フォームイベントの設定
             FormClosing += _formHandlers.OptionsForm_FormClosing;
             Shown += _formHandlers.OptionsForm_Shown;
@@ -85,22 +84,22 @@ namespace BrowserChooser3.Forms
         private void InitializeForm()
         {
             Logger.LogInfo("OptionsForm.InitializeForm", "Start");
-            
+
             try
             {
                 // Designerで定義されたコンポーネントを初期化
                 InitializeComponent();
-                
+
                 // TreeViewノードの作成
                 var commonNode = new TreeNode("Common");
                 commonNode.Nodes.Add(new TreeNode("Browsers & applications") { Tag = "tabBrowsers" });
                 commonNode.Nodes.Add(new TreeNode("Auto URLs") { Tag = "tabAutoURLs" });
-                
+
                 var associationsNode = new TreeNode("Associations");
                 associationsNode.Nodes.Add(new TreeNode("Protocols") { Tag = "tabProtocols" });
                 associationsNode.Nodes.Add(new TreeNode("File Types") { Tag = "tabFileTypes" });
                 associationsNode.Nodes.Add(new TreeNode("Categories") { Tag = "tabCategories" });
-                
+
                 var settingsNode = new TreeNode("Settings");
                 settingsNode.Nodes.Add(new TreeNode("Display") { Tag = "tabDisplay" });
                 settingsNode.Nodes.Add(new TreeNode("Grid") { Tag = "tabGrid" });
@@ -109,12 +108,12 @@ namespace BrowserChooser3.Forms
                 settingsNode.Nodes.Add(new TreeNode("Others") { Tag = "tabOthers" });
 
                 var defaultBrowserNode = new TreeNode("Windows Default") { Tag = "tabDefaultBrowser" };
-                
+
                 treeSettings.Nodes.Add(commonNode);
                 treeSettings.Nodes.Add(associationsNode);
                 treeSettings.Nodes.Add(settingsNode);
                 treeSettings.Nodes.Add(defaultBrowserNode);
-                
+
                 // タブページの作成
                 var browsersTab = _panels.CreateBrowsersPanel(_settings, _mBrowser, _mProtocols, _mFileTypes, _mLastBrowserID, _imBrowserIcons, SetModified, RebuildAutoURLs);
                 var autoUrlsTab = _panels.CreateAutoURLsPanel(_settings, _mURLs, _mBrowser, SetModified, RebuildAutoURLs);
@@ -137,17 +136,17 @@ namespace BrowserChooser3.Forms
                 tabSettings.TabPages.Add(privacyTab);
                 tabSettings.TabPages.Add(startupTab);
                 tabSettings.TabPages.Add(othersTab);
-                
+
                 // TreeViewを展開
                 treeSettings.ExpandAll();
-                
+
                 // 設定の読み込み
                 LoadSettings();
-                
+
                 // ドラッグ&ドロップ機能の設定
                 SetupURLDragDrop();
                 SetupBrowserDragDrop();
-                
+
                 Logger.LogInfo("OptionsForm.InitializeForm", "End");
             }
             catch (Exception ex)
@@ -233,973 +232,27 @@ namespace BrowserChooser3.Forms
 
 
 
-        /// <summary>
-        /// Auto URLsパネルの作成（Browser Chooser 2互換）
-        /// </summary>
-        private TabPage CreateAutoURLsPanel()
-        {
-            var tabPage = new TabPage("Auto URLs");
-            tabPage.Name = "tabAutoURLs";
-            
-            var panel = new Panel
-            {
-                Dock = DockStyle.Fill,
-                Padding = new Padding(10)
-            };
 
-            var label = new Label
-            {
-                Text = "Auto URLs Settings",
-                Font = new Font(Font.FontFamily, 12, FontStyle.Bold),
-                Location = new Point(10, 10),
-                AutoSize = true
-            };
 
-            // ListView for URLs（Browser Chooser 2互換）
-            var lstURLs = new ListView
-            {
-                Location = new Point(87, 6),
-                Size = new Size(751, 218),
-                View = View.Details,
-                FullRowSelect = true,
-                GridLines = true,
-                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom
-            };
-            
-            lstURLs.Columns.Add("URL", 226);
-            lstURLs.Columns.Add("Browser", 105);
-            lstURLs.Columns.Add("Timeout", 100);
 
-            // Buttons（Browser Chooser 2互換）
-            var btnAdd = new Button { Text = "Add", Location = new Point(6, 6), Size = new Size(75, 23), Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0) };
-            var btnEdit = new Button { Text = "Edit", Location = new Point(6, 35), Size = new Size(75, 23), Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0) };
-            var btnDelete = new Button { Text = "Delete", Location = new Point(6, 64), Size = new Size(75, 23), Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0) };
-            var btnMoveUp = new Button { Text = "Move Up", Location = new Point(6, 93), Size = new Size(75, 23), Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0) };
-            var btnMoveDown = new Button { Text = "Move Down", Location = new Point(6, 122), Size = new Size(75, 23), Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0) };
 
-            var noteLabel = new Label
-            {
-                Text = "Double-click to edit an entry",
-                Location = new Point(6, 153),
-                Size = new Size(75, 26),
-                TextAlign = ContentAlignment.TopCenter,
-                ForeColor = Color.Gray
-            };
 
-            panel.Controls.Add(label);
-            panel.Controls.Add(lstURLs);
-            panel.Controls.Add(btnAdd);
-            panel.Controls.Add(btnEdit);
-            panel.Controls.Add(btnDelete);
-            panel.Controls.Add(btnMoveUp);
-            panel.Controls.Add(btnMoveDown);
-            panel.Controls.Add(noteLabel);
 
-            // 説明ラベル（Browser Chooser 2互換）
-            var label7 = new Label
-            {
-                Text = "Auto-URLs are processed in order that they are displayed, top to bottom. Case sensitive.",
-                Location = new Point(250, 206),
-                Size = new Size(421, 13),
-                AutoSize = true,
-                Anchor = AnchorStyles.Bottom | AnchorStyles.Right
-            };
-            panel.Controls.Add(label7);
 
-            // Auto URLsの選択変更時の処理
-            lstURLs.SelectedIndexChanged += (s, e) =>
-            {
-                bool hasSelection = lstURLs.SelectedItems.Count > 0;
-                btnEdit.Enabled = hasSelection;
-                btnDelete.Enabled = hasSelection;
-                btnMoveUp.Enabled = hasSelection;
-                btnMoveDown.Enabled = hasSelection;
-                noteLabel.Visible = hasSelection;
-                
-                // 変更フラグを設定
-                if (hasSelection)
-                {
-                    _isModified = true;
-                }
-            };
-            
-            tabPage.Controls.Add(panel);
-            return tabPage;
-        }
 
-        /// <summary>
-        /// プロトコルパネルの作成（Browser Chooser 2互換）
-        /// </summary>
-        private TabPage CreateProtocolsPanel()
-        {
-            var tabPage = new TabPage("Protocols");
-            tabPage.Name = "tabProtocols";
-            
-            var panel = new Panel
-            {
-                Dock = DockStyle.Fill,
-                Padding = new Padding(10)
-            };
 
-            var label = new Label
-            {
-                Text = "Protocol Settings",
-                Font = new Font(Font.FontFamily, 12, FontStyle.Bold),
-                Location = new Point(10, 10),
-                AutoSize = true
-            };
 
-            // ListView for Protocols（Browser Chooser 2互換）
-            var lstProtocols = new ListView
-            {
-                Location = new Point(87, 6),
-                Size = new Size(751, 218),
-                View = View.Details,
-                FullRowSelect = true,
-                GridLines = true,
-                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom
-            };
-            
-            lstProtocols.Columns.Add("Name", 109);
-            lstProtocols.Columns.Add("Header", 124);
 
-            // Buttons（Browser Chooser 2互換）
-            var btnAdd = new Button { Text = "Add", Location = new Point(6, 6), Size = new Size(75, 23), Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0) };
-            var btnEdit = new Button { Text = "Edit", Location = new Point(6, 35), Size = new Size(75, 23), Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0) };
-            var btnDelete = new Button { Text = "Delete", Location = new Point(6, 64), Size = new Size(75, 23), Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0) };
-            var btnOpenDefault = new Button { Text = "Select Default App", Location = new Point(6, 93), Size = new Size(75, 36), Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0) };
 
-            var noteLabel = new Label
-            {
-                Text = "Double-click to edit an entry",
-                Location = new Point(6, 153),
-                Size = new Size(75, 26),
-                TextAlign = ContentAlignment.TopCenter,
-                ForeColor = Color.Gray
-            };
 
-            panel.Controls.Add(label);
-            panel.Controls.Add(lstProtocols);
-            panel.Controls.Add(btnAdd);
-            panel.Controls.Add(btnEdit);
-            panel.Controls.Add(btnDelete);
-            panel.Controls.Add(btnOpenDefault);
-            panel.Controls.Add(noteLabel);
-            
-            tabPage.Controls.Add(panel);
-            return tabPage;
-        }
 
-        /// <summary>
-        /// カテゴリパネルの作成（Browser Chooser 2互換）
-        /// </summary>
-        private TabPage CreateCategoriesPanel()
-        {
-            var tabPage = new TabPage("Categories");
-            tabPage.Name = "tabCategories";
-            
-            var panel = new Panel
-            {
-                Dock = DockStyle.Fill,
-                Padding = new Padding(3)
-            };
 
-            // ListView for Categories（Browser Chooser 2互換）
-            var lstCategories = new ListView
-            {
-                Location = new Point(3, 6),
-                Size = new Size(836, 218),
-                View = View.Details,
-                FullRowSelect = true,
-                GridLines = true,
-                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom
-            };
-            
-            lstCategories.Columns.Add("Name", 425);
 
-            // カテゴリタブの選択時の処理
-            tabPage.Enter += TabCategories_Enter;
 
-            panel.Controls.Add(lstCategories);
-            
-            tabPage.Controls.Add(panel);
-            return tabPage;
-        }
 
-        /// <summary>
-        /// カテゴリタブ選択時の処理（Browser Chooser 2互換）
-        /// </summary>
-        private void TabCategories_Enter(object? sender, EventArgs e)
-        {
-            if (sender is TabPage tabPage)
-            {
-                var lstCategories = tabPage.Controls.OfType<ListView>().FirstOrDefault();
-                if (lstCategories != null)
-                {
-                    // カテゴリリストを更新
-                    lstCategories.Items.Clear();
 
-                    var categories = new List<string>();
-                    foreach (var browser in _mBrowser.Values)
-                    {
-                        if (!categories.Contains(browser.Category))
-                        {
-                            categories.Add(browser.Category);
-                            lstCategories.Items.Add(browser.Category);
-                        }
-                    }
-                }
-            }
-        }
 
-        /// <summary>
-        /// ファイルタイプパネルの作成（Browser Chooser 2互換）
-        /// </summary>
-        private TabPage CreateFileTypesPanel()
-        {
-            var tabPage = new TabPage("File Types");
-            tabPage.Name = "tabFileTypes";
-            
-            var panel = new Panel
-            {
-                Dock = DockStyle.Fill,
-                Padding = new Padding(10)
-            };
 
-            var label = new Label
-            {
-                Text = "File Type Settings",
-                Font = new Font(Font.FontFamily, 12, FontStyle.Bold),
-                Location = new Point(10, 10),
-                AutoSize = true
-            };
-
-            // ListView for File Types（Browser Chooser 2互換）
-            var lstFileTypes = new ListView
-            {
-                Location = new Point(87, 6),
-                Size = new Size(751, 218),
-                View = View.Details,
-                FullRowSelect = true,
-                GridLines = true,
-                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom
-            };
-            
-            lstFileTypes.Columns.Add("Name", 109);
-            lstFileTypes.Columns.Add("Extention", 74);
-
-            // Buttons（Browser Chooser 2互換）
-            var btnAdd = new Button { Text = "Add", Location = new Point(6, 6), Size = new Size(75, 23), Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0) };
-            var btnEdit = new Button { Text = "Edit", Location = new Point(6, 35), Size = new Size(75, 23), Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0) };
-            var btnDelete = new Button { Text = "Delete", Location = new Point(6, 64), Size = new Size(75, 23), Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0) };
-            var btnOpenDefault = new Button { Text = "Select Default App", Location = new Point(6, 93), Size = new Size(75, 36), Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0) };
-
-            var noteLabel = new Label
-            {
-                Text = "Double-click to edit an entry",
-                Location = new Point(6, 153),
-                Size = new Size(75, 26),
-                TextAlign = ContentAlignment.TopCenter,
-                ForeColor = Color.Gray
-            };
-
-            panel.Controls.Add(label);
-            panel.Controls.Add(lstFileTypes);
-            panel.Controls.Add(btnAdd);
-            panel.Controls.Add(btnEdit);
-            panel.Controls.Add(btnDelete);
-            panel.Controls.Add(btnOpenDefault);
-            panel.Controls.Add(noteLabel);
-            
-            tabPage.Controls.Add(panel);
-            return tabPage;
-        }
-
-        /// <summary>
-        /// 表示パネルの作成（Browser Chooser 2互換）
-        /// </summary>
-        private TabPage CreateDisplayPanel()
-        {
-            var tabPage = new TabPage("Display");
-            tabPage.Name = "tabDisplay";
-            
-            var panel = new Panel
-            {
-                Dock = DockStyle.Fill,
-                Padding = new Padding(3)
-            };
-
-            // チェックボックス群（Browser Chooser 2互換）
-            var chkShowURLs = new CheckBox
-            {
-                Text = "Show URLs in User Interface",
-                Location = new Point(6, 3),
-                AutoSize = true,
-                Checked = _settings.ShowURLs
-            };
-
-            var chkRevealShortURLs = new CheckBox
-            {
-                Text = "Reveal Shortened URLs",
-                Location = new Point(6, 26),
-                AutoSize = true,
-                Checked = _settings.RevealShortURLs
-            };
-
-            var chkAllowStayOpen = new CheckBox
-            {
-                Text = "Allow interface to stay open",
-                Location = new Point(6, 49),
-                AutoSize = true,
-                Checked = _settings.AllowStayOpen
-            };
-
-            var chkUseAreo = new CheckBox
-            {
-                Text = "Use AERO (when available)",
-                Location = new Point(276, 26),
-                AutoSize = true,
-                Checked = _settings.UseAero
-            };
-
-            var chkUseAccessibleRendering = new CheckBox
-            {
-                Text = "Use Accessible Rendering",
-                Location = new Point(276, 3),
-                AutoSize = true,
-                Checked = _settings.UseAccessibleRendering
-            };
-
-            // ボタン群（Browser Chooser 2互換）
-            var cmdAccessiblitySettings = new Button
-            {
-                Text = "Focus Settings",
-                Location = new Point(286, 45),
-                Size = new Size(134, 23),
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            };
-            cmdAccessiblitySettings.Click += (s, e) => _accessibilityHandlers.OpenAccessibilitySettings();
-
-            var cmdChangeBackgroundColor = new Button
-            {
-                Text = "Change Background Color",
-                Location = new Point(131, 126),
-                Size = new Size(149, 23),
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            };
-            cmdChangeBackgroundColor.Click += (s, e) => _backgroundHandlers.ChangeBackgroundColor();
-
-            var cmdTransparentBackground = new Button
-            {
-                Text = "Transparent Background",
-                Location = new Point(286, 126),
-                Size = new Size(149, 23),
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
-                Visible = false
-            };
-            cmdTransparentBackground.Click += (s, e) => _backgroundHandlers.SetTransparentBackground();
-
-            // 背景色プレビュー（Browser Chooser 2互換）
-            var pbBackgroundColor = new PictureBox
-            {
-                Location = new Point(100, 126),
-                Size = new Size(25, 23),
-                BackColor = _settings.BackgroundColorValue
-            };
-
-            // ラベル群（Browser Chooser 2互換）
-            var label13 = new Label
-            {
-                Text = "Background Color",
-                Location = new Point(2, 131),
-                AutoSize = true
-            };
-
-            var label5 = new Label
-            {
-                Text = "Message on main screen :",
-                Location = new Point(2, 74),
-                AutoSize = true
-            };
-
-            var label6 = new Label
-            {
-                Text = "Separator (Text between message and URL) :",
-                Location = new Point(2, 99),
-                AutoSize = true
-            };
-
-            // テキストボックス群（Browser Chooser 2互換）
-            var txtMessage = new TextBox
-            {
-                Text = _settings.DefaultMessage,
-                Location = new Point(158, 74),
-                Size = new Size(537, 20),
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
-                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
-            };
-
-            var txtSeparator = new TextBox
-            {
-                Text = _settings.Separator,
-                Location = new Point(232, 99),
-                Size = new Size(463, 20),
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
-                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
-            };
-
-            panel.Controls.Add(chkShowURLs);
-            panel.Controls.Add(chkRevealShortURLs);
-            panel.Controls.Add(chkAllowStayOpen);
-            panel.Controls.Add(chkUseAreo);
-            panel.Controls.Add(chkUseAccessibleRendering);
-            panel.Controls.Add(cmdAccessiblitySettings);
-            panel.Controls.Add(cmdChangeBackgroundColor);
-            panel.Controls.Add(cmdTransparentBackground);
-            panel.Controls.Add(pbBackgroundColor);
-            panel.Controls.Add(label13);
-            panel.Controls.Add(label5);
-            panel.Controls.Add(label6);
-            panel.Controls.Add(txtMessage);
-            panel.Controls.Add(txtSeparator);
-            
-            tabPage.Controls.Add(panel);
-            return tabPage;
-        }
-
-        /// <summary>
-        /// グリッドパネルの作成（Browser Chooser 2互換）
-        /// </summary>
-        private TabPage CreateGridPanel()
-        {
-            var tabPage = new TabPage("Grid");
-            tabPage.Name = "tabGrid";
-            
-            var panel = new Panel
-            {
-                Dock = DockStyle.Fill,
-                Padding = new Padding(3)
-            };
-
-            // GroupBox1: グリッドのアイコン数設定
-            var groupBox1 = new GroupBox
-            {
-                Text = "# of icons in grid",
-                Location = new Point(6, 6),
-                Size = new Size(263, 45)
-            };
-
-            var label2 = new Label
-            {
-                Text = "Columns:",
-                Location = new Point(6, 23),
-                AutoSize = true
-            };
-
-            var nudWidth = new NumericUpDown
-            {
-                Location = new Point(62, 20),
-                Size = new Size(60, 20),
-                Minimum = 1,
-                Maximum = 10,
-                Value = _settings.GridWidth
-            };
-
-            var label3 = new Label
-            {
-                Text = "Rows:",
-                Location = new Point(149, 23),
-                AutoSize = true
-            };
-
-            var nudHeight = new NumericUpDown
-            {
-                Location = new Point(196, 21),
-                Size = new Size(60, 20),
-                Minimum = 1,
-                Maximum = 10,
-                Value = _settings.GridHeight
-            };
-
-            groupBox1.Controls.Add(label2);
-            groupBox1.Controls.Add(nudWidth);
-            groupBox1.Controls.Add(label3);
-            groupBox1.Controls.Add(nudHeight);
-
-            // GroupBox2: アイコンサイズ設定
-            var groupBox2 = new GroupBox
-            {
-                Text = "Size of icons in grid",
-                Location = new Point(6, 57),
-                Size = new Size(430, 47)
-            };
-
-            var label9 = new Label
-            {
-                Text = "Width :",
-                Location = new Point(6, 20),
-                AutoSize = true
-            };
-
-            var nudIconSizeWidth = new NumericUpDown
-            {
-                Location = new Point(62, 18),
-                Size = new Size(60, 20),
-                Minimum = 1,
-                Maximum = 1000,
-                Value = _settings.IconWidth
-            };
-
-            var label10 = new Label
-            {
-                Text = "Height :",
-                Location = new Point(149, 20),
-                AutoSize = true
-            };
-
-            var nudIconSizeHeight = new NumericUpDown
-            {
-                Location = new Point(196, 18),
-                Size = new Size(60, 20),
-                Minimum = 1,
-                Maximum = 1000,
-                Value = _settings.IconHeight
-            };
-
-            var label14 = new Label
-            {
-                Text = "Icon Scale :",
-                Location = new Point(292, 20),
-                AutoSize = true
-            };
-
-            var nudIconScale = new NumericUpDown
-            {
-                Location = new Point(358, 18),
-                Size = new Size(60, 20),
-                DecimalPlaces = 1,
-                Increment = 0.1m,
-                Minimum = 0.1m,
-                Maximum = 5.0m,
-                Value = (decimal)_settings.IconScale
-            };
-
-            groupBox2.Controls.Add(label9);
-            groupBox2.Controls.Add(nudIconSizeWidth);
-            groupBox2.Controls.Add(label10);
-            groupBox2.Controls.Add(nudIconSizeHeight);
-            groupBox2.Controls.Add(label14);
-            groupBox2.Controls.Add(nudIconScale);
-
-            // GroupBox3: アイコン間隔設定
-            var groupBox3 = new GroupBox
-            {
-                Text = "Gap Size between icons in grid (can be negative)",
-                Location = new Point(6, 110),
-                Size = new Size(263, 47)
-            };
-
-            var label12 = new Label
-            {
-                Text = "Width :",
-                Location = new Point(6, 20),
-                AutoSize = true
-            };
-
-            var nudIconGapWidth = new NumericUpDown
-            {
-                Location = new Point(62, 18),
-                Size = new Size(60, 20),
-                Minimum = -100,
-                Maximum = 100,
-                Value = _settings.IconGapWidth
-            };
-
-            var label11 = new Label
-            {
-                Text = "Height :",
-                Location = new Point(150, 20),
-                AutoSize = true
-            };
-
-            var nudIconGapHeight = new NumericUpDown
-            {
-                Location = new Point(196, 18),
-                Size = new Size(60, 20),
-                Minimum = -100,
-                Maximum = 100,
-                Value = _settings.IconGapHeight
-            };
-
-            groupBox3.Controls.Add(label12);
-            groupBox3.Controls.Add(nudIconGapWidth);
-            groupBox3.Controls.Add(label11);
-            groupBox3.Controls.Add(nudIconGapHeight);
-
-            panel.Controls.Add(groupBox1);
-            panel.Controls.Add(groupBox2);
-            panel.Controls.Add(groupBox3);
-            
-            tabPage.Controls.Add(panel);
-            return tabPage;
-        }
-
-        /// <summary>
-        /// プライバシーパネルの作成（Browser Chooser 2互換）
-        /// </summary>
-        private TabPage CreatePrivacyPanel()
-        {
-            var tabPage = new TabPage("Privacy");
-            tabPage.Name = "tabPrivacy";
-            
-            var panel = new Panel
-            {
-                Dock = DockStyle.Fill,
-                Padding = new Padding(3)
-            };
-
-            // User Agent設定（Browser Chooser 2互換）
-            var label8 = new Label
-            {
-                Text = "User Agent To Send :",
-                Location = new Point(3, 6),
-                AutoSize = true
-            };
-
-            var txtUserAgent = new TextBox
-            {
-                Text = _settings.UserAgent,
-                Location = new Point(159, 3),
-                Size = new Size(277, 20),
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            };
-
-            // ダウンロード検出ファイル設定（Browser Chooser 2互換）
-            var chkDownloadDetectionfile = new CheckBox
-            {
-                Text = "Download Detection file from BrowserChooser2.com",
-                Location = new Point(6, 29),
-                AutoSize = true,
-                Checked = _settings.DownloadDetectionFile
-            };
-
-            panel.Controls.Add(label8);
-            panel.Controls.Add(txtUserAgent);
-            panel.Controls.Add(chkDownloadDetectionfile);
-            tabPage.Controls.Add(panel);
-            return tabPage;
-        }
-
-        /// <summary>
-        /// スタートアップパネルの作成（Browser Chooser 2互換）
-        /// </summary>
-        private TabPage CreateStartupPanel()
-        {
-            var tabPage = new TabPage("Startup");
-            tabPage.Name = "tabStartup";
-            
-            var panel = new Panel
-            {
-                Dock = DockStyle.Fill,
-                Padding = new Padding(3)
-            };
-
-            // ポータブルモード設定（Browser Chooser 2互換）
-            var chkPortableMode = new CheckBox
-            {
-                Text = "Portable Mode",
-                Location = new Point(6, 6),
-                AutoSize = true,
-                Checked = _settings.PortableMode
-            };
-
-            // 自動更新チェック設定（Browser Chooser 2互換）
-            var chkAutoCheckUpdate = new CheckBox
-            {
-                Text = "Automatically Check for Updates",
-                Location = new Point(6, 28),
-                AutoSize = true,
-                Checked = _settings.AutomaticUpdates
-            };
-
-            // 更新チェックボタン（Browser Chooser 2互換）
-            var cmdCheckForUpdate = new Button
-            {
-                Text = "Check Now",
-                Location = new Point(185, 24),
-                Size = new Size(75, 23),
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            };
-
-            // 自動読み込み遅延設定（Browser Chooser 2互換）
-            var label1 = new Label
-            {
-                Text = "Default Delay before Auto-Load :",
-                Location = new Point(6, 54),
-                AutoSize = true
-            };
-
-            var nudDelayBeforeAutoload = new NumericUpDown
-            {
-                Location = new Point(200, 52),
-                Size = new Size(60, 20),
-                Minimum = 0,
-                Maximum = 60,
-                Value = _settings.DefaultDelay
-            };
-
-            // 高度な画面設定（Browser Chooser 2互換）
-            var chkAdvanced = new CheckBox
-            {
-                Text = "Use Advanced Screens",
-                Location = new Point(3, 228),
-                AutoSize = true,
-                Checked = _settings.AdvancedScreens,
-                Visible = false
-            };
-
-            // GroupBox4: メイン画面開始位置設定（Browser Chooser 2互換）
-            var groupBox4 = new GroupBox
-            {
-                Text = "Main Screen Starting Position",
-                Location = new Point(6, 78),
-                Size = new Size(430, 47)
-            };
-
-            var label17 = new Label
-            {
-                Text = "Starting Position",
-                Location = new Point(6, 20),
-                AutoSize = true
-            };
-
-            var cmbStartingPosition = new ComboBox
-            {
-                Location = new Point(95, 17),
-                Size = new Size(142, 21),
-                DropDownStyle = ComboBoxStyle.DropDownList,
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            };
-            cmbStartingPosition.Items.AddRange(new object[] {
-                "Center Screen", "Offset Center", "XY", "Top Left", "Top Right", 
-                "Bottom Left", "Bottom Right", "Offset Top Left", "Offset Top Right",
-                "Offset Bottom Left", "Offset Bottom Right"
-            });
-            cmbStartingPosition.SelectedIndex = _settings.StartingPosition;
-
-            var label16 = new Label
-            {
-                Text = "X :",
-                Location = new Point(243, 20),
-                AutoSize = true
-            };
-
-            var nudXOffset = new NumericUpDown
-            {
-                Location = new Point(269, 18),
-                Size = new Size(60, 20),
-                Increment = 10,
-                Minimum = -10000,
-                Maximum = 10000,
-                Value = _settings.OffsetX
-            };
-
-            var label15 = new Label
-            {
-                Text = "Y:",
-                Location = new Point(335, 20),
-                AutoSize = true
-            };
-
-            var nudYOffset = new NumericUpDown
-            {
-                Location = new Point(358, 18),
-                Size = new Size(60, 20),
-                Increment = 10,
-                Minimum = -10000,
-                Maximum = 10000,
-                Value = _settings.OffsetY
-            };
-
-            groupBox4.Controls.Add(label17);
-            groupBox4.Controls.Add(cmbStartingPosition);
-            groupBox4.Controls.Add(label15);
-            groupBox4.Controls.Add(label16);
-            groupBox4.Controls.Add(nudYOffset);
-            groupBox4.Controls.Add(nudXOffset);
-
-            panel.Controls.Add(chkPortableMode);
-            panel.Controls.Add(chkAutoCheckUpdate);
-            panel.Controls.Add(cmdCheckForUpdate);
-            panel.Controls.Add(label1);
-            panel.Controls.Add(nudDelayBeforeAutoload);
-            panel.Controls.Add(chkAdvanced);
-            panel.Controls.Add(groupBox4);
-            tabPage.Controls.Add(panel);
-            return tabPage;
-        }
-
-        /// <summary>
-        /// 一般設定パネルの作成
-        /// </summary>
-        private TabPage CreateGeneralPanel()
-        {
-            var tabPage = new TabPage("General");
-            tabPage.Name = "tabGeneral";
-            
-            var panel = new Panel
-            {
-                Dock = DockStyle.Fill,
-                Padding = new Padding(10)
-            };
-
-            var label = new Label
-            {
-                Text = "General Settings",
-                Font = new Font(Font.FontFamily, 12, FontStyle.Bold),
-                Location = new Point(10, 10),
-                AutoSize = true
-            };
-
-            panel.Controls.Add(label);
-            tabPage.Controls.Add(panel);
-            return tabPage;
-        }
-
-        /// <summary>
-        /// その他パネルの作成（Browser Chooser 2互換）
-        /// </summary>
-        private TabPage CreateOthersPanel()
-        {
-            var tabPage = new TabPage("Others");
-            tabPage.Name = "tabOthers";
-            
-            var panel = new Panel
-            {
-                Dock = DockStyle.Fill,
-                Padding = new Padding(3)
-            };
-
-            // オプションショートカット設定（Browser Chooser 2互換）
-            var label4 = new Label
-            {
-                Text = "Hotkey to open Options dialog :",
-                Location = new Point(2, 6),
-                AutoSize = true
-            };
-
-            var txtOptionsShortcut = new TextBox
-            {
-                Text = _settings.OptionsShortcut.ToString(),
-                Location = new Point(158, 3),
-                Size = new Size(100, 20),
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
-                MaxLength = 1
-            };
-
-            // GroupBox5: 正規化設定（Browser Chooser 2互換）
-            var groupBox5 = new GroupBox
-            {
-                Text = "Append To / Canonicalize Domain",
-                Location = new Point(3, 29),
-                Size = new Size(430, 48)
-            };
-
-            var chkCanonicalize = new CheckBox
-            {
-                Text = "Append To / Canonicalize Domain",
-                Location = new Point(9, 0),
-                AutoSize = true,
-                Checked = _settings.Canonicalize,
-                BackColor = SystemColors.Control
-            };
-
-            var label19 = new Label
-            {
-                Text = "URI Part to Add (omit first dot)",
-                Location = new Point(6, 22),
-                AutoSize = true
-            };
-
-            var txtCanonicalizeAppend = new TextBox
-            {
-                Text = _settings.CanonicalizeAppendedText,
-                Location = new Point(159, 19),
-                Size = new Size(100, 20),
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            };
-
-            groupBox5.Controls.Add(chkCanonicalize);
-            groupBox5.Controls.Add(label19);
-            groupBox5.Controls.Add(txtCanonicalizeAppend);
-
-            // ログ設定（Browser Chooser 2互換）
-            var chkLog = new CheckBox
-            {
-                Text = "Enable Logging",
-                Location = new Point(5, 83),
-                AutoSize = true,
-                Checked = _settings.EnableLogging,
-                BackColor = Color.Transparent
-            };
-
-            // DLL抽出設定（Browser Chooser 2互換）
-            var chkExtract = new CheckBox
-            {
-                Text = "Extract embded DLLs",
-                Location = new Point(5, 106),
-                AutoSize = true,
-                Checked = _settings.ExtractDLLs,
-                BackColor = Color.Transparent
-            };
-
-            panel.Controls.Add(label4);
-            panel.Controls.Add(txtOptionsShortcut);
-            panel.Controls.Add(groupBox5);
-            panel.Controls.Add(chkLog);
-            panel.Controls.Add(chkExtract);
-            tabPage.Controls.Add(panel);
-            return tabPage;
-        }
-
-        /// <summary>
-        /// アクセシビリティパネルの作成
-        /// </summary>
-        private TabPage CreateAccessibilityPanel()
-        {
-            var tabPage = new TabPage("Accessibility");
-            tabPage.Name = "tabAccessibility";
-            
-            var panel = new Panel
-            {
-                Dock = DockStyle.Fill,
-                Padding = new Padding(10)
-            };
-
-            var label = new Label
-            {
-                Text = "Accessibility Settings",
-                Font = new Font(Font.FontFamily, 12, FontStyle.Bold),
-                Location = new Point(10, 10),
-                AutoSize = true
-            };
-
-            var accessibilityButton = new Button
-            {
-                Text = "Open Accessibility Settings",
-                Location = new Point(10, 40),
-                Size = new Size(200, 30)
-            };
-            accessibilityButton.Click += (s, e) =>
-            {
-                _accessibilityHandlers.OpenAccessibilitySettings();
-            };
-
-            panel.Controls.Add(label);
-            panel.Controls.Add(accessibilityButton);
-            tabPage.Controls.Add(panel);
-            return tabPage;
-        }
 
 
 
@@ -1209,7 +262,7 @@ namespace BrowserChooser3.Forms
         private void LoadSettings()
         {
             Logger.LogInfo("OptionsForm.LoadSettings", "Start");
-            
+
             try
             {
                 // プロトコル設定の読み込み
@@ -1233,17 +286,17 @@ namespace BrowserChooser3.Forms
                 var defaultBrowserGuid = _settings.DefaultBrowserGuid;
                 var listView = Controls.Find("lstBrowsers", true).FirstOrDefault() as ListView;
                 if (listView != null) listView.Items.Clear();
-                
+
                 if (_imBrowserIcons != null) _imBrowserIcons.Images.Clear();
-                
+
                 foreach (var browser in _settings.Browsers)
                 {
                     var clonedBrowser = browser.Clone();
                     _mBrowser.Add(_mBrowser.Count, clonedBrowser);
-                    
+
                     // デフォルトブラウザの判定
                     bool isDefault = (defaultBrowserGuid == browser.Guid);
-                    
+
                     // ListViewにアイテムを追加
                     if (listView != null)
                     {
@@ -1254,9 +307,9 @@ namespace BrowserChooser3.Forms
                         item.SubItems.Add(clonedBrowser.PosY.ToString());
                         item.SubItems.Add(clonedBrowser.PosX.ToString());
                         item.SubItems.Add(clonedBrowser.Hotkey.ToString());
-                        item.SubItems.Add(GetBrowserProtocolsAndFileTypes(clonedBrowser));
+                        item.SubItems.Add(_browserHandlers.GetBrowserProtocolsAndFileTypes(clonedBrowser));
                     }
-                    
+
                     // ImageListにアイコンを追加
                     if (_imBrowserIcons != null)
                     {
@@ -1273,17 +326,17 @@ namespace BrowserChooser3.Forms
                 _mURLs.Clear();
                 var urlListView = Controls.Find("lstURLs", true).FirstOrDefault() as ListView;
                 if (urlListView != null) urlListView.Items.Clear();
-                
+
                 foreach (var url in _settings.URLs)
                 {
                     _mURLs.Add(_mURLs.Count, url.Clone());
-                    
+
                     // ListViewにアイテムを追加
                     if (urlListView != null)
                     {
                         var item = urlListView.Items.Add(url.URLValue);
                         item.Tag = _mURLs.Count - 1;
-                        
+
                         // ブラウザ名
                         if (url.BrowserGuid != Guid.Empty)
                         {
@@ -1294,7 +347,7 @@ namespace BrowserChooser3.Forms
                         {
                             item.SubItems.Add("Default");
                         }
-                        
+
                         // 遅延時間
                         if (url.DelayTime < 0)
                         {
@@ -1310,13 +363,13 @@ namespace BrowserChooser3.Forms
 
                 // コントロールに設定値を設定
                 LoadSettingsToControls();
-                
+
                 Logger.LogInfo("OptionsForm.LoadSettings", "End");
             }
             catch (Exception ex)
             {
                 Logger.LogError("OptionsForm.LoadSettings", "設定読み込みエラー", ex.Message, ex.StackTrace ?? "");
-                MessageBox.Show($"設定の読み込みに失敗しました: {ex.Message}", "エラー", 
+                MessageBox.Show($"設定の読み込みに失敗しました: {ex.Message}", "エラー",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -1460,7 +513,7 @@ namespace BrowserChooser3.Forms
             _mFocusSettings.BoxWidth = _settings.FocusBoxLineWidth;
 
             // デフォルトブラウザGUIDの設定
-                                var hiddenLabel = lblHiddenBrowserGuid;
+            var hiddenLabel = lblHiddenBrowserGuid;
             if (hiddenLabel != null && _settings.DefaultBrowserGuid != Guid.Empty)
             {
                 hiddenLabel.Tag = _settings.DefaultBrowserGuid.ToString();
@@ -1473,7 +526,7 @@ namespace BrowserChooser3.Forms
         private void SaveSettings()
         {
             Logger.LogInfo("OptionsForm.SaveSettings", "Start");
-            
+
             try
             {
                 // ブラウザ設定の保存
@@ -1484,7 +537,7 @@ namespace BrowserChooser3.Forms
                 }
 
                 // デフォルトブラウザの設定
-                                        var hiddenGuidLabel = lblHiddenBrowserGuid;
+                var hiddenGuidLabel = lblHiddenBrowserGuid;
                 if (hiddenGuidLabel?.Tag != null && !string.IsNullOrEmpty(hiddenGuidLabel.Tag.ToString()?.Trim()))
                 {
                     try
@@ -1498,7 +551,7 @@ namespace BrowserChooser3.Forms
                     }
                     catch (Exception)
                     {
-                        MessageBox.Show("There is a problem with the default browser (GUID error)", "Error", 
+                        MessageBox.Show("There is a problem with the default browser (GUID error)", "Error",
                             MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
@@ -1527,7 +580,7 @@ namespace BrowserChooser3.Forms
                 // プロトコル・ファイルタイプが変更された場合の確認
                 if (_mFileTypesAreDirty || _mProtocolsAreDirty)
                 {
-                    var result = MessageBox.Show("You have changed the accepted Protocols or Filetypes.", 
+                    var result = MessageBox.Show("You have changed the accepted Protocols or Filetypes.",
                         "Protocols/Filetypes Updated", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
 
@@ -1645,16 +698,16 @@ namespace BrowserChooser3.Forms
 
                 var txtMessage = Controls.Find("txtMessage", true).FirstOrDefault() as TextBox;
                 if (txtMessage != null) _settings.DefaultMessage = txtMessage.Text;
-                
+
                 _settings.DoSave();
                 _isModified = false;
-                
+
                 Logger.LogInfo("OptionsForm.SaveSettings", "End");
             }
             catch (Exception ex)
             {
                 Logger.LogError("OptionsForm.SaveSettings", "保存エラー", ex.Message, ex.StackTrace ?? "");
-                MessageBox.Show($"設定の保存に失敗しました: {ex.Message}", "エラー", 
+                MessageBox.Show($"設定の保存に失敗しました: {ex.Message}", "エラー",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -1673,360 +726,9 @@ namespace BrowserChooser3.Forms
 
 
 
-        /// <summary>
-        /// プロトコル・ファイルタイプ管理機能（Browser Chooser 2互換）
-        /// </summary>
-        private void SetupProtocolFileTypeManagement()
-        {
-            // プロトコル追加ボタン
-            var addProtocolButton = Controls.Find("cmdAddProtocol", true).FirstOrDefault() as Button;
-            if (addProtocolButton != null)
-            {
-                addProtocolButton.Click += (s, e) =>
-                {
-                    var addEditForm = new AddEditProtocolForm();
-                    if (addEditForm.AddProtocol(_mBrowser))
-                    {
-                        var newProtocol = addEditForm.GetData();
-                        _mProtocols.Add(_mLastProtocolID + 1, newProtocol);
-                        
-                        // ListViewにアイテムを追加
-                        var listView = Controls.Find("lstProtocols", true).FirstOrDefault() as ListView;
-                        if (listView != null)
-                        {
-                            var item = listView.Items.Add(newProtocol.ProtocolName);
-                            item.Tag = _mLastProtocolID + 1;
-                            item.SubItems.Add(newProtocol.Header);
-                        }
-                        
-                        _mLastProtocolID++;
-                        _mProtocolsAreDirty = true;
-                        _isModified = true;
-                    }
-                };
-            }
 
-            // プロトコル編集ボタン
-            var editProtocolButton = Controls.Find("cmdEditProtocol", true).FirstOrDefault() as Button;
-            if (editProtocolButton != null)
-            {
-                editProtocolButton.Click += (s, e) =>
-                {
-                    var listView = Controls.Find("lstProtocols", true).FirstOrDefault() as ListView;
-                    if (listView?.SelectedItems.Count > 0)
-                    {
-                        var selectedIndex = listView.SelectedItems[0].Tag is int tag ? tag : -1;
-                        if (selectedIndex == -1 || !_mProtocols.ContainsKey(selectedIndex)) return;
-                        
-                        var addEditForm = new AddEditProtocolForm();
-                        if (addEditForm.EditProtocol(_mProtocols[selectedIndex], _mBrowser))
-                        {
-                            var updatedProtocol = addEditForm.GetData();
-                            _mProtocols[selectedIndex] = updatedProtocol;
-                            
-                            // ListViewアイテムの更新
-                            var selectedItem = listView.SelectedItems[0];
-                            selectedItem.Text = updatedProtocol.ProtocolName;
-                            selectedItem.SubItems[1].Text = updatedProtocol.Header;
-                            
-                            _mProtocolsAreDirty = true;
-                            _isModified = true;
-                        }
-                    }
-                };
-            }
 
-            // プロトコル削除ボタン
-            var deleteProtocolButton = Controls.Find("cmdDeleteProtocol", true).FirstOrDefault() as Button;
-            if (deleteProtocolButton != null)
-            {
-                deleteProtocolButton.Click += (s, e) =>
-                {
-                    var listView = Controls.Find("lstProtocols", true).FirstOrDefault() as ListView;
-                    if (listView?.SelectedItems.Count > 0)
-                    {
-                        var protocolName = listView.SelectedItems[0].Text;
-                        var result = MessageBox.Show($"Are you sure you want delete the {protocolName} entry?", 
-                            "Confirm Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                        
-                        if (result == DialogResult.Yes)
-                        {
-                            var selectedIndex = listView.SelectedItems[0].Tag is int tag ? tag : -1;
-                            if (selectedIndex != -1)
-                            {
-                                _mProtocols.Remove(selectedIndex);
-                                listView.Items.Remove(listView.SelectedItems[0]);
-                                _mProtocolsAreDirty = true;
-                                _isModified = true;
-                            }
-                        }
-                    }
-                };
-            }
 
-            // ファイルタイプ追加ボタン
-            var addFileTypeButton = Controls.Find("cmdAddFileType", true).FirstOrDefault() as Button;
-            if (addFileTypeButton != null)
-            {
-                addFileTypeButton.Click += (s, e) =>
-                {
-                    var addEditForm = new AddEditFileTypeForm();
-                    if (addEditForm.AddFileType(_mBrowser))
-                    {
-                        var newFileType = addEditForm.GetData();
-                        _mFileTypes.Add(_mLastFileTypeID + 1, newFileType);
-                        
-                        // ListViewにアイテムを追加
-                        var listView = Controls.Find("lstFiletypes", true).FirstOrDefault() as ListView;
-                        if (listView != null)
-                        {
-                            var item = listView.Items.Add(newFileType.FiletypeName);
-                            item.Tag = _mLastFileTypeID + 1;
-                            item.SubItems.Add(newFileType.Extention);
-                        }
-                        
-                        _mLastFileTypeID++;
-                        _mFileTypesAreDirty = true;
-                        _isModified = true;
-                    }
-                };
-            }
-
-            // ファイルタイプ編集ボタン
-            var editFileTypeButton = Controls.Find("cmdEditFileType", true).FirstOrDefault() as Button;
-            if (editFileTypeButton != null)
-            {
-                editFileTypeButton.Click += (s, e) =>
-                {
-                    var listView = Controls.Find("lstFiletypes", true).FirstOrDefault() as ListView;
-                    if (listView?.SelectedItems.Count > 0)
-                    {
-                        var selectedIndex = listView.SelectedItems[0].Tag is int tag ? tag : -1;
-                        if (selectedIndex == -1 || !_mFileTypes.ContainsKey(selectedIndex)) return;
-                        
-                        var addEditForm = new AddEditFileTypeForm();
-                        if (addEditForm.EditFileType(_mFileTypes[selectedIndex], _mBrowser))
-                        {
-                            var updatedFileType = addEditForm.GetData();
-                            _mFileTypes[selectedIndex] = updatedFileType;
-                            
-                            // ListViewアイテムの更新
-                            var selectedItem = listView.SelectedItems[0];
-                            selectedItem.Text = updatedFileType.FiletypeName;
-                            selectedItem.SubItems[1].Text = updatedFileType.Extention;
-                            
-                            _mFileTypesAreDirty = true;
-                            _isModified = true;
-                        }
-                    }
-                };
-            }
-
-            // ファイルタイプ削除ボタン
-            var deleteFileTypeButton = Controls.Find("cmdDeleteFileType", true).FirstOrDefault() as Button;
-            if (deleteFileTypeButton != null)
-            {
-                deleteFileTypeButton.Click += (s, e) =>
-                {
-                    var listView = Controls.Find("lstFiletypes", true).FirstOrDefault() as ListView;
-                    if (listView?.SelectedItems.Count > 0)
-                    {
-                        var fileTypeName = listView.SelectedItems[0].Text;
-                        var result = MessageBox.Show($"Are you sure you want delete the {fileTypeName} entry?", 
-                            "Confirm Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                        
-                        if (result == DialogResult.Yes)
-                        {
-                            var selectedIndex = listView.SelectedItems[0].Tag is int tag ? tag : -1;
-                            if (selectedIndex != -1)
-                            {
-                                _mFileTypes.Remove(selectedIndex);
-                                listView.Items.Remove(listView.SelectedItems[0]);
-                                _mFileTypesAreDirty = true;
-                                _isModified = true;
-                            }
-                        }
-                    }
-                };
-            }
-        }
-
-        /// <summary>
-        /// URL管理機能（Browser Chooser 2互換）
-        /// </summary>
-        private void SetupURLManagement()
-        {
-            // URL追加ボタン
-            var addURLButton = Controls.Find("cmdAddAutoURL", true).FirstOrDefault() as Button;
-            if (addURLButton != null)
-            {
-                addURLButton.Click += (s, e) =>
-                {
-                    var addEditForm = new AddEditURLForm();
-                    if (addEditForm.AddURL(_mBrowser))
-                    {
-                        var newURL = addEditForm.GetData();
-                        _mURLs.Add(_mLastURLID + 1, newURL);
-                        
-                        // ListViewにアイテムを追加
-                        var listView = Controls.Find("lstURLs", true).FirstOrDefault() as ListView;
-                        if (listView != null)
-                        {
-                            var item = listView.Items.Add(newURL.URLValue);
-                            item.Tag = _mLastURLID + 1;
-                            
-                            // ブラウザ名
-                            if (newURL.BrowserGuid != Guid.Empty)
-                            {
-                                var browser = _mBrowser.Values.FirstOrDefault(b => b.Guid == newURL.BrowserGuid);
-                                item.SubItems.Add(browser?.Name ?? "Unknown");
-                            }
-                            else
-                            {
-                                item.SubItems.Add("Default");
-                            }
-                            
-                            // 遅延時間
-                            if (newURL.DelayTime < 0)
-                            {
-                                item.SubItems.Add("Default");
-                            }
-                            else
-                            {
-                                item.SubItems.Add(newURL.DelayTime.ToString());
-                            }
-                        }
-                        
-                        _mLastURLID++;
-                        _isModified = true;
-                    }
-                };
-            }
-
-            // URL編集ボタン
-            var editURLButton = Controls.Find("cmdAutoURLEdit", true).FirstOrDefault() as Button;
-            if (editURLButton != null)
-            {
-                editURLButton.Click += (s, e) =>
-                {
-                    var listView = Controls.Find("lstURLs", true).FirstOrDefault() as ListView;
-                    if (listView?.SelectedItems.Count > 0)
-                    {
-                        var selectedIndex = listView.SelectedItems[0].Tag is int tag ? tag : -1;
-                        if (selectedIndex == -1 || !_mURLs.ContainsKey(selectedIndex)) return;
-                        
-                        var addEditForm = new AddEditURLForm();
-                        if (addEditForm.EditURL(_mURLs[selectedIndex], _mBrowser))
-                        {
-                            var updatedURL = addEditForm.GetData();
-                            _mURLs[selectedIndex] = updatedURL;
-                            
-                            // ListViewアイテムの更新
-                            var selectedItem = listView.SelectedItems[0];
-                            selectedItem.Text = updatedURL.URLValue;
-                            
-                            // ブラウザ名
-                            if (updatedURL.BrowserGuid != Guid.Empty)
-                            {
-                                var browser = _mBrowser.Values.FirstOrDefault(b => b.Guid == updatedURL.BrowserGuid);
-                                selectedItem.SubItems[1].Text = browser?.Name ?? "Unknown";
-                            }
-                            else
-                            {
-                                selectedItem.SubItems[1].Text = "Default";
-                            }
-                            
-                            // 遅延時間
-                            if (updatedURL.DelayTime < 0)
-                            {
-                                selectedItem.SubItems[2].Text = "Default";
-                            }
-                            else
-                            {
-                                selectedItem.SubItems[2].Text = updatedURL.DelayTime.ToString();
-                            }
-                            
-                            _isModified = true;
-                        }
-                    }
-                };
-            }
-
-            // URL削除ボタン
-            var deleteURLButton = Controls.Find("cmdAutoURLDelete", true).FirstOrDefault() as Button;
-            if (deleteURLButton != null)
-            {
-                deleteURLButton.Click += (s, e) =>
-                {
-                    var listView = Controls.Find("lstURLs", true).FirstOrDefault() as ListView;
-                    if (listView?.SelectedItems.Count > 0)
-                    {
-                        var urlName = listView.SelectedItems[0].Text;
-                        var result = MessageBox.Show($"Are you sure you want delete the {urlName} entry?", 
-                            "Confirm Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                        
-                        if (result == DialogResult.Yes)
-                        {
-                            var selectedIndex = listView.SelectedItems[0].Tag is int tag ? tag : -1;
-                            if (selectedIndex != -1)
-                            {
-                                _mURLs.Remove(selectedIndex);
-                                listView.Items.Remove(listView.SelectedItems[0]);
-                                _isModified = true;
-                            }
-                        }
-                    }
-                };
-            }
-
-            // URL上移動ボタン
-            var moveUpURLButton = Controls.Find("cmdMoveUpAutoURL", true).FirstOrDefault() as Button;
-            if (moveUpURLButton != null)
-            {
-                moveUpURLButton.Click += (s, e) =>
-                {
-                    var listView = Controls.Find("lstURLs", true).FirstOrDefault() as ListView;
-                    if (listView?.SelectedItems.Count > 0)
-                    {
-                        var selectedIndex = listView.SelectedItems[0].Index;
-                        if (selectedIndex > 0)
-                        {
-                            var item = listView.SelectedItems[0];
-                            listView.Items.RemoveAt(selectedIndex);
-                            listView.Items.Insert(selectedIndex - 1, item);
-                            listView.Items[selectedIndex - 1].Selected = true;
-                            
-                            // 内部リストを再構築
-                            RebuildAutoURLs();
-                        }
-                    }
-                };
-            }
-
-            // URL下移動ボタン
-            var moveDownURLButton = Controls.Find("cmdMoveDownAutoURL", true).FirstOrDefault() as Button;
-            if (moveDownURLButton != null)
-            {
-                moveDownURLButton.Click += (s, e) =>
-                {
-                    var listView = Controls.Find("lstURLs", true).FirstOrDefault() as ListView;
-                    if (listView?.SelectedItems.Count > 0)
-                    {
-                        var selectedIndex = listView.SelectedItems[0].Index;
-                        if (selectedIndex < listView.Items.Count - 1)
-                        {
-                            var item = listView.SelectedItems[0];
-                            listView.Items.RemoveAt(selectedIndex);
-                            listView.Items.Insert(selectedIndex + 1, item);
-                            listView.Items[selectedIndex + 1].Selected = true;
-                            
-                            // 内部リストを再構築
-                            RebuildAutoURLs();
-                        }
-                    }
-                };
-            }
-        }
 
 
 
@@ -2046,410 +748,11 @@ namespace BrowserChooser3.Forms
 
         // OptionsForm_FormClosing と OptionsForm_Shown は OptionsFormFormHandlers クラスに移動済み
 
-        /// <summary>
-        /// ブラウザのプロトコル・ファイルタイプを取得（Browser Chooser 2互換）
-        /// </summary>
-        private string GetBrowserProtocolsAndFileTypes(Browser browser)
-        {
-            var items = new List<string>();
 
-            // プロトコルを追加
-            foreach (var protocol in _mProtocols.Values)
-            {
-                if (protocol.SupportingBrowsers.Contains(browser.Guid))
-                {
-                    items.Add(protocol.ProtocolName);
-                }
-            }
 
-            // ファイルタイプを追加
-            foreach (var fileType in _mFileTypes.Values)
-            {
-                if (fileType.SupportingBrowsers.Contains(browser.Guid))
-                {
-                    items.Add(fileType.FiletypeName);
-                }
-            }
 
-            return string.Join(", ", items);
-        }
 
-        /// <summary>
-        /// ブラウザ管理機能（Browser Chooser 2互換）
-        /// </summary>
-        private void SetupBrowserManagement()
-        {
-            // ブラウザ追加ボタン
-            var addButton = Controls.Find("cmdBrowserAdd", true).FirstOrDefault() as Button;
-            if (addButton != null)
-            {
-                addButton.Click += (s, e) =>
-                {
-                    Logger.LogInfo("OptionsForm.cmdBrowserAdd_Click", "ブラウザ追加ダイアログを表示");
-                    try
-                    {
-                        var addEditForm = new AddEditBrowserForm();
-                        var gridSize = new Point(_settings.GridWidth, _settings.GridHeight);
-                        
-                        if (addEditForm.AddBrowser(_mBrowser, _mProtocols, _mFileTypes, _settings.AdvancedScreens, gridSize))
-                        {
-                            var newBrowser = addEditForm.GetData();
-                            _mBrowser.Add(_mLastBrowserID + 1, newBrowser);
-                            
-                            // ImageListにアイコンを追加
-                            if (_imBrowserIcons != null)
-                            {
-                                var image = ImageUtilities.GetImage(newBrowser, false);
-                                if (image != null)
-                                {
-                                    _imBrowserIcons.Images.Add(image);
-                                }
-                            }
 
-                            // ListViewにアイテムを追加
-                            var listView = Controls.Find("lstBrowsers", true).FirstOrDefault() as ListView;
-                            if (listView != null)
-                            {
-                                var item = listView.Items.Add(newBrowser.Name);
-                                item.Tag = _mLastBrowserID + 1;
-                                
-                                // デフォルトブラウザのチェックマーク
-                                if (_settings.DefaultBrowserGuid == newBrowser.Guid)
-                                {
-                                    item.SubItems.Add("✔");
-                                }
-                                else
-                                {
-                                    item.SubItems.Add("");
-                                }
-                                
-                                // 位置情報
-                                item.SubItems.Add(newBrowser.PosY.ToString());
-                                item.SubItems.Add(newBrowser.PosX.ToString());
-                                item.SubItems.Add(newBrowser.Hotkey.ToString());
-                                
-                                // プロトコル・ファイルタイプ情報
-                                item.SubItems.Add(GetBrowserProtocolsAndFileTypes(newBrowser));
-                            }
-                            
-                            _mLastBrowserID++;
-                            
-                            // プロトコル・ファイルタイプの更新
-                            _mProtocols = addEditForm.GetProtocols();
-                            _mFileTypes = addEditForm.GetFileTypes();
-                            
-                            _isModified = true;
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.LogError("OptionsForm.cmdBrowserAdd_Click", "ブラウザ追加エラー", ex.Message, ex.StackTrace ?? "");
-                        MessageBox.Show($"ブラウザ追加に失敗しました: {ex.Message}", "エラー", 
-                            MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                };
-            }
-
-            // ブラウザ編集ボタン
-            var editButton = Controls.Find("cmdBrowserEdit", true).FirstOrDefault() as Button;
-            if (editButton != null)
-            {
-                editButton.Click += (s, e) =>
-                {
-                    var listView = Controls.Find("lstBrowsers", true).FirstOrDefault() as ListView;
-                    if (listView?.SelectedItems.Count > 0)
-                    {
-                        var selectedIndex = listView.SelectedItems[0].Tag is int tag ? tag : -1;
-                        if (selectedIndex == -1 || !_mBrowser.ContainsKey(selectedIndex)) return;
-                        
-                        var addEditForm = new AddEditBrowserForm();
-                        if (addEditForm.EditBrowser(_mBrowser[selectedIndex], _mBrowser, _mProtocols, _mFileTypes, _settings.AdvancedScreens))
-                        {
-                            var updatedBrowser = addEditForm.GetData();
-                            _mBrowser[selectedIndex] = updatedBrowser;
-                            
-                            // ListViewアイテムの更新
-                            var selectedItem = listView.SelectedItems[0];
-                            selectedItem.Text = updatedBrowser.Name;
-                            
-                            // デフォルトブラウザのチェックマーク
-                            if (_settings.DefaultBrowserGuid == updatedBrowser.Guid)
-                            {
-                                selectedItem.SubItems[1].Text = "✔";
-                            }
-                            else
-                            {
-                                selectedItem.SubItems[1].Text = "";
-                            }
-                            
-                            // 位置情報
-                            selectedItem.SubItems[2].Text = updatedBrowser.PosY.ToString();
-                            selectedItem.SubItems[3].Text = updatedBrowser.PosX.ToString();
-                            selectedItem.SubItems[4].Text = updatedBrowser.Hotkey.ToString();
-                            
-                            // プロトコル・ファイルタイプ情報
-                            selectedItem.SubItems[5].Text = GetBrowserProtocolsAndFileTypes(updatedBrowser);
-                            
-                            // ImageListアイコンの更新
-                            if (_imBrowserIcons != null)
-                            {
-                                var image = ImageUtilities.GetImage(updatedBrowser, false);
-                                if (image != null)
-                                {
-                                    var scaledImage = ImageUtilities.ScaleImageTo(image, new Size(16, 16));
-                                    if (scaledImage != null)
-                                    {
-                                        _imBrowserIcons.Images[selectedIndex] = scaledImage;
-                                    }
-                                }
-                            }
-                            
-                            // プロトコル・ファイルタイプの更新
-                            _mProtocols = addEditForm.GetProtocols();
-                            _mFileTypes = addEditForm.GetFileTypes();
-                            
-                            _isModified = true;
-                        }
-                    }
-                };
-            }
-
-            // ブラウザ削除ボタン
-            var deleteButton = Controls.Find("cmdBrowserDelete", true).FirstOrDefault() as Button;
-            if (deleteButton != null)
-            {
-                deleteButton.Click += (s, e) =>
-                {
-                    var listView = Controls.Find("lstBrowsers", true).FirstOrDefault() as ListView;
-                    if (listView?.SelectedItems.Count > 0)
-                    {
-                        var browserName = listView.SelectedItems[0].Text;
-                        var result = MessageBox.Show($"Are you sure you want delete the {browserName} entry?", 
-                            "Confirm Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                        
-                        if (result == DialogResult.Yes)
-                        {
-                            var selectedIndex = listView.SelectedItems[0].Tag is int tag ? tag : -1;
-                            if (selectedIndex != -1)
-                            {
-                                _mBrowser.Remove(selectedIndex);
-                                listView.Items.Remove(listView.SelectedItems[0]);
-                                _isModified = true;
-                            }
-                        }
-                    }
-                };
-            }
-
-            // ブラウザ複製ボタン
-            var cloneButton = Controls.Find("cmdBrowserClone", true).FirstOrDefault() as Button;
-            if (cloneButton != null)
-            {
-                cloneButton.Click += (s, e) =>
-                {
-                    var listView = Controls.Find("lstBrowsers", true).FirstOrDefault() as ListView;
-                    if (listView?.SelectedItems.Count > 0)
-                    {
-                        var selectedIndex = listView.SelectedItems[0].Tag is int tag ? tag : -1;
-                        if (selectedIndex == -1 || !_mBrowser.ContainsKey(selectedIndex)) return;
-
-                        var templateBrowser = _mBrowser[selectedIndex];
-                        var addEditForm = new AddEditBrowserForm();
-                        var gridSize = new Point(_settings.GridWidth, _settings.GridHeight);
-
-                        if (addEditForm.AddBrowser(_mBrowser, _mProtocols, _mFileTypes, _settings.AdvancedScreens, gridSize, templateBrowser))
-                        {
-                            var newBrowser = addEditForm.GetData();
-                            _mBrowser.Add(_mLastBrowserID + 1, newBrowser);
-
-                            // ImageListにアイコンを追加
-                            if (_imBrowserIcons != null)
-                            {
-                                var image = ImageUtilities.GetImage(newBrowser, false);
-                                if (image != null)
-                                {
-                                    _imBrowserIcons.Images.Add(image);
-                                }
-                            }
-
-                            // ListViewにアイテムを追加
-                            var browserListView = Controls.Find("lstBrowsers", true).FirstOrDefault() as ListView;
-                            if (browserListView != null)
-                            {
-                                var item = browserListView.Items.Add(newBrowser.Name);
-                                item.Tag = _mLastBrowserID + 1;
-                                
-                                // デフォルトブラウザのチェックマーク
-                                if (_settings.DefaultBrowserGuid == newBrowser.Guid)
-                                {
-                                    item.SubItems.Add("✔");
-                                }
-                                else
-                                {
-                                    item.SubItems.Add("");
-                                }
-                                
-                                // 位置情報
-                                item.SubItems.Add(newBrowser.PosY.ToString());
-                                item.SubItems.Add(newBrowser.PosX.ToString());
-                                item.SubItems.Add(newBrowser.Hotkey.ToString());
-                                
-                                // プロトコル・ファイルタイプ情報
-                                item.SubItems.Add(GetBrowserProtocolsAndFileTypes(newBrowser));
-                            }
-
-                            _mLastBrowserID++;
-
-                            // プロトコル・ファイルタイプの更新
-                            _mProtocols = addEditForm.GetProtocols();
-                            _mFileTypes = addEditForm.GetFileTypes();
-
-                            _isModified = true;
-                        }
-                    }
-                };
-            }
-
-            // デフォルトブラウザ設定ボタン
-            var defaultButton = Controls.Find("cmdBrowserDefault", true).FirstOrDefault() as Button;
-            if (defaultButton != null)
-            {
-                defaultButton.Click += (s, e) =>
-                {
-                    var listView = Controls.Find("lstBrowsers", true).FirstOrDefault() as ListView;
-                    if (listView?.SelectedItems.Count > 0)
-                    {
-                        var selectedIndex = listView.SelectedItems[0].Tag is int tag ? tag : -1;
-                        if (selectedIndex == -1 || !_mBrowser.ContainsKey(selectedIndex)) return;
-                        
-                        var selectedBrowser = _mBrowser[selectedIndex];
-                        
-                        // 隠しラベルにGUIDを設定
-                        var hiddenLabel = lblHiddenBrowserGuid;
-                        if (hiddenLabel != null)
-                        {
-                            hiddenLabel.Tag = selectedBrowser.Guid.ToString();
-                        }
-                        
-                        // 既存のデフォルトマークを削除し、新しいものを設定
-                        foreach (ListViewItem item in listView.Items)
-                        {
-                            if (item.Tag is int itemTag && _mBrowser.ContainsKey(itemTag))
-                            {
-                                if (_mBrowser[itemTag].Guid == selectedBrowser.Guid)
-                                {
-                                    item.SubItems[1].Text = "✔";
-                                }
-                                else
-                                {
-                                    item.SubItems[1].Text = "";
-                                }
-                            }
-                        }
-                        
-                        _isModified = true;
-                    }
-                };
-            }
-        }
-
-        /// <summary>
-        /// 詳細な選択変更イベントハンドラー（Browser Chooser 2互換）
-        /// </summary>
-        private void SetupDetailedSelectionHandlers()
-        {
-            // ブラウザリストの選択変更
-            var browsersListView = Controls.Find("lstBrowsers", true).FirstOrDefault() as ListView;
-            if (browsersListView != null)
-            {
-                browsersListView.SelectedIndexChanged += (s, e) =>
-                {
-                    var hasSelection = browsersListView.SelectedItems.Count > 0;
-                    
-                    // ボタンの有効/無効切り替え
-                    var editButton = Controls.Find("cmdBrowserEdit", true).FirstOrDefault() as Button;
-                    var cloneButton = Controls.Find("cmdBrowserClone", true).FirstOrDefault() as Button;
-                    var deleteButton = Controls.Find("cmdBrowserDelete", true).FirstOrDefault() as Button;
-                    var defaultButton = Controls.Find("cmdBrowserDefault", true).FirstOrDefault() as Button;
-                    
-                    if (editButton != null) editButton.Enabled = hasSelection;
-                    if (cloneButton != null) cloneButton.Enabled = hasSelection;
-                    if (deleteButton != null) deleteButton.Enabled = hasSelection;
-                    if (defaultButton != null) defaultButton.Enabled = hasSelection;
-
-                    // ダブルクリック注釈の表示/非表示
-                    var noteLabel = Controls.Find("lblDoubleClickBrowsersNote", true).FirstOrDefault() as Label;
-                    if (noteLabel != null) noteLabel.Visible = hasSelection;
-                };
-            }
-
-            // Auto URLsリストの選択変更
-            var urlsListView = Controls.Find("lstURLs", true).FirstOrDefault() as ListView;
-            if (urlsListView != null)
-            {
-                urlsListView.SelectedIndexChanged += (s, e) =>
-                {
-                    var hasSelection = urlsListView.SelectedItems.Count > 0;
-                    
-                    // ボタンの有効/無効切り替え
-                    var editButton = Controls.Find("cmdAutoURLEdit", true).FirstOrDefault() as Button;
-                    var deleteButton = Controls.Find("cmdAutoURLDelete", true).FirstOrDefault() as Button;
-                    var moveUpButton = Controls.Find("cmdMoveUpAutoURL", true).FirstOrDefault() as Button;
-                    var moveDownButton = Controls.Find("cmdMoveDownAutoURL", true).FirstOrDefault() as Button;
-                    
-                    if (editButton != null) editButton.Enabled = hasSelection;
-                    if (deleteButton != null) deleteButton.Enabled = hasSelection;
-                    if (moveUpButton != null) moveUpButton.Enabled = hasSelection;
-                    if (moveDownButton != null) moveDownButton.Enabled = hasSelection;
-
-                    // ダブルクリック注釈の表示/非表示
-                    var noteLabel = Controls.Find("lblDoubleClickURLsNote", true).FirstOrDefault() as Label;
-                    if (noteLabel != null) noteLabel.Visible = hasSelection;
-                };
-            }
-
-            // プロトコルリストの選択変更
-            var protocolsListView = Controls.Find("lstProtocols", true).FirstOrDefault() as ListView;
-            if (protocolsListView != null)
-            {
-                protocolsListView.SelectedIndexChanged += (s, e) =>
-                {
-                    var hasSelection = protocolsListView.SelectedItems.Count > 0;
-                    
-                    // ボタンの有効/無効切り替え
-                    var editButton = Controls.Find("cmdEditProtocol", true).FirstOrDefault() as Button;
-                    var deleteButton = Controls.Find("cmdDeleteProtocol", true).FirstOrDefault() as Button;
-                    
-                    if (editButton != null) editButton.Enabled = hasSelection;
-                    if (deleteButton != null) deleteButton.Enabled = hasSelection;
-
-                    // ダブルクリック注釈の表示/非表示
-                    var noteLabel = Controls.Find("lblDoubleClickProtocolsNote", true).FirstOrDefault() as Label;
-                    if (noteLabel != null) noteLabel.Visible = hasSelection;
-                };
-            }
-
-            // ファイルタイプリストの選択変更
-            var fileTypesListView = Controls.Find("lstFiletypes", true).FirstOrDefault() as ListView;
-            if (fileTypesListView != null)
-            {
-                fileTypesListView.SelectedIndexChanged += (s, e) =>
-                {
-                    var hasSelection = fileTypesListView.SelectedItems.Count > 0;
-                    
-                    // ボタンの有効/無効切り替え
-                    var editButton = Controls.Find("cmdEditFileType", true).FirstOrDefault() as Button;
-                    var deleteButton = Controls.Find("cmdDeleteFileType", true).FirstOrDefault() as Button;
-                    
-                    if (editButton != null) editButton.Enabled = hasSelection;
-                    if (deleteButton != null) deleteButton.Enabled = hasSelection;
-
-                    // ダブルクリック注釈の表示/非表示
-                    var noteLabel = Controls.Find("lblDoubleClickFileTypesNote", true).FirstOrDefault() as Label;
-                    if (noteLabel != null) noteLabel.Visible = hasSelection;
-                };
-            }
-        }
 
 
 
@@ -2469,7 +772,7 @@ namespace BrowserChooser3.Forms
         private void SetupBrowsersDragDrop(ListView listView)
         {
             listView.AllowDrop = true;
-            
+
             listView.DragEnter += (s, e) =>
             {
                 if (e.Data?.GetDataPresent(DataFormats.FileDrop) == true)
@@ -2512,12 +815,12 @@ namespace BrowserChooser3.Forms
                                     Category = "Default"
                                 };
 
-                                if (addEditForm.AddBrowser(_mBrowser, _mProtocols, _mFileTypes, _settings.AdvancedScreens, 
+                                if (addEditForm.AddBrowser(_mBrowser, _mProtocols, _mFileTypes, _settings.AdvancedScreens,
                                     new Point(_settings.GridWidth, _settings.GridHeight), newBrowser))
                                 {
                                     var browser = addEditForm.GetData();
                                     _mBrowser.Add(_mLastBrowserID + 1, browser);
-                                    
+
                                     // ListViewにアイテムを追加
                                     var item = listView.Items.Add(browser.Name);
                                     item.Tag = _mLastBrowserID + 1;
@@ -2526,8 +829,8 @@ namespace BrowserChooser3.Forms
                                     item.SubItems.Add(browser.PosY.ToString());
                                     item.SubItems.Add(browser.PosX.ToString());
                                     item.SubItems.Add(browser.Hotkey.ToString());
-                                    item.SubItems.Add(GetBrowserProtocolsAndFileTypes(browser));
-                                    
+                                    item.SubItems.Add(_browserHandlers.GetBrowserProtocolsAndFileTypes(browser));
+
                                     // ImageListにアイコンを追加
                                     if (_imBrowserIcons != null)
                                     {
@@ -2537,7 +840,7 @@ namespace BrowserChooser3.Forms
                                             _imBrowserIcons.Images.Add(image);
                                         }
                                     }
-                                    
+
                                     _mLastBrowserID++;
                                     _isModified = true;
                                 }
@@ -2602,10 +905,10 @@ namespace BrowserChooser3.Forms
                 btnAddCategory.Click += _categoryHandlers.BtnAddCategory_Click;
                 btnEditCategory.Click += _categoryHandlers.BtnEditCategory_Click;
                 btnDeleteCategory.Click += _categoryHandlers.BtnDeleteCategory_Click;
-                
+
                 // カテゴリデータの読み込み
                 LoadCategories();
-                
+
                 Logger.LogInfo("OptionsForm.SetupCategoryManagement", "カテゴリ管理機能設定完了");
             }
             catch (Exception ex)
@@ -2709,10 +1012,5 @@ namespace BrowserChooser3.Forms
                 Logger.LogError("OptionsForm.SetupBrowserDragDrop", "ブラウザドラッグ&ドロップ機能設定エラー", ex.Message);
             }
         }
-
-
-
-
-
     }
 }
