@@ -36,7 +36,7 @@ namespace BrowserChooser3.Forms
             btnCopyToClipboardAndClose = new Button();
             chkAutoClose = new CheckBox();
             chkAutoOpen = new CheckBox();
-            lblShortcutMessage = new Label();
+
             tmrDelay = new System.Windows.Forms.Timer(components);
             cmOptions = new ContextMenuStrip(components);
             miEditMode = new ToolStripMenuItem();
@@ -55,10 +55,10 @@ namespace BrowserChooser3.Forms
             btnInfo.FlatAppearance.MouseOverBackColor = Color.Transparent;
             btnInfo.FlatStyle = FlatStyle.Flat;
             btnInfo.Image = Properties.Resources.Icon122;
-            btnInfo.Location = new Point(852, 161);
+            btnInfo.Location = new Point(2, 1);
             btnInfo.Margin = new Padding(0);
             btnInfo.Name = "btnInfo";
-            btnInfo.Size = new Size(40, 46);
+            btnInfo.Size = new Size(24, 24);
             btnInfo.TabIndex = 1;
             btnInfo.UseVisualStyleBackColor = false;
             btnInfo.Click += btnInfo_Click;
@@ -73,10 +73,10 @@ namespace BrowserChooser3.Forms
             btnOptions.FlatAppearance.MouseOverBackColor = Color.Transparent;
             btnOptions.FlatStyle = FlatStyle.Flat;
             btnOptions.Image = Properties.Resources.SettingsIcon;
-            btnOptions.Location = new Point(852, 23);
+            btnOptions.Location = new Point(ClientSize.Width - 35, 15);
             btnOptions.Margin = new Padding(0);
             btnOptions.Name = "btnOptions";
-            btnOptions.Size = new Size(40, 46);
+            btnOptions.Size = new Size(28, 28);
             btnOptions.TabIndex = 2;
             btnOptions.UseVisualStyleBackColor = false;
             btnOptions.Click += btnOptions_Click;
@@ -87,10 +87,10 @@ namespace BrowserChooser3.Forms
             btnCancel.FlatAppearance.BorderSize = 0;
             btnCancel.FlatStyle = FlatStyle.Flat;
             btnCancel.Image = Properties.Resources.WorldGoIcon;
-            btnCancel.Location = new Point(852, 69);
+            btnCancel.Location = new Point(370, 12);
             btnCancel.Margin = new Padding(0);
             btnCancel.Name = "btnCancel";
-            btnCancel.Size = new Size(40, 46);
+            btnCancel.Size = new Size(0, 0);
             btnCancel.TabIndex = 3;
             btnCancel.UseVisualStyleBackColor = false;
             btnCancel.Click += btnCancel_Click;
@@ -101,10 +101,10 @@ namespace BrowserChooser3.Forms
             btnCopyToClipboard.FlatAppearance.BorderSize = 0;
             btnCopyToClipboard.FlatStyle = FlatStyle.Flat;
             btnCopyToClipboard.Image = Properties.Resources.PasteIcon;
-            btnCopyToClipboard.Location = new Point(852, 115);
+            btnCopyToClipboard.Location = new Point(ClientSize.Width - 35, 50);
             btnCopyToClipboard.Margin = new Padding(0);
             btnCopyToClipboard.Name = "btnCopyToClipboard";
-            btnCopyToClipboard.Size = new Size(40, 46);
+            btnCopyToClipboard.Size = new Size(28, 28);
             btnCopyToClipboard.TabIndex = 4;
             btnCopyToClipboard.UseVisualStyleBackColor = false;
             btnCopyToClipboard.Click += btnCopyToClipboard_Click;
@@ -115,10 +115,10 @@ namespace BrowserChooser3.Forms
             btnCopyToClipboardAndClose.FlatAppearance.BorderSize = 0;
             btnCopyToClipboardAndClose.FlatStyle = FlatStyle.Flat;
             btnCopyToClipboardAndClose.Image = Properties.Resources.PasteAndCloseIcon;
-            btnCopyToClipboardAndClose.Location = new Point(852, 207);
+            btnCopyToClipboardAndClose.Location = new Point(ClientSize.Width - 35, 85);
             btnCopyToClipboardAndClose.Margin = new Padding(0);
             btnCopyToClipboardAndClose.Name = "btnCopyToClipboardAndClose";
-            btnCopyToClipboardAndClose.Size = new Size(40, 46);
+            btnCopyToClipboardAndClose.Size = new Size(28, 28);
             btnCopyToClipboardAndClose.TabIndex = 5;
             btnCopyToClipboardAndClose.UseVisualStyleBackColor = false;
             btnCopyToClipboardAndClose.Click += btnCopyToClipboardAndClose_Click;
@@ -127,12 +127,12 @@ namespace BrowserChooser3.Forms
             // 
             chkAutoClose.AutoSize = true;
             chkAutoClose.BackColor = Color.Transparent;
-            chkAutoClose.Location = new Point(23, 231);
+            chkAutoClose.Location = new Point(20, ClientSize.Height - 80);
             chkAutoClose.Margin = new Padding(5, 6, 5, 6);
             chkAutoClose.Name = "chkAutoClose";
-            chkAutoClose.Size = new Size(125, 29);
+            chkAutoClose.Size = new Size(400, 24);
             chkAutoClose.TabIndex = 6;
-            chkAutoClose.Text = "Auto Close";
+            chkAutoClose.Text = "ブラウザを選択後に自動的に閉じる";
             chkAutoClose.UseVisualStyleBackColor = false;
             chkAutoClose.CheckedChanged += chkAutoClose_CheckedChanged;
             // 
@@ -140,28 +140,16 @@ namespace BrowserChooser3.Forms
             // 
             chkAutoOpen.AutoSize = true;
             chkAutoOpen.BackColor = Color.Transparent;
-            chkAutoOpen.Location = new Point(167, 231);
+            chkAutoOpen.Location = new Point(20, ClientSize.Height - 50);
             chkAutoOpen.Margin = new Padding(5, 6, 5, 6);
             chkAutoOpen.Name = "chkAutoOpen";
-            chkAutoOpen.Size = new Size(126, 29);
+            chkAutoOpen.Size = new Size(450, 22);
             chkAutoOpen.TabIndex = 7;
-            chkAutoOpen.Text = "Auto Open";
+            chkAutoOpen.Text = "指定秒数後にデフォルトブラウザを開く [space key:Timerの一時停止/再開]";
             chkAutoOpen.UseVisualStyleBackColor = false;
             chkAutoOpen.CheckedChanged += chkAutoOpen_CheckedChanged;
             // 
-            // lblShortcutMessage
-            // 
-            lblShortcutMessage.AutoSize = true;
-            lblShortcutMessage.BackColor = Color.Black;
-            lblShortcutMessage.Font = new Font("Microsoft Sans Serif", 8F);
-            lblShortcutMessage.ForeColor = Color.White;
-            lblShortcutMessage.Location = new Point(3, 2);
-            lblShortcutMessage.Margin = new Padding(5, 0, 5, 0);
-            lblShortcutMessage.Name = "lblShortcutMessage";
-            lblShortcutMessage.Size = new Size(70, 60);
-            lblShortcutMessage.TabIndex = 8;
-            lblShortcutMessage.Text = "Shortcut\r\n/ Default\r\n(if set):";
-            lblShortcutMessage.TextAlign = ContentAlignment.MiddleRight;
+
             // 
             // tmrDelay
             // 
@@ -205,9 +193,8 @@ namespace BrowserChooser3.Forms
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.Gold;
             CancelButton = btnCancel;
-            ClientSize = new Size(903, 302);
+            ClientSize = new Size(542, 157);
             Controls.Add(btnInfo);
-            Controls.Add(lblShortcutMessage);
             Controls.Add(btnCopyToClipboardAndClose);
             Controls.Add(chkAutoOpen);
             Controls.Add(chkAutoClose);
@@ -246,6 +233,6 @@ namespace BrowserChooser3.Forms
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem3;
-        private System.Windows.Forms.Label lblShortcutMessage;
+
     }
 }

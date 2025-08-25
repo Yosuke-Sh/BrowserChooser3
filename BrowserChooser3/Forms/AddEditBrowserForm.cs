@@ -24,6 +24,8 @@ namespace BrowserChooser3.Forms
         public AddEditBrowserForm()
         {
             InitializeComponent();
+            this.TopMost = true;
+            this.StartPosition = FormStartPosition.CenterParent;
         }
 
         /// <summary>
@@ -160,7 +162,8 @@ namespace BrowserChooser3.Forms
             var txtName = new TextBox { Name = "txtName", Location = new Point(120, 17), Size = new Size(300, 23) };
 
             var lblTarget = new Label { Text = "Target:", Location = new Point(10, 50), AutoSize = true };
-            var txtTarget = new TextBox { Name = "txtTarget", Location = new Point(120, 47), Size = new Size(300, 23) };
+            var txtTarget = new TextBox { Name = "txtTarget", Location = new Point(120, 47), Size = new Size(250, 23) };
+            var btnBrowse = new Button { Text = "Browse", Location = new Point(380, 46), Size = new Size(85, 28) };
 
             var lblArguments = new Label { Text = "Arguments:", Location = new Point(10, 80), AutoSize = true };
             var txtArguments = new TextBox { Name = "txtArguments", Location = new Point(120, 77), Size = new Size(300, 23) };
@@ -172,14 +175,14 @@ namespace BrowserChooser3.Forms
             var txtCategory = new TextBox { Name = "txtCategory", Location = new Point(120, 137), Size = new Size(300, 23) };
 
             // ボタン
-            var btnOK = new Button { Text = "OK", DialogResult = DialogResult.OK, Location = new Point(300, 320), Size = new Size(75, 23) };
-            var btnCancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, Location = new Point(385, 320), Size = new Size(75, 23) };
+            var btnOK = new Button { Text = "OK", DialogResult = DialogResult.OK, Location = new Point(300, 320), Size = new Size(85, 28) };
+            var btnCancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, Location = new Point(395, 320), Size = new Size(85, 28) };
 
             // コントロールの追加
             Controls.AddRange(new Control[] 
             {
                 lblName, txtName,
-                lblTarget, txtTarget,
+                lblTarget, txtTarget, btnBrowse,
                 lblArguments, txtArguments,
                 lblHotkey, txtHotkey,
                 lblCategory, txtCategory,
@@ -187,6 +190,41 @@ namespace BrowserChooser3.Forms
             });
 
             // イベントハンドラー
+            btnBrowse.Click += (s, e) =>
+            {
+                using var openFileDialog = new OpenFileDialog
+                {
+                    Filter = "実行ファイル (*.exe)|*.exe|すべてのファイル (*.*)|*.*",
+                    Title = "ブラウザ実行ファイルを選択"
+                };
+                
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    txtTarget.Text = openFileDialog.FileName;
+                    
+                    // ブラウザ名を自動設定
+                    try
+                    {
+                        var fileInfo = new FileInfo(openFileDialog.FileName);
+                        var versionInfo = System.Diagnostics.FileVersionInfo.GetVersionInfo(openFileDialog.FileName);
+                        
+                        if (!string.IsNullOrEmpty(versionInfo.ProductName))
+                        {
+                            txtName.Text = versionInfo.ProductName;
+                        }
+                        else
+                        {
+                            txtName.Text = Path.GetFileNameWithoutExtension(openFileDialog.FileName);
+                        }
+                    }
+                    catch
+                    {
+                        // バージョン情報が取得できない場合はファイル名を使用
+                        txtName.Text = Path.GetFileNameWithoutExtension(openFileDialog.FileName);
+                    }
+                }
+            };
+            
             btnOK.Click += (s, e) =>
             {
                 // データの検証

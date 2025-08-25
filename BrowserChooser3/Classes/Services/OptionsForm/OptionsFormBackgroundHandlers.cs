@@ -69,5 +69,21 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        /// <summary>
+        /// 背景色ボタンのクリックイベント
+        /// </summary>
+        public void BackgroundColorButton_Click(object? sender, EventArgs e)
+        {
+            ChangeBackgroundColor();
+        }
+
+        /// <summary>
+        /// 透明背景ボタンのクリックイベント
+        /// </summary>
+        public void TransparentButton_Click(object? sender, EventArgs e)
+        {
+            SetTransparentBackground();
+        }
     }
 }

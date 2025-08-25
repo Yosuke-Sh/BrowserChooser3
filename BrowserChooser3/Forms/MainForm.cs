@@ -26,17 +26,7 @@ namespace BrowserChooser3.Forms
         private bool _hasAero = false;
         private string _currentText = string.Empty;
 
-        // Browser Chooser 2互換のUI要素
-        private Button? _btnInfo;
-        private Button? _btnAppStub;
-        private Button? _btnOptions;
-        private Button? _btnCancel;
-        private Button? _btnCopyToClipboard;
-        private Button? _btnCopyToClipboardAndClose;
-        private CheckBox? _chkAutoClose;
-        private CheckBox? _chkAutoOpen;
-        private Label? _lblShortcutMessage;
-        private System.Windows.Forms.Timer? _tmrDelay;
+        // Browser Chooser 2互換のUI要素（デザイナーファイルで定義済み）
         private ContextMenuStrip? _cmOptions;
 
         /// <summary>
@@ -77,8 +67,8 @@ namespace BrowserChooser3.Forms
                 // カウントダウンラベルの作成
                 CreateCountdownLabel();
                 
-                // Browser Chooser 2互換のUI要素を作成
-                CreateCompatibilityUI();
+                // Browser Chooser 2互換のUI要素の位置調整
+                AdjustCompatibilityUILayout();
                 
                 // アイコンの読み込み
                 LoadIcons();
@@ -86,6 +76,9 @@ namespace BrowserChooser3.Forms
                 // キーボードイベントの設定
                 KeyPreview = true;
                 KeyDown += MainForm_KeyDown;
+                
+                // AutoCloseとAutoOpenの初期化
+                InitializeAutoCloseAndAutoOpen();
                 
                 // 初期テキストの設定
                 UpdateAutoOpenTextWithSpaceKey();
@@ -133,6 +126,65 @@ namespace BrowserChooser3.Forms
 
 
         /// <summary>
+        /// AutoCloseとAutoOpenの初期化（Browser Chooser 2互換）
+        /// </summary>
+        private void InitializeAutoCloseAndAutoOpen()
+        {
+            Logger.LogInfo("MainForm.InitializeAutoCloseAndAutoOpen", "Start");
+            
+            try
+            {
+                // AutoCloseの初期化
+                if (chkAutoClose != null)
+                {
+                    chkAutoClose.Checked = true; // デフォルトでチェック
+                    chkAutoClose.Text = "Auto Close";
+                }
+                
+                // AutoOpenの初期化
+                if (chkAutoOpen != null)
+                {
+                    if (_defaultBrowser != null && (_settings?.DefaultDelay ?? 0) > 0)
+                    {
+                        // デフォルトブラウザがある場合
+                        chkAutoOpen.Visible = true;
+                        chkAutoOpen.Checked = true; // デフォルトでチェック
+                        _currentDelay = _settings?.DefaultDelay ?? 5;
+                        
+                        // タイマーを開始
+                        if (tmrDelay != null)
+                        {
+                            tmrDelay.Enabled = true;
+                        }
+                        
+                        UpdateAutoOpenText();
+                    }
+                    else
+                    {
+                        // デフォルトブラウザがない場合
+                        chkAutoOpen.Visible = false;
+                        if (tmrDelay != null)
+                        {
+                            tmrDelay.Enabled = false;
+                        }
+                        
+                        // AutoCloseの位置を調整
+                        if (chkAutoClose != null)
+                        {
+                            chkAutoClose.Location = new Point(20, ClientSize.Height - 50);
+                        }
+                    }
+                }
+                
+                Logger.LogInfo("MainForm.InitializeAutoCloseAndAutoOpen", "End");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("MainForm.InitializeAutoCloseAndAutoOpen", "初期化エラー", ex.Message, ex.StackTrace ?? "");
+            }
+        }
+
+        /// <summary>
         /// フォームの設定
         /// </summary>
         private void ConfigureForm()
@@ -148,7 +200,7 @@ namespace BrowserChooser3.Forms
             SizeGripStyle = SizeGripStyle.Show;  // サイズグリップを表示
             StartPosition = FormStartPosition.CenterScreen;
             TopMost = true;
-            CancelButton = _btnCancel;
+            CancelButton = btnCancel;
             KeyPreview = true;
             
             // フォントの設定（現代的で日本語・英語両対応）
@@ -211,8 +263,8 @@ namespace BrowserChooser3.Forms
             var gapWidth = _settings.IconGapWidth;
             var gapHeight = _settings.IconGapHeight;
             
-            // フォーム幅に基づいて列数を計算
-            var availableWidth = ClientSize.Width - 80; // 左右マージン（右端ボタン用のスペース確保）
+            // フォーム幅に基づいて列数を計算（btnInfoのスペースを確保）
+            var availableWidth = ClientSize.Width - 120; // 左右マージン（右端ボタンとbtnInfo用のスペース確保）
             var columnsPerRow = Math.Max(1, availableWidth / (buttonWidth + gapWidth));
             
             var buttonIndex = 0;
@@ -222,7 +274,7 @@ namespace BrowserChooser3.Forms
                 {
                     var row = buttonIndex / columnsPerRow;
                     var col = buttonIndex % columnsPerRow;
-                    var x = 30 + (col * (buttonWidth + gapWidth));
+                    var x = 50 + (col * (buttonWidth + gapWidth)); // btnInfoの右側から開始
                     var y = 30 + (row * (buttonHeight + gapHeight));
                     
                     button.Location = new Point(x, y);
@@ -235,6 +287,16 @@ namespace BrowserChooser3.Forms
                         overlayLabel.Location = new Point(
                             x + (buttonWidth / 2) - (labelWidth / 2),
                             y - 15
+                        );
+                    }
+                    
+                    var nameLabel = Controls.OfType<Label>().FirstOrDefault(l => l.Name == $"lblName_{buttonIndex}");
+                    if (nameLabel != null)
+                    {
+                        var labelWidth = TextRenderer.MeasureText(nameLabel.Text, nameLabel.Font).Width;
+                        nameLabel.Location = new Point(
+                            x + (buttonWidth / 2) - (labelWidth / 2),
+                            y + buttonHeight - 20
                         );
                     }
                     
@@ -281,50 +343,13 @@ namespace BrowserChooser3.Forms
         private void StyleXP()
         {
             FormBorderStyle = FormBorderStyle.FixedDialog;
-            if (_chkAutoClose != null)
-                _chkAutoClose.BackColor = Color.Transparent;
-            if (_chkAutoOpen != null)
-                _chkAutoOpen.BackColor = Color.Transparent;
+            if (chkAutoClose != null)
+                chkAutoClose.BackColor = Color.Transparent;
+            if (chkAutoOpen != null)
+                chkAutoOpen.BackColor = Color.Transparent;
         }
 
-        /// <summary>
-        /// 互換性UIコントロールのレイアウトを調整
-        /// </summary>
-        private void AdjustCompatibilityUILayout()
-        {
-            if (_chkAutoClose != null)
-            {
-                _chkAutoClose.Location = new Point(20, ClientSize.Height - 80);
-            }
-            
-            if (_chkAutoOpen != null)
-            {
-                _chkAutoOpen.Location = new Point(20, ClientSize.Height - 50);
-            }
-            
-            if (_btnOptions != null)
-            {
-                _btnOptions.Location = new Point(ClientSize.Width - 35, 15);
-            }
-            
-            if (_btnCopyToClipboard != null)
-            {
-                _btnCopyToClipboard.Location = new Point(ClientSize.Width - 35, 50);
-            }
-            
-            if (_btnCopyToClipboardAndClose != null)
-            {
-                _btnCopyToClipboardAndClose.Location = new Point(ClientSize.Width - 35, 85);
-            }
-            
-            if (_countdownLabel != null)
-            {
-                _countdownLabel.Location = new Point(20, ClientSize.Height - 20);
-            }
-            
-            // オーバーレイラベルの位置も調整
-            AdjustOverlayLabels();
-        }
+
 
         /// <summary>
         /// ブラウザボタンの作成
@@ -332,6 +357,7 @@ namespace BrowserChooser3.Forms
         private void CreateBrowserButtons()
         {
             Logger.LogInfo("MainForm.CreateBrowserButtons", "Start", $"ブラウザ数: {_browsers?.Count ?? 0}");
+            Logger.LogInfo("MainForm.CreateBrowserButtons", "既存のボタン数", Controls.OfType<Button>().Where(b => b.Tag is Browser).Count().ToString());
             
             var buttonWidth = _settings?.IconWidth ?? 90;
             var buttonHeight = _settings?.IconHeight ?? 100;
@@ -342,7 +368,7 @@ namespace BrowserChooser3.Forms
             
             // 既存のブラウザボタンとオーバーレイラベルを削除
             var buttonsToRemove = Controls.OfType<Button>().Where(b => b.Tag is Browser).ToList();
-            var labelsToRemove = Controls.OfType<Label>().Where(l => l.Name.StartsWith("lblOverlay_")).ToList();
+            var labelsToRemove = Controls.OfType<Label>().Where(l => l.Name.StartsWith("lblOverlay_") || l.Name.StartsWith("lblName_")).ToList();
             
             foreach (var btn in buttonsToRemove)
             {
@@ -356,7 +382,7 @@ namespace BrowserChooser3.Forms
                 lbl.Dispose();
             }
             
-            var visibleBrowsers = _browsers.Where(b => b.Visible).ToList();
+            var visibleBrowsers = _browsers.Where(b => b.Visible && b.IsActive).ToList();
             
             for (int i = 0; i < visibleBrowsers.Count; i++)
             {
@@ -365,17 +391,43 @@ namespace BrowserChooser3.Forms
                 var button = new FFButton
                 {
                     Name = $"btnBrowser_{i}",
-                    Text = browser.Name, // テキストはブラウザ名のみ
+                    Text = "", // テキストは空にして、オーバーレイラベルで表示
                     Size = new Size(buttonWidth, buttonHeight),
                     Tag = browser,
                     FlatStyle = FlatStyle.Flat,
                     BackColor = Color.Transparent,
                     UseVisualStyleBackColor = true,
-                    Font = new Font("Segoe UI", 9.5f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                    Font = new Font("Segoe UI", 7.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
                     TextAlign = ContentAlignment.MiddleCenter,
                     ShowFocusBox = _settings?.ShowFocus ?? true,
                     TrapArrowKeys = true
                 };
+                
+                // ブラウザアイコンの設定
+                try
+                {
+                    var browserIcon = ImageUtilities.GetImage(browser, true);
+                    if (browserIcon != null)
+                    {
+                        // アイコンのサイズを調整（ボタンサイズに合わせる）
+                        var iconSize = Math.Min(buttonWidth - 10, buttonHeight - 30); // マージンを確保
+                        var resizedIcon = new Bitmap(browserIcon, new Size(iconSize, iconSize));
+                        
+                        button.Image = resizedIcon;
+                        button.ImageAlign = ContentAlignment.TopCenter;
+                        button.TextImageRelation = TextImageRelation.ImageAboveText;
+                        
+                        Logger.LogTrace("MainForm.CreateBrowserButtons", "アイコン設定成功", browser.Name, iconSize);
+                    }
+                    else
+                    {
+                        Logger.LogWarning("MainForm.CreateBrowserButtons", "アイコンが取得できませんでした", browser.Name);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogWarning("MainForm.CreateBrowserButtons", "アイコン設定エラー", browser.Name, ex.Message);
+                }
                 
                 // イベントハンドラーの設定
                 button.Click += BrowserButton_Click;
@@ -401,10 +453,33 @@ namespace BrowserChooser3.Forms
         }
 
         /// <summary>
-        /// ホットキーとデフォルトブラウザのオーバーレイラベルを作成
+        /// ブラウザ名のオーバーレイラベルを作成
         /// </summary>
         private void CreateOverlayLabel(Button button, Browser browser, int index)
         {
+            // ブラウザ名のオーバーレイラベルを作成
+            var nameLabel = new Label
+            {
+                Name = $"lblName_{index}",
+                AutoSize = true,
+                BackColor = Color.FromArgb(200, 0, 0, 0), // 半透明の黒
+                ForeColor = Color.White,
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Bold, GraphicsUnit.Point, 0),
+                TextAlign = ContentAlignment.MiddleCenter,
+                Text = browser.Name
+            };
+            
+            // 位置の計算（ボタンの中央下部に配置）
+            var labelWidth = TextRenderer.MeasureText(nameLabel.Text, nameLabel.Font).Width;
+            nameLabel.Location = new Point(
+                button.Location.X + (button.Width / 2) - (labelWidth / 2),
+                button.Location.Y + button.Height - 20
+            );
+            
+            Controls.Add(nameLabel);
+            nameLabel.BringToFront();
+            
+            // ホットキーとデフォルトブラウザのオーバーレイラベルを作成
             var defaultIndicator = "";
             if (_settings?.DefaultBrowserGuid == browser.Guid)
             {
@@ -435,9 +510,9 @@ namespace BrowserChooser3.Forms
                 }
                 
                 // 位置の計算（ボタンの中央上部に配置）
-                var labelWidth = TextRenderer.MeasureText(overlayLabel.Text, overlayLabel.Font).Width;
+                var labelWidth2 = TextRenderer.MeasureText(overlayLabel.Text, overlayLabel.Font).Width;
                 overlayLabel.Location = new Point(
-                    button.Location.X + (button.Width / 2) - (labelWidth / 2),
+                    button.Location.X + (button.Width / 2) - (labelWidth2 / 2),
                     button.Location.Y - 15
                 );
                 
@@ -519,17 +594,44 @@ namespace BrowserChooser3.Forms
             
             try
             {
-                // 既存のコントロールをクリア
-                Controls.Clear();
+                // 設定を再読み込み
+                _settings = Settings.Load(Application.StartupPath);
+                Settings.Current = _settings;
+                _browsers = _settings?.Browsers ?? new List<Browser>();
+                
+                // デフォルトブラウザの再検索
+                _defaultBrowser = _browsers?.FirstOrDefault(b => b.IsDefault);
+                
+                // 既存のブラウザボタンとオーバーレイラベルのみを削除
+                var buttonsToRemove = Controls.OfType<Button>().Where(b => b.Tag is Browser).ToList();
+                var labelsToRemove = Controls.OfType<Label>().Where(l => l.Name.StartsWith("lblOverlay_") || l.Name.StartsWith("lblName_")).ToList();
+                
+                foreach (var btn in buttonsToRemove)
+                {
+                    Controls.Remove(btn);
+                    btn.Dispose();
+                }
+                
+                foreach (var lbl in labelsToRemove)
+                {
+                    Controls.Remove(lbl);
+                    lbl.Dispose();
+                }
                 
                 // フォームを再設定
                 ConfigureForm();
+                
+                // 基本コントロールを再作成
+                CreateBasicControls();
                 
                 // ブラウザボタンを再作成
                 CreateBrowserButtons();
                 
                 // カウントダウンラベルを再作成
                 CreateCountdownLabel();
+                
+                // AutoCloseとAutoOpenの再初期化
+                InitializeAutoCloseAndAutoOpen();
                 
                 Logger.LogInfo("MainForm.RefreshForm", "End");
             }
@@ -550,7 +652,7 @@ namespace BrowserChooser3.Forms
                 
                 try
                 {
-                    var autoClose = _chkAutoClose?.Checked ?? true;
+                    var autoClose = chkAutoClose?.Checked ?? true;
                     
                     // Ctrl+クリックで自動終了を無効化
                     if (ModifierKeys.HasFlag(Keys.Control))
@@ -623,209 +725,74 @@ namespace BrowserChooser3.Forms
         }
 
         /// <summary>
-        /// Browser Chooser 2互換のUI要素を作成
+        /// Browser Chooser 2互換のUI要素の位置調整
         /// </summary>
-        private void CreateCompatibilityUI()
+        private void AdjustCompatibilityUILayout()
         {
-            Logger.LogInfo("MainForm.CreateCompatibilityUI", "Start");
+            Logger.LogInfo("MainForm.AdjustCompatibilityUILayout", "Start");
             
             try
             {
-                // Aboutボタン（アイコン付き）
-                _btnInfo = new Button
+                // デザイナーファイルで定義されたUI要素の位置を調整
+                if (btnInfo != null)
                 {
-                    AccessibleName = "About",
-                    AutoSize = true,
-                    BackColor = Color.Transparent,
-                    FlatAppearance = { BorderSize = 0, MouseOverBackColor = Color.Transparent },
-                    FlatStyle = FlatStyle.Flat,
-                    Location = new Point(14, 52),
-                    Margin = new Padding(0),
-                    Name = "btnInfo",
-                    Size = new Size(24, 24),
-                    TabIndex = 1,
-                    UseVisualStyleBackColor = false
-                };
-                
+                    btnInfo.Location = new Point(2, 1);
+                    btnInfo.Size = new Size(24, 24);
+                }
 
-                
-                _btnInfo.Click += BtnInfo_Click;
-                Controls.Add(_btnInfo);
 
-                // アプリケーションスタブボタン（Browser Chooser 2互換）
-                _btnAppStub = new Button
+
+                if (btnOptions != null)
                 {
-                    BackColor = Color.Transparent,
-                    FlatAppearance = { BorderSize = 0 },
-                    FlatStyle = FlatStyle.Flat,
-                    Location = new Point(56, 1),
-                    Name = "btnAppStub",
-                    Size = new Size(75, 80),
-                    TabIndex = 0,
-                    TabStop = false,
-                    UseVisualStyleBackColor = false,
-                    Visible = false
-                };
-                Controls.Add(_btnAppStub);
+                    btnOptions.Location = new Point(ClientSize.Width - 35, 15);
+                    btnOptions.Size = new Size(28, 28);
+                }
 
-                // オプションボタン（アイコン付き）
-                _btnOptions = new Button
+                if (btnCancel != null)
                 {
-                    AccessibleName = "Options",
-                    Anchor = AnchorStyles.Top | AnchorStyles.Right,
-                    AutoSize = true,
-                    BackColor = Color.Transparent,
-                    FlatAppearance = { BorderSize = 0, MouseOverBackColor = Color.Transparent },
-                    FlatStyle = FlatStyle.Flat,
-                    Location = new Point(ClientSize.Width - 35, 15),
-                    Margin = new Padding(0),
-                    Name = "btnOptions",
-                    Size = new Size(28, 28),
-                    TabIndex = 2,
-                    UseVisualStyleBackColor = false,
-                    ImageAlign = ContentAlignment.MiddleCenter
-                };
-                
+                    btnCancel.Location = new Point(370, 12);
+                    btnCancel.Size = new Size(0, 0);
+                }
 
-                
-                _btnOptions.Click += BtnOptions_Click;
-                Controls.Add(_btnOptions);
-
-                // キャンセルボタン
-                _btnCancel = new Button
+                if (chkAutoClose != null)
                 {
-                    BackColor = Color.Transparent,
-                    DialogResult = DialogResult.Cancel,
-                    FlatAppearance = { BorderSize = 0 },
-                    FlatStyle = FlatStyle.Flat,
-                    Location = new Point(370, 12),
-                    Name = "btnCancel",
-                    Size = new Size(0, 0),
-                    TabIndex = 6,
-                    TabStop = false,
-                    Text = "Cancel",
-                    UseVisualStyleBackColor = false
-                };
-                Controls.Add(_btnCancel);
+                    chkAutoClose.Location = new Point(20, ClientSize.Height - 80);
+                    chkAutoClose.Size = new Size(400, 24);
+                }
 
-                // 自動閉じるチェックボックス（Browser Chooser 2互換）
-                _chkAutoClose = new FFCheckBox
+                if (chkAutoOpen != null)
                 {
-                    Anchor = AnchorStyles.Bottom | AnchorStyles.Left,
-                    AutoSize = true,
-                    BackColor = Color.Transparent,
-                    Checked = true,
-                    CheckState = CheckState.Checked,
-                    Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
-                    ForeColor = SystemColors.ActiveCaptionText,
-                    Location = new Point(20, ClientSize.Height - 80),
-                    Name = "chkAutoClose",
-                    Size = new Size(400, 24),
-                    TabIndex = 5,
-                    Text = "ブラウザを選択後に自動的に閉じる",
-                    UseCompatibleTextRendering = true,
-                    UseVisualStyleBackColor = true,
-                    ShowFocusBox = _settings?.ShowFocus ?? true,
-                    UsesAero = _settings?.UseAero ?? true
-                };
-                _chkAutoClose.CheckedChanged += ChkAutoClose_CheckedChanged;
-                Controls.Add(_chkAutoClose);
+                    chkAutoOpen.Location = new Point(20, ClientSize.Height - 50);
+                    chkAutoOpen.Size = new Size(450, 22);
+                }
 
-                // 自動開くチェックボックス（Browser Chooser 2互換）
-                _chkAutoOpen = new FFCheckBox
+                if (btnCopyToClipboard != null)
                 {
-                    Anchor = AnchorStyles.Bottom | AnchorStyles.Left,
-                    AutoSize = true,
-                    BackColor = Color.Transparent,
-                    Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
-                    ForeColor = SystemColors.ActiveCaptionText,
-                    Location = new Point(20, ClientSize.Height - 50),
-                    Name = "chkAutoOpen",
-                    Size = new Size(450, 22),
-                    TabIndex = 6,
-                    Text = "指定秒数後にデフォルトブラウザを開く [space key:Timerの一時停止/再開]",
-                    UseVisualStyleBackColor = false,
-                    ShowFocusBox = _settings?.ShowFocus ?? true,
-                    UsesAero = _settings?.UseAero ?? true
-                };
-                _chkAutoOpen.CheckedChanged += ChkAutoOpen_CheckedChanged;
-                Controls.Add(_chkAutoOpen);
+                    btnCopyToClipboard.Location = new Point(ClientSize.Width - 35, 50);
+                    btnCopyToClipboard.Size = new Size(28, 28);
+                }
 
-                // クリップボードにコピーボタン（アイコン付き）
-                _btnCopyToClipboard = new Button
+                if (btnCopyToClipboardAndClose != null)
                 {
-                    AccessibleName = "Copy URL to clipboard and keep open",
-                    Anchor = AnchorStyles.Top | AnchorStyles.Right,
-                    BackColor = Color.Transparent,
-                    FlatAppearance = { BorderSize = 0, MouseOverBackColor = Color.Transparent },
-                    FlatStyle = FlatStyle.Flat,
-                    Location = new Point(ClientSize.Width - 35, 50),
-                    Margin = new Padding(0),
-                    Name = "btnCopyToClipboard",
-                    Size = new Size(28, 28),
-                    TabIndex = 3,
-                    UseVisualStyleBackColor = false,
-                    ImageAlign = ContentAlignment.MiddleCenter
-                };
-                
+                    btnCopyToClipboardAndClose.Location = new Point(ClientSize.Width - 35, 85);
+                    btnCopyToClipboardAndClose.Size = new Size(28, 28);
+                }
 
-                
-                _btnCopyToClipboard.Click += BtnCopyToClipboard_Click;
-                Controls.Add(_btnCopyToClipboard);
-
-                // クリップボードにコピーして閉じるボタン（アイコン付き）
-                _btnCopyToClipboardAndClose = new Button
+                // 遅延タイマーの設定
+                if (tmrDelay != null)
                 {
-                    AccessibleName = "Copy URL to clipboard and close",
-                    Anchor = AnchorStyles.Top | AnchorStyles.Right,
-                    BackColor = Color.Transparent,
-                    FlatAppearance = { BorderSize = 0, MouseOverBackColor = Color.Transparent },
-                    FlatStyle = FlatStyle.Flat,
-                    Location = new Point(ClientSize.Width - 35, 85),
-                    Margin = new Padding(0),
-                    Name = "btnCopyToClipboardAndClose",
-                    Size = new Size(28, 28),
-                    TabIndex = 4,
-                    UseVisualStyleBackColor = false,
-                    ImageAlign = ContentAlignment.MiddleCenter
-                };
-                
-
-                
-                _btnCopyToClipboardAndClose.Click += BtnCopyToClipboardAndClose_Click;
-                Controls.Add(_btnCopyToClipboardAndClose);
-
-                // ショートカットメッセージラベル
-                _lblShortcutMessage = new Label
-                {
-                    AutoSize = true,
-                    BackColor = Color.Black,
-                    Font = new Font("Segoe UI", 8.5f, FontStyle.Regular, GraphicsUnit.Point, 0),
-                    ForeColor = Color.White,
-                    Location = new Point(2, 1),
-                    Name = "lblShortcutMessage",
-                    Size = new Size(60, 50),
-                    TabIndex = 7,
-                    Text = "Shortcut\r\n/ Default\r\n(if set):",
-                    TextAlign = ContentAlignment.MiddleRight
-                };
-                Controls.Add(_lblShortcutMessage);
-
-                // 遅延タイマー
-                _tmrDelay = new System.Windows.Forms.Timer
-                {
-                    Interval = 1000
-                };
-                _tmrDelay.Tick += TmrDelay_Tick;
+                    tmrDelay.Interval = 1000;
+                    tmrDelay.Tick += TmrDelay_Tick;
+                }
 
                 // コンテキストメニュー
                 CreateContextMenu();
 
-                Logger.LogInfo("MainForm.CreateCompatibilityUI", "End");
+                Logger.LogInfo("MainForm.AdjustCompatibilityUILayout", "End");
             }
             catch (Exception ex)
             {
-                Logger.LogError("MainForm.CreateCompatibilityUI", "UI作成エラー", ex.Message, ex.StackTrace ?? "");
+                Logger.LogError("MainForm.AdjustCompatibilityUILayout", "UI位置調整エラー", ex.Message, ex.StackTrace ?? "");
             }
         }
 
@@ -837,35 +804,29 @@ namespace BrowserChooser3.Forms
             try
             {
                 // Aboutボタンのアイコン読み込み
-                if (_btnInfo != null)
+                if (btnInfo != null)
                 {
-                    _btnInfo.Image = Properties.Resources.Icon122;
-                }
-                
-                // アプリケーションスタブボタンのアイコン読み込み
-                if (_btnAppStub != null)
-                {
-                    _btnAppStub.Image = Properties.Resources.BrowserChooserIcon;
+                    btnInfo.Image = Properties.Resources.Icon122;
                 }
                 
                 // オプションボタンのアイコン読み込み
-                if (_btnOptions != null)
+                if (btnOptions != null)
                 {
-                    _btnOptions.Image = Properties.Resources.Icon128;
+                    btnOptions.Image = Properties.Resources.Icon128;
                 }
                 
                 // コピーボタンのアイコン読み込み
-                if (_btnCopyToClipboard != null)
+                if (btnCopyToClipboard != null)
                 {
                     var pasteIcon = Properties.Resources.PasteIcon;
-                    _btnCopyToClipboard.Image = ImageUtilities.ResizeImage(pasteIcon, 20, 20);
+                    btnCopyToClipboard.Image = ImageUtilities.ResizeImage(pasteIcon, 20, 20);
                 }
                 
                 // コピー＆クローズボタンのアイコン読み込み
-                if (_btnCopyToClipboardAndClose != null)
+                if (btnCopyToClipboardAndClose != null)
                 {
                     var pasteAndCloseIcon = Properties.Resources.PasteAndCloseIcon;
-                    _btnCopyToClipboardAndClose.Image = ImageUtilities.ResizeImage(pasteAndCloseIcon, 20, 20);
+                    btnCopyToClipboardAndClose.Image = ImageUtilities.ResizeImage(pasteAndCloseIcon, 20, 20);
                 }
                 
                 Logger.LogInfo("MainForm.LoadIcons", "アイコン読み込み完了");
@@ -972,11 +933,11 @@ namespace BrowserChooser3.Forms
         /// </summary>
         private void UpdateAutoOpenText()
         {
-            if (_chkAutoOpen != null && _defaultBrowser != null)
+            if (chkAutoOpen != null && _defaultBrowser != null)
             {
-                var pauseText = _tmrDelay?.Enabled == false ? "un" : "";
+                var pauseText = tmrDelay?.Enabled == false ? "un" : "";
                 var browserName = _defaultBrowser.Name ?? "default browser";
-                _chkAutoOpen.Text = $"Open {browserName} after {_currentDelay} seconds.  [Space: ({pauseText}pause) timer]";
+                chkAutoOpen.Text = $"Open {browserName} in {_currentDelay} seconds. [Space: {pauseText}pause timer]";
             }
         }
 
@@ -1117,7 +1078,7 @@ namespace BrowserChooser3.Forms
             }
             
             // スペースキーでカウントダウンを一時停止/再開
-            if (e.KeyCode == Keys.Space && _tmrDelay != null)
+            if (e.KeyCode == Keys.Space && tmrDelay != null)
             {
                 e.Handled = true;
                 e.SuppressKeyPress = true;
@@ -1138,7 +1099,7 @@ namespace BrowserChooser3.Forms
                     if (char.IsDigit(browser.Hotkey) && int.Parse(browser.Hotkey.ToString()) == keyNumber)
                     {
                         Logger.LogInfo("MainForm.MainForm_KeyDown", "ホットキー起動", browser.Name, keyNumber);
-                        BrowserUtilities.LaunchBrowser(browser, _currentUrl, _chkAutoClose?.Checked ?? true);
+                        BrowserUtilities.LaunchBrowser(browser, _currentUrl, chkAutoClose?.Checked ?? true);
                         return;
                     }
                 }
@@ -1317,7 +1278,7 @@ namespace BrowserChooser3.Forms
         /// </summary>
         private void ChkAutoClose_CheckedChanged(object? sender, EventArgs e)
         {
-            Logger.LogInfo("MainForm.ChkAutoClose_CheckedChanged", $"自動閉じる: {_chkAutoClose?.Checked}");
+            Logger.LogInfo("MainForm.ChkAutoClose_CheckedChanged", $"自動閉じる: {chkAutoClose?.Checked}");
             // 設定に反映する処理を追加
         }
 
@@ -1326,11 +1287,11 @@ namespace BrowserChooser3.Forms
         /// </summary>
         private void ChkAutoOpen_CheckedChanged(object? sender, EventArgs e)
         {
-            Logger.LogInfo("MainForm.ChkAutoOpen_CheckedChanged", $"自動開く: {_chkAutoOpen?.Checked}");
+            Logger.LogInfo("MainForm.ChkAutoOpen_CheckedChanged", $"自動開く: {chkAutoOpen?.Checked}");
             
-            if (_tmrDelay != null)
+            if (tmrDelay != null)
             {
-                _tmrDelay.Enabled = _chkAutoOpen?.Checked ?? false;
+                tmrDelay.Enabled = chkAutoOpen?.Checked ?? false;
                 UpdateAutoOpenText();
             }
         }
@@ -1350,28 +1311,28 @@ namespace BrowserChooser3.Forms
 
             if (_currentDelay > 0)
             {
-                var text = $"Open {_defaultBrowser?.Name} in {_currentDelay} seconds. [Space: {(_tmrDelay?.Enabled == false ? "un" : "")}pause timer]";
+                var text = $"Open {_defaultBrowser?.Name} in {_currentDelay} seconds. [Space: {(tmrDelay?.Enabled == false ? "un" : "")}pause timer]";
                 
-                if (_chkAutoOpen != null)
+                if (chkAutoOpen != null)
                 {
-                    _chkAutoOpen.Text = text;
-                    _chkAutoOpen.Invalidate();
+                    chkAutoOpen.Text = text;
+                    chkAutoOpen.Invalidate();
                 }
             }
             else
             {
-                _tmrDelay!.Enabled = false;
+                tmrDelay!.Enabled = false;
                 
                 var text = $"Automatically opening {_defaultBrowser?.Name}.";
-                if (_chkAutoOpen != null)
+                if (chkAutoOpen != null)
                 {
-                    _chkAutoOpen.Text = text;
-                    _chkAutoOpen.Invalidate();
+                    chkAutoOpen.Text = text;
+                    chkAutoOpen.Invalidate();
                 }
 
                 if (_defaultBrowser != null)
                 {
-                    BrowserUtilities.LaunchBrowser(_defaultBrowser, _currentUrl, _chkAutoClose?.Checked ?? true);
+                    BrowserUtilities.LaunchBrowser(_defaultBrowser, _currentUrl, chkAutoClose?.Checked ?? true);
                 }
             }
         }
@@ -1412,9 +1373,8 @@ namespace BrowserChooser3.Forms
                     title = button.AccessibleName ?? title;
                     _currentText = title;
                 }
-                else if (button.Tag is int index && _browsers != null && index < _browsers.Count)
+                else if (button.Tag is Browser browser)
                 {
-                    var browser = _browsers[index];
                     _currentText = $"Open {browser.Name}";
 
                     if (_settings?.ShowURL == true)
@@ -1485,17 +1445,17 @@ namespace BrowserChooser3.Forms
         /// <param name="e">キーイベント引数</param>
         private void HandleSpaceKey(KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Space && _tmrDelay != null && _defaultBrowser != null)
+            if (e.KeyCode == Keys.Space && tmrDelay != null && _defaultBrowser != null)
             {
-                if (_tmrDelay.Enabled)
+                if (tmrDelay.Enabled)
                 {
                     _isPaused = true;
-                    _tmrDelay.Stop();
+                    tmrDelay.Stop();
                 }
                 else
                 {
                     _isPaused = false;
-                    _tmrDelay.Start();
+                    tmrDelay.Start();
                 }
 
                 UpdateAutoOpenText();
@@ -1509,10 +1469,101 @@ namespace BrowserChooser3.Forms
         /// </summary>
         private void UpdateAutoOpenTextWithSpaceKey()
         {
-            if (_chkAutoOpen != null && _defaultBrowser != null)
+            if (chkAutoOpen != null && _defaultBrowser != null)
             {
-                var pauseStatus = _tmrDelay?.Enabled == false ? "un" : "";
-                _chkAutoOpen.Text = $"Open {_defaultBrowser.Name} in {_currentDelay} seconds. [Space: {pauseStatus}pause timer]";
+                var pauseStatus = tmrDelay?.Enabled == false ? "un" : "";
+                chkAutoOpen.Text = $"Open {_defaultBrowser.Name} in {_currentDelay} seconds. [Space: {pauseStatus}pause timer]";
+            }
+        }
+
+        /// <summary>
+        /// 基本コントロールを再作成
+        /// </summary>
+        private void CreateBasicControls()
+        {
+            Logger.LogInfo("MainForm.CreateBasicControls", "Start");
+            
+            try
+            {
+                // 設定ボタン
+                btnOptions = Controls.Find("btnOptions", true).FirstOrDefault() as Button;
+                if (btnOptions == null)
+                {
+                    btnOptions = new Button
+                    {
+                        Name = "btnOptions",
+                        Text = "Settings",
+                        Size = new Size(80, 25),
+                        Location = new Point(ClientSize.Width - 90, 5),
+                        Anchor = AnchorStyles.Top | AnchorStyles.Right
+                    };
+                    btnOptions.Click += (s, e) => OpenOptionsForm();
+                    Controls.Add(btnOptions);
+                }
+                
+                // キャンセルボタン
+                btnCancel = Controls.Find("btnCancel", true).FirstOrDefault() as Button;
+                if (btnCancel == null)
+                {
+                    btnCancel = new Button
+                    {
+                        Name = "btnCancel",
+                        Text = "Cancel",
+                        Size = new Size(80, 25),
+                        Location = new Point(ClientSize.Width - 90, ClientSize.Height - 30),
+                        Anchor = AnchorStyles.Bottom | AnchorStyles.Right
+                    };
+                    btnCancel.Click += (s, e) => Close();
+                    Controls.Add(btnCancel);
+                }
+                
+                // Auto Close チェックボックス
+                chkAutoClose = Controls.Find("chkAutoClose", true).FirstOrDefault() as CheckBox;
+                if (chkAutoClose == null)
+                {
+                    chkAutoClose = new CheckBox
+                    {
+                        Name = "chkAutoClose",
+                        Text = "Auto Close",
+                        Size = new Size(100, 20),
+                        Location = new Point(20, ClientSize.Height - 50),
+                        Anchor = AnchorStyles.Bottom | AnchorStyles.Left,
+                        Checked = true
+                    };
+                    Controls.Add(chkAutoClose);
+                }
+                
+                // Auto Open チェックボックス
+                chkAutoOpen = Controls.Find("chkAutoOpen", true).FirstOrDefault() as CheckBox;
+                if (chkAutoOpen == null)
+                {
+                    chkAutoOpen = new CheckBox
+                    {
+                        Name = "chkAutoOpen",
+                        Text = "Auto Open",
+                        Size = new Size(100, 20),
+                        Location = new Point(130, ClientSize.Height - 50),
+                        Anchor = AnchorStyles.Bottom | AnchorStyles.Left,
+                        Checked = true
+                    };
+                    Controls.Add(chkAutoOpen);
+                }
+                
+                // カウントダウンタイマー
+                if (tmrDelay == null)
+                {
+                    tmrDelay = new System.Windows.Forms.Timer
+                    {
+                        Interval = 1000
+                    };
+                    tmrDelay.Tick += TmrDelay_Tick;
+                }
+                
+                Logger.LogInfo("MainForm.CreateBasicControls", "End");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("MainForm.CreateBasicControls", "基本コントロール作成エラー", ex.Message);
             }
         }
     }

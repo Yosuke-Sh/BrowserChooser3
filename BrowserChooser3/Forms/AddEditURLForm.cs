@@ -1,12 +1,11 @@
 using BrowserChooser3.Classes;
 using BrowserChooser3.Classes.Models;
-using BrowserChooser3.Classes.Services;
 using BrowserChooser3.Classes.Utilities;
 
 namespace BrowserChooser3.Forms
 {
     /// <summary>
-    /// URL追加・編集ダイアログ
+    /// Auto URL追加・編集ダイアログ
     /// </summary>
     public partial class AddEditURLForm : Form
     {
@@ -15,15 +14,17 @@ namespace BrowserChooser3.Forms
         private bool _isEditMode;
 
         /// <summary>
-        /// URL追加・編集ダイアログの新しいインスタンスを初期化します
+        /// Auto URL追加・編集ダイアログの新しいインスタンスを初期化します
         /// </summary>
         public AddEditURLForm()
         {
             InitializeComponent();
+            this.TopMost = true;
+            this.StartPosition = FormStartPosition.CenterParent;
         }
 
         /// <summary>
-        /// URL追加モードでダイアログを表示
+        /// Auto URL追加モードでダイアログを表示
         /// </summary>
         public bool AddURL(Dictionary<int, Browser> browsers)
         {
@@ -32,12 +33,9 @@ namespace BrowserChooser3.Forms
 
             _url = new URL
             {
-                Guid = Guid.NewGuid(),
-                Name = "",
-                URLValue = "",
-                BrowserGuid = Guid.Empty,
-                DelayTime = -1,
-                IsActive = true
+                URLPattern = "",
+                Guid = Guid.Empty,
+                DelayTime = -1
             };
 
             LoadURLData();
@@ -45,7 +43,7 @@ namespace BrowserChooser3.Forms
         }
 
         /// <summary>
-        /// URL編集モードでダイアログを表示
+        /// Auto URL編集モードでダイアログを表示
         /// </summary>
         public bool EditURL(URL url, Dictionary<int, Browser> browsers)
         {
@@ -62,36 +60,35 @@ namespace BrowserChooser3.Forms
         /// </summary>
         private void LoadURLData()
         {
-            Text = _isEditMode ? "Edit URL" : "Add URL";
+            Text = _isEditMode ? "Edit Auto URL" : "Add Auto URL";
             
             var txtURL = Controls.Find("txtURL", true).FirstOrDefault() as TextBox;
             var cmbBrowser = Controls.Find("cmbBrowser", true).FirstOrDefault() as ComboBox;
-            var nudDelay = Controls.Find("nudDelay", true).FirstOrDefault() as NumericUpDown;
-            var chkActive = Controls.Find("chkActive", true).FirstOrDefault() as CheckBox;
+            var txtDelay = Controls.Find("txtDelay", true).FirstOrDefault() as TextBox;
 
-            if (txtURL != null) txtURL.Text = _url.URLValue;
-            if (nudDelay != null) nudDelay.Value = _url.DelayTime;
-            if (chkActive != null) chkActive.Checked = _url.IsActive;
+            if (txtURL != null) txtURL.Text = _url.URLPattern;
+            if (txtDelay != null) txtDelay.Text = _url.DelayTime < 0 ? "" : _url.DelayTime.ToString();
 
+            // ブラウザコンボボックスの設定
             if (cmbBrowser != null)
             {
-                // ブラウザの選択
-                if (_url.BrowserGuid == Guid.Empty)
+                cmbBrowser.Items.Clear();
+                foreach (var browser in _browsers.Values)
                 {
-                    cmbBrowser.SelectedIndex = 0; // Default
+                    cmbBrowser.Items.Add(browser.Name);
                 }
-                else
+
+                if (_url.Guid != Guid.Empty)
                 {
-                    var browserIndex = 1; // Defaultの次から
-                    foreach (var browser in _browsers.Values)
+                    var selectedBrowser = _browsers.Values.FirstOrDefault(b => b.Guid == _url.Guid);
+                    if (selectedBrowser != null)
                     {
-                        if (browser.Guid == _url.BrowserGuid)
-                        {
-                            cmbBrowser.SelectedIndex = browserIndex;
-                            break;
-                        }
-                        browserIndex++;
+                        cmbBrowser.SelectedItem = selectedBrowser.Name;
                     }
+                }
+                else if (cmbBrowser.Items.Count > 0)
+                {
+                    cmbBrowser.SelectedIndex = 0;
                 }
             }
         }
@@ -103,21 +100,27 @@ namespace BrowserChooser3.Forms
         {
             var txtURL = Controls.Find("txtURL", true).FirstOrDefault() as TextBox;
             var cmbBrowser = Controls.Find("cmbBrowser", true).FirstOrDefault() as ComboBox;
-            var nudDelay = Controls.Find("nudDelay", true).FirstOrDefault() as NumericUpDown;
-            var chkActive = Controls.Find("chkActive", true).FirstOrDefault() as CheckBox;
+            var txtDelay = Controls.Find("txtDelay", true).FirstOrDefault() as TextBox;
 
-            if (txtURL != null) _url.URLValue = txtURL.Text;
-            if (nudDelay != null) _url.DelayTime = (int)nudDelay.Value;
-            if (chkActive != null) _url.IsActive = chkActive.Checked;
-
-            if (cmbBrowser != null && cmbBrowser.SelectedIndex > 0)
+            if (txtURL != null) _url.URLPattern = txtURL.Text;
+            
+            if (cmbBrowser != null && cmbBrowser.SelectedItem != null)
             {
-                var selectedBrowser = _browsers.Values.ElementAt(cmbBrowser.SelectedIndex - 1);
-                _url.BrowserGuid = selectedBrowser.Guid;
+                var selectedBrowserName = cmbBrowser.SelectedItem.ToString();
+                var selectedBrowser = _browsers.Values.FirstOrDefault(b => b.Name == selectedBrowserName);
+                if (selectedBrowser != null)
+                {
+                    _url.Guid = selectedBrowser.Guid;
+                }
+            }
+            
+            if (txtDelay != null && int.TryParse(txtDelay.Text, out var delay))
+            {
+                _url.DelayTime = delay;
             }
             else
             {
-                _url.BrowserGuid = Guid.Empty;
+                _url.DelayTime = -1; // Default
             }
 
             return _url;
@@ -128,8 +131,8 @@ namespace BrowserChooser3.Forms
         /// </summary>
         private void InitializeComponent()
         {
-            Text = "Add/Edit URL";
-            Size = new Size(500, 300);
+            Text = "Add/Edit Auto URL";
+            Size = new Size(450, 250);
             StartPosition = FormStartPosition.CenterParent;
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
@@ -137,36 +140,26 @@ namespace BrowserChooser3.Forms
 
             // 基本設定
             var lblURL = new Label { Text = "URL:", Location = new Point(10, 20), AutoSize = true };
-            var txtURL = new TextBox { Name = "txtURL", Location = new Point(120, 17), Size = new Size(350, 23) };
+            var txtURL = new TextBox { Name = "txtURL", Location = new Point(120, 17), Size = new Size(300, 23) };
 
             var lblBrowser = new Label { Text = "Browser:", Location = new Point(10, 50), AutoSize = true };
-            var cmbBrowser = new ComboBox { Name = "cmbBrowser", Location = new Point(120, 47), Size = new Size(350, 23), DropDownStyle = ComboBoxStyle.DropDownList };
+            var cmbBrowser = new ComboBox { Name = "cmbBrowser", Location = new Point(120, 47), Size = new Size(300, 23), DropDownStyle = ComboBoxStyle.DropDownList };
 
             var lblDelay = new Label { Text = "Delay (seconds):", Location = new Point(10, 80), AutoSize = true };
-            var nudDelay = new NumericUpDown { Name = "nudDelay", Location = new Point(120, 77), Size = new Size(100, 23), Minimum = -1, Maximum = 3600, Value = -1 };
-
-            var chkActive = new CheckBox { Name = "chkActive", Text = "Active", Location = new Point(120, 110), AutoSize = true, Checked = true };
+            var txtDelay = new TextBox { Name = "txtDelay", Location = new Point(120, 77), Size = new Size(100, 23) };
 
             // ボタン
-            var btnOK = new Button { Text = "OK", DialogResult = DialogResult.OK, Location = new Point(300, 220), Size = new Size(75, 23) };
-            var btnCancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, Location = new Point(385, 220), Size = new Size(75, 23) };
+            var btnOK = new Button { Text = "OK", DialogResult = DialogResult.OK, Location = new Point(250, 170), Size = new Size(75, 23) };
+            var btnCancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, Location = new Point(335, 170), Size = new Size(75, 23) };
 
             // コントロールの追加
             Controls.AddRange(new Control[] 
             {
                 lblURL, txtURL,
                 lblBrowser, cmbBrowser,
-                lblDelay, nudDelay,
-                chkActive,
+                lblDelay, txtDelay,
                 btnOK, btnCancel
             });
-
-            // ブラウザリストの設定
-            cmbBrowser.Items.Add("Default");
-            foreach (var browser in _browsers.Values)
-            {
-                cmbBrowser.Items.Add(browser.Name);
-            }
 
             // イベントハンドラー
             btnOK.Click += (s, e) =>
@@ -178,19 +171,29 @@ namespace BrowserChooser3.Forms
                     return;
                 }
 
-                // データの保存
-                _url.URLValue = txtURL.Text;
-                _url.IsActive = chkActive.Checked;
-                _url.DelayTime = (int)nudDelay.Value;
-
-                if (cmbBrowser.SelectedIndex > 0)
+                if (cmbBrowser.SelectedItem == null)
                 {
-                    var selectedBrowser = _browsers.Values.ElementAt(cmbBrowser.SelectedIndex - 1);
-                    _url.BrowserGuid = selectedBrowser.Guid;
+                    MessageBox.Show("ブラウザを選択してください。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // データの保存
+                _url.URLPattern = txtURL.Text;
+                
+                var selectedBrowserName = cmbBrowser.SelectedItem.ToString();
+                var selectedBrowser = _browsers.Values.FirstOrDefault(b => b.Name == selectedBrowserName);
+                if (selectedBrowser != null)
+                {
+                    _url.Guid = selectedBrowser.Guid;
+                }
+                
+                if (int.TryParse(txtDelay.Text, out var delay))
+                {
+                    _url.DelayTime = delay;
                 }
                 else
                 {
-                    _url.BrowserGuid = Guid.Empty;
+                    _url.DelayTime = -1; // Default
                 }
             };
         }

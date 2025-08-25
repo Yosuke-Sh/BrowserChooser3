@@ -34,9 +34,6 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
                 // Edge
                 DetectEdge();
                 
-                // Internet Explorer
-                DetectInternetExplorer();
-                
                 // Opera
                 DetectOpera();
                 
@@ -146,28 +143,7 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
             }
         }
 
-        /// <summary>
-        /// Internet Explorerを検出
-        /// </summary>
-        private static void DetectInternetExplorer()
-        {
-            var iePath = @"C:\Program Files\Internet Explorer\iexplore.exe";
-            if (System.IO.File.Exists(iePath))
-            {
-                var browser = new Browser
-                {
-                    Name = "Internet Explorer",
-                    Target = iePath,
-                    Arguments = "-new",
-                    Category = "Web Browsers",
-                    IsActive = true,
-                    Visible = true,
-                    IEBehaviour = true
-                };
-                DetectedBrowsers.Add(browser);
-                Logger.LogInfo("BrowserDetector.DetectInternetExplorer", "IE検出", iePath);
-            }
-        }
+
 
         /// <summary>
         /// Operaを検出

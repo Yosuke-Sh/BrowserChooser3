@@ -363,6 +363,44 @@ namespace BrowserChooser3.Classes
         /// <summary>ログレベル</summary>
         public int LogLevel { get; set; } = 3;
 
+        /// <summary>グリッド表示</summary>
+        public bool ShowGrid { get; set; } = false;
+
+        /// <summary>グリッド色</summary>
+        public int GridColor { get; set; } = Color.Gray.ToArgb();
+
+        /// <summary>グリッド線幅</summary>
+        public int GridLineWidth { get; set; } = 1;
+
+        /// <summary>履歴保持</summary>
+        public bool KeepHistory { get; set; } = true;
+
+        /// <summary>履歴保持日数</summary>
+        public int HistoryDays { get; set; } = 30;
+
+        /// <summary>プライバシーモード</summary>
+        public bool PrivacyMode { get; set; } = false;
+
+        /// <summary>データ収集許可</summary>
+        public bool AllowDataCollection { get; set; } = false;
+
+        /// <summary>自動起動</summary>
+        public bool AutoStart { get; set; } = false;
+
+        /// <summary>最小化で起動</summary>
+        public bool StartMinimized { get; set; } = false;
+
+        /// <summary>システムトレイで起動</summary>
+        public bool StartInTray { get; set; } = false;
+
+        /// <summary>起動遅延</summary>
+        public int StartupDelay { get; set; } = 0;
+
+        /// <summary>起動メッセージ</summary>
+        public string StartupMessage { get; set; } = "BrowserChooser3 Started";
+
+
+
         /// <summary>セーフモード（ファイルが読み込めない場合のみtrue - 保存を防止）</summary>
         [field: NonSerialized] public bool SafeMode { get; set; } = false;
         /// <summary>ログデバッグ（コマンドラインで指定された場合のみtrue）</summary>

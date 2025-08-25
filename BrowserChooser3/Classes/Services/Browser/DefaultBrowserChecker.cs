@@ -127,7 +127,6 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
                 // 一般的なブラウザのレジストリキーをチェック
                 var browserKeys = new[]
                 {
-                    @"SOFTWARE\Clients\StartMenuInternet\IEXPLORE.EXE\shell\open\command",
                     @"SOFTWARE\Clients\StartMenuInternet\chrome.exe\shell\open\command",
                     @"SOFTWARE\Clients\StartMenuInternet\firefox.exe\shell\open\command",
                     @"SOFTWARE\Clients\StartMenuInternet\msedge.exe\shell\open\command"
@@ -219,7 +218,7 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
                 var fileName = Path.GetFileNameWithoutExtension(path).ToLower();
                 return fileName switch
                 {
-                    "iexplore" => "Internet Explorer",
+        
                     "chrome" => "Google Chrome",
                     "firefox" => "Mozilla Firefox",
                     "msedge" => "Microsoft Edge",

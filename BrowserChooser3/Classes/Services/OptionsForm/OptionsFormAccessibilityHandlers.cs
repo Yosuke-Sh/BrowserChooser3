@@ -51,5 +51,13 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        /// <summary>
+        /// アクセシビリティボタンのクリックイベント
+        /// </summary>
+        public void AccessibilityButton_Click(object? sender, EventArgs e)
+        {
+            OpenAccessibilitySettings();
+        }
     }
 }

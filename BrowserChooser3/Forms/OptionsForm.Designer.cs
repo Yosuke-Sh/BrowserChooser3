@@ -58,45 +58,45 @@ namespace BrowserChooser3.Forms
             // 
             // treeSettings
             // 
-            treeSettings.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            treeSettings.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point, 0);
             treeSettings.Location = new Point(12, 12);
             treeSettings.Name = "treeSettings";
-            treeSettings.Size = new Size(173, 270);
+            treeSettings.Size = new Size(200, 350);
             treeSettings.TabIndex = 1;
             treeSettings.AfterSelect += TreeSettings_AfterSelect;
             // 
             // tabSettings
             // 
             tabSettings.Appearance = TabAppearance.FlatButtons;
-            tabSettings.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            tabSettings.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point, 0);
             tabSettings.ItemSize = new Size(0, 1);
-            tabSettings.Location = new Point(179, 12);
+            tabSettings.Location = new Point(220, 12);
             tabSettings.Name = "tabSettings";
             tabSettings.SelectedIndex = 0;
-            tabSettings.Size = new Size(852, 274);
+            tabSettings.Size = new Size(950, 400);
             tabSettings.SizeMode = TabSizeMode.Fixed;
             tabSettings.TabIndex = 2;
             // 
             // saveButton
             // 
             saveButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            saveButton.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            saveButton.Location = new Point(853, 390);
+            saveButton.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            saveButton.Location = new Point(1000, 450);
             saveButton.Name = "saveButton";
-            saveButton.Size = new Size(75, 30);
+            saveButton.Size = new Size(85, 35);
             saveButton.TabIndex = 3;
             saveButton.Text = "Save";
             saveButton.UseVisualStyleBackColor = true;
-            // saveButton.Click += SaveButton_Click; // イベントハンドラーは OptionsFormFormHandlers クラスに移動済み
+            // saveButton.Click += _formHandlers.SaveButton_Click; // イベントハンドラーは SetupButtonEventHandlers で設定
             // 
             // cancelButton
             // 
             cancelButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             cancelButton.DialogResult = DialogResult.Cancel;
-            cancelButton.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            cancelButton.Location = new Point(1015, 390);
+            cancelButton.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            cancelButton.Location = new Point(1095, 450);
             cancelButton.Name = "cancelButton";
-            cancelButton.Size = new Size(75, 30);
+            cancelButton.Size = new Size(85, 35);
             cancelButton.TabIndex = 4;
             cancelButton.Text = "Cancel";
             cancelButton.UseVisualStyleBackColor = true;
@@ -104,14 +104,14 @@ namespace BrowserChooser3.Forms
             // helpButton
             // 
             helpButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            helpButton.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            helpButton.Location = new Point(934, 390);
+            helpButton.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            helpButton.Location = new Point(905, 450);
             helpButton.Name = "helpButton";
-            helpButton.Size = new Size(75, 30);
+            helpButton.Size = new Size(85, 35);
             helpButton.TabIndex = 5;
             helpButton.Text = "Help";
             helpButton.UseVisualStyleBackColor = true;
-            // helpButton.Click += HelpButton_Click; // イベントハンドラーは OptionsFormFormHandlers クラスに移動済み
+            // helpButton.Click += _formHandlers.HelpButton_Click; // イベントハンドラーは SetupButtonEventHandlers で設定
             // 
             // categoryPanel
             // 
@@ -188,7 +188,7 @@ namespace BrowserChooser3.Forms
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1097, 422);
+            ClientSize = new Size(1200, 500);
             Controls.Add(lblHiddenBrowserGuid);
             Controls.Add(categoryPanel);
             Controls.Add(helpButton);
@@ -197,9 +197,9 @@ namespace BrowserChooser3.Forms
             Controls.Add(tabSettings);
             Controls.Add(treeSettings);
             Controls.Add(pictureBox1);
-            Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point, 0);
             MaximizeBox = false;
-            MinimumSize = new Size(595, 350);
+            MinimumSize = new Size(800, 600);
             Name = "OptionsForm";
             StartPosition = FormStartPosition.CenterParent;
             Text = "Options";
@@ -215,7 +215,10 @@ namespace BrowserChooser3.Forms
 
         private PictureBox pictureBox1;
         private TreeView treeSettings;
-        private TabControl tabSettings;
+        /// <summary>
+        /// 設定タブコントロール
+        /// </summary>
+        public TabControl tabSettings;
         private Button saveButton;
         private Button cancelButton;
         private Button helpButton;
