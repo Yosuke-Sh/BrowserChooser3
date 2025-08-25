@@ -437,7 +437,13 @@ namespace BrowserChooser3.Classes
         {
             Logger.LogInfo("Settings.DetectBrowsers", "Start");
             
-            var detectedBrowsers = BrowserDetector.DetectBrowsers();
+            // 初回のみブラウザ検出を実行
+            if (BrowserDetector.DetectedBrowsers.Count == 0)
+            {
+                BrowserDetector.DetectBrowsers();
+            }
+            
+            var detectedBrowsers = BrowserDetector.DetectedBrowsers.ToList(); // コピーを作成
             
             // 既存のブラウザとマージ
             foreach (var detectedBrowser in detectedBrowsers)

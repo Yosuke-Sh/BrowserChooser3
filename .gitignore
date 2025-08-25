@@ -10,3 +10,7 @@
 /BrowserChooser3/Resources/*.lnk
 /.vs
 BrowserChooser3/Resources/BrowserChooser3.XmlSerializers.dll
+bin
+obj
+coverage
+TestResults
