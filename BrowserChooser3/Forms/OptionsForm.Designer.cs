@@ -35,6 +35,7 @@ namespace BrowserChooser3.Forms
             saveButton = new Button();
             cancelButton = new Button();
             helpButton = new Button();
+            resetButton = new Button();
             categoryPanel = new Panel();
             categoryItemsListView = new ListView();
             btnDeleteCategory = new Button();
@@ -73,7 +74,7 @@ namespace BrowserChooser3.Forms
             tabSettings.Location = new Point(220, 12);
             tabSettings.Name = "tabSettings";
             tabSettings.SelectedIndex = 0;
-            tabSettings.Size = new Size(800, 293);
+            tabSettings.Size = new Size(750, 430);
             tabSettings.SizeMode = TabSizeMode.Fixed;
             tabSettings.TabIndex = 2;
             // 
@@ -81,7 +82,7 @@ namespace BrowserChooser3.Forms
             // 
             saveButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             saveButton.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            saveButton.Location = new Point(550, 450);
+            saveButton.Location = new Point(685, 450);
             saveButton.Name = "saveButton";
             saveButton.Size = new Size(85, 35);
             saveButton.TabIndex = 3;
@@ -93,7 +94,7 @@ namespace BrowserChooser3.Forms
             cancelButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             cancelButton.DialogResult = DialogResult.Cancel;
             cancelButton.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            cancelButton.Location = new Point(650, 450);
+            cancelButton.Location = new Point(785, 450);
             cancelButton.Name = "cancelButton";
             cancelButton.Size = new Size(85, 35);
             cancelButton.TabIndex = 4;
@@ -104,12 +105,24 @@ namespace BrowserChooser3.Forms
             // 
             helpButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             helpButton.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            helpButton.Location = new Point(750, 450);
+            helpButton.Location = new Point(885, 450);
             helpButton.Name = "helpButton";
             helpButton.Size = new Size(85, 35);
             helpButton.TabIndex = 5;
             helpButton.Text = "Help";
             helpButton.UseVisualStyleBackColor = true;
+            // 
+            // resetButton
+            // 
+            resetButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            resetButton.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            resetButton.Location = new Point(585, 450);
+            resetButton.Name = "resetButton";
+            resetButton.Size = new Size(85, 35);
+            resetButton.TabIndex = 6;
+            resetButton.Text = "Reset";
+            resetButton.UseVisualStyleBackColor = true;
+            resetButton.Click += ResetToDefaults_Click;
             // 
             // categoryPanel
             // 
@@ -120,8 +133,8 @@ namespace BrowserChooser3.Forms
             categoryPanel.Controls.Add(categoryListView);
             categoryPanel.Location = new Point(230, 15);
             categoryPanel.Name = "categoryPanel";
-            categoryPanel.Size = new Size(600, 380);
-            categoryPanel.TabIndex = 6;
+            categoryPanel.Size = new Size(630, 420);
+            categoryPanel.TabIndex = 7;
             categoryPanel.Visible = false;
             // 
             // categoryItemsListView
@@ -186,9 +199,10 @@ namespace BrowserChooser3.Forms
             // 
             AutoScaleDimensions = new SizeF(11F, 28F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(878, 494);
+            ClientSize = new Size(983, 494);
             Controls.Add(lblHiddenBrowserGuid);
             Controls.Add(categoryPanel);
+            Controls.Add(resetButton);
             Controls.Add(helpButton);
             Controls.Add(cancelButton);
             Controls.Add(saveButton);
@@ -220,6 +234,7 @@ namespace BrowserChooser3.Forms
         private Button saveButton;
         private Button cancelButton;
         private Button helpButton;
+        private Button resetButton;
         private Panel categoryPanel;
         private ListView categoryListView;
         private Button btnAddCategory;

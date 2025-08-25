@@ -396,8 +396,8 @@ namespace BrowserChooser3.Forms
                     Tag = browser,
                     FlatStyle = FlatStyle.Flat,
                     BackColor = Color.Transparent,
-                    UseVisualStyleBackColor = true,
-                    Font = new Font("Segoe UI", 7.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                    UseVisualStyleBackColor = false,
+                    Font = new Font("Segoe UI", 6.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
                     TextAlign = ContentAlignment.MiddleCenter,
                     ShowFocusBox = _settings?.ShowFocus ?? true,
                     TrapArrowKeys = true

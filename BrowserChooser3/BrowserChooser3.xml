@@ -3532,6 +3532,61 @@
             フォームサイズ変更時の処理
             </summary>
         </member>
+        <member name="M:BrowserChooser3.Forms.OptionsForm.ResetToDefaults_Click(System.Object,System.EventArgs)">
+            <summary>
+            設定をデフォルト値にリセットします
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.OptionsForm.ResetBrowsersPanel">
+            <summary>
+            ブラウザパネルをリセット
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.OptionsForm.ResetAutoURLsPanel">
+            <summary>
+            Auto URLsパネルをリセット
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.OptionsForm.ResetProtocolsPanel">
+            <summary>
+            プロトコルパネルをリセット
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.OptionsForm.ResetFileTypesPanel">
+            <summary>
+            ファイルタイプパネルをリセット
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.OptionsForm.ResetCategoriesPanel">
+            <summary>
+            カテゴリパネルをリセット
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.OptionsForm.ResetDisplayPanel">
+            <summary>
+            表示パネルをリセット
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.OptionsForm.ResetGridPanel">
+            <summary>
+            グリッドパネルをリセット
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.OptionsForm.ResetPrivacyPanel">
+            <summary>
+            プライバシーパネルをリセット
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.OptionsForm.ResetStartupPanel">
+            <summary>
+            スタートアップパネルをリセット
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.OptionsForm.ResetOthersPanel">
+            <summary>
+            その他パネルをリセット
+            </summary>
+        </member>
         <member name="M:BrowserChooser3.Forms.OptionsForm.AdjustLayout">
             <summary>
             レイアウトの調整

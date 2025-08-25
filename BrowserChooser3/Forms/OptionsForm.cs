@@ -555,6 +555,182 @@ namespace BrowserChooser3.Forms
         }
 
         /// <summary>
+        /// 設定をデフォルト値にリセットします
+        /// </summary>
+        private void ResetToDefaults_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var result = MessageBox.Show(
+                    "すべての設定をデフォルト値にリセットしますか？\n\nこの操作は元に戻せません。",
+                    "設定リセット確認",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Warning);
+
+                if (result == DialogResult.Yes)
+                {
+                    Logger.LogInfo("OptionsForm.ResetToDefaults", "設定リセット開始");
+                    
+                    // デフォルト設定を作成
+                    var defaultSettings = new Settings();
+                    
+                    // 現在の設定をデフォルト値で上書き
+                    _settings = defaultSettings;
+                    
+                    // 各パネルの設定をリセット
+                    ResetBrowsersPanel();
+                    ResetAutoURLsPanel();
+                    ResetProtocolsPanel();
+                    ResetFileTypesPanel();
+                    ResetCategoriesPanel();
+                    ResetDisplayPanel();
+                    ResetGridPanel();
+                    ResetPrivacyPanel();
+                    ResetStartupPanel();
+                    ResetOthersPanel();
+                    
+                    // 変更フラグを設定
+                    _isModified = true;
+                    
+                    Logger.LogInfo("OptionsForm.ResetToDefaults", "設定リセット完了");
+                    MessageBox.Show("設定をデフォルト値にリセットしました。", "リセット完了", 
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("OptionsForm.ResetToDefaults", "リセットエラー", ex.Message, ex.StackTrace ?? "");
+                MessageBox.Show($"設定のリセット中にエラーが発生しました。\n{ex.Message}", "エラー", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// ブラウザパネルをリセット
+        /// </summary>
+        private void ResetBrowsersPanel()
+        {
+            // ブラウザリストをクリア
+            var listView = Controls.Find("lstBrowsers", true).FirstOrDefault() as ListView;
+            if (listView != null)
+            {
+                listView.Items.Clear();
+            }
+        }
+
+        /// <summary>
+        /// Auto URLsパネルをリセット
+        /// </summary>
+        private void ResetAutoURLsPanel()
+        {
+            var listView = Controls.Find("lstURLs", true).FirstOrDefault() as ListView;
+            if (listView != null)
+            {
+                listView.Items.Clear();
+            }
+        }
+
+        /// <summary>
+        /// プロトコルパネルをリセット
+        /// </summary>
+        private void ResetProtocolsPanel()
+        {
+            var listView = Controls.Find("lstProtocols", true).FirstOrDefault() as ListView;
+            if (listView != null)
+            {
+                listView.Items.Clear();
+            }
+        }
+
+        /// <summary>
+        /// ファイルタイプパネルをリセット
+        /// </summary>
+        private void ResetFileTypesPanel()
+        {
+            var listView = Controls.Find("lstFileTypes", true).FirstOrDefault() as ListView;
+            if (listView != null)
+            {
+                listView.Items.Clear();
+            }
+        }
+
+        /// <summary>
+        /// カテゴリパネルをリセット
+        /// </summary>
+        private void ResetCategoriesPanel()
+        {
+            var listView = Controls.Find("lstCategories", true).FirstOrDefault() as ListView;
+            if (listView != null)
+            {
+                listView.Items.Clear();
+            }
+        }
+
+        /// <summary>
+        /// 表示パネルをリセット
+        /// </summary>
+        private void ResetDisplayPanel()
+        {
+            // 表示設定をデフォルト値にリセット
+            var chkShowURLs = Controls.Find("chkShowURLs", true).FirstOrDefault() as CheckBox;
+            if (chkShowURLs != null) chkShowURLs.Checked = _settings.ShowURL;
+
+            var chkRevealShortURLs = Controls.Find("chkRevealShortURLs", true).FirstOrDefault() as CheckBox;
+            if (chkRevealShortURLs != null) chkRevealShortURLs.Checked = _settings.RevealShortURL;
+        }
+
+        /// <summary>
+        /// グリッドパネルをリセット
+        /// </summary>
+        private void ResetGridPanel()
+        {
+            var nudGridWidth = Controls.Find("nudGridWidth", true).FirstOrDefault() as NumericUpDown;
+            if (nudGridWidth != null) nudGridWidth.Value = _settings.GridWidth;
+
+            var nudGridHeight = Controls.Find("nudGridHeight", true).FirstOrDefault() as NumericUpDown;
+            if (nudGridHeight != null) nudGridHeight.Value = _settings.GridHeight;
+
+            var chkShowGrid = Controls.Find("chkShowGrid", true).FirstOrDefault() as CheckBox;
+            if (chkShowGrid != null) chkShowGrid.Checked = _settings.ShowGrid;
+        }
+
+        /// <summary>
+        /// プライバシーパネルをリセット
+        /// </summary>
+        private void ResetPrivacyPanel()
+        {
+            var chkEnableLogging = Controls.Find("chkEnableLogging", true).FirstOrDefault() as CheckBox;
+            if (chkEnableLogging != null) chkEnableLogging.Checked = _settings.EnableLogging;
+
+            var cmbLogLevel = Controls.Find("cmbLogLevel", true).FirstOrDefault() as ComboBox;
+            if (cmbLogLevel != null) cmbLogLevel.SelectedIndex = Math.Min(_settings.LogLevel, cmbLogLevel.Items.Count - 1);
+        }
+
+        /// <summary>
+        /// スタートアップパネルをリセット
+        /// </summary>
+        private void ResetStartupPanel()
+        {
+            var chkAutoStart = Controls.Find("chkAutoStart", true).FirstOrDefault() as CheckBox;
+            if (chkAutoStart != null) chkAutoStart.Checked = _settings.AutoStart;
+
+            var chkStartMinimized = Controls.Find("chkStartMinimized", true).FirstOrDefault() as CheckBox;
+            if (chkStartMinimized != null) chkStartMinimized.Checked = _settings.StartMinimized;
+        }
+
+        /// <summary>
+        /// その他パネルをリセット
+        /// </summary>
+        private void ResetOthersPanel()
+        {
+            var chkPortableMode = Controls.Find("chkPortableMode", true).FirstOrDefault() as CheckBox;
+            if (chkPortableMode != null) chkPortableMode.Checked = _settings.PortableMode;
+
+            var chkAutoCheckUpdate = Controls.Find("chkAutoCheckUpdate", true).FirstOrDefault() as CheckBox;
+            if (chkAutoCheckUpdate != null) chkAutoCheckUpdate.Checked = _settings.AutomaticUpdates;
+        }
+
+        /// <summary>
         /// レイアウトの調整
         /// </summary>
         private void AdjustLayout()
@@ -577,21 +753,6 @@ namespace BrowserChooser3.Forms
                 // 左側のツリーと右側のグリッドの上部位置を合わせる
                 tabSettings.Location = new Point(220, 12);
                 tabSettings.Size = new Size(ClientSize.Width - 240, ClientSize.Height - 100);
-            }
-
-            if (saveButton != null)
-            {
-                saveButton.Location = new Point(ClientSize.Width - 280, ClientSize.Height - 50);
-            }
-
-            if (cancelButton != null)
-            {
-                cancelButton.Location = new Point(ClientSize.Width - 180, ClientSize.Height - 50);
-            }
-
-            if (helpButton != null)
-            {
-                helpButton.Location = new Point(ClientSize.Width - 80, ClientSize.Height - 50);
             }
         }
 

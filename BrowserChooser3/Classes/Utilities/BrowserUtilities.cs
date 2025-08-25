@@ -170,11 +170,13 @@ namespace BrowserChooser3.Classes.Utilities
             {
                 // ブラウザパスの正規化
                 string browserPath = NormalizeTarget(browser.Target);
+                Logger.LogInfo("BrowserUtilities.DoLaunch", "Normalized path", browserPath);
 
                 // ファイルの存在確認
                 var fileData = new WIN32_FILE_ATTRIBUTE_DATA();
                 if (!GetFileAttributesEx(browserPath, GetFileExInfoStandard, out fileData))
                 {
+                    Logger.LogError("BrowserUtilities.DoLaunch", "File not found", browserPath);
                     if (string.IsNullOrEmpty(browser.Target))
                     {
                         Logger.LogInfo("BrowserUtilities.DoLaunch", "Terminate - Empty target", browser.Name, url, terminate);
@@ -182,7 +184,7 @@ namespace BrowserChooser3.Classes.Utilities
                     }
                     else
                     {
-                        MessageBox.Show($"ブラウザ {browser.Name} が見つかりません。", "見つからないターゲット", 
+                        MessageBox.Show($"ブラウザ {browser.Name} が見つかりません。\nパス: {browserPath}", "見つからないターゲット", 
                             MessageBoxButtons.OK, MessageBoxIcon.Error);
                         Logger.LogError("BrowserUtilities.DoLaunch", "ブラウザが見つからない", browser.Target);
                         return false;
@@ -190,32 +192,57 @@ namespace BrowserChooser3.Classes.Utilities
                 }
 
                 Process? process = null;
+                string arguments = browser.Arguments;
 
-                // URLがある場合の起動
-                if (!string.IsNullOrEmpty(url))
+                // Chrome専用の処理
+                if (browser.Name.ToLower().Contains("chrome") || browserPath.ToLower().Contains("chrome"))
                 {
-                    if (browser.Arguments.Contains("{0}") || browser.Arguments.Contains("{1}"))
+                    Logger.LogInfo("BrowserUtilities.DoLaunch", "Chrome detected", browser.Name);
+                    
+                    // Chromeの標準的な起動引数を設定
+                    if (string.IsNullOrEmpty(arguments) || arguments.Trim() == "")
                     {
-                        // 置換パラメータを使用
-                        var parts = URLUtilities.DetermineParts(url);
-                        string arguments = string.Format(browser.Arguments, parts.Protocol, parts.Remainder);
-                        process = Process.Start(browserPath, arguments);
+                        arguments = "--new-window";
                     }
-                    else
+                    
+                    // URLがある場合は追加
+                    if (!string.IsNullOrEmpty(url))
                     {
-                        // 従来の起動方法
-                        process = Process.Start(browserPath, browser.Arguments + " \"" + url + "\"");
+                        arguments += $" \"{url}\"";
                     }
+                    
+                    Logger.LogInfo("BrowserUtilities.DoLaunch", "Chrome arguments", arguments);
                 }
                 else
                 {
-                    // URLなしで起動
-                    process = Process.Start(browserPath, browser.Arguments);
+                    // 他のブラウザの処理
+                    if (!string.IsNullOrEmpty(url))
+                    {
+                        if (browser.Arguments.Contains("{0}") || browser.Arguments.Contains("{1}"))
+                        {
+                            // 置換パラメータを使用
+                            var parts = URLUtilities.DetermineParts(url);
+                            arguments = string.Format(browser.Arguments, parts.Protocol, parts.Remainder);
+                        }
+                        else
+                        {
+                            // 従来の起動方法
+                            arguments = browser.Arguments + " \"" + url + "\"";
+                        }
+                    }
+                    else
+                    {
+                        arguments = browser.Arguments;
+                    }
                 }
+
+                Logger.LogInfo("BrowserUtilities.DoLaunch", "Starting process", browserPath, arguments);
+                process = Process.Start(browserPath, arguments);
 
                 if (process != null)
                 {
                     int processId = process.Id;
+                    Logger.LogInfo("BrowserUtilities.DoLaunch", "Process started", processId.ToString());
 
                     try
                     {
@@ -241,6 +268,7 @@ namespace BrowserChooser3.Classes.Utilities
                     }
                     else
                     {
+                        Logger.LogError("BrowserUtilities.DoLaunch", "Process exited immediately", processId.ToString());
                         TryToBringToFront(browserPath);
                     }
 
@@ -258,7 +286,7 @@ namespace BrowserChooser3.Classes.Utilities
                 Logger.LogError("BrowserUtilities.DoLaunch", "起動エラー", ex.Message, ex.StackTrace ?? "");
             }
 
-            MessageBox.Show("ブラウザの起動に失敗しました。バグレポートを提出してください。", "起動エラー", 
+            MessageBox.Show($"ブラウザ {browser.Name} の起動に失敗しました。\nパス: {browser.Target}\n引数: {browser.Arguments}", "起動エラー", 
                 MessageBoxButtons.OK, MessageBoxIcon.Error);
             Logger.LogError("BrowserUtilities.DoLaunch", "重大な失敗", browser.Name, url, terminate);
             return false;

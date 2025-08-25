@@ -75,7 +75,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 FullRowSelect = true,
                 GridLines = true,
                 Location = new Point(97, 6),
-                Size = new Size(741, 420),
+                Size = new Size(630, 420),
                 Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom,
                 AllowDrop = true,
                 MultiSelect = false,
@@ -128,7 +128,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             {
                 Name = "btnEdit",
                 Text = "Edit",
-                Location = new Point(6, 40),
+                Location = new Point(6, 52),
                 Size = new Size(85, 40),
                 Font = new Font("Segoe UI", 9.5f, FontStyle.Regular, GraphicsUnit.Point, 0),
                 Enabled = false
@@ -138,7 +138,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             {
                 Name = "btnClone",
                 Text = "Clone",
-                Location = new Point(6, 74),
+                Location = new Point(6, 98),
                 Size = new Size(85, 40),
                 Font = new Font("Segoe UI", 9.5f, FontStyle.Regular, GraphicsUnit.Point, 0),
                 Enabled = false
@@ -148,7 +148,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             {
                 Name = "btnDetect",
                 Text = "Detect",
-                Location = new Point(6, 108),
+                Location = new Point(6, 144),
                 Size = new Size(85, 40),
                 Font = new Font("Segoe UI", 9.5f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
@@ -157,7 +157,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             {
                 Name = "btnDelete",
                 Text = "Delete",
-                Location = new Point(6, 142),
+                Location = new Point(6, 190),
                 Size = new Size(85, 40),
                 Font = new Font("Segoe UI", 9.5f, FontStyle.Regular, GraphicsUnit.Point, 0),
                 Enabled = false
@@ -208,7 +208,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 FullRowSelect = true,
                 GridLines = true,
                 Location = new Point(97, 6),
-                Size = new Size(741, 420),
+                Size = new Size(630, 420),
                 Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom,
                 AllowDrop = true,
                 MultiSelect = false,
@@ -313,7 +313,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 FullRowSelect = true,
                 GridLines = true,
                 Location = new Point(97, 6),
-                Size = new Size(741, 420),
+                Size = new Size(630, 420),
                 Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom,
                 MultiSelect = false,
                 HideSelection = false,
@@ -407,7 +407,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 FullRowSelect = true,
                 GridLines = true,
                 Location = new Point(97, 6),
-                Size = new Size(741, 420),
+                Size = new Size(630, 420),
                 Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom,
                 MultiSelect = false,
                 HideSelection = false,
@@ -560,20 +560,28 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 Padding = new Padding(10)
             };
 
-            // グリッド幅設定
+            // グリッドサイズ設定
+            var groupBox1 = new GroupBox
+            {
+                Text = "Grid Size",
+                Location = new Point(6, 6),
+                Size = new Size(263, 45),
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+
             var lblGridWidth = new Label
             {
-                Text = "Grid Width:",
-                Location = new Point(6, 9),
-                Size = new Size(80, 23),
+                Text = "Width:",
+                Location = new Point(6, 20),
+                Size = new Size(41, 23),
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
 
             var nudGridWidth = new NumericUpDown
             {
                 Name = "nudGridWidth",
-                Location = new Point(90, 6),
-                Size = new Size(80, 23),
+                Location = new Point(62, 18),
+                Size = new Size(60, 23),
                 Minimum = 1,
                 Maximum = 20,
                 Value = settings.GridWidth,
@@ -581,20 +589,19 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             };
             nudGridWidth.ValueChanged += (s, e) => setModified(true);
 
-            // グリッド高さ設定
             var lblGridHeight = new Label
             {
-                Text = "Grid Height:",
-                Location = new Point(6, 39),
-                Size = new Size(80, 23),
+                Text = "Height:",
+                Location = new Point(149, 20),
+                Size = new Size(44, 23),
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
 
             var nudGridHeight = new NumericUpDown
             {
                 Name = "nudGridHeight",
-                Location = new Point(90, 36),
-                Size = new Size(80, 23),
+                Location = new Point(196, 18),
+                Size = new Size(60, 23),
                 Minimum = 1,
                 Maximum = 20,
                 Value = settings.GridHeight,
@@ -602,12 +609,132 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             };
             nudGridHeight.ValueChanged += (s, e) => setModified(true);
 
+            // アイコンサイズ設定
+            var groupBox2 = new GroupBox
+            {
+                Text = "Icon Size",
+                Location = new Point(6, 57),
+                Size = new Size(430, 47),
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+
+            var lblIconWidth = new Label
+            {
+                Text = "Width:",
+                Location = new Point(6, 20),
+                Size = new Size(41, 23),
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+
+            var nudIconWidth = new NumericUpDown
+            {
+                Name = "nudIconWidth",
+                Location = new Point(62, 18),
+                Size = new Size(60, 23),
+                Minimum = 1,
+                Maximum = 1000,
+                Value = settings.IconWidth,
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+            nudIconWidth.ValueChanged += (s, e) => setModified(true);
+
+            var lblIconHeight = new Label
+            {
+                Text = "Height:",
+                Location = new Point(149, 20),
+                Size = new Size(44, 23),
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+
+            var nudIconHeight = new NumericUpDown
+            {
+                Name = "nudIconHeight",
+                Location = new Point(196, 18),
+                Size = new Size(60, 23),
+                Minimum = 1,
+                Maximum = 1000,
+                Value = settings.IconHeight,
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+            nudIconHeight.ValueChanged += (s, e) => setModified(true);
+
+            var lblIconScale = new Label
+            {
+                Text = "Scale:",
+                Location = new Point(292, 20),
+                Size = new Size(64, 23),
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+
+            var nudIconScale = new NumericUpDown
+            {
+                Name = "nudIconScale",
+                Location = new Point(358, 18),
+                Size = new Size(60, 23),
+                DecimalPlaces = 1,
+                Increment = 0.1m,
+                Minimum = 0.1m,
+                Maximum = 5.0m,
+                Value = (decimal)settings.IconScale,
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+            nudIconScale.ValueChanged += (s, e) => setModified(true);
+
+            // アイコン間隔設定
+            var groupBox3 = new GroupBox
+            {
+                Text = "Icon Gap (can be negative)",
+                Location = new Point(6, 110),
+                Size = new Size(263, 47),
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+
+            var lblGapWidth = new Label
+            {
+                Text = "Width:",
+                Location = new Point(6, 20),
+                Size = new Size(41, 23),
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+
+            var nudGapWidth = new NumericUpDown
+            {
+                Name = "nudGapWidth",
+                Location = new Point(62, 18),
+                Size = new Size(60, 23),
+                Minimum = -100,
+                Maximum = 100,
+                Value = settings.IconGapWidth,
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+            nudGapWidth.ValueChanged += (s, e) => setModified(true);
+
+            var lblGapHeight = new Label
+            {
+                Text = "Height:",
+                Location = new Point(150, 20),
+                Size = new Size(44, 23),
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+
+            var nudGapHeight = new NumericUpDown
+            {
+                Name = "nudGapHeight",
+                Location = new Point(196, 18),
+                Size = new Size(60, 23),
+                Minimum = -100,
+                Maximum = 100,
+                Value = settings.IconGapHeight,
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+            nudGapHeight.ValueChanged += (s, e) => setModified(true);
+
             // グリッド表示設定
             var chkShowGrid = new CheckBox
             {
                 Name = "chkShowGrid",
                 Text = "Show Grid",
-                Location = new Point(6, 69),
+                Location = new Point(6, 169),
                 Size = new Size(100, 23),
                 Checked = settings.ShowGrid,
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
@@ -618,7 +745,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var lblGridColor = new Label
             {
                 Text = "Grid Color:",
-                Location = new Point(6, 99),
+                Location = new Point(6, 199),
                 Size = new Size(80, 23),
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
@@ -626,7 +753,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var pbGridColor = new Panel
             {
                 Name = "pbGridColor",
-                Location = new Point(90, 96),
+                Location = new Point(90, 196),
                 Size = new Size(80, 23),
                 BackColor = Color.FromArgb(settings.GridColor),
                 BorderStyle = BorderStyle.FixedSingle
@@ -648,7 +775,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var lblGridLineWidth = new Label
             {
                 Text = "Line Width:",
-                Location = new Point(6, 129),
+                Location = new Point(6, 229),
                 Size = new Size(80, 23),
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
@@ -656,7 +783,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var nudGridLineWidth = new NumericUpDown
             {
                 Name = "nudGridLineWidth",
-                Location = new Point(90, 126),
+                Location = new Point(90, 226),
                 Size = new Size(80, 23),
                 Minimum = 1,
                 Maximum = 10,
@@ -666,10 +793,26 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             nudGridLineWidth.ValueChanged += (s, e) => setModified(true);
 
             // コントロールの追加
-            panel.Controls.Add(lblGridWidth);
-            panel.Controls.Add(nudGridWidth);
-            panel.Controls.Add(lblGridHeight);
-            panel.Controls.Add(nudGridHeight);
+            groupBox1.Controls.Add(lblGridWidth);
+            groupBox1.Controls.Add(nudGridWidth);
+            groupBox1.Controls.Add(lblGridHeight);
+            groupBox1.Controls.Add(nudGridHeight);
+
+            groupBox2.Controls.Add(lblIconWidth);
+            groupBox2.Controls.Add(nudIconWidth);
+            groupBox2.Controls.Add(lblIconHeight);
+            groupBox2.Controls.Add(nudIconHeight);
+            groupBox2.Controls.Add(lblIconScale);
+            groupBox2.Controls.Add(nudIconScale);
+
+            groupBox3.Controls.Add(lblGapWidth);
+            groupBox3.Controls.Add(nudGapWidth);
+            groupBox3.Controls.Add(lblGapHeight);
+            groupBox3.Controls.Add(nudGapHeight);
+
+            panel.Controls.Add(groupBox1);
+            panel.Controls.Add(groupBox2);
+            panel.Controls.Add(groupBox3);
             panel.Controls.Add(chkShowGrid);
             panel.Controls.Add(lblGridColor);
             panel.Controls.Add(pbGridColor);
