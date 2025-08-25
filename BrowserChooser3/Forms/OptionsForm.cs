@@ -13,9 +13,6 @@ namespace BrowserChooser3.Forms
     {
         private Settings _settings;
         private bool _isModified = false;
-#pragma warning disable CS0414
-        private bool _isCanceled = false;
-#pragma warning restore CS0414
 
         // イベントハンドラークラス
         private OptionsFormFormHandlers _formHandlers;
@@ -227,34 +224,6 @@ namespace BrowserChooser3.Forms
                 }
             }
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         /// <summary>
         /// 設定値の読み込み（Browser Chooser 2互換）
@@ -712,63 +681,19 @@ namespace BrowserChooser3.Forms
             }
         }
 
-        #region Event Handlers
-
-        // フォームイベントハンドラーは OptionsFormFormHandlers クラスに移動済み
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        // OptionsForm_FormClosing と OptionsForm_Shown は OptionsFormFormHandlers クラスに移動済み
-
-
-
-
-
-
-
-
-
-
-
         /// <summary>
         /// Auto URLsのドラッグ&amp;ドロップ機能を設定（Browser Chooser 2互換）
+        /// 現在は未実装（Browser Chooser 2でも実装されていない）
         /// </summary>
         private void SetupAutoURLsDragDrop(ListView listView)
         {
-
+            // Browser Chooser 2では実装されていないため、空の実装のままとする
         }
 
         /// <summary>
         /// ブラウザリストへのファイルドロップ機能を設定（Browser Chooser 2互換）
         /// </summary>
+        /// <param name="listView">対象のListView</param>
         private void SetupBrowsersDragDrop(ListView listView)
         {
             listView.AllowDrop = true;
@@ -856,8 +781,6 @@ namespace BrowserChooser3.Forms
             };
         }
 
-
-
         /// <summary>
         /// URLドラッグ&amp;ドロップ機能の設定
         /// </summary>
@@ -887,10 +810,6 @@ namespace BrowserChooser3.Forms
             }
         }
 
-
-
-        #endregion
-
         /// <summary>
         /// カテゴリ管理機能の設定
         /// </summary>
@@ -916,8 +835,6 @@ namespace BrowserChooser3.Forms
                 Logger.LogError("OptionsForm.SetupCategoryManagement", "カテゴリ管理機能設定エラー", ex.Message);
             }
         }
-
-
 
         /// <summary>
         /// カテゴリデータを読み込みます
@@ -983,8 +900,6 @@ namespace BrowserChooser3.Forms
             count += _mFileTypes.Values.Count(f => f.Category == category);
             return count;
         }
-
-        // カテゴリ管理イベントハンドラーは OptionsFormCategoryHandlers クラスに移動済み
 
         /// <summary>
         /// ブラウザドラッグ&amp;ドロップ機能の設定

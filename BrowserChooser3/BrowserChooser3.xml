@@ -3378,12 +3378,14 @@
         <member name="M:BrowserChooser3.Forms.OptionsForm.SetupAutoURLsDragDrop(System.Windows.Forms.ListView)">
             <summary>
             Auto URLsのドラッグ&amp;ドロップ機能を設定（Browser Chooser 2互換）
+            現在は未実装（Browser Chooser 2でも実装されていない）
             </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.OptionsForm.SetupBrowsersDragDrop(System.Windows.Forms.ListView)">
             <summary>
             ブラウザリストへのファイルドロップ機能を設定（Browser Chooser 2互換）
             </summary>
+            <param name="listView">対象のListView</param>
         </member>
         <member name="M:BrowserChooser3.Forms.OptionsForm.SetupURLDragDrop">
             <summary>
