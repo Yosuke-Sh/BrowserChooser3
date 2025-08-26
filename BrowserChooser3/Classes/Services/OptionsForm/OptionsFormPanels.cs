@@ -501,43 +501,335 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var panel = new Panel
             {
                 Dock = DockStyle.Fill,
-                Padding = new Padding(10)
+                Padding = new Padding(10),
+                AutoScroll = true
             };
+
+            int currentY = 6;
+
+            // === Visual Settings ===
+            var lblVisualTitle = new Label
+            {
+                Text = "Visual Settings",
+                Location = new Point(6, currentY),
+                Size = new Size(200, 25),
+                Font = new Font("Segoe UI", 10.0f, FontStyle.Bold, GraphicsUnit.Point, 0),
+                ForeColor = Color.DarkBlue
+            };
+            currentY += 30;
 
             // アクセシビリティボタン
             var accessibilityButton = new Button
             {
                 Name = "btnAccessibility",
                 Text = "Accessibility Settings",
-                Location = new Point(6, 6),
+                Location = new Point(6, currentY),
                 Size = new Size(200, 40),
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
+
+            var lblAccessibilityDesc = new Label
+            {
+                Text = "フォーカス表示やキーボードナビゲーションの設定を行います",
+                Location = new Point(220, currentY + 10),
+                Size = new Size(400, 20),
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                ForeColor = Color.Gray
+            };
+            currentY += 50;
 
             // 背景色ボタン
             var backgroundColorButton = new Button
             {
                 Name = "btnBackgroundColor",
                 Text = "Change Background Color",
-                Location = new Point(6, 52),
+                Location = new Point(6, currentY),
                 Size = new Size(200, 40),
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
+
+            var lblBackgroundColorDesc = new Label
+            {
+                Text = "メイン画面の背景色を変更します",
+                Location = new Point(220, currentY + 10),
+                Size = new Size(400, 20),
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                ForeColor = Color.Gray
+            };
+            currentY += 50;
 
             // 透明背景ボタン
             var transparentButton = new Button
             {
                 Name = "btnTransparent",
                 Text = "Set Transparent Background",
-                Location = new Point(6, 94),
+                Location = new Point(6, currentY),
                 Size = new Size(200, 40),
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
 
+            var lblTransparentDesc = new Label
+            {
+                Text = "メイン画面を透明にします",
+                Location = new Point(220, currentY + 10),
+                Size = new Size(400, 20),
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                ForeColor = Color.Gray
+            };
+            currentY += 50;
+
+            // 背景色表示用PictureBox（ChangeBackgroundボタンの横に配置）
+            var pbBackgroundColor = new PictureBox
+            {
+                Name = "pbBackgroundColor",
+                Location = new Point(220, 52),
+                Size = new Size(40, 40),
+                BackColor = settings.BackgroundColorValue,
+                BorderStyle = BorderStyle.FixedSingle
+            };
+
+            // === Display Effects ===
+            var lblEffectsTitle = new Label
+            {
+                Text = "Display Effects",
+                Location = new Point(6, currentY),
+                Size = new Size(200, 25),
+                Font = new Font("Segoe UI", 10.0f, FontStyle.Bold, GraphicsUnit.Point, 0),
+                ForeColor = Color.DarkBlue
+            };
+            currentY += 30;
+
+            // Aero効果使用設定
+            var chkUseAero = new CheckBox
+            {
+                Name = "chkUseAero",
+                Text = "Use Aero Effects",
+                Location = new Point(6, currentY),
+                Size = new Size(140, 23),
+                Checked = settings.UseAero,
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+            chkUseAero.CheckedChanged += (s, e) => setModified(true);
+
+            var lblUseAeroDesc = new Label
+            {
+                Text = "Windows Aero効果を使用してウィンドウを表示します",
+                Location = new Point(150, currentY + 3),
+                Size = new Size(400, 20),
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                ForeColor = Color.Gray
+            };
+            currentY += 29;
+
+            // アクセシブルレンダリング使用設定
+            var chkUseAccessibleRendering = new CheckBox
+            {
+                Name = "chkUseAccessibleRendering",
+                Text = "Use Accessible Rendering",
+                Location = new Point(6, currentY),
+                Size = new Size(180, 23),
+                Checked = settings.UseAccessibleRendering,
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+            chkUseAccessibleRendering.CheckedChanged += (s, e) => setModified(true);
+
+            var lblUseAccessibleRenderingDesc = new Label
+            {
+                Text = "アクセシビリティ対応のレンダリングを使用します",
+                Location = new Point(190, currentY + 3),
+                Size = new Size(400, 20),
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                ForeColor = Color.Gray
+            };
+            currentY += 40;
+
+            // === Focus Settings ===
+            var lblFocusTitle = new Label
+            {
+                Text = "Focus Settings",
+                Location = new Point(6, currentY),
+                Size = new Size(200, 25),
+                Font = new Font("Segoe UI", 10.0f, FontStyle.Bold, GraphicsUnit.Point, 0),
+                ForeColor = Color.DarkBlue
+            };
+            currentY += 30;
+
+            // フォーカス表示設定
+            var chkShowFocus = new CheckBox
+            {
+                Name = "chkShowFocus",
+                Text = "Show Focus",
+                Location = new Point(6, currentY),
+                Size = new Size(120, 23),
+                Checked = settings.ShowFocus,
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+            chkShowFocus.CheckedChanged += (s, e) => setModified(true);
+
+            var lblShowFocusDesc = new Label
+            {
+                Text = "キーボードフォーカスを視覚的に表示します",
+                Location = new Point(130, currentY + 3),
+                Size = new Size(400, 20),
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                ForeColor = Color.Gray
+            };
+            currentY += 29;
+
+            // 視覚的フォーカス表示設定
+            var chkShowVisualFocus = new CheckBox
+            {
+                Name = "chkShowVisualFocus",
+                Text = "Show Visual Focus",
+                Location = new Point(6, currentY),
+                Size = new Size(150, 23),
+                Checked = settings.ShowVisualFocus,
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+            chkShowVisualFocus.CheckedChanged += (s, e) => setModified(true);
+
+            var lblShowVisualFocusDesc = new Label
+            {
+                Text = "視覚的なフォーカスボックスを表示します",
+                Location = new Point(160, currentY + 3),
+                Size = new Size(400, 20),
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                ForeColor = Color.Gray
+            };
+            currentY += 29;
+
+            // フォーカスボックス線幅設定
+            var lblFocusBoxLineWidth = new Label
+            {
+                Text = "Focus Box Line Width:",
+                Location = new Point(6, currentY),
+                Size = new Size(140, 23),
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+
+            var nudFocusBoxLineWidth = new NumericUpDown
+            {
+                Name = "nudFocusBoxLineWidth",
+                Location = new Point(150, currentY - 3),
+                Size = new Size(60, 23),
+                Minimum = 1,
+                Maximum = 10,
+                Value = settings.FocusBoxLineWidth,
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+            nudFocusBoxLineWidth.ValueChanged += (s, e) => setModified(true);
+
+            var lblFocusBoxLineWidthDesc = new Label
+            {
+                Text = "フォーカスボックスの線の太さを設定します",
+                Location = new Point(220, currentY + 3),
+                Size = new Size(400, 20),
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                ForeColor = Color.Gray
+            };
+            currentY += 29;
+
+            // フォーカスボックス幅設定
+            var lblFocusBoxWidth = new Label
+            {
+                Text = "Focus Box Width:",
+                Location = new Point(6, currentY),
+                Size = new Size(120, 23),
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+
+            var nudFocusBoxWidth = new NumericUpDown
+            {
+                Name = "nudFocusBoxWidth",
+                Location = new Point(130, currentY - 3),
+                Size = new Size(60, 23),
+                Minimum = 1,
+                Maximum = 20,
+                Value = settings.FocusBoxWidth,
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+            nudFocusBoxWidth.ValueChanged += (s, e) => setModified(true);
+
+            var lblFocusBoxWidthDesc = new Label
+            {
+                Text = "フォーカスボックスの幅を設定します",
+                Location = new Point(200, currentY + 3),
+                Size = new Size(400, 20),
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                ForeColor = Color.Gray
+            };
+            currentY += 29;
+
+            // フォーカスボックス色設定
+            var lblFocusBoxColor = new Label
+            {
+                Text = "Focus Box Color:",
+                Location = new Point(6, currentY),
+                Size = new Size(100, 23),
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+
+            var pbFocusBoxColor = new PictureBox
+            {
+                Name = "pbFocusBoxColor",
+                Location = new Point(110, currentY - 3),
+                Size = new Size(30, 23),
+                BackColor = Color.FromArgb(settings.FocusBoxColor),
+                BorderStyle = BorderStyle.FixedSingle
+            };
+            pbFocusBoxColor.Click += (s, e) =>
+            {
+                var colorDialog = new ColorDialog
+                {
+                    Color = Color.FromArgb(settings.FocusBoxColor)
+                };
+                if (colorDialog.ShowDialog() == DialogResult.OK)
+                {
+                    pbFocusBoxColor.BackColor = colorDialog.Color;
+                    settings.FocusBoxColor = colorDialog.Color.ToArgb();
+                    setModified(true);
+                }
+            };
+
+            var lblFocusBoxColorDesc = new Label
+            {
+                Text = "フォーカスボックスの色を設定します",
+                Location = new Point(150, currentY + 3),
+                Size = new Size(400, 20),
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                ForeColor = Color.Gray
+            };
+
             // コントロールの追加
+            panel.Controls.Add(lblVisualTitle);
             panel.Controls.Add(accessibilityButton);
+            panel.Controls.Add(lblAccessibilityDesc);
             panel.Controls.Add(backgroundColorButton);
+            panel.Controls.Add(lblBackgroundColorDesc);
+            panel.Controls.Add(pbBackgroundColor);
             panel.Controls.Add(transparentButton);
+            panel.Controls.Add(lblTransparentDesc);
+            
+            panel.Controls.Add(lblEffectsTitle);
+            panel.Controls.Add(chkUseAero);
+            panel.Controls.Add(lblUseAeroDesc);
+            panel.Controls.Add(chkUseAccessibleRendering);
+            panel.Controls.Add(lblUseAccessibleRenderingDesc);
+            
+            panel.Controls.Add(lblFocusTitle);
+            panel.Controls.Add(chkShowFocus);
+            panel.Controls.Add(lblShowFocusDesc);
+            panel.Controls.Add(chkShowVisualFocus);
+            panel.Controls.Add(lblShowVisualFocusDesc);
+            panel.Controls.Add(lblFocusBoxLineWidth);
+            panel.Controls.Add(nudFocusBoxLineWidth);
+            panel.Controls.Add(lblFocusBoxLineWidthDesc);
+            panel.Controls.Add(lblFocusBoxWidth);
+            panel.Controls.Add(nudFocusBoxWidth);
+            panel.Controls.Add(lblFocusBoxWidthDesc);
+            panel.Controls.Add(lblFocusBoxColor);
+            panel.Controls.Add(pbFocusBoxColor);
+            panel.Controls.Add(lblFocusBoxColorDesc);
 
             tabPage.Controls.Add(panel);
             return tabPage;
@@ -565,22 +857,22 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             {
                 Text = "Grid Size",
                 Location = new Point(6, 6),
-                Size = new Size(263, 45),
+                Size = new Size(320, 70),
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
 
             var lblGridWidth = new Label
             {
                 Text = "Width:",
-                Location = new Point(6, 20),
-                Size = new Size(41, 23),
+                Location = new Point(6, 25),
+                Size = new Size(55, 23),
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
 
             var nudGridWidth = new NumericUpDown
             {
                 Name = "nudGridWidth",
-                Location = new Point(62, 18),
+                Location = new Point(65, 22),
                 Size = new Size(60, 23),
                 Minimum = 1,
                 Maximum = 20,
@@ -592,15 +884,15 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var lblGridHeight = new Label
             {
                 Text = "Height:",
-                Location = new Point(149, 20),
-                Size = new Size(44, 23),
+                Location = new Point(140, 25),
+                Size = new Size(55, 23),
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
 
             var nudGridHeight = new NumericUpDown
             {
                 Name = "nudGridHeight",
-                Location = new Point(196, 18),
+                Location = new Point(199, 22),
                 Size = new Size(60, 23),
                 Minimum = 1,
                 Maximum = 20,
@@ -613,23 +905,23 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var groupBox2 = new GroupBox
             {
                 Text = "Icon Size",
-                Location = new Point(6, 57),
-                Size = new Size(430, 47),
+                Location = new Point(6, 86),
+                Size = new Size(470, 70),
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
 
             var lblIconWidth = new Label
             {
                 Text = "Width:",
-                Location = new Point(6, 20),
-                Size = new Size(41, 23),
+                Location = new Point(6, 25),
+                Size = new Size(55, 23),
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
 
             var nudIconWidth = new NumericUpDown
             {
                 Name = "nudIconWidth",
-                Location = new Point(62, 18),
+                Location = new Point(65, 22),
                 Size = new Size(60, 23),
                 Minimum = 1,
                 Maximum = 1000,
@@ -641,15 +933,15 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var lblIconHeight = new Label
             {
                 Text = "Height:",
-                Location = new Point(149, 20),
-                Size = new Size(44, 23),
+                Location = new Point(140, 25),
+                Size = new Size(55, 23),
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
 
             var nudIconHeight = new NumericUpDown
             {
                 Name = "nudIconHeight",
-                Location = new Point(196, 18),
+                Location = new Point(199, 22),
                 Size = new Size(60, 23),
                 Minimum = 1,
                 Maximum = 1000,
@@ -661,15 +953,15 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var lblIconScale = new Label
             {
                 Text = "Scale:",
-                Location = new Point(292, 20),
-                Size = new Size(64, 23),
+                Location = new Point(274, 25),
+                Size = new Size(55, 23),
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
 
             var nudIconScale = new NumericUpDown
             {
                 Name = "nudIconScale",
-                Location = new Point(358, 18),
+                Location = new Point(333, 22),
                 Size = new Size(60, 23),
                 DecimalPlaces = 1,
                 Increment = 0.1m,
@@ -684,23 +976,23 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var groupBox3 = new GroupBox
             {
                 Text = "Icon Gap (can be negative)",
-                Location = new Point(6, 110),
-                Size = new Size(263, 47),
+                Location = new Point(6, 166),
+                Size = new Size(320, 70),
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
 
             var lblGapWidth = new Label
             {
                 Text = "Width:",
-                Location = new Point(6, 20),
-                Size = new Size(41, 23),
+                Location = new Point(6, 25),
+                Size = new Size(55, 23),
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
 
             var nudGapWidth = new NumericUpDown
             {
                 Name = "nudGapWidth",
-                Location = new Point(62, 18),
+                Location = new Point(65, 22),
                 Size = new Size(60, 23),
                 Minimum = -100,
                 Maximum = 100,
@@ -712,15 +1004,15 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var lblGapHeight = new Label
             {
                 Text = "Height:",
-                Location = new Point(150, 20),
-                Size = new Size(44, 23),
+                Location = new Point(140, 25),
+                Size = new Size(55, 23),
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
 
             var nudGapHeight = new NumericUpDown
             {
                 Name = "nudGapHeight",
-                Location = new Point(196, 18),
+                Location = new Point(199, 22),
                 Size = new Size(60, 23),
                 Minimum = -100,
                 Maximum = 100,
@@ -734,7 +1026,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             {
                 Name = "chkShowGrid",
                 Text = "Show Grid",
-                Location = new Point(6, 169),
+                Location = new Point(6, 246),
                 Size = new Size(100, 23),
                 Checked = settings.ShowGrid,
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
@@ -745,7 +1037,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var lblGridColor = new Label
             {
                 Text = "Grid Color:",
-                Location = new Point(6, 199),
+                Location = new Point(6, 279),
                 Size = new Size(80, 23),
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
@@ -753,7 +1045,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var pbGridColor = new Panel
             {
                 Name = "pbGridColor",
-                Location = new Point(90, 196),
+                Location = new Point(90, 276),
                 Size = new Size(80, 23),
                 BackColor = Color.FromArgb(settings.GridColor),
                 BorderStyle = BorderStyle.FixedSingle
@@ -775,7 +1067,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var lblGridLineWidth = new Label
             {
                 Text = "Line Width:",
-                Location = new Point(6, 229),
+                Location = new Point(6, 312),
                 Size = new Size(80, 23),
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
@@ -783,7 +1075,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var nudGridLineWidth = new NumericUpDown
             {
                 Name = "nudGridLineWidth",
-                Location = new Point(90, 226),
+                Location = new Point(90, 309),
                 Size = new Size(80, 23),
                 Minimum = 1,
                 Maximum = 10,
@@ -856,7 +1148,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var lblLogLevel = new Label
             {
                 Text = "Log Level:",
-                Location = new Point(6, 55),
+                Location = new Point(6, 39),
                 Size = new Size(80, 23),
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
@@ -864,7 +1156,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var cmbLogLevel = new ComboBox
             {
                 Name = "cmbLogLevel",
-                Location = new Point(90, 52),
+                Location = new Point(90, 36),
                 Size = new Size(120, 23),
                 DropDownStyle = ComboBoxStyle.DropDownList,
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
@@ -878,7 +1170,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             {
                 Name = "chkKeepHistory",
                 Text = "Keep Browser History",
-                Location = new Point(6, 100),
+                Location = new Point(6, 69),
                 Size = new Size(150, 23),
                 Checked = settings.KeepHistory,
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
@@ -889,15 +1181,15 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var lblHistoryDays = new Label
             {
                 Text = "History Days:",
-                Location = new Point(6, 145),
-                Size = new Size(80, 23),
+                Location = new Point(6, 102),
+                Size = new Size(100, 23),
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
 
             var nudHistoryDays = new NumericUpDown
             {
                 Name = "nudHistoryDays",
-                Location = new Point(90, 142),
+                Location = new Point(110, 99),
                 Size = new Size(80, 23),
                 Minimum = 1,
                 Maximum = 365,
@@ -911,7 +1203,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             {
                 Name = "chkPrivacyMode",
                 Text = "Privacy Mode (Clear on Exit)",
-                Location = new Point(6, 190),
+                Location = new Point(6, 132),
                 Size = new Size(200, 23),
                 Checked = settings.PrivacyMode,
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
@@ -923,7 +1215,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             {
                 Name = "chkAllowDataCollection",
                 Text = "Allow Data Collection",
-                Location = new Point(6, 235),
+                Location = new Point(6, 165),
                 Size = new Size(150, 23),
                 Checked = settings.AllowDataCollection,
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
@@ -973,47 +1265,83 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             };
             chkAutoStart.CheckedChanged += (s, e) => setModified(true);
 
+            var lblAutoStartDesc = new Label
+            {
+                Text = "Windows起動時に自動的にBrowser Chooserを起動します",
+                Location = new Point(160, 9),
+                Size = new Size(400, 20),
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                ForeColor = Color.Gray
+            };
+
             // 最小化で起動設定
             var chkStartMinimized = new CheckBox
             {
                 Name = "chkStartMinimized",
                 Text = "Start Minimized",
-                Location = new Point(6, 55),
+                Location = new Point(6, 39),
                 Size = new Size(150, 23),
                 Checked = settings.StartMinimized,
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
             chkStartMinimized.CheckedChanged += (s, e) => setModified(true);
 
+            var lblStartMinimizedDesc = new Label
+            {
+                Text = "起動時にメイン画面を最小化状態で表示します",
+                Location = new Point(160, 42),
+                Size = new Size(400, 20),
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                ForeColor = Color.Gray
+            };
+
             // システムトレイ設定
             var chkStartInTray = new CheckBox
             {
                 Name = "chkStartInTray",
                 Text = "Start in System Tray",
-                Location = new Point(6, 95),
+                Location = new Point(6, 72),
                 Size = new Size(150, 23),
                 Checked = settings.StartInTray,
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
             chkStartInTray.CheckedChanged += (s, e) => setModified(true);
 
+            var lblStartInTrayDesc = new Label
+            {
+                Text = "起動時にシステムトレイに最小化して表示します",
+                Location = new Point(160, 75),
+                Size = new Size(400, 20),
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                ForeColor = Color.Gray
+            };
+
             // 起動時のチェック設定
             var chkCheckDefaultOnStartup = new CheckBox
             {
                 Name = "chkCheckDefaultOnStartup",
                 Text = "Check Default Browser on Startup",
-                Location = new Point(6, 135),
+                Location = new Point(6, 105),
                 Size = new Size(200, 23),
                 Checked = settings.CheckDefaultOnLaunch,
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
             chkCheckDefaultOnStartup.CheckedChanged += (s, e) => setModified(true);
 
+            var lblCheckDefaultDesc = new Label
+            {
+                Text = "起動時にデフォルトブラウザの変更をチェックします",
+                Location = new Point(210, 108),
+                Size = new Size(400, 20),
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                ForeColor = Color.Gray
+            };
+
             // 起動遅延設定
             var lblStartupDelay = new Label
             {
                 Text = "Startup Delay (ms):",
-                Location = new Point(6, 175),
+                Location = new Point(6, 138),
                 Size = new Size(120, 23),
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
@@ -1021,7 +1349,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var nudStartupDelay = new NumericUpDown
             {
                 Name = "nudStartupDelay",
-                Location = new Point(130, 172),
+                Location = new Point(130, 135),
                 Size = new Size(80, 23),
                 Minimum = 0,
                 Maximum = 10000,
@@ -1030,11 +1358,20 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             };
             nudStartupDelay.ValueChanged += (s, e) => setModified(true);
 
+            var lblStartupDelayDesc = new Label
+            {
+                Text = "起動時の遅延時間をミリ秒で設定します（0-10000ms）",
+                Location = new Point(220, 138),
+                Size = new Size(400, 20),
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                ForeColor = Color.Gray
+            };
+
             // 起動時のメッセージ設定
             var lblStartupMessage = new Label
             {
                 Text = "Startup Message:",
-                Location = new Point(6, 215),
+                Location = new Point(6, 171),
                 Size = new Size(100, 23),
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
@@ -1042,52 +1379,37 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var txtStartupMessage = new TextBox
             {
                 Name = "txtStartupMessage",
-                Location = new Point(110, 212),
+                Location = new Point(110, 168),
                 Size = new Size(200, 23),
                 Text = settings.StartupMessage,
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
             txtStartupMessage.TextChanged += (s, e) => setModified(true);
 
+            var lblStartupMessageDesc = new Label
+            {
+                Text = "起動時に表示するメッセージを設定します",
+                Location = new Point(320, 171),
+                Size = new Size(400, 20),
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                ForeColor = Color.Gray
+            };
+
             // コントロールの追加
             panel.Controls.Add(chkAutoStart);
+            panel.Controls.Add(lblAutoStartDesc);
             panel.Controls.Add(chkStartMinimized);
+            panel.Controls.Add(lblStartMinimizedDesc);
             panel.Controls.Add(chkStartInTray);
+            panel.Controls.Add(lblStartInTrayDesc);
             panel.Controls.Add(chkCheckDefaultOnStartup);
+            panel.Controls.Add(lblCheckDefaultDesc);
             panel.Controls.Add(lblStartupDelay);
             panel.Controls.Add(nudStartupDelay);
+            panel.Controls.Add(lblStartupDelayDesc);
             panel.Controls.Add(lblStartupMessage);
             panel.Controls.Add(txtStartupMessage);
-
-            tabPage.Controls.Add(panel);
-            return tabPage;
-        }
-
-        /// <summary>
-        /// 一般設定パネルの作成
-        /// </summary>
-        /// <returns>作成されたTabPage</returns>
-        public TabPage CreateGeneralPanel()
-        {
-            var tabPage = new TabPage("General");
-            tabPage.Name = "tabGeneral";
-            
-            var panel = new Panel
-            {
-                Dock = DockStyle.Fill,
-                Padding = new Padding(10)
-            };
-
-            // 一般設定のコントロールを追加
-            var label = new Label
-            {
-                Text = "General settings will be implemented here",
-                Location = new Point(6, 6),
-                Size = new Size(300, 23),
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            };
-
-            panel.Controls.Add(label);
+            panel.Controls.Add(lblStartupMessageDesc);
 
             tabPage.Controls.Add(panel);
             return tabPage;
@@ -1107,50 +1429,127 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var panel = new Panel
             {
                 Dock = DockStyle.Fill,
-                Padding = new Padding(10)
+                Padding = new Padding(10),
+                AutoScroll = true
             };
+
+            int currentY = 6;
+
+            // === General Settings ===
+            var lblGeneralTitle = new Label
+            {
+                Text = "General Settings",
+                Location = new Point(6, currentY),
+                Size = new Size(200, 25),
+                Font = new Font("Segoe UI", 10.0f, FontStyle.Bold, GraphicsUnit.Point, 0),
+                ForeColor = Color.DarkBlue
+            };
+            currentY += 30;
 
             // ポータブルモード設定
             var chkPortableMode = new CheckBox
             {
                 Name = "chkPortableMode",
                 Text = "Portable Mode",
-                Location = new Point(6, 6),
+                Location = new Point(6, currentY),
                 Size = new Size(150, 23),
                 Checked = settings.PortableMode,
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
             chkPortableMode.CheckedChanged += (s, e) => setModified(true);
 
+            var lblPortableModeDesc = new Label
+            {
+                Text = "設定ファイルをアプリケーションフォルダに保存します（USBメモリなどで持ち運び可能）",
+                Location = new Point(160, currentY + 3),
+                Size = new Size(400, 20),
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                ForeColor = Color.Gray
+            };
+            currentY += 29;
+
             // 自動更新設定
             var chkAutoCheckUpdate = new CheckBox
             {
                 Name = "chkAutoCheckUpdate",
                 Text = "Check for Updates Automatically",
-                Location = new Point(6, 45),
+                Location = new Point(6, currentY),
                 Size = new Size(200, 23),
                 Checked = settings.AutomaticUpdates,
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
             chkAutoCheckUpdate.CheckedChanged += (s, e) => setModified(true);
 
+            var lblAutoCheckUpdateDesc = new Label
+            {
+                Text = "起動時に自動的にアップデートをチェックします",
+                Location = new Point(210, currentY + 3),
+                Size = new Size(400, 20),
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                ForeColor = Color.Gray
+            };
+            currentY += 29;
+
             // 詳細画面設定
             var chkAdvanced = new CheckBox
             {
                 Name = "chkAdvanced",
                 Text = "Show Advanced Options",
-                Location = new Point(6, 80),
+                Location = new Point(6, currentY),
                 Size = new Size(150, 23),
                 Checked = settings.AdvancedScreens,
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
             chkAdvanced.CheckedChanged += (s, e) => setModified(true);
 
+            var lblAdvancedDesc = new Label
+            {
+                Text = "上級者向けの詳細設定オプションを表示します",
+                Location = new Point(160, currentY + 3),
+                Size = new Size(400, 20),
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                ForeColor = Color.Gray
+            };
+            currentY += 29;
+
+            // 開いたまま許可設定
+            var chkAllowStayOpen = new CheckBox
+            {
+                Name = "chkAllowStayOpen",
+                Text = "Allow Window to Stay Open",
+                Location = new Point(6, currentY),
+                Size = new Size(180, 23),
+                Checked = settings.AllowStayOpen,
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+            chkAllowStayOpen.CheckedChanged += (s, e) => setModified(true);
+
+            var lblAllowStayOpenDesc = new Label
+            {
+                Text = "ブラウザ選択後もウィンドウを開いたままにします",
+                Location = new Point(190, currentY + 3),
+                Size = new Size(400, 20),
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                ForeColor = Color.Gray
+            };
+            currentY += 40;
+
+            // === Advanced Settings ===
+            var lblAdvancedTitle = new Label
+            {
+                Text = "Advanced Settings",
+                Location = new Point(6, currentY),
+                Size = new Size(200, 25),
+                Font = new Font("Segoe UI", 10.0f, FontStyle.Bold, GraphicsUnit.Point, 0),
+                ForeColor = Color.DarkBlue
+            };
+            currentY += 30;
+
             // デフォルト遅延設定
             var lblDefaultDelay = new Label
             {
                 Text = "Default Delay (ms):",
-                Location = new Point(6, 115),
+                Location = new Point(6, currentY),
                 Size = new Size(120, 23),
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
@@ -1158,7 +1557,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var nudDefaultDelay = new NumericUpDown
             {
                 Name = "nudDefaultDelay",
-                Location = new Point(130, 112),
+                Location = new Point(130, currentY - 3),
                 Size = new Size(80, 23),
                 Minimum = 0,
                 Maximum = 10000,
@@ -1167,11 +1566,21 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             };
             nudDefaultDelay.ValueChanged += (s, e) => setModified(true);
 
+            var lblDefaultDelayDesc = new Label
+            {
+                Text = "ブラウザ起動時のデフォルト遅延時間をミリ秒で設定します",
+                Location = new Point(220, currentY + 3),
+                Size = new Size(400, 20),
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                ForeColor = Color.Gray
+            };
+            currentY += 29;
+
             // セパレーター設定
             var lblSeparator = new Label
             {
                 Text = "Separator:",
-                Location = new Point(6, 150),
+                Location = new Point(6, currentY),
                 Size = new Size(80, 23),
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
@@ -1179,30 +1588,28 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var txtSeparator = new TextBox
             {
                 Name = "txtSeparator",
-                Location = new Point(90, 147),
+                Location = new Point(90, currentY - 3),
                 Size = new Size(50, 23),
                 Text = settings.Separator,
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
             txtSeparator.TextChanged += (s, e) => setModified(true);
 
-            // 開いたまま許可設定
-            var chkAllowStayOpen = new CheckBox
+            var lblSeparatorDesc = new Label
             {
-                Name = "chkAllowStayOpen",
-                Text = "Allow Window to Stay Open",
-                Location = new Point(6, 185),
-                Size = new Size(180, 23),
-                Checked = settings.AllowStayOpen,
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+                Text = "URLとブラウザ引数の間のセパレーター文字を設定します",
+                Location = new Point(150, currentY + 3),
+                Size = new Size(400, 20),
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                ForeColor = Color.Gray
             };
-            chkAllowStayOpen.CheckedChanged += (s, e) => setModified(true);
+            currentY += 29;
 
             // ユーザーエージェント設定
             var lblUserAgent = new Label
             {
                 Text = "User Agent:",
-                Location = new Point(6, 220),
+                Location = new Point(6, currentY),
                 Size = new Size(80, 23),
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
@@ -1210,24 +1617,273 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var txtUserAgent = new TextBox
             {
                 Name = "txtUserAgent",
-                Location = new Point(90, 217),
+                Location = new Point(90, currentY - 3),
                 Size = new Size(200, 23),
                 Text = settings.UserAgent,
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
             txtUserAgent.TextChanged += (s, e) => setModified(true);
 
+            var lblUserAgentDesc = new Label
+            {
+                Text = "ブラウザで使用するユーザーエージェント文字列を設定します",
+                Location = new Point(300, currentY + 3),
+                Size = new Size(400, 20),
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                ForeColor = Color.Gray
+            };
+            currentY += 29;
+
+            // 正規化設定
+            var chkCanonicalize = new CheckBox
+            {
+                Name = "chkCanonicalize",
+                Text = "Canonicalize URLs",
+                Location = new Point(6, currentY),
+                Size = new Size(150, 23),
+                Checked = settings.Canonicalize,
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+            chkCanonicalize.CheckedChanged += (s, e) => setModified(true);
+
+            var lblCanonicalizeDesc = new Label
+            {
+                Text = "URLを正規化して標準形式に変換します",
+                Location = new Point(160, currentY + 3),
+                Size = new Size(400, 20),
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                ForeColor = Color.Gray
+            };
+            currentY += 29;
+
+            // 正規化追加テキスト設定
+            var lblCanonicalizeText = new Label
+            {
+                Text = "Canonicalize Text:",
+                Location = new Point(6, currentY),
+                Size = new Size(120, 23),
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+
+            var txtCanonicalizeText = new TextBox
+            {
+                Name = "txtCanonicalizeText",
+                Location = new Point(130, currentY - 3),
+                Size = new Size(200, 23),
+                Text = settings.CanonicalizeAppendedText,
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+            txtCanonicalizeText.TextChanged += (s, e) => setModified(true);
+
+            var lblCanonicalizeTextDesc = new Label
+            {
+                Text = "正規化時に追加するテキストを設定します",
+                Location = new Point(340, currentY + 3),
+                Size = new Size(400, 20),
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                ForeColor = Color.Gray
+            };
+            currentY += 40;
+
+            // === System Settings ===
+            var lblSystemTitle = new Label
+            {
+                Text = "System Settings",
+                Location = new Point(6, currentY),
+                Size = new Size(200, 25),
+                Font = new Font("Segoe UI", 10.0f, FontStyle.Bold, GraphicsUnit.Point, 0),
+                ForeColor = Color.DarkBlue
+            };
+            currentY += 30;
+
+            // ダウンロード検出ファイル設定
+            var chkDownloadDetectionFile = new CheckBox
+            {
+                Name = "chkDownloadDetectionFile",
+                Text = "Download Detection File",
+                Location = new Point(6, currentY),
+                Size = new Size(180, 23),
+                Checked = settings.DownloadDetectionFile,
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+            chkDownloadDetectionFile.CheckedChanged += (s, e) => setModified(true);
+
+            var lblDownloadDetectionFileDesc = new Label
+            {
+                Text = "ダウンロード検出用のファイルを生成します",
+                Location = new Point(190, currentY + 3),
+                Size = new Size(400, 20),
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                ForeColor = Color.Gray
+            };
+            currentY += 29;
+
+            // ログ有効化設定
+            var chkEnableLogging = new CheckBox
+            {
+                Name = "chkEnableLogging",
+                Text = "Enable Logging",
+                Location = new Point(6, currentY),
+                Size = new Size(120, 23),
+                Checked = settings.EnableLogging,
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+            chkEnableLogging.CheckedChanged += (s, e) => setModified(true);
+
+            var lblEnableLoggingDesc = new Label
+            {
+                Text = "アプリケーションの動作ログを記録します",
+                Location = new Point(130, currentY + 3),
+                Size = new Size(400, 20),
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                ForeColor = Color.Gray
+            };
+            currentY += 29;
+
+            // DLL抽出設定
+            var chkExtractDLLs = new CheckBox
+            {
+                Name = "chkExtractDLLs",
+                Text = "Extract DLLs",
+                Location = new Point(6, currentY),
+                Size = new Size(120, 23),
+                Checked = settings.ExtractDLLs,
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+            chkExtractDLLs.CheckedChanged += (s, e) => setModified(true);
+
+            var lblExtractDLLsDesc = new Label
+            {
+                Text = "必要なDLLファイルを自動的に抽出します",
+                Location = new Point(130, currentY + 3),
+                Size = new Size(400, 20),
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                ForeColor = Color.Gray
+            };
+            currentY += 29;
+
+            // オプションショートカット設定
+            var lblOptionsShortcut = new Label
+            {
+                Text = "Options Shortcut:",
+                Location = new Point(6, currentY),
+                Size = new Size(120, 23),
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+
+            var txtOptionsShortcut = new TextBox
+            {
+                Name = "txtOptionsShortcut",
+                Location = new Point(130, currentY - 3),
+                Size = new Size(30, 23),
+                Text = settings.OptionsShortcut.ToString(),
+                MaxLength = 1,
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+            txtOptionsShortcut.TextChanged += (s, e) => setModified(true);
+
+            var lblOptionsShortcutDesc = new Label
+            {
+                Text = "オプション画面を開くショートカットキーを設定します",
+                Location = new Point(170, currentY + 3),
+                Size = new Size(400, 20),
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                ForeColor = Color.Gray
+            };
+            currentY += 29;
+
+            // デフォルトメッセージ設定
+            var lblDefaultMessage = new Label
+            {
+                Text = "Default Message:",
+                Location = new Point(6, currentY),
+                Size = new Size(100, 23),
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+
+            var txtDefaultMessage = new TextBox
+            {
+                Name = "txtDefaultMessage",
+                Location = new Point(110, currentY - 3),
+                Size = new Size(200, 23),
+                Text = settings.DefaultMessage,
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+            txtDefaultMessage.TextChanged += (s, e) => setModified(true);
+
+            var lblDefaultMessageDesc = new Label
+            {
+                Text = "デフォルトで表示するメッセージを設定します",
+                Location = new Point(320, currentY + 3),
+                Size = new Size(400, 20),
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                ForeColor = Color.Gray
+            };
+            currentY += 29;
+
+            // 自動起動設定
+            var chkAutoStart = new CheckBox
+            {
+                Name = "chkAutoStart",
+                Text = "Auto Start",
+                Location = new Point(6, currentY),
+                Size = new Size(100, 23),
+                Checked = settings.AutoStart,
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+            chkAutoStart.CheckedChanged += (s, e) => setModified(true);
+
+            var lblAutoStartDesc = new Label
+            {
+                Text = "Windows起動時に自動的にアプリケーションを起動します",
+                Location = new Point(110, currentY + 3),
+                Size = new Size(400, 20),
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                ForeColor = Color.Gray
+            };
+
             // コントロールの追加
+            panel.Controls.Add(lblGeneralTitle);
             panel.Controls.Add(chkPortableMode);
+            panel.Controls.Add(lblPortableModeDesc);
             panel.Controls.Add(chkAutoCheckUpdate);
+            panel.Controls.Add(lblAutoCheckUpdateDesc);
             panel.Controls.Add(chkAdvanced);
+            panel.Controls.Add(lblAdvancedDesc);
+            panel.Controls.Add(chkAllowStayOpen);
+            panel.Controls.Add(lblAllowStayOpenDesc);
+            
+            panel.Controls.Add(lblAdvancedTitle);
             panel.Controls.Add(lblDefaultDelay);
             panel.Controls.Add(nudDefaultDelay);
+            panel.Controls.Add(lblDefaultDelayDesc);
             panel.Controls.Add(lblSeparator);
             panel.Controls.Add(txtSeparator);
-            panel.Controls.Add(chkAllowStayOpen);
+            panel.Controls.Add(lblSeparatorDesc);
             panel.Controls.Add(lblUserAgent);
             panel.Controls.Add(txtUserAgent);
+            panel.Controls.Add(lblUserAgentDesc);
+            panel.Controls.Add(chkCanonicalize);
+            panel.Controls.Add(lblCanonicalizeDesc);
+            panel.Controls.Add(lblCanonicalizeText);
+            panel.Controls.Add(txtCanonicalizeText);
+            panel.Controls.Add(lblCanonicalizeTextDesc);
+            
+            panel.Controls.Add(lblSystemTitle);
+            panel.Controls.Add(chkDownloadDetectionFile);
+            panel.Controls.Add(lblDownloadDetectionFileDesc);
+            panel.Controls.Add(chkEnableLogging);
+            panel.Controls.Add(lblEnableLoggingDesc);
+            panel.Controls.Add(chkExtractDLLs);
+            panel.Controls.Add(lblExtractDLLsDesc);
+            panel.Controls.Add(lblOptionsShortcut);
+            panel.Controls.Add(txtOptionsShortcut);
+            panel.Controls.Add(lblOptionsShortcutDesc);
+            panel.Controls.Add(lblDefaultMessage);
+            panel.Controls.Add(txtDefaultMessage);
+            panel.Controls.Add(lblDefaultMessageDesc);
+            panel.Controls.Add(chkAutoStart);
+            panel.Controls.Add(lblAutoStartDesc);
 
             tabPage.Controls.Add(panel);
             return tabPage;

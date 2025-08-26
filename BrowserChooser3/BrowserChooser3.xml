@@ -1063,12 +1063,6 @@
             <param name="setModified">変更フラグ設定アクション</param>
             <returns>作成されたTabPage</returns>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormPanels.CreateGeneralPanel">
-            <summary>
-            一般設定パネルの作成
-            </summary>
-            <returns>作成されたTabPage</returns>
-        </member>
         <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormPanels.CreateOthersPanel(BrowserChooser3.Classes.Settings,System.Action{System.Boolean})">
             <summary>
             その他パネルの作成

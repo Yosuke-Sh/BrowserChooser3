@@ -728,6 +728,67 @@ namespace BrowserChooser3.Forms
 
             var chkAutoCheckUpdate = Controls.Find("chkAutoCheckUpdate", true).FirstOrDefault() as CheckBox;
             if (chkAutoCheckUpdate != null) chkAutoCheckUpdate.Checked = _settings.AutomaticUpdates;
+
+            var chkAdvanced = Controls.Find("chkAdvanced", true).FirstOrDefault() as CheckBox;
+            if (chkAdvanced != null) chkAdvanced.Checked = _settings.AdvancedScreens;
+
+            var nudDefaultDelay = Controls.Find("nudDefaultDelay", true).FirstOrDefault() as NumericUpDown;
+            if (nudDefaultDelay != null) nudDefaultDelay.Value = _settings.DefaultDelay;
+
+            var txtSeparator = Controls.Find("txtSeparator", true).FirstOrDefault() as TextBox;
+            if (txtSeparator != null) txtSeparator.Text = _settings.Separator;
+
+            var chkAllowStayOpen = Controls.Find("chkAllowStayOpen", true).FirstOrDefault() as CheckBox;
+            if (chkAllowStayOpen != null) chkAllowStayOpen.Checked = _settings.AllowStayOpen;
+
+            var txtUserAgent = Controls.Find("txtUserAgent", true).FirstOrDefault() as TextBox;
+            if (txtUserAgent != null) txtUserAgent.Text = _settings.UserAgent;
+
+            // 新しく追加した設定項目のリセット
+            var chkDownloadDetectionFile = Controls.Find("chkDownloadDetectionFile", true).FirstOrDefault() as CheckBox;
+            if (chkDownloadDetectionFile != null) chkDownloadDetectionFile.Checked = _settings.DownloadDetectionFile;
+
+            var chkCanonicalizeNew = Controls.Find("chkCanonicalize", true).FirstOrDefault() as CheckBox;
+            if (chkCanonicalizeNew != null) chkCanonicalizeNew.Checked = _settings.Canonicalize;
+
+            var txtCanonicalizeText = Controls.Find("txtCanonicalizeText", true).FirstOrDefault() as TextBox;
+            if (txtCanonicalizeText != null) txtCanonicalizeText.Text = _settings.CanonicalizeAppendedText;
+
+            var chkEnableLoggingNew = Controls.Find("chkEnableLogging", true).FirstOrDefault() as CheckBox;
+            if (chkEnableLoggingNew != null) chkEnableLoggingNew.Checked = _settings.EnableLogging;
+
+            var chkExtractDLLs = Controls.Find("chkExtractDLLs", true).FirstOrDefault() as CheckBox;
+            if (chkExtractDLLs != null) chkExtractDLLs.Checked = _settings.ExtractDLLs;
+
+            var chkShowFocus = Controls.Find("chkShowFocus", true).FirstOrDefault() as CheckBox;
+            if (chkShowFocus != null) chkShowFocus.Checked = _settings.ShowFocus;
+
+            var chkUseAeroNew = Controls.Find("chkUseAero", true).FirstOrDefault() as CheckBox;
+            if (chkUseAeroNew != null) chkUseAeroNew.Checked = _settings.UseAero;
+
+            var chkUseAccessibleRenderingNew = Controls.Find("chkUseAccessibleRendering", true).FirstOrDefault() as CheckBox;
+            if (chkUseAccessibleRenderingNew != null) chkUseAccessibleRenderingNew.Checked = _settings.UseAccessibleRendering;
+
+            var chkShowVisualFocus = Controls.Find("chkShowVisualFocus", true).FirstOrDefault() as CheckBox;
+            if (chkShowVisualFocus != null) chkShowVisualFocus.Checked = _settings.ShowVisualFocus;
+
+            var nudFocusBoxLineWidth = Controls.Find("nudFocusBoxLineWidth", true).FirstOrDefault() as NumericUpDown;
+            if (nudFocusBoxLineWidth != null) nudFocusBoxLineWidth.Value = _settings.FocusBoxLineWidth;
+
+            var nudFocusBoxWidth = Controls.Find("nudFocusBoxWidth", true).FirstOrDefault() as NumericUpDown;
+            if (nudFocusBoxWidth != null) nudFocusBoxWidth.Value = _settings.FocusBoxWidth;
+
+            var pbFocusBoxColor = Controls.Find("pbFocusBoxColor", true).FirstOrDefault() as PictureBox;
+            if (pbFocusBoxColor != null) pbFocusBoxColor.BackColor = Color.FromArgb(_settings.FocusBoxColor);
+
+            var txtOptionsShortcut = Controls.Find("txtOptionsShortcut", true).FirstOrDefault() as TextBox;
+            if (txtOptionsShortcut != null) txtOptionsShortcut.Text = _settings.OptionsShortcut.ToString();
+
+            var txtDefaultMessage = Controls.Find("txtDefaultMessage", true).FirstOrDefault() as TextBox;
+            if (txtDefaultMessage != null) txtDefaultMessage.Text = _settings.DefaultMessage;
+
+            var chkAutoStartNew = Controls.Find("chkAutoStart", true).FirstOrDefault() as CheckBox;
+            if (chkAutoStartNew != null) chkAutoStartNew.Checked = _settings.AutoStart;
         }
 
         /// <summary>
@@ -1093,6 +1154,26 @@ namespace BrowserChooser3.Forms
             var chkUseAero = Controls.Find("chkUseAero", true).FirstOrDefault() as CheckBox;
             if (chkUseAero != null) chkUseAero.Checked = _settings.UseAero;
 
+            // フォーカス設定
+            var chkShowFocus = Controls.Find("chkShowFocus", true).FirstOrDefault() as CheckBox;
+            if (chkShowFocus != null) chkShowFocus.Checked = _settings.ShowFocus;
+
+            var chkShowVisualFocus = Controls.Find("chkShowVisualFocus", true).FirstOrDefault() as CheckBox;
+            if (chkShowVisualFocus != null) chkShowVisualFocus.Checked = _settings.ShowVisualFocus;
+
+            var nudFocusBoxLineWidth = Controls.Find("nudFocusBoxLineWidth", true).FirstOrDefault() as NumericUpDown;
+            if (nudFocusBoxLineWidth != null) nudFocusBoxLineWidth.Value = _settings.FocusBoxLineWidth;
+
+            var nudFocusBoxWidth = Controls.Find("nudFocusBoxWidth", true).FirstOrDefault() as NumericUpDown;
+            if (nudFocusBoxWidth != null) nudFocusBoxWidth.Value = _settings.FocusBoxWidth;
+
+            var pbFocusBoxColor = Controls.Find("pbFocusBoxColor", true).FirstOrDefault() as PictureBox;
+            if (pbFocusBoxColor != null) pbFocusBoxColor.BackColor = Color.FromArgb(_settings.FocusBoxColor);
+
+            // 背景色設定
+            var pbBackgroundColorLoad = Controls.Find("pbBackgroundColor", true).FirstOrDefault() as PictureBox;
+            if (pbBackgroundColorLoad != null) pbBackgroundColorLoad.BackColor = _settings.BackgroundColorValue;
+
             // ショートカット設定
             var txtOptionsShortcut = Controls.Find("txtOptionsShortcut", true).FirstOrDefault() as TextBox;
             if (txtOptionsShortcut != null && _settings.OptionsShortcut != char.MinValue)
@@ -1100,20 +1181,39 @@ namespace BrowserChooser3.Forms
                 txtOptionsShortcut.Text = _settings.OptionsShortcut.ToString();
             }
 
-            var txtMessage = Controls.Find("txtMessage", true).FirstOrDefault() as TextBox;
-            if (txtMessage != null) txtMessage.Text = _settings.DefaultMessage;
+            var txtDefaultMessage = Controls.Find("txtDefaultMessage", true).FirstOrDefault() as TextBox;
+            if (txtDefaultMessage != null) txtDefaultMessage.Text = _settings.DefaultMessage;
 
-            // フォーカス設定
-            _mFocusSettings.ShowFocus = _settings.ShowFocus;
-            _mFocusSettings.BoxColor = Color.FromArgb(_settings.FocusBoxColor);
-            _mFocusSettings.BoxWidth = _settings.FocusBoxLineWidth;
+            // その他の設定項目の読み込み
+            var chkDownloadDetectionFileLoad = Controls.Find("chkDownloadDetectionFile", true).FirstOrDefault() as CheckBox;
+            if (chkDownloadDetectionFileLoad != null) chkDownloadDetectionFileLoad.Checked = _settings.DownloadDetectionFile;
 
-            // デフォルトブラウザGUIDの設定
-            var hiddenLabel = lblHiddenBrowserGuid;
-            if (hiddenLabel != null && _settings.DefaultBrowserGuid != Guid.Empty)
-            {
-                hiddenLabel.Tag = _settings.DefaultBrowserGuid.ToString();
-            }
+            var chkCanonicalizeLoad = Controls.Find("chkCanonicalize", true).FirstOrDefault() as CheckBox;
+            if (chkCanonicalizeLoad != null) chkCanonicalizeLoad.Checked = _settings.Canonicalize;
+
+            var txtCanonicalizeTextLoad = Controls.Find("txtCanonicalizeText", true).FirstOrDefault() as TextBox;
+            if (txtCanonicalizeTextLoad != null) txtCanonicalizeTextLoad.Text = _settings.CanonicalizeAppendedText;
+
+            var chkEnableLoggingLoad = Controls.Find("chkEnableLogging", true).FirstOrDefault() as CheckBox;
+            if (chkEnableLoggingLoad != null) chkEnableLoggingLoad.Checked = _settings.EnableLogging;
+
+            var chkExtractDLLsLoad = Controls.Find("chkExtractDLLs", true).FirstOrDefault() as CheckBox;
+            if (chkExtractDLLsLoad != null) chkExtractDLLsLoad.Checked = _settings.ExtractDLLs;
+
+            var chkAutoStartLoad = Controls.Find("chkAutoStart", true).FirstOrDefault() as CheckBox;
+            if (chkAutoStartLoad != null) chkAutoStartLoad.Checked = _settings.AutoStart;
+
+            var txtUserAgentLoad = Controls.Find("txtUserAgent", true).FirstOrDefault() as TextBox;
+            if (txtUserAgentLoad != null) txtUserAgentLoad.Text = _settings.UserAgent;
+
+            var nudDefaultDelayLoad = Controls.Find("nudDefaultDelay", true).FirstOrDefault() as NumericUpDown;
+            if (nudDefaultDelayLoad != null) nudDefaultDelayLoad.Value = _settings.DefaultDelay;
+
+            var txtSeparatorLoad = Controls.Find("txtSeparator", true).FirstOrDefault() as TextBox;
+            if (txtSeparatorLoad != null) txtSeparatorLoad.Text = _settings.Separator;
+
+            var chkAllowStayOpenLoad = Controls.Find("chkAllowStayOpen", true).FirstOrDefault() as CheckBox;
+            if (chkAllowStayOpenLoad != null) chkAllowStayOpenLoad.Checked = _settings.AllowStayOpen;
         }
 
         /// <summary>
@@ -1331,9 +1431,24 @@ namespace BrowserChooser3.Forms
                 if (chkUseAero != null) _settings.UseAero = chkUseAero.Checked;
 
                 // フォーカス設定
-                _settings.ShowFocus = _mFocusSettings.ShowFocus;
-                _settings.FocusBoxColor = _mFocusSettings.BoxColor.ToArgb();
-                _settings.FocusBoxLineWidth = _mFocusSettings.BoxWidth;
+                var chkShowFocus = Controls.Find("chkShowFocus", true).FirstOrDefault() as CheckBox;
+                if (chkShowFocus != null) _settings.ShowFocus = chkShowFocus.Checked;
+
+                var chkShowVisualFocus = Controls.Find("chkShowVisualFocus", true).FirstOrDefault() as CheckBox;
+                if (chkShowVisualFocus != null) _settings.ShowVisualFocus = chkShowVisualFocus.Checked;
+
+                var nudFocusBoxLineWidth = Controls.Find("nudFocusBoxLineWidth", true).FirstOrDefault() as NumericUpDown;
+                if (nudFocusBoxLineWidth != null) _settings.FocusBoxLineWidth = (int)nudFocusBoxLineWidth.Value;
+
+                var nudFocusBoxWidth = Controls.Find("nudFocusBoxWidth", true).FirstOrDefault() as NumericUpDown;
+                if (nudFocusBoxWidth != null) _settings.FocusBoxWidth = (int)nudFocusBoxWidth.Value;
+
+                var pbFocusBoxColor = Controls.Find("pbFocusBoxColor", true).FirstOrDefault() as PictureBox;
+                if (pbFocusBoxColor != null) _settings.FocusBoxColor = pbFocusBoxColor.BackColor.ToArgb();
+
+                // 背景色設定
+                var pbBackgroundColorSave = Controls.Find("pbBackgroundColor", true).FirstOrDefault() as PictureBox;
+                if (pbBackgroundColorSave != null) _settings.BackgroundColorValue = pbBackgroundColorSave.BackColor;
 
                 // ショートカット設定
                 var txtOptionsShortcut = Controls.Find("txtOptionsShortcut", true).FirstOrDefault() as TextBox;
@@ -1346,8 +1461,39 @@ namespace BrowserChooser3.Forms
                     _settings.OptionsShortcut = char.MinValue;
                 }
 
-                var txtMessage = Controls.Find("txtMessage", true).FirstOrDefault() as TextBox;
-                if (txtMessage != null) _settings.DefaultMessage = txtMessage.Text;
+                var txtDefaultMessage = Controls.Find("txtDefaultMessage", true).FirstOrDefault() as TextBox;
+                if (txtDefaultMessage != null) _settings.DefaultMessage = txtDefaultMessage.Text;
+
+                // その他の設定項目の保存
+                var chkDownloadDetectionFileSave = Controls.Find("chkDownloadDetectionFile", true).FirstOrDefault() as CheckBox;
+                if (chkDownloadDetectionFileSave != null) _settings.DownloadDetectionFile = chkDownloadDetectionFileSave.Checked;
+
+                var chkCanonicalizeSave = Controls.Find("chkCanonicalize", true).FirstOrDefault() as CheckBox;
+                if (chkCanonicalizeSave != null) _settings.Canonicalize = chkCanonicalizeSave.Checked;
+
+                var txtCanonicalizeTextSave = Controls.Find("txtCanonicalizeText", true).FirstOrDefault() as TextBox;
+                if (txtCanonicalizeTextSave != null) _settings.CanonicalizeAppendedText = txtCanonicalizeTextSave.Text;
+
+                var chkEnableLoggingSave = Controls.Find("chkEnableLogging", true).FirstOrDefault() as CheckBox;
+                if (chkEnableLoggingSave != null) _settings.EnableLogging = chkEnableLoggingSave.Checked;
+
+                var chkExtractDLLsSave = Controls.Find("chkExtractDLLs", true).FirstOrDefault() as CheckBox;
+                if (chkExtractDLLsSave != null) _settings.ExtractDLLs = chkExtractDLLsSave.Checked;
+
+                var chkAutoStartSave = Controls.Find("chkAutoStart", true).FirstOrDefault() as CheckBox;
+                if (chkAutoStartSave != null) _settings.AutoStart = chkAutoStartSave.Checked;
+
+                var txtUserAgentSave = Controls.Find("txtUserAgent", true).FirstOrDefault() as TextBox;
+                if (txtUserAgentSave != null) _settings.UserAgent = txtUserAgentSave.Text;
+
+                var nudDefaultDelaySave = Controls.Find("nudDefaultDelay", true).FirstOrDefault() as NumericUpDown;
+                if (nudDefaultDelaySave != null) _settings.DefaultDelay = (int)nudDefaultDelaySave.Value;
+
+                var txtSeparatorSave = Controls.Find("txtSeparator", true).FirstOrDefault() as TextBox;
+                if (txtSeparatorSave != null) _settings.Separator = txtSeparatorSave.Text;
+
+                var chkAllowStayOpenSave = Controls.Find("chkAllowStayOpen", true).FirstOrDefault() as CheckBox;
+                if (chkAllowStayOpenSave != null) _settings.AllowStayOpen = chkAllowStayOpenSave.Checked;
 
                 _settings.DoSave();
                 _isModified = false;

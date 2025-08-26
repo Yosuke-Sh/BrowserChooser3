@@ -36,6 +36,8 @@ namespace BrowserChooser3.Forms
         public AccessibilitySettingsForm()
         {
             InitializeComponent();
+            this.TopMost = true;
+            this.StartPosition = FormStartPosition.CenterParent;
         }
 
         /// <summary>
