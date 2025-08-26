@@ -25,6 +25,11 @@ namespace BrowserChooser3.CustomControls
         public bool ShowFocusBox { get; set; } = true;
 
         /// <summary>
+        /// 視覚的フォーカス表示の有効/無効
+        /// </summary>
+        public bool ShowVisualFocus { get; set; } = false;
+
+        /// <summary>
         /// 矢印キーのトラップ設定
         /// </summary>
         public bool TrapArrowKeys { get; set; } = true;
@@ -250,7 +255,7 @@ namespace BrowserChooser3.CustomControls
             DrawText(graphics, rect);
 
             // フォーカスボックスの描画
-            if (ShowFocus && _isFocused)
+            if ((ShowFocus || ShowVisualFocus) && _isFocused)
             {
                 DrawFocusBox(graphics, rect);
             }

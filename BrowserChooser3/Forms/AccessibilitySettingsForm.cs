@@ -18,17 +18,29 @@ namespace BrowserChooser3.Forms
         /// <summary>
         /// フォーカス表示フラグ
         /// </summary>
-        public bool ShowFocus => _showFocus;
+        public bool ShowFocus 
+        { 
+            get => _showFocus;
+            set => _showFocus = value;
+        }
 
         /// <summary>
         /// フォーカスボックスの色
         /// </summary>
-        public Color FocusBoxColor => _focusBoxColor;
+        public Color FocusBoxColor 
+        { 
+            get => _focusBoxColor;
+            set => _focusBoxColor = value;
+        }
 
         /// <summary>
         /// フォーカスボックスの線幅
         /// </summary>
-        public int FocusBoxWidth => _focusBoxWidth;
+        public int FocusBoxWidth 
+        { 
+            get => _focusBoxWidth;
+            set => _focusBoxWidth = value;
+        }
 
         /// <summary>
         /// アクセシビリティ設定ダイアログの新しいインスタンスを初期化します
@@ -38,6 +50,11 @@ namespace BrowserChooser3.Forms
             InitializeComponent();
             this.TopMost = true;
             this.StartPosition = FormStartPosition.CenterParent;
+            
+            // 初期値を設定
+            _showFocus = true;
+            _focusBoxColor = Color.Black;
+            _focusBoxWidth = 2;
         }
 
         /// <summary>

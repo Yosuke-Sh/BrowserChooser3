@@ -10,19 +10,19 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
     public class OptionsFormAccessibilityHandlers
     {
         private readonly OptionsForm _form;
-        private readonly FocusSettings _focusSettings;
+        private readonly Settings _settings;
         private readonly Action<bool> _setModified;
 
         /// <summary>
         /// OptionsFormAccessibilityHandlersクラスの新しいインスタンスを初期化します
         /// </summary>
         /// <param name="form">親フォーム</param>
-        /// <param name="focusSettings">フォーカス設定オブジェクト</param>
+        /// <param name="settings">設定オブジェクト</param>
         /// <param name="setModified">変更フラグ設定アクション</param>
-        public OptionsFormAccessibilityHandlers(OptionsForm form, FocusSettings focusSettings, Action<bool> setModified)
+        public OptionsFormAccessibilityHandlers(OptionsForm form, Settings settings, Action<bool> setModified)
         {
             _form = form;
-            _focusSettings = focusSettings;
+            _settings = settings;
             _setModified = setModified;
         }
 
@@ -33,15 +33,22 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
         {
             try
             {
-                // アクセシビリティ設定ダイアログを表示
+                // 現在の設定をフォームに反映
                 var accessibilityForm = new AccessibilitySettingsForm();
+                accessibilityForm.ShowFocus = _settings.ShowFocus;
+                accessibilityForm.FocusBoxColor = Color.FromArgb(_settings.FocusBoxColor);
+                accessibilityForm.FocusBoxWidth = _settings.FocusBoxWidth;
+                
+                // アクセシビリティ設定ダイアログを表示
                 if (accessibilityForm.ShowDialog() == DialogResult.OK)
                 {
                     // 設定を更新
-                    _focusSettings.ShowFocus = accessibilityForm.ShowFocus;
-                    _focusSettings.BoxColor = accessibilityForm.FocusBoxColor;
-                    _focusSettings.BoxWidth = accessibilityForm.FocusBoxWidth;
+                    _settings.ShowFocus = accessibilityForm.ShowFocus;
+                    _settings.FocusBoxColor = accessibilityForm.FocusBoxColor.ToArgb();
+                    _settings.FocusBoxWidth = accessibilityForm.FocusBoxWidth;
                     _setModified(true);
+                    
+                    Logger.LogInfo("OptionsFormAccessibilityHandlers.OpenAccessibilitySettings", "アクセシビリティ設定を保存しました");
                 }
             }
             catch (Exception ex)

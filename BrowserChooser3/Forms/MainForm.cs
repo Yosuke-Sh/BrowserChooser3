@@ -263,6 +263,8 @@ namespace BrowserChooser3.Forms
             var gapWidth = _settings.IconGapWidth;
             var gapHeight = _settings.IconGapHeight;
             
+            Logger.LogInfo("MainForm.RecalculateButtonLayout", $"Layout settings - Width: {buttonWidth}, Height: {buttonHeight}, GapWidth: {gapWidth}, GapHeight: {gapHeight}");
+            
             // フォーム幅に基づいて列数を計算（btnInfoのスペースを確保）
             var availableWidth = ClientSize.Width - 120; // 左右マージン（右端ボタンとbtnInfo用のスペース確保）
             var columnsPerRow = Math.Max(1, availableWidth / (buttonWidth + gapWidth));
@@ -364,6 +366,8 @@ namespace BrowserChooser3.Forms
             var gapWidth = _settings?.IconGapWidth ?? 0;
             var gapHeight = _settings?.IconGapHeight ?? 0;
             
+            Logger.LogInfo("MainForm.CreateBrowserButtons", $"Icon settings - Width: {buttonWidth}, Height: {buttonHeight}, GapWidth: {gapWidth}, GapHeight: {gapHeight}, Scale: {_settings?.IconScale ?? 1.0}");
+            
             if (_browsers == null) return;
             
             // 既存のブラウザボタンとオーバーレイラベルを削除
@@ -400,6 +404,7 @@ namespace BrowserChooser3.Forms
                     Font = new Font("Segoe UI", 6.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
                     TextAlign = ContentAlignment.MiddleCenter,
                     ShowFocusBox = _settings?.ShowFocus ?? true,
+                    ShowVisualFocus = _settings?.ShowVisualFocus ?? false,
                     TrapArrowKeys = true
                 };
                 
@@ -411,9 +416,13 @@ namespace BrowserChooser3.Forms
                     var browserIcon = ImageUtilities.GetImage(browser, true);
                     if (browserIcon != null)
                     {
-                        // アイコンのサイズを調整（ボタンサイズに合わせる）
-                        var iconSize = Math.Min(buttonWidth - 10, buttonHeight - 30); // マージンを確保
+                        // アイコンのサイズを調整（ボタンサイズとスケールに合わせる）
+                        var baseIconSize = Math.Min(buttonWidth - 10, buttonHeight - 30); // マージンを確保
+                        var iconScale = _settings?.IconScale ?? 1.0;
+                        var iconSize = (int)(baseIconSize * iconScale);
                         var resizedIcon = new Bitmap(browserIcon, new Size(iconSize, iconSize));
+                        
+                        Logger.LogInfo("MainForm.CreateBrowserButtons", $"Icon size calculation - Base: {baseIconSize}, Scale: {iconScale}, Final: {iconSize}");
                         
                         button.Image = resizedIcon;
                         button.ImageAlign = ContentAlignment.MiddleCenter;

@@ -593,12 +593,12 @@
             OptionsFormのアクセシビリティ設定関連イベントハンドラーを管理するクラス
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormAccessibilityHandlers.#ctor(BrowserChooser3.Forms.OptionsForm,BrowserChooser3.Classes.Models.FocusSettings,System.Action{System.Boolean})">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormAccessibilityHandlers.#ctor(BrowserChooser3.Forms.OptionsForm,BrowserChooser3.Classes.Settings,System.Action{System.Boolean})">
             <summary>
             OptionsFormAccessibilityHandlersクラスの新しいインスタンスを初期化します
             </summary>
             <param name="form">親フォーム</param>
-            <param name="focusSettings">フォーカス設定オブジェクト</param>
+            <param name="settings">設定オブジェクト</param>
             <param name="setModified">変更フラグ設定アクション</param>
         </member>
         <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormAccessibilityHandlers.OpenAccessibilitySettings">
@@ -2487,6 +2487,11 @@
         <member name="P:BrowserChooser3.CustomControls.FFButton.ShowFocusBox">
             <summary>
             フォーカスボックスの表示設定
+            </summary>
+        </member>
+        <member name="P:BrowserChooser3.CustomControls.FFButton.ShowVisualFocus">
+            <summary>
+            視覚的フォーカス表示の有効/無効
             </summary>
         </member>
         <member name="P:BrowserChooser3.CustomControls.FFButton.TrapArrowKeys">

@@ -920,7 +920,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
 
             var nudIconWidth = new NumericUpDown
             {
-                Name = "nudIconWidth",
+                Name = "nudIconSizeWidth",
                 Location = new Point(65, 22),
                 Size = new Size(60, 23),
                 Minimum = 1,
@@ -940,7 +940,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
 
             var nudIconHeight = new NumericUpDown
             {
-                Name = "nudIconHeight",
+                Name = "nudIconSizeHeight",
                 Location = new Point(199, 22),
                 Size = new Size(60, 23),
                 Minimum = 1,
@@ -991,7 +991,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
 
             var nudGapWidth = new NumericUpDown
             {
-                Name = "nudGapWidth",
+                Name = "nudIconGapWidth",
                 Location = new Point(65, 22),
                 Size = new Size(60, 23),
                 Minimum = -100,
@@ -1011,7 +1011,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
 
             var nudGapHeight = new NumericUpDown
             {
-                Name = "nudGapHeight",
+                Name = "nudIconGapHeight",
                 Location = new Point(199, 22),
                 Size = new Size(60, 23),
                 Minimum = -100,

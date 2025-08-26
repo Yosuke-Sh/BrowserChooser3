@@ -67,7 +67,7 @@ namespace BrowserChooser3.Forms
             _checkBoxHandlers = new OptionsFormCheckBoxHandlers(this, _settings, SetModified);
             _backgroundHandlers = new OptionsFormBackgroundHandlers(this, _settings, SetModified);
             _helpHandlers = new OptionsFormHelpHandlers(this);
-            _accessibilityHandlers = new OptionsFormAccessibilityHandlers(this, _mFocusSettings, SetModified);
+            _accessibilityHandlers = new OptionsFormAccessibilityHandlers(this, _settings, SetModified);
 
             // UIパネル作成クラスの初期化
             _panels = new OptionsFormPanels();
@@ -754,8 +754,7 @@ namespace BrowserChooser3.Forms
             var txtCanonicalizeText = Controls.Find("txtCanonicalizeText", true).FirstOrDefault() as TextBox;
             if (txtCanonicalizeText != null) txtCanonicalizeText.Text = _settings.CanonicalizeAppendedText;
 
-            var chkEnableLoggingNew = Controls.Find("chkEnableLogging", true).FirstOrDefault() as CheckBox;
-            if (chkEnableLoggingNew != null) chkEnableLoggingNew.Checked = _settings.EnableLogging;
+
 
             var chkExtractDLLs = Controls.Find("chkExtractDLLs", true).FirstOrDefault() as CheckBox;
             if (chkExtractDLLs != null) chkExtractDLLs.Checked = _settings.ExtractDLLs;
@@ -1038,38 +1037,58 @@ namespace BrowserChooser3.Forms
             var txtUserAgent = Controls.Find("txtUserAgent", true).FirstOrDefault() as TextBox;
             if (txtUserAgent != null) txtUserAgent.Text = _settings.UserAgent;
 
-            var chkDownloadDetectionfile = Controls.Find("chkDownloadDetectionfile", true).FirstOrDefault() as CheckBox;
-            if (chkDownloadDetectionfile != null) chkDownloadDetectionfile.Checked = _settings.DownloadDetectionFile;
+            var chkDownloadDetectionFile = Controls.Find("chkDownloadDetectionFile", true).FirstOrDefault() as CheckBox;
+            if (chkDownloadDetectionFile != null) chkDownloadDetectionFile.Checked = _settings.DownloadDetectionFile;
 
             var nudIconSizeWidth = Controls.Find("nudIconSizeWidth", true).FirstOrDefault() as NumericUpDown;
-            if (nudIconSizeWidth != null) nudIconSizeWidth.Value = _settings.IconWidth;
+            if (nudIconSizeWidth != null) 
+            {
+                nudIconSizeWidth.Value = _settings.IconWidth;
+                Logger.LogInfo("OptionsForm.LoadSettingsToControls", $"IconWidth loaded: {_settings.IconWidth} (to control: {nudIconSizeWidth.Value})");
+            }
 
             var nudIconSizeHeight = Controls.Find("nudIconSizeHeight", true).FirstOrDefault() as NumericUpDown;
-            if (nudIconSizeHeight != null) nudIconSizeHeight.Value = _settings.IconHeight;
+            if (nudIconSizeHeight != null) 
+            {
+                nudIconSizeHeight.Value = _settings.IconHeight;
+                Logger.LogInfo("OptionsForm.LoadSettingsToControls", $"IconHeight loaded: {_settings.IconHeight} (to control: {nudIconSizeHeight.Value})");
+            }
 
             var nudIconGapWidth = Controls.Find("nudIconGapWidth", true).FirstOrDefault() as NumericUpDown;
-            if (nudIconGapWidth != null) nudIconGapWidth.Value = _settings.IconGapWidth;
+            if (nudIconGapWidth != null) 
+            {
+                nudIconGapWidth.Value = _settings.IconGapWidth;
+                Logger.LogInfo("OptionsForm.LoadSettingsToControls", $"IconGapWidth loaded: {_settings.IconGapWidth} (to control: {nudIconGapWidth.Value})");
+            }
 
             var nudIconGapHeight = Controls.Find("nudIconGapHeight", true).FirstOrDefault() as NumericUpDown;
-            if (nudIconGapHeight != null) nudIconGapHeight.Value = _settings.IconGapHeight;
+            if (nudIconGapHeight != null) 
+            {
+                nudIconGapHeight.Value = _settings.IconGapHeight;
+                Logger.LogInfo("OptionsForm.LoadSettingsToControls", $"IconGapHeight loaded: {_settings.IconGapHeight} (to control: {nudIconGapHeight.Value})");
+            }
 
             var pbBackgroundColor = Controls.Find("pbBackgroundColor", true).FirstOrDefault() as Panel;
             if (pbBackgroundColor != null) pbBackgroundColor.BackColor = Color.FromArgb(_settings.BackgroundColor);
 
             var nudIconScale = Controls.Find("nudIconScale", true).FirstOrDefault() as NumericUpDown;
-            if (nudIconScale != null) nudIconScale.Value = (decimal)_settings.IconScale;
+            if (nudIconScale != null) 
+            {
+                nudIconScale.Value = (decimal)_settings.IconScale;
+                Logger.LogInfo("OptionsForm.LoadSettingsToControls", $"IconScale loaded: {_settings.IconScale} (to control: {nudIconScale.Value})");
+            }
 
             var chkCanonicalize = Controls.Find("chkCanonicalize", true).FirstOrDefault() as CheckBox;
             if (chkCanonicalize != null) chkCanonicalize.Checked = _settings.Canonicalize;
 
-            var txtCanonicalizeAppend = Controls.Find("txtCanonicalizeAppend", true).FirstOrDefault() as TextBox;
-            if (txtCanonicalizeAppend != null) txtCanonicalizeAppend.Text = _settings.CanonicalizeAppendedText;
+            var txtCanonicalizeText = Controls.Find("txtCanonicalizeText", true).FirstOrDefault() as TextBox;
+            if (txtCanonicalizeText != null) txtCanonicalizeText.Text = _settings.CanonicalizeAppendedText;
 
-            var chkLog = Controls.Find("chkLog", true).FirstOrDefault() as CheckBox;
-            if (chkLog != null) chkLog.Checked = _settings.EnableLogging;
+            var chkEnableLogging = Controls.Find("chkEnableLogging", true).FirstOrDefault() as CheckBox;
+            if (chkEnableLogging != null) chkEnableLogging.Checked = _settings.EnableLogging;
 
-            var chkExtract = Controls.Find("chkExtract", true).FirstOrDefault() as CheckBox;
-            if (chkExtract != null) chkExtract.Checked = _settings.ExtractDLLs;
+            var chkExtractDLLs = Controls.Find("chkExtractDLLs", true).FirstOrDefault() as CheckBox;
+            if (chkExtractDLLs != null) chkExtractDLLs.Checked = _settings.ExtractDLLs;
 
             // グリッド設定
             var nudGridWidth = Controls.Find("nudGridWidth", true).FirstOrDefault() as NumericUpDown;
@@ -1088,8 +1107,6 @@ namespace BrowserChooser3.Forms
             if (nudGridLineWidth != null) nudGridLineWidth.Value = _settings.GridLineWidth;
 
             // プライバシー設定
-            var chkEnableLogging = Controls.Find("chkEnableLogging", true).FirstOrDefault() as CheckBox;
-            if (chkEnableLogging != null) chkEnableLogging.Checked = _settings.EnableLogging;
 
             var cmbLogLevel = Controls.Find("cmbLogLevel", true).FirstOrDefault() as ComboBox;
             if (cmbLogLevel != null) cmbLogLevel.SelectedIndex = Math.Min(_settings.LogLevel, cmbLogLevel.Items.Count - 1);
@@ -1319,38 +1336,58 @@ namespace BrowserChooser3.Forms
                 var txtUserAgent = Controls.Find("txtUserAgent", true).FirstOrDefault() as TextBox;
                 if (txtUserAgent != null) _settings.UserAgent = txtUserAgent.Text;
 
-                var chkDownloadDetectionfile = Controls.Find("chkDownloadDetectionfile", true).FirstOrDefault() as CheckBox;
-                if (chkDownloadDetectionfile != null) _settings.DownloadDetectionFile = chkDownloadDetectionfile.Checked;
+                            var chkDownloadDetectionFile = Controls.Find("chkDownloadDetectionFile", true).FirstOrDefault() as CheckBox;
+            if (chkDownloadDetectionFile != null) _settings.DownloadDetectionFile = chkDownloadDetectionFile.Checked;
 
                 var nudIconSizeWidth = Controls.Find("nudIconSizeWidth", true).FirstOrDefault() as NumericUpDown;
-                if (nudIconSizeWidth != null) _settings.IconWidth = (int)nudIconSizeWidth.Value;
+                if (nudIconSizeWidth != null) 
+                {
+                    _settings.IconWidth = (int)nudIconSizeWidth.Value;
+                    Logger.LogInfo("OptionsForm.SaveSettings", $"IconWidth saved: {_settings.IconWidth} (from control: {nudIconSizeWidth.Value})");
+                }
 
                 var nudIconSizeHeight = Controls.Find("nudIconSizeHeight", true).FirstOrDefault() as NumericUpDown;
-                if (nudIconSizeHeight != null) _settings.IconHeight = (int)nudIconSizeHeight.Value;
+                if (nudIconSizeHeight != null) 
+                {
+                    _settings.IconHeight = (int)nudIconSizeHeight.Value;
+                    Logger.LogInfo("OptionsForm.SaveSettings", $"IconHeight saved: {_settings.IconHeight} (from control: {nudIconSizeHeight.Value})");
+                }
 
                 var nudIconGapWidth = Controls.Find("nudIconGapWidth", true).FirstOrDefault() as NumericUpDown;
-                if (nudIconGapWidth != null) _settings.IconGapWidth = (int)nudIconGapWidth.Value;
+                if (nudIconGapWidth != null) 
+                {
+                    _settings.IconGapWidth = (int)nudIconGapWidth.Value;
+                    Logger.LogInfo("OptionsForm.SaveSettings", $"IconGapWidth saved: {_settings.IconGapWidth} (from control: {nudIconGapWidth.Value})");
+                }
 
                 var nudIconGapHeight = Controls.Find("nudIconGapHeight", true).FirstOrDefault() as NumericUpDown;
-                if (nudIconGapHeight != null) _settings.IconGapHeight = (int)nudIconGapHeight.Value;
+                if (nudIconGapHeight != null) 
+                {
+                    _settings.IconGapHeight = (int)nudIconGapHeight.Value;
+                    Logger.LogInfo("OptionsForm.SaveSettings", $"IconGapHeight saved: {_settings.IconGapHeight} (from control: {nudIconGapHeight.Value})");
+                }
 
                 var pbBackgroundColor = Controls.Find("pbBackgroundColor", true).FirstOrDefault() as Panel;
                 if (pbBackgroundColor != null) _settings.BackgroundColor = pbBackgroundColor.BackColor.ToArgb();
 
                 var nudIconScale = Controls.Find("nudIconScale", true).FirstOrDefault() as NumericUpDown;
-                if (nudIconScale != null) _settings.IconScale = (double)nudIconScale.Value;
+                if (nudIconScale != null) 
+                {
+                    _settings.IconScale = (double)nudIconScale.Value;
+                    Logger.LogInfo("OptionsForm.SaveSettings", $"IconScale saved: {_settings.IconScale} (from control: {nudIconScale.Value})");
+                }
 
                 var chkCanonicalize = Controls.Find("chkCanonicalize", true).FirstOrDefault() as CheckBox;
                 if (chkCanonicalize != null) _settings.Canonicalize = chkCanonicalize.Checked;
 
-                var txtCanonicalizeAppend = Controls.Find("txtCanonicalizeAppend", true).FirstOrDefault() as TextBox;
-                if (txtCanonicalizeAppend != null) _settings.CanonicalizeAppendedText = txtCanonicalizeAppend.Text;
+                            var txtCanonicalizeText = Controls.Find("txtCanonicalizeText", true).FirstOrDefault() as TextBox;
+            if (txtCanonicalizeText != null) _settings.CanonicalizeAppendedText = txtCanonicalizeText.Text;
 
-                var chkLog = Controls.Find("chkLog", true).FirstOrDefault() as CheckBox;
-                if (chkLog != null) _settings.EnableLogging = chkLog.Checked;
+                            var chkEnableLogging = Controls.Find("chkEnableLogging", true).FirstOrDefault() as CheckBox;
+            if (chkEnableLogging != null) _settings.EnableLogging = chkEnableLogging.Checked;
 
-                var chkExtract = Controls.Find("chkExtract", true).FirstOrDefault() as CheckBox;
-                if (chkExtract != null) _settings.ExtractDLLs = chkExtract.Checked;
+                            var chkExtractDLLs = Controls.Find("chkExtractDLLs", true).FirstOrDefault() as CheckBox;
+            if (chkExtractDLLs != null) _settings.ExtractDLLs = chkExtractDLLs.Checked;
 
                 // グリッド設定
                 var nudGridWidth = Controls.Find("nudGridWidth", true).FirstOrDefault() as NumericUpDown;
@@ -1369,8 +1406,6 @@ namespace BrowserChooser3.Forms
                 if (nudGridLineWidth != null) _settings.GridLineWidth = (int)nudGridLineWidth.Value;
 
                 // プライバシー設定
-                var chkEnableLogging = Controls.Find("chkEnableLogging", true).FirstOrDefault() as CheckBox;
-                if (chkEnableLogging != null) _settings.EnableLogging = chkEnableLogging.Checked;
 
                 var cmbLogLevel = Controls.Find("cmbLogLevel", true).FirstOrDefault() as ComboBox;
                 if (cmbLogLevel != null) _settings.LogLevel = cmbLogLevel.SelectedIndex;

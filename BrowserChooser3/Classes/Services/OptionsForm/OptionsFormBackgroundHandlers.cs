@@ -31,12 +31,25 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
         /// </summary>
         public void SetTransparentBackground()
         {
-            var pbBackgroundColor = _form.Controls.Find("pbBackgroundColor", true).FirstOrDefault() as PictureBox;
-            if (pbBackgroundColor != null)
+            try
             {
-                pbBackgroundColor.BackColor = Color.Transparent;
+                _settings.BackgroundColorValue = Color.Transparent;
+                
+                var pbBackgroundColor = _form.Controls.Find("pbBackgroundColor", true).FirstOrDefault() as PictureBox;
+                if (pbBackgroundColor != null)
+                {
+                    pbBackgroundColor.BackColor = Color.Transparent;
+                }
+                _setModified(true);
+                
+                Logger.LogInfo("OptionsFormBackgroundHandlers.SetTransparentBackground", "透明背景を設定しました");
             }
-            _setModified(true);
+            catch (Exception ex)
+            {
+                Logger.LogError("OptionsFormBackgroundHandlers.SetTransparentBackground", "透明背景設定エラー", ex.Message, ex.StackTrace ?? "");
+                MessageBox.Show($"透明背景の設定に失敗しました: {ex.Message}", "エラー", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         /// <summary>

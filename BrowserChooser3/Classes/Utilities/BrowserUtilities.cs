@@ -349,13 +349,34 @@ namespace BrowserChooser3.Classes.Utilities
                 if (Environment.Is64BitProcess)
                 {
                     string programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+                    string programFilesX86 = Environment.GetEnvironmentVariable("ProgramFiles(x86)") ?? "";
 
-                    if (target.StartsWith(programFiles))
+                    // 現在のパスでファイルが存在するかチェック
+                    if (File.Exists(target))
                     {
-                        string programFilesX86 = Environment.GetEnvironmentVariable("ProgramFiles(x86)") ?? "";
-                        if (!target.StartsWith(programFilesX86))
+                        Logger.LogInfo("BrowserUtilities.NormalizeTarget", "File exists at current path", target);
+                        return target;
+                    }
+
+                    // Program Files から Program Files (x86) への変換を試行
+                    if (target.StartsWith(programFiles) && !string.IsNullOrEmpty(programFilesX86))
+                    {
+                        string x86Path = target.Replace(programFiles, programFilesX86);
+                        if (File.Exists(x86Path))
                         {
-                            target = target.Replace(programFiles, programFilesX86);
+                            Logger.LogInfo("BrowserUtilities.NormalizeTarget", "File found at x86 path", x86Path);
+                            return x86Path;
+                        }
+                    }
+
+                    // Program Files (x86) から Program Files への変換を試行
+                    if (target.StartsWith(programFilesX86) && !string.IsNullOrEmpty(programFiles))
+                    {
+                        string x64Path = target.Replace(programFilesX86, programFiles);
+                        if (File.Exists(x64Path))
+                        {
+                            Logger.LogInfo("BrowserUtilities.NormalizeTarget", "File found at x64 path", x64Path);
+                            return x64Path;
                         }
                     }
                 }
@@ -364,7 +385,12 @@ namespace BrowserChooser3.Classes.Utilities
                     // 32ビット環境での処理
                     if (target.Contains("x86"))
                     {
-                        target = target.Replace(" (x86)", "");
+                        string x64Path = target.Replace(" (x86)", "");
+                        if (File.Exists(x64Path))
+                        {
+                            Logger.LogInfo("BrowserUtilities.NormalizeTarget", "File found at x64 path (32-bit env)", x64Path);
+                            return x64Path;
+                        }
                     }
                 }
             }

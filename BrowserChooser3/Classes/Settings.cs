@@ -180,10 +180,10 @@ namespace BrowserChooser3.Classes
         public Dictionary<DefaultField, object> Defaults = new()
         {
             { DefaultField.FileVersion, CURRENT_FILE_VERSION },
-            { DefaultField.IconWidth, 75 },
-            { DefaultField.IconHeight, 80 },
-            { DefaultField.IconGapWidth, 0 },
-            { DefaultField.IconGapHeight, 0 },
+            { DefaultField.IconWidth, 100 },
+            { DefaultField.IconHeight, 110 },
+            { DefaultField.IconGapWidth, 20 },
+            { DefaultField.IconGapHeight, 20 },
             { DefaultField.IconScale, 1.0 },
             { DefaultField.OptionsShortcut, 'O' },
             { DefaultField.DefaultMessage, "Choose a Browser" },

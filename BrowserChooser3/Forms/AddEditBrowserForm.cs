@@ -159,7 +159,7 @@ namespace BrowserChooser3.Forms
         private void InitializeComponent()
         {
             Text = "Add/Edit Browser";
-            Size = new Size(500, 430);
+            Size = new Size(550, 430);
             StartPosition = FormStartPosition.CenterParent;
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
@@ -186,7 +186,7 @@ namespace BrowserChooser3.Forms
             var nudRow = new NumericUpDown { Name = "nudRow", Location = new Point(120, 167), Size = new Size(80, 23), Minimum = 0, Maximum = 100 };
 
             var lblCol = new Label { Text = "Column:", Location = new Point(220, 170), AutoSize = true };
-            var nudCol = new NumericUpDown { Name = "nudCol", Location = new Point(280, 167), Size = new Size(80, 23), Minimum = 0, Maximum = 100 };
+            var nudCol = new NumericUpDown { Name = "nudCol", Location = new Point(290, 167), Size = new Size(80, 23), Minimum = 0, Maximum = 100 };
 
             // ボタン
             var btnOK = new Button { Text = "OK", DialogResult = DialogResult.OK, Location = new Point(300, 350), Size = new Size(85, 28) };
