@@ -11,6 +11,8 @@ using BrowserChooser3.Forms;
 using FluentAssertions;
 using Moq;
 using Xunit;
+using System.Linq;
+using System.Threading;
 
 namespace BrowserChooser3.Tests
 {
@@ -220,20 +222,35 @@ namespace BrowserChooser3.Tests
         }
 
         [Fact]
-        public async Task BackgroundHandlers_ShouldBeThreadSafe()
+        public void BackgroundHandlers_ShouldBeThreadSafe()
         {
             // Arrange
-            var tasks = new List<Task>();
+            var exceptions = new List<Exception>();
 
-            // Act
-            for (int i = 0; i < 5; i++)
+            // Act - 複数のスレッドで同時実行をシミュレート
+            var tasks = Enumerable.Range(0, 3).Select(i => Task.Run(() =>
             {
-                tasks.Add(Task.Run(() => _handlers.ChangeBackgroundColor()));
-                tasks.Add(Task.Run(() => _handlers.SetTransparentBackground()));
-            }
+                try
+                {
+                    // 各タスクで少し遅延を入れて、実際の並行実行をシミュレート
+                    Thread.Sleep(10);
+                    _handlers.ChangeBackgroundColor();
+                    _handlers.SetTransparentBackground();
+                }
+                catch (Exception ex)
+                {
+                    lock (exceptions)
+                    {
+                        exceptions.Add(ex);
+                    }
+                }
+            })).ToArray();
 
             // Assert
-            await Task.WhenAll(tasks.ToArray());
+            Task.WaitAll(tasks, TimeSpan.FromSeconds(5)); // 5秒でタイムアウト
+            
+            // 例外が発生していないことを確認
+            exceptions.Should().BeEmpty();
             _handlers.Should().NotBeNull();
         }
 

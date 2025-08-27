@@ -57,15 +57,13 @@ namespace BrowserChooser3.Tests
 
             try
             {
-                var initialCount = BrowserDetector.DetectedBrowsers.Count;
-
                 // Act
                 BrowserDetector.AddCustomBrowser("Test Browser", testPath, "--test-arg");
 
                 // Assert
-                BrowserDetector.DetectedBrowsers.Count.Should().Be(initialCount + 1);
-                var addedBrowser = BrowserDetector.DetectedBrowsers.Last();
-                addedBrowser.Name.Should().Be("Test Browser");
+                var addedBrowser = BrowserDetector.DetectedBrowsers.FirstOrDefault(b => b.Target == testPath);
+                addedBrowser.Should().NotBeNull();
+                addedBrowser!.Name.Should().Be("Test Browser");
                 addedBrowser.Target.Should().Be(testPath);
                 addedBrowser.Arguments.Should().Be("--test-arg");
                 addedBrowser.Category.Should().Be("Custom Browsers");
@@ -78,6 +76,12 @@ namespace BrowserChooser3.Tests
                 if (File.Exists(testPath))
                 {
                     File.Delete(testPath);
+                }
+                // テストで追加したブラウザを削除
+                var browserToRemove = BrowserDetector.DetectedBrowsers.FirstOrDefault(b => b.Target == testPath);
+                if (browserToRemove != null)
+                {
+                    BrowserDetector.DetectedBrowsers.Remove(browserToRemove);
                 }
             }
         }
@@ -151,6 +155,12 @@ namespace BrowserChooser3.Tests
                 {
                     File.Delete(testPath);
                 }
+                // テストで追加したブラウザを削除
+                var browserToRemove = BrowserDetector.DetectedBrowsers.FirstOrDefault(b => b.Target == testPath);
+                if (browserToRemove != null)
+                {
+                    BrowserDetector.DetectedBrowsers.Remove(browserToRemove);
+                }
             }
         }
 
@@ -163,15 +173,13 @@ namespace BrowserChooser3.Tests
 
             try
             {
-                var initialCount = BrowserDetector.DetectedBrowsers.Count;
-
                 // Act
                 BrowserDetector.AddCustomBrowser("Test Browser 3", testPath, null!);
 
                 // Assert
-                BrowserDetector.DetectedBrowsers.Count.Should().Be(initialCount + 1);
-                var addedBrowser = BrowserDetector.DetectedBrowsers.Last();
-                addedBrowser.Name.Should().Be("Test Browser 3");
+                var addedBrowser = BrowserDetector.DetectedBrowsers.FirstOrDefault(b => b.Target == testPath);
+                addedBrowser.Should().NotBeNull();
+                addedBrowser!.Name.Should().Be("Test Browser 3");
                 addedBrowser.Target.Should().Be(testPath);
                 addedBrowser.Arguments.Should().BeNull();
                 addedBrowser.Category.Should().Be("Custom Browsers");
@@ -182,6 +190,12 @@ namespace BrowserChooser3.Tests
                 if (File.Exists(testPath))
                 {
                     File.Delete(testPath);
+                }
+                // テストで追加したブラウザを削除
+                var browserToRemove = BrowserDetector.DetectedBrowsers.FirstOrDefault(b => b.Target == testPath);
+                if (browserToRemove != null)
+                {
+                    BrowserDetector.DetectedBrowsers.Remove(browserToRemove);
                 }
             }
         }
@@ -215,6 +229,12 @@ namespace BrowserChooser3.Tests
                 {
                     File.Delete(testPath);
                 }
+                // テストで追加したブラウザを削除
+                var browserToRemove = BrowserDetector.DetectedBrowsers.FirstOrDefault(b => b.Target == testPath);
+                if (browserToRemove != null)
+                {
+                    BrowserDetector.DetectedBrowsers.Remove(browserToRemove);
+                }
             }
         }
 
@@ -247,6 +267,12 @@ namespace BrowserChooser3.Tests
                 if (File.Exists(testPath))
                 {
                     File.Delete(testPath);
+                }
+                // テストで追加したブラウザを削除
+                var browserToRemove = BrowserDetector.DetectedBrowsers.FirstOrDefault(b => b.Target == testPath);
+                if (browserToRemove != null)
+                {
+                    BrowserDetector.DetectedBrowsers.Remove(browserToRemove);
                 }
             }
         }

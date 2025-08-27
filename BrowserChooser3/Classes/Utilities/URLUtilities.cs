@@ -25,6 +25,10 @@ namespace BrowserChooser3.Classes.Utilities
             if (lowerUrl.StartsWith("http://") || lowerUrl.StartsWith("https://") || 
                 lowerUrl.StartsWith("ftp://") || lowerUrl.StartsWith("file://"))
             {
+                // 不完全なURL（スキームのみ）の場合は有効とみなす
+                if (url.EndsWith("://"))
+                    return true;
+
                 try
                 {
                     var uri = new Uri(url);

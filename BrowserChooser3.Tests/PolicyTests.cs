@@ -454,6 +454,7 @@ namespace BrowserChooser3.Tests
         public void Initialize_WithInvalidEnvironmentVariables_ShouldHandleGracefully()
         {
             // Arrange
+            Policy.Reset(); // 初期状態にリセット
             Environment.SetEnvironmentVariable("BROWSERCHOOSER_IGNORE_SETTINGS", "invalid");
             Environment.SetEnvironmentVariable("BROWSERCHOOSER_ICON_SCALE", "invalid");
 
@@ -471,6 +472,7 @@ namespace BrowserChooser3.Tests
                 // Cleanup
                 Environment.SetEnvironmentVariable("BROWSERCHOOSER_IGNORE_SETTINGS", null);
                 Environment.SetEnvironmentVariable("BROWSERCHOOSER_ICON_SCALE", null);
+                Policy.Reset(); // テスト後にリセット
             }
         }
 
