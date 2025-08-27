@@ -60,13 +60,23 @@ namespace BrowserChooser3.Forms
         /// </summary>
         private void LoadURLData()
         {
+            // nullチェック
+            if (_url == null)
+            {
+                _url = new URL();
+            }
+            if (_browsers == null)
+            {
+                _browsers = new Dictionary<int, Browser>();
+            }
+
             Text = _isEditMode ? "Edit Auto URL" : "Add Auto URL";
             
             var txtURL = Controls.Find("txtURL", true).FirstOrDefault() as TextBox;
             var cmbBrowser = Controls.Find("cmbBrowser", true).FirstOrDefault() as ComboBox;
             var txtDelay = Controls.Find("txtDelay", true).FirstOrDefault() as TextBox;
 
-            if (txtURL != null) txtURL.Text = _url.URLPattern;
+            if (txtURL != null) txtURL.Text = _url.URLPattern ?? "";
             if (txtDelay != null) txtDelay.Text = _url.DelayTime < 0 ? "" : _url.DelayTime.ToString();
 
             // ブラウザコンボボックスの設定
@@ -75,12 +85,15 @@ namespace BrowserChooser3.Forms
                 cmbBrowser.Items.Clear();
                 foreach (var browser in _browsers.Values)
                 {
-                    cmbBrowser.Items.Add(browser.Name);
+                    if (browser != null && !string.IsNullOrEmpty(browser.Name))
+                    {
+                        cmbBrowser.Items.Add(browser.Name);
+                    }
                 }
 
                 if (_url.Guid != Guid.Empty)
                 {
-                    var selectedBrowser = _browsers.Values.FirstOrDefault(b => b.Guid == _url.Guid);
+                    var selectedBrowser = _browsers.Values.FirstOrDefault(b => b != null && b.Guid == _url.Guid);
                     if (selectedBrowser != null)
                     {
                         cmbBrowser.SelectedItem = selectedBrowser.Name;

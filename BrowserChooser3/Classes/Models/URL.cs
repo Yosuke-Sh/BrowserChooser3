@@ -62,7 +62,11 @@ namespace BrowserChooser3.Classes.Models
                 Delay = this.Delay,
                 DelayTime = this.DelayTime,
                 IsActive = this.IsActive,
-                AutoClose = this.AutoClose
+                AutoClose = this.AutoClose,
+                Pattern = this.Pattern,
+                SupportingBrowsers = new List<Guid>(this.SupportingBrowsers),
+                Category = this.Category,
+                Active = this.Active
             };
         }
     }

@@ -61,6 +61,13 @@ namespace BrowserChooser3.Classes.Services.SystemServices
         /// <returns>解析結果</returns>
         public static CommandLineArgs ParseArguments(string[] args)
         {
+            // nullチェック
+            if (args == null)
+            {
+                Logger.LogInfo("CommandLineProcessor.ParseArguments", "コマンドライン引数がnull");
+                return new CommandLineArgs();
+            }
+
             Logger.LogInfo("CommandLineProcessor.ParseArguments", "コマンドライン引数解析開始", string.Join(" ", args));
 
             var result = new CommandLineArgs();

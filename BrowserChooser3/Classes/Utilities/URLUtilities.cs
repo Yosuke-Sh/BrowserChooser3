@@ -20,18 +20,26 @@ namespace BrowserChooser3.Classes.Utilities
             if (string.IsNullOrEmpty(url))
                 return false;
 
-            try
+            // 基本的なURLパターンチェック（大文字小文字を区別しない）
+            var lowerUrl = url.ToLowerInvariant();
+            if (lowerUrl.StartsWith("http://") || lowerUrl.StartsWith("https://") || 
+                lowerUrl.StartsWith("ftp://") || lowerUrl.StartsWith("file://"))
             {
-                var uri = new Uri(url);
-                return uri.Scheme == Uri.UriSchemeHttp || 
-                       uri.Scheme == Uri.UriSchemeHttps ||
-                       uri.Scheme == Uri.UriSchemeFtp ||
-                       uri.Scheme == Uri.UriSchemeFile;
+                try
+                {
+                    var uri = new Uri(url);
+                    return uri.Scheme == Uri.UriSchemeHttp || 
+                           uri.Scheme == Uri.UriSchemeHttps ||
+                           uri.Scheme == Uri.UriSchemeFtp ||
+                           uri.Scheme == Uri.UriSchemeFile;
+                }
+                catch
+                {
+                    return false;
+                }
             }
-            catch
-            {
-                return false;
-            }
+
+            return false;
         }
 
         /// <summary>
@@ -42,6 +50,11 @@ namespace BrowserChooser3.Classes.Utilities
         public static bool IsFilePath(string path)
         {
             if (string.IsNullOrEmpty(path))
+                return false;
+
+            // URLの場合はファイルパスではない
+            if (path.StartsWith("http://") || path.StartsWith("https://") || 
+                path.StartsWith("ftp://") || path.StartsWith("file://"))
                 return false;
 
             return System.IO.Path.IsPathRooted(path) || 
@@ -164,6 +177,12 @@ namespace BrowserChooser3.Classes.Utilities
         /// <returns>マッチする場合はtrue</returns>
         public static bool MatchURLs(string source, string target)
         {
+            // nullチェック
+            if (source == null && target == null)
+                return true;
+            if (source == null || target == null)
+                return false;
+
             Logger.LogInfo("URLUtilities.MatchURLs", "Start", source, target);
             
             // http(s)://とwwwを除去

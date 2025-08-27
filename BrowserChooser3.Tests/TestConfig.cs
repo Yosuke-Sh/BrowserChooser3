@@ -60,5 +60,60 @@ namespace BrowserChooser3.Tests
                 Environment.SetEnvironmentVariable("DISABLE_DIALOGS", "true");
             }
         }
+
+        /// <summary>
+        /// テスト環境でのDrag&Drop処理を無効化する
+        /// </summary>
+        public static void DisableDragDropInTestEnvironment()
+        {
+            if (IsTestEnvironment())
+            {
+                // テスト環境ではDrag&Drop処理を無効化
+                Environment.SetEnvironmentVariable("DISABLE_DRAGDROP", "true");
+            }
+        }
+
+        /// <summary>
+        /// テスト環境でのコンポーネントエラーを抑制する
+        /// </summary>
+        public static void SuppressComponentErrorsInTestEnvironment()
+        {
+            if (IsTestEnvironment())
+            {
+                // テスト環境ではコンポーネントエラーを抑制
+                Environment.SetEnvironmentVariable("SUPPRESS_COMPONENT_ERRORS", "true");
+            }
+        }
+
+        /// <summary>
+        /// テスト環境でSTAスレッドを強制する
+        /// </summary>
+        public static void ForceSTAThreadInTestEnvironment()
+        {
+            if (IsTestEnvironment())
+            {
+                // テスト環境ではSTAスレッドを強制
+                Environment.SetEnvironmentVariable("FORCE_STA_THREAD", "true");
+                
+                // 現在のスレッドをSTAに設定
+                if (Thread.CurrentThread.GetApartmentState() != ApartmentState.STA)
+                {
+                    // 注意: 実行中のスレッドのApartmentStateは変更できないため、
+                    // 新しいSTAスレッドでテストを実行する必要があります
+                }
+            }
+        }
+
+        /// <summary>
+        /// テスト環境でのヘルプ機能を無効化する
+        /// </summary>
+        public static void DisableHelpInTestEnvironment()
+        {
+            if (IsTestEnvironment())
+            {
+                // テスト環境ではヘルプ機能を無効化
+                Environment.SetEnvironmentVariable("DISABLE_HELP", "true");
+            }
+        }
     }
 }

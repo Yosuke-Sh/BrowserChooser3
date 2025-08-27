@@ -164,9 +164,26 @@ namespace BrowserChooser3.Classes.Utilities
         {
             try
             {
-                return !string.IsNullOrEmpty(path) && 
-                       System.IO.Path.IsPathRooted(path) && 
-                       System.IO.Directory.Exists(System.IO.Path.GetDirectoryName(path));
+                if (string.IsNullOrEmpty(path))
+                    return false;
+
+                // 基本的なパス形式チェック
+                if (System.IO.Path.IsPathRooted(path))
+                    return true;
+
+                // 相対パスの場合
+                if (path == "." || path == ".." || path.StartsWith(".\\") || path.StartsWith("..\\"))
+                    return true;
+
+                // ネットワークパスの場合
+                if (path.StartsWith("\\\\"))
+                    return true;
+
+                // ドライブレターのみの場合
+                if (path.Length == 2 && path[1] == ':')
+                    return true;
+
+                return false;
             }
             catch
             {

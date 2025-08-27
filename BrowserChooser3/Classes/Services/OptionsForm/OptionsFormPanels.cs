@@ -9,6 +9,31 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
     /// </summary>
     public class OptionsFormPanels
     {
+        /// <summary>
+        /// テスト環境かどうかを判定する
+        /// </summary>
+        /// <returns>テスト環境の場合はtrue</returns>
+        private bool IsTestEnvironment()
+        {
+            try
+            {
+                // 環境変数でテスト環境を判定
+                var testEnv = Environment.GetEnvironmentVariable("TEST_ENVIRONMENT");
+                if (!string.IsNullOrEmpty(testEnv) && testEnv.Equals("true", StringComparison.OrdinalIgnoreCase))
+                    return true;
+
+                // プロセス名に"test"が含まれている場合
+                var processName = System.Diagnostics.Process.GetCurrentProcess().ProcessName;
+                if (processName.Contains("test", StringComparison.OrdinalIgnoreCase))
+                    return true;
+
+                return false;
+            }
+            catch
+            {
+                return false;
+            }
+        }
 
         private ImageList? _imBrowserIcons;
 
@@ -77,7 +102,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 Location = new Point(97, 6),
                 Size = new Size(630, 420),
                 Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom,
-                AllowDrop = true,
+                AllowDrop = !IsTestEnvironment(), // テスト環境ではDragDropを無効化
                 MultiSelect = false,
                 HideSelection = false,
                 UseCompatibleStateImageBehavior = false,
@@ -210,7 +235,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 Location = new Point(97, 6),
                 Size = new Size(630, 420),
                 Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom,
-                AllowDrop = true,
+                AllowDrop = !IsTestEnvironment(), // テスト環境ではDragDropを無効化
                 MultiSelect = false,
                 HideSelection = false,
                 UseCompatibleStateImageBehavior = false,
@@ -315,6 +340,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 Location = new Point(97, 6),
                 Size = new Size(630, 420),
                 Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom,
+                AllowDrop = !IsTestEnvironment(), // テスト環境ではDragDropを無効化
                 MultiSelect = false,
                 HideSelection = false,
                 UseCompatibleStateImageBehavior = false,
@@ -409,6 +435,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 Location = new Point(97, 6),
                 Size = new Size(630, 420),
                 Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom,
+                AllowDrop = !IsTestEnvironment(), // テスト環境ではDragDropを無効化
                 MultiSelect = false,
                 HideSelection = false,
                 UseCompatibleStateImageBehavior = false,
@@ -1931,52 +1958,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             return tabPage;
         }
 
-        /// <summary>
-        /// テスト環境かどうかを判定する
-        /// </summary>
-        /// <returns>テスト環境の場合はtrue</returns>
-        private static bool IsTestEnvironment()
-        {
-            try
-            {
-                // 環境変数でダイアログ無効化が設定されている場合
-                var disableDialogs = Environment.GetEnvironmentVariable("DISABLE_DIALOGS");
-                if (!string.IsNullOrEmpty(disableDialogs) && disableDialogs.Equals("true", StringComparison.OrdinalIgnoreCase))
-                    return true;
 
-                // デバッガーがアタッチされている場合
-                if (System.Diagnostics.Debugger.IsAttached)
-                    return true;
-
-                // アセンブリ名に"Test"が含まれている場合
-                var assemblyName = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
-                if (assemblyName?.Contains("Test", StringComparison.OrdinalIgnoreCase) == true)
-                    return true;
-
-                // 環境変数でテスト環境を判定
-                var testEnv = Environment.GetEnvironmentVariable("TEST_ENVIRONMENT");
-                if (!string.IsNullOrEmpty(testEnv) && testEnv.Equals("true", StringComparison.OrdinalIgnoreCase))
-                    return true;
-
-                // プロセス名に"test"が含まれている場合
-                var processName = System.Diagnostics.Process.GetCurrentProcess().ProcessName;
-                if (processName.Contains("test", StringComparison.OrdinalIgnoreCase))
-                    return true;
-
-                // スタックトレースにテスト関連のメソッドが含まれている場合
-                var stackTrace = Environment.StackTrace;
-                if (stackTrace.Contains("xunit", StringComparison.OrdinalIgnoreCase) ||
-                    stackTrace.Contains("test", StringComparison.OrdinalIgnoreCase))
-                    return true;
-
-                return false;
-            }
-            catch
-            {
-                // エラーが発生した場合は安全のためテスト環境とみなす
-                return true;
-            }
-        }
 
     }
 }

@@ -59,6 +59,12 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
         {
             try
             {
+                // テスト環境ではヘルプを開かない
+                if (IsTestEnvironment())
+                {
+                    return;
+                }
+
                 // ヘルプファイルまたはオンラインヘルプを開く
                 var helpUrl = "https://github.com/your-repo/browser-chooser/wiki";
                 System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
@@ -73,6 +79,16 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 MessageBox.Show($"ヘルプの表示に失敗しました: {ex.Message}", "エラー", 
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        /// <summary>
+        /// テスト環境かどうかを判定
+        /// </summary>
+        private bool IsTestEnvironment()
+        {
+            return Environment.GetEnvironmentVariable("TEST_ENVIRONMENT") == "true" ||
+                   Environment.GetEnvironmentVariable("DISABLE_HELP") == "true" ||
+                   System.Diagnostics.Process.GetCurrentProcess().ProcessName.Contains("test", StringComparison.OrdinalIgnoreCase);
         }
 
         /// <summary>

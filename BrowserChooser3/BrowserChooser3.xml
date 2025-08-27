@@ -919,6 +919,11 @@
             ヘルプボタンのクリックイベント
             </summary>
         </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormFormHandlers.IsTestEnvironment">
+            <summary>
+            テスト環境かどうかを判定
+            </summary>
+        </member>
         <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormFormHandlers.OptionsForm_FormClosing(System.Object,System.Windows.Forms.FormClosingEventArgs)">
             <summary>
             フォーム閉じる時の確認ダイアログ
@@ -980,6 +985,12 @@
             <summary>
             OptionsFormのUIパネル作成を担当するクラス
             </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormPanels.IsTestEnvironment">
+            <summary>
+            テスト環境かどうかを判定する
+            </summary>
+            <returns>テスト環境の場合はtrue</returns>
         </member>
         <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormPanels.GetBrowserIcons">
             <summary>
@@ -1088,12 +1099,6 @@
             アクセシビリティパネルの作成
             </summary>
             <returns>作成されたTabPage</returns>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormPanels.IsTestEnvironment">
-            <summary>
-            テスト環境かどうかを判定する
-            </summary>
-            <returns>テスト環境の場合はtrue</returns>
         </member>
         <member name="T:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormProtocolHandlers">
             <summary>
@@ -2459,6 +2464,11 @@
             SebCboLbリンクのクリックイベント
             </summary>
         </member>
+        <member name="M:BrowserChooser3.Forms.AboutForm.IsTestEnvironment">
+            <summary>
+            テスト環境かどうかを判定
+            </summary>
+        </member>
         <member name="T:BrowserChooser3.Forms.AccessibilitySettingsForm">
             <summary>
             アクセシビリティ設定ダイアログ
@@ -3088,6 +3098,12 @@
             <summary>
             フォームの初期化（Browser Chooser 2互換）
             </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.OptionsForm.IsTestEnvironment">
+            <summary>
+            テスト環境かどうかを判定する
+            </summary>
+            <returns>テスト環境の場合はtrue</returns>
         </member>
         <member name="M:BrowserChooser3.Forms.OptionsForm.SetupCategoriesPanel">
             <summary>

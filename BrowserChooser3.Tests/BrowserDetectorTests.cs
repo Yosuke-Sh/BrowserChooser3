@@ -301,6 +301,7 @@ namespace BrowserChooser3.Tests
                 // Assert
                 var browser = BrowserDetector.DetectedBrowsers.Last();
                 browser.Should().NotBeNull();
+                // カスタムブラウザが正しく追加されていることを確認
                 browser.Name.Should().Be("Test Browser 6");
                 browser.Target.Should().Be(testPath);
                 browser.Arguments.Should().Be("--test-arg");

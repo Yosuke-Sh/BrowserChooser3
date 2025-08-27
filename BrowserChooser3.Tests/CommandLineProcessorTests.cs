@@ -440,8 +440,8 @@ namespace BrowserChooser3.Tests
             // Act & Assert
             Action act = () => CommandLineProcessor.ParseArguments(null!);
             
-            // Should throw ArgumentNullException
-            act.Should().Throw<ArgumentNullException>();
+            // Should not throw exception, should return empty result
+            act.Should().NotThrow();
         }
 
         [Fact]

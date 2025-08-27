@@ -88,6 +88,12 @@ namespace BrowserChooser3.Forms
         {
             Text = _isEditMode ? "Edit Browser" : "Add Browser";
             
+            // _browserがnullの場合は処理をスキップ
+            if (_browser == null)
+            {
+                return;
+            }
+            
             var txtName = Controls.Find("txtName", true).FirstOrDefault() as TextBox;
             var txtTarget = Controls.Find("txtTarget", true).FirstOrDefault() as TextBox;
             var txtArguments = Controls.Find("txtArguments", true).FirstOrDefault() as TextBox;
@@ -96,11 +102,11 @@ namespace BrowserChooser3.Forms
             var nudRow = Controls.Find("nudRow", true).FirstOrDefault() as NumericUpDown;
             var nudCol = Controls.Find("nudCol", true).FirstOrDefault() as NumericUpDown;
 
-            if (txtName != null) txtName.Text = _browser.Name;
-            if (txtTarget != null) txtTarget.Text = _browser.Target;
-            if (txtArguments != null) txtArguments.Text = _browser.Arguments;
+            if (txtName != null) txtName.Text = _browser.Name ?? "";
+            if (txtTarget != null) txtTarget.Text = _browser.Target ?? "";
+            if (txtArguments != null) txtArguments.Text = _browser.Arguments ?? "";
             if (txtHotkey != null) txtHotkey.Text = _browser.Hotkey != '\0' ? _browser.Hotkey.ToString() : "";
-            if (txtCategory != null) txtCategory.Text = _browser.Category;
+            if (txtCategory != null) txtCategory.Text = _browser.Category ?? "";
             if (nudRow != null) nudRow.Value = _browser.PosY;
             if (nudCol != null) nudCol.Value = _browser.PosX;
         }

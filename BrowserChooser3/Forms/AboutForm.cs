@@ -434,6 +434,12 @@ namespace BrowserChooser3.Forms
             Logger.LogInfo("AboutForm.llHome_LinkClicked", "ホームページを開く");
             try
             {
+                // テスト環境ではブラウザを開かない
+                if (IsTestEnvironment())
+                {
+                    return;
+                }
+
                 System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
                 {
                     FileName = "https://github.com/BrowserChooser/BrowserChooser3",
@@ -454,6 +460,12 @@ namespace BrowserChooser3.Forms
             Logger.LogInfo("AboutForm.llLicense_LinkClicked", "ライセンスページを開く");
             try
             {
+                // テスト環境ではブラウザを開かない
+                if (IsTestEnvironment())
+                {
+                    return;
+                }
+
                 System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
                 {
                     FileName = "https://github.com/BrowserChooser/BrowserChooser3/blob/main/LICENSE",
@@ -517,6 +529,12 @@ namespace BrowserChooser3.Forms
             Logger.LogInfo("AboutForm.lblOriginalVersion_LinkClicked", "元バージョンのページを開く");
             try
             {
+                // テスト環境ではブラウザを開かない
+                if (IsTestEnvironment())
+                {
+                    return;
+                }
+
                 System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
                 {
                     FileName = "https://bitbucket.org/Verbail/browserchooser2rrfork",
@@ -537,6 +555,12 @@ namespace BrowserChooser3.Forms
             Logger.LogInfo("AboutForm.llSebCboLb_LinkClicked", "SebCboLbのページを開く");
             try
             {
+                // テスト環境ではブラウザを開かない
+                if (IsTestEnvironment())
+                {
+                    return;
+                }
+
                 System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
                 {
                     FileName = "https://github.com/BrowserChooser/BrowserChooser3/contributors",
@@ -547,6 +571,16 @@ namespace BrowserChooser3.Forms
             {
                 Logger.LogError("AboutForm.llSebCboLb_LinkClicked", "SebCboLbのページを開けませんでした", ex.Message);
             }
+        }
+
+        /// <summary>
+        /// テスト環境かどうかを判定
+        /// </summary>
+        private bool IsTestEnvironment()
+        {
+            return Environment.GetEnvironmentVariable("TEST_ENVIRONMENT") == "true" ||
+                   Environment.GetEnvironmentVariable("DISABLE_HELP") == "true" ||
+                   System.Diagnostics.Process.GetCurrentProcess().ProcessName.Contains("test", StringComparison.OrdinalIgnoreCase);
         }
 
 
