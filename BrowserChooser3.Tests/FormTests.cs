@@ -98,7 +98,6 @@ namespace BrowserChooser3.Tests
             var browsers = new Dictionary<int, Browser>();
             var protocols = new Dictionary<int, Protocol>();
             var fileTypes = new Dictionary<int, FileType>();
-            var isAdvanced = false;
             var gridSize = new Point(3, 3);
 
             // Act & Assert - テスト環境ではフォームを表示せず、メソッドの動作のみをテスト
@@ -127,7 +126,6 @@ namespace BrowserChooser3.Tests
             var browsers = new Dictionary<int, Browser>();
             var protocols = new Dictionary<int, Protocol>();
             var fileTypes = new Dictionary<int, FileType>();
-            var isAdvanced = false;
 
             // Act & Assert - テスト環境ではフォームを表示せず、メソッドの動作のみをテスト
             ExceptionHandler.ExecuteIgnoringSTAErrors(() =>
@@ -527,7 +525,7 @@ namespace BrowserChooser3.Tests
         #region スレッド安全性テスト
 
         [Fact]
-        public void Forms_Constructor_ShouldBeThreadSafe()
+        public async Task Forms_Constructor_ShouldBeThreadSafe()
         {
             // Arrange
             var tasks = new List<Task<AddEditBrowserForm>>();
@@ -538,7 +536,7 @@ namespace BrowserChooser3.Tests
                 tasks.Add(Task.Run(() => new AddEditBrowserForm()));
             }
 
-            Task.WaitAll(tasks.ToArray());
+            await Task.WhenAll(tasks);
 
             // Assert
             var forms = tasks.Select(t => t.Result).ToList();

@@ -37,10 +37,10 @@ namespace BrowserChooser3.Tests
         [InlineData("not-a-url", false)]
         [InlineData("", false)]
         [InlineData(null, false)]
-        public void URLUtilities_IsValidURL_ShouldReturnCorrectResult(string url, bool expected)
+        public void URLUtilities_IsValidURL_ShouldReturnCorrectResult(string? url, bool expected)
         {
             // Act
-            var isValid = URLUtilities.IsValidURL(url);
+            var isValid = URLUtilities.IsValidURL(url!);
 
             // Assert
             isValid.Should().Be(expected);
@@ -56,10 +56,10 @@ namespace BrowserChooser3.Tests
         [InlineData("https://www.example.com", false)]
         [InlineData("", false)]
         [InlineData(null, false)]
-        public void URLUtilities_IsFilePath_ShouldReturnCorrectResult(string path, bool expected)
+        public void URLUtilities_IsFilePath_ShouldReturnCorrectResult(string? path, bool expected)
         {
             // Act
-            var isFilePath = URLUtilities.IsFilePath(path);
+            var isFilePath = URLUtilities.IsFilePath(path!);
 
             // Assert
             isFilePath.Should().Be(expected);
@@ -129,10 +129,10 @@ namespace BrowserChooser3.Tests
         [InlineData("https://www.google.com", "https://www.bing.com", false)]
         [InlineData("", "", true)]
         [InlineData(null, null, true)]
-        public void URLUtilities_MatchURLs_ShouldReturnCorrectResult(string url1, string url2, bool expected)
+        public void URLUtilities_MatchURLs_ShouldReturnCorrectResult(string? url1, string? url2, bool expected)
         {
             // Act
-            var matches = URLUtilities.MatchURLs(url1, url2);
+            var matches = URLUtilities.MatchURLs(url1!, url2!);
 
             // Assert
             matches.Should().Be(expected);
@@ -211,7 +211,7 @@ namespace BrowserChooser3.Tests
         #region スレッド安全性テスト
 
         [Fact]
-        public void URLUtilities_StaticMethods_ShouldBeThreadSafe()
+        public async Task URLUtilities_StaticMethods_ShouldBeThreadSafe()
         {
             // Arrange
             var tasks = new List<Task<bool>>();
@@ -223,7 +223,7 @@ namespace BrowserChooser3.Tests
                 tasks.Add(Task.Run(() => URLUtilities.IsValidURL(testUrl)));
             }
 
-            Task.WaitAll(tasks.ToArray());
+            await Task.WhenAll(tasks);
 
             // Assert
             tasks.Should().AllSatisfy(task => task.Result.Should().BeTrue());

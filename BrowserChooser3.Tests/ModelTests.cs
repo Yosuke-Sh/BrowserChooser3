@@ -588,7 +588,7 @@ namespace BrowserChooser3.Tests
         #region スレッド安全性テスト
 
         [Fact]
-        public void Browser_Properties_ShouldBeThreadSafe()
+        public async Task Browser_Properties_ShouldBeThreadSafe()
         {
             // Arrange
             var browser = new Browser();
@@ -606,7 +606,7 @@ namespace BrowserChooser3.Tests
                 }));
             }
 
-            Task.WaitAll(tasks.ToArray());
+            await Task.WhenAll(tasks);
 
             // Assert
             browser.Should().NotBeNull();

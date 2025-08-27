@@ -188,7 +188,7 @@ namespace BrowserChooser3.Tests
         #region スレッド安全性テスト
 
         [Fact]
-        public void GeneralUtilities_StaticMethods_ShouldBeThreadSafe()
+        public async Task GeneralUtilities_StaticMethods_ShouldBeThreadSafe()
         {
             // Arrange
             var tasks = new List<Task<bool>>();
@@ -200,7 +200,7 @@ namespace BrowserChooser3.Tests
                 tasks.Add(Task.Run(() => GeneralUtilities.IsValidPath(testPath)));
             }
 
-            Task.WaitAll(tasks.ToArray());
+            await Task.WhenAll(tasks);
 
             // Assert
             tasks.Should().AllSatisfy(task => task.Result.Should().BeTrue());

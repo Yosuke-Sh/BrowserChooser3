@@ -28,7 +28,7 @@ namespace BrowserChooser3.Tests
                 // STAスレッドエラーを無視
                 Console.WriteLine("STAスレッドエラーを無視しました: " + ex.Message);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // その他の例外は再スロー
                 throw;

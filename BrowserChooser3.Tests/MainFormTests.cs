@@ -60,10 +60,10 @@ namespace BrowserChooser3.Tests
         [InlineData(null)]
         [InlineData("")]
         [InlineData("invalid-url")]
-        public void UpdateURL_WithInvalidUrl_ShouldNotThrowException(string url)
+        public void UpdateURL_WithInvalidUrl_ShouldNotThrowException(string? url)
         {
             // Act & Assert
-            var action = () => _form.UpdateURL(url);
+            var action = () => _form.UpdateURL(url!);
             action.Should().NotThrow();
         }
         #endregion
@@ -179,7 +179,7 @@ namespace BrowserChooser3.Tests
         public void UpdateURL_WithNullUrl_ShouldHandleGracefully()
         {
             // Act & Assert
-            var action = () => _form.UpdateURL(null);
+            var action = () => _form.UpdateURL(null!);
             action.Should().NotThrow();
         }
         #endregion
@@ -187,7 +187,7 @@ namespace BrowserChooser3.Tests
         #region スレッド安全性テスト
 
         [Fact]
-        public void UpdateURL_ShouldBeThreadSafe()
+        public async Task UpdateURL_ShouldBeThreadSafe()
         {
             // Arrange
             var url = "https://example.com";
@@ -199,7 +199,7 @@ namespace BrowserChooser3.Tests
                 tasks.Add(Task.Run(() => _form.UpdateURL(url)));
             }
 
-            Task.WaitAll(tasks.ToArray());
+            await Task.WhenAll(tasks);
 
             // Assert
             tasks.Should().HaveCount(10);

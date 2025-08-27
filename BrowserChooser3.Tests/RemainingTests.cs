@@ -488,7 +488,7 @@ namespace BrowserChooser3.Tests
         #region エッジケーステスト
 
         [Fact]
-        public void RemainingClasses_WithConcurrentAccess_ShouldHandleGracefully()
+        public async Task RemainingClasses_WithConcurrentAccess_ShouldHandleGracefully()
         {
             // Act & Assert
             var tasks = new List<Task>
@@ -518,7 +518,7 @@ namespace BrowserChooser3.Tests
                 })
             };
 
-            Task.WaitAll(tasks.ToArray());
+            await Task.WhenAll(tasks);
         }
 
         [Fact]

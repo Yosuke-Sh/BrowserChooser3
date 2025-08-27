@@ -201,7 +201,7 @@ namespace BrowserChooser3.Tests
         }
 
         [Fact]
-        public void OpenAccessibilitySettings_ShouldBeThreadSafe()
+        public async Task OpenAccessibilitySettings_ShouldBeThreadSafe()
         {
             // Arrange
             var exceptions = new List<Exception>();
@@ -225,7 +225,7 @@ namespace BrowserChooser3.Tests
             })).ToArray();
 
             // Assert
-            Task.WaitAll(tasks, TimeSpan.FromSeconds(5)); // 5秒でタイムアウト
+            await Task.WhenAll(tasks);
             
             // 例外が発生していないことを確認
             exceptions.Should().BeEmpty();
