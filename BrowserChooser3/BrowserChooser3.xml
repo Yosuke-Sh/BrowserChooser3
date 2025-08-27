@@ -2881,6 +2881,16 @@
             コンテキストメニューの作成
             </summary>
         </member>
+        <member name="M:BrowserChooser3.Forms.MainForm.InitializeToolTips">
+            <summary>
+            ツールチップの初期化
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.MainForm.SetupButtonToolTips">
+            <summary>
+            ボタンにツールチップを設定
+            </summary>
+        </member>
         <member name="M:BrowserChooser3.Forms.MainForm.CreateCountdownLabel">
             <summary>
             カウントダウンラベルの作成

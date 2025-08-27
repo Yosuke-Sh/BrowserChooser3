@@ -330,29 +330,33 @@ namespace BrowserChooser3.CustomControls
             // アイコンがある場合の処理
             if (Image != null)
             {
-                // アイコンを中央に配置
+                // アイコンを上寄せに配置（テキストスペースを考慮）
                 var imageRect = new Rectangle(
                     rect.X + (rect.Width - Image.Width) / 2,
-                    rect.Y + (rect.Height - Image.Height) / 2,
+                    rect.Y + 5, // 上から5ピクセルの余白
                     Image.Width,
                     Image.Height);
 
                 graphics.DrawImage(Image, imageRect);
                 
-                // テキストがある場合はアイコンの下に配置
-                if (!string.IsNullOrEmpty(Text) && Text.Trim() != " ")
+                // テキストがある場合（スペースのみでない場合）はアイコンの下に配置
+                if (!string.IsNullOrEmpty(Text) && Text.Trim() != "" && Text.Trim() != " ")
                 {
                     var textRect = new Rectangle(
                         rect.X,
-                        rect.Y + Image.Height + 5,
+                        rect.Y + Image.Height + 10, // アイコンの下に10ピクセルの余白
                         rect.Width,
-                        rect.Height - Image.Height - 5);
+                        rect.Height - Image.Height - 15); // 下部に5ピクセルの余白
                     graphics.DrawString(Text, font, brush, textRect, format);
                 }
             }
             else
             {
-                graphics.DrawString(Text, font, brush, rect, format);
+                // テキストのみの場合
+                if (!string.IsNullOrEmpty(Text) && Text.Trim() != "")
+                {
+                    graphics.DrawString(Text, font, brush, rect, format);
+                }
             }
         }
 

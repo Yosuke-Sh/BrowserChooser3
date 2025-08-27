@@ -28,6 +28,9 @@ namespace BrowserChooser3.Forms
 
         // Browser Chooser 2互換のUI要素（デザイナーファイルで定義済み）
         private ContextMenuStrip? _cmOptions;
+        
+        // ツールチップ
+        private ToolTip? _toolTip;
 
         /// <summary>
         /// MainFormクラスの新しいインスタンスを初期化します
@@ -61,11 +64,17 @@ namespace BrowserChooser3.Forms
                 // フォームの設定
                 ConfigureForm();
                 
+                // ツールチップの初期化
+                InitializeToolTips();
+                
                 // ブラウザボタンの作成
                 CreateBrowserButtons();
                 
                 // カウントダウンラベルの作成
                 CreateCountdownLabel();
+                
+                // ボタンのツールチップ設定
+                SetupButtonToolTips();
                 
                 // Browser Chooser 2互換のUI要素の位置調整
                 AdjustCompatibilityUILayout();
@@ -447,6 +456,17 @@ namespace BrowserChooser3.Forms
                     ffButton.ArrowKeyUp += FFButton_ArrowKeyUp;
                 }
                 
+                // ブラウザボタンにツールチップを設定
+                if (_toolTip != null)
+                {
+                    var tooltipText = $"{browser.Name}\nパス: {browser.Target}";
+                    if (!string.IsNullOrEmpty(browser.Arguments))
+                    {
+                        tooltipText += $"\n引数: {browser.Arguments}";
+                    }
+                    _toolTip.SetToolTip(button, tooltipText);
+                }
+                
                 Controls.Add(button);
                 
                 // ホットキーとデフォルトブラウザのオーバーレイラベルを作成
@@ -471,8 +491,8 @@ namespace BrowserChooser3.Forms
             {
                 Name = $"lblName_{index}",
                 AutoSize = true,
-                BackColor = Color.FromArgb(200, 0, 0, 0), // 半透明の黒
-                ForeColor = Color.White,
+                BackColor = Color.Transparent, // 背景を透過
+                ForeColor = Color.Black, // 文字色を黒に変更
                 Font = new Font("Segoe UI", 8.0f, FontStyle.Bold, GraphicsUnit.Point, 0),
                 TextAlign = ContentAlignment.MiddleCenter,
                 Text = browser.Name
@@ -762,6 +782,7 @@ namespace BrowserChooser3.Forms
                 if (btnOptions != null)
                 {
                     btnOptions.Location = new Point(ClientSize.Width - 35, 15);
+                    btnOptions.ImageAlign = ContentAlignment.MiddleCenter;
                     btnOptions.Size = new Size(28, 28);
                     btnOptions.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
                 }
@@ -769,6 +790,7 @@ namespace BrowserChooser3.Forms
                 if (btnCopyToClipboard != null)
                 {
                     btnCopyToClipboard.Location = new Point(ClientSize.Width - 35, 50);
+                    btnCopyToClipboard.ImageAlign = ContentAlignment.MiddleCenter;
                     btnCopyToClipboard.Size = new Size(28, 28);
                     btnCopyToClipboard.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
                 }
@@ -776,6 +798,7 @@ namespace BrowserChooser3.Forms
                 if (btnCopyToClipboardAndClose != null)
                 {
                     btnCopyToClipboardAndClose.Location = new Point(ClientSize.Width - 35, 85);
+                    btnCopyToClipboardAndClose.ImageAlign = ContentAlignment.MiddleCenter;
                     btnCopyToClipboardAndClose.Size = new Size(28, 28);
                     btnCopyToClipboardAndClose.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
                 }
@@ -783,6 +806,7 @@ namespace BrowserChooser3.Forms
                 {
                     // btnCancelを他のボタンの下に配置（固定位置を解除）
                     btnCancel.Location = new Point(ClientSize.Width - 35, ClientSize.Height - 120);
+                    btnCancel.ImageAlign = ContentAlignment.MiddleCenter;
                     btnCancel.Size = new Size(28, 28);
                     btnCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
                 }
@@ -874,6 +898,50 @@ namespace BrowserChooser3.Forms
             var toolStripMenuItem3 = new ToolStripMenuItem("ToolStripMenuItem3");
             
             _cmOptions.Items.AddRange(new ToolStripItem[] { miEditMode, toolStripSeparator1, toolStripMenuItem2, toolStripMenuItem3 });
+        }
+
+        /// <summary>
+        /// ツールチップの初期化
+        /// </summary>
+        private void InitializeToolTips()
+        {
+            _toolTip = new ToolTip();
+            _toolTip.IsBalloon = false;
+            _toolTip.ToolTipTitle = "Browser Chooser";
+            _toolTip.ShowAlways = true;
+            _toolTip.AutoPopDelay = 5000;
+            _toolTip.InitialDelay = 1000;
+            _toolTip.ReshowDelay = 500;
+        }
+
+        /// <summary>
+        /// ボタンにツールチップを設定
+        /// </summary>
+        private void SetupButtonToolTips()
+        {
+            if (_toolTip == null) return;
+
+            // 基本ボタンのツールチップ設定
+            if (btnInfo != null)
+                _toolTip.SetToolTip(btnInfo, "アプリケーション情報を表示します");
+
+            if (btnOptions != null)
+                _toolTip.SetToolTip(btnOptions, "設定画面を開きます");
+
+            if (btnCancel != null)
+                _toolTip.SetToolTip(btnCancel, "アプリケーションを終了します");
+
+            if (btnCopyToClipboard != null)
+                _toolTip.SetToolTip(btnCopyToClipboard, "URLをクリップボードにコピーします");
+
+            if (btnCopyToClipboardAndClose != null)
+                _toolTip.SetToolTip(btnCopyToClipboardAndClose, "URLをクリップボードにコピーしてアプリケーションを終了します");
+
+            if (chkAutoClose != null)
+                _toolTip.SetToolTip(chkAutoClose, "ブラウザ起動後にアプリケーションを自動で閉じます");
+
+            if (chkAutoOpen != null)
+                _toolTip.SetToolTip(chkAutoOpen, "デフォルトブラウザで自動的にURLを開きます");
         }
 
         /// <summary>
