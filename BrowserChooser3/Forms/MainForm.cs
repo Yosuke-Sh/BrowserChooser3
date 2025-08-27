@@ -144,10 +144,12 @@ namespace BrowserChooser3.Forms
                 // AutoOpenの初期化
                 if (chkAutoOpen != null)
                 {
+                    // chkAutoOpenを常に表示（デフォルトブラウザの有無に関係なく）
+                    chkAutoOpen.Visible = true;
+                    
                     if (_defaultBrowser != null && (_settings?.DefaultDelay ?? 0) > 0)
                     {
                         // デフォルトブラウザがある場合
-                        chkAutoOpen.Visible = true;
                         chkAutoOpen.Checked = true; // デフォルトでチェック
                         _currentDelay = _settings?.DefaultDelay ?? 5;
                         
@@ -161,17 +163,12 @@ namespace BrowserChooser3.Forms
                     }
                     else
                     {
-                        // デフォルトブラウザがない場合
-                        chkAutoOpen.Visible = false;
+                        // デフォルトブラウザがない場合でも表示
+                        chkAutoOpen.Checked = false;
+                        chkAutoOpen.Text = "Auto Open (No default browser set)";
                         if (tmrDelay != null)
                         {
                             tmrDelay.Enabled = false;
-                        }
-                        
-                        // AutoCloseの位置を調整
-                        if (chkAutoClose != null)
-                        {
-                            chkAutoClose.Location = new Point(20, ClientSize.Height - 50);
                         }
                     }
                 }
@@ -208,7 +205,7 @@ namespace BrowserChooser3.Forms
             
             // サイズの設定（動的サイズ変更対応）
             MinimumSize = new Size(600, 300);  // 最小サイズを設定
-            ClientSize = new Size(900, 400);   // 初期サイズ
+            ClientSize = new Size(600, 220);   // 初期サイズ
             
             // サイズ変更イベントの設定
             Resize += MainForm_Resize;
@@ -400,6 +397,7 @@ namespace BrowserChooser3.Forms
                     Tag = browser,
                     FlatStyle = FlatStyle.Flat,
                     BackColor = Color.Transparent,
+                    ImageAlign = ContentAlignment.MiddleCenter,
                     UseVisualStyleBackColor = false,
                     Font = new Font("Segoe UI", 6.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
                     TextAlign = ContentAlignment.MiddleCenter,
@@ -761,18 +759,32 @@ namespace BrowserChooser3.Forms
                     btnInfo.Size = new Size(24, 24);
                 }
 
-
-
                 if (btnOptions != null)
                 {
                     btnOptions.Location = new Point(ClientSize.Width - 35, 15);
                     btnOptions.Size = new Size(28, 28);
+                    btnOptions.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+                }
+                
+                if (btnCopyToClipboard != null)
+                {
+                    btnCopyToClipboard.Location = new Point(ClientSize.Width - 35, 50);
+                    btnCopyToClipboard.Size = new Size(28, 28);
+                    btnCopyToClipboard.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
                 }
 
+                if (btnCopyToClipboardAndClose != null)
+                {
+                    btnCopyToClipboardAndClose.Location = new Point(ClientSize.Width - 35, 85);
+                    btnCopyToClipboardAndClose.Size = new Size(28, 28);
+                    btnCopyToClipboardAndClose.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+                }
                 if (btnCancel != null)
                 {
-                    btnCancel.Location = new Point(370, 12);
-                    btnCancel.Size = new Size(0, 0);
+                    // btnCancelを他のボタンの下に配置（固定位置を解除）
+                    btnCancel.Location = new Point(ClientSize.Width - 35, ClientSize.Height - 120);
+                    btnCancel.Size = new Size(28, 28);
+                    btnCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
                 }
 
                 if (chkAutoClose != null)
@@ -785,18 +797,6 @@ namespace BrowserChooser3.Forms
                 {
                     chkAutoOpen.Location = new Point(20, ClientSize.Height - 50);
                     chkAutoOpen.Size = new Size(450, 22);
-                }
-
-                if (btnCopyToClipboard != null)
-                {
-                    btnCopyToClipboard.Location = new Point(ClientSize.Width - 35, 50);
-                    btnCopyToClipboard.Size = new Size(28, 28);
-                }
-
-                if (btnCopyToClipboardAndClose != null)
-                {
-                    btnCopyToClipboardAndClose.Location = new Point(ClientSize.Width - 35, 85);
-                    btnCopyToClipboardAndClose.Size = new Size(28, 28);
                 }
 
                 // 遅延タイマーの設定
@@ -840,14 +840,14 @@ namespace BrowserChooser3.Forms
                 if (btnCopyToClipboard != null)
                 {
                     var pasteIcon = Properties.Resources.PasteIcon;
-                    btnCopyToClipboard.Image = ImageUtilities.ResizeImage(pasteIcon, 20, 20);
+                    btnCopyToClipboard.Image = ImageUtilities.ResizeImage(pasteIcon, 28, 28);
                 }
                 
                 // コピー＆クローズボタンのアイコン読み込み
                 if (btnCopyToClipboardAndClose != null)
                 {
                     var pasteAndCloseIcon = Properties.Resources.PasteAndCloseIcon;
-                    btnCopyToClipboardAndClose.Image = ImageUtilities.ResizeImage(pasteAndCloseIcon, 20, 20);
+                    btnCopyToClipboardAndClose.Image = ImageUtilities.ResizeImage(pasteAndCloseIcon, 28, 28);
                 }
                 
                 Logger.LogInfo("MainForm.LoadIcons", "アイコン読み込み完了");
@@ -1565,7 +1565,8 @@ namespace BrowserChooser3.Forms
                         Size = new Size(100, 20),
                         Location = new Point(130, ClientSize.Height - 50),
                         Anchor = AnchorStyles.Bottom | AnchorStyles.Left,
-                        Checked = true
+                        Checked = false, // デフォルトは無効
+                        Visible = true   // 常に表示
                     };
                     Controls.Add(chkAutoOpen);
                 }

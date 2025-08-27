@@ -39,16 +39,7 @@ namespace BrowserChooser3.Classes.Utilities
         {
             try
             {
-                // デバッガーがアタッチされている場合
-                if (System.Diagnostics.Debugger.IsAttached)
-                    return true;
-
-                // アセンブリ名に"Test"が含まれている場合
-                var assemblyName = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
-                if (assemblyName?.Contains("Test", StringComparison.OrdinalIgnoreCase) == true)
-                    return true;
-
-                // 環境変数でテスト環境が設定されている場合
+                // 環境変数でテスト環境が明示的に設定されている場合のみ
                 var testEnvironment = Environment.GetEnvironmentVariable("TEST_ENVIRONMENT");
                 if (!string.IsNullOrEmpty(testEnvironment) && testEnvironment.Equals("true", StringComparison.OrdinalIgnoreCase))
                     return true;
@@ -58,19 +49,6 @@ namespace BrowserChooser3.Classes.Utilities
                 if (!string.IsNullOrEmpty(disableDialogs) && disableDialogs.Equals("true", StringComparison.OrdinalIgnoreCase))
                     return true;
 
-                // スタックトレースにテストフレームワークのメソッドが含まれている場合
-                var stackTrace = new System.Diagnostics.StackTrace();
-                foreach (var frame in stackTrace.GetFrames())
-                {
-                    var methodName = frame.GetMethod()?.Name;
-                    if (methodName != null && (methodName.Contains("xunit", StringComparison.OrdinalIgnoreCase) ||
-                                                methodName.Contains("nunit", StringComparison.OrdinalIgnoreCase) ||
-                                                methodName.Contains("mstest", StringComparison.OrdinalIgnoreCase)))
-                    {
-                        return true;
-                    }
-                }
-
                 // プロセス名にテストランナーが含まれている場合
                 var processName = System.Diagnostics.Process.GetCurrentProcess().ProcessName;
                 if (processName.Contains("testhost", StringComparison.OrdinalIgnoreCase) ||
@@ -78,6 +56,11 @@ namespace BrowserChooser3.Classes.Utilities
                 {
                     return true;
                 }
+
+                // アセンブリ名に"Test"が含まれている場合（テストプロジェクトの場合のみ）
+                var assemblyName = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
+                if (assemblyName?.Contains("Test", StringComparison.OrdinalIgnoreCase) == true)
+                    return true;
 
                 return false;
             }
