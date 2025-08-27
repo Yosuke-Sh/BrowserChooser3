@@ -238,6 +238,7 @@ namespace BrowserChooser3.Classes
         /// <summary>プロトコルリスト</summary>
         public List<Protocol> Protocols { get; set; } = new();
         
+        
         /// <summary>ファイルタイプリスト</summary>
         public List<FileType> FileTypes { get; set; } = new();
         
@@ -638,17 +639,7 @@ namespace BrowserChooser3.Classes
             }
             else
             {
-                // レガシー設定ファイルのインポートを試行
-                if (Importer.HasLegacySettings(path))
-                {
-                    Logger.LogInfo("Settings.Load", "レガシー設定ファイルを検出", path);
-                    var newSettings = new Settings(false);
-                    if (Importer.ImportLegacySettings(path, newSettings))
-                    {
-                        Logger.LogInfo("Settings.Load", "レガシー設定のインポートが完了しました");
-                        return newSettings;
-                    }
-                }
+                // レガシー設定ファイルのインポート機能は削除されました
             }
 
             Logger.LogInfo("Settings.Load", "設定ファイルが存在しないためデフォルト設定を使用", path);

@@ -103,9 +103,9 @@ namespace BrowserChooser3.Forms
         {
             if (_settings?.RevealShortURL == true && !string.IsNullOrEmpty(_currentUrl))
             {
-                var parts = URLUtilities.DetermineParts(_currentUrl);
-                if (parts.IsProtocol == Settings.TriState.True && 
-                    (parts.Protocol == "http" || parts.Protocol == "https"))
+                // HTTP/HTTPS URLの場合のみ短縮URL展開を実行
+                if (_currentUrl.StartsWith("http://", StringComparison.OrdinalIgnoreCase) || 
+                    _currentUrl.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
                 {
                     var userAgent = _settings.UserAgent ?? "Mozilla/5.0";
                     URLUtilities.UnshortenURLAsync(_currentUrl, userAgent, (expandedUrl) =>

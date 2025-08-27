@@ -611,6 +611,12 @@
             アクセシビリティボタンのクリックイベント
             </summary>
         </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormAccessibilityHandlers.IsTestEnvironment">
+            <summary>
+            テスト環境かどうかを判定する
+            </summary>
+            <returns>テスト環境の場合はtrue</returns>
+        </member>
         <member name="T:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormBackgroundHandlers">
             <summary>
             OptionsFormの背景色関連イベントハンドラーを管理するクラス
@@ -643,6 +649,12 @@
             <summary>
             透明背景ボタンのクリックイベント
             </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormBackgroundHandlers.IsTestEnvironment">
+            <summary>
+            テスト環境かどうかを判定する
+            </summary>
+            <returns>テスト環境の場合はtrue</returns>
         </member>
         <member name="T:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormBrowserHandlers">
             <summary>
@@ -1077,6 +1089,12 @@
             </summary>
             <returns>作成されたTabPage</returns>
         </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormPanels.IsTestEnvironment">
+            <summary>
+            テスト環境かどうかを判定する
+            </summary>
+            <returns>テスト環境の場合はtrue</returns>
+        </member>
         <member name="T:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormProtocolHandlers">
             <summary>
             プロトコルパネルのイベントハンドラー
@@ -1190,284 +1208,6 @@
             </summary>
             <param name="args">既存の引数</param>
             <returns>環境変数で更新された引数</returns>
-        </member>
-        <member name="T:BrowserChooser3.Classes.Services.SystemServices.Importer">
-            <summary>
-            レガシー設定インポート機能を提供するクラス
-            Browser Chooser 2の設定ファイルをBrowserChooser3に変換します
-            </summary>
-        </member>
-        <member name="F:BrowserChooser3.Classes.Services.SystemServices.Importer.BC2_CONFIG_FILE">
-            <summary>
-            Browser Chooser 2の設定ファイル名
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Services.SystemServices.Importer.ImportLegacySettings(System.String,BrowserChooser3.Classes.Settings)">
-            <summary>
-            レガシー設定をインポートします
-            </summary>
-            <param name="sourcePath">ソースパス</param>
-            <param name="targetSettings">ターゲット設定</param>
-            <returns>インポートが成功した場合はtrue</returns>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Services.SystemServices.Importer.LoadBC2Settings(System.String)">
-            <summary>
-            Browser Chooser 2の設定ファイルを読み込みます
-            </summary>
-            <param name="configPath">設定ファイルパス</param>
-            <returns>BC2Settingsオブジェクト</returns>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Services.SystemServices.Importer.ConvertSettings(BrowserChooser3.Classes.Services.SystemServices.BC2Settings,BrowserChooser3.Classes.Settings)">
-            <summary>
-            設定を変換します
-            </summary>
-            <param name="source">ソース設定</param>
-            <param name="target">ターゲット設定</param>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Services.SystemServices.Importer.ConvertBrowsers(BrowserChooser3.Classes.Services.SystemServices.BC2Browser[],System.Collections.Generic.List{BrowserChooser3.Classes.Models.Browser})">
-            <summary>
-            ブラウザ設定を変換します
-            </summary>
-            <param name="source">ソースブラウザリスト</param>
-            <param name="target">ターゲットブラウザリスト</param>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Services.SystemServices.Importer.ConvertProtocols(BrowserChooser3.Classes.Services.SystemServices.BC2Protocol[],System.Collections.Generic.List{BrowserChooser3.Classes.Models.Protocol})">
-            <summary>
-            プロトコル設定を変換します
-            </summary>
-            <param name="source">ソースプロトコルリスト</param>
-            <param name="target">ターゲットプロトコルリスト</param>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Services.SystemServices.Importer.ConvertFileTypes(BrowserChooser3.Classes.Services.SystemServices.BC2FileType[],System.Collections.Generic.List{BrowserChooser3.Classes.Models.FileType})">
-            <summary>
-            ファイルタイプ設定を変換します
-            </summary>
-            <param name="source">ソースファイルタイプリスト</param>
-            <param name="target">ターゲットファイルタイプリスト</param>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Services.SystemServices.Importer.ConvertURLs(BrowserChooser3.Classes.Services.SystemServices.BC2URL[],System.Collections.Generic.List{BrowserChooser3.Classes.Models.URL})">
-            <summary>
-            URL設定を変換します
-            </summary>
-            <param name="source">ソースURLリスト</param>
-            <param name="target">ターゲットURLリスト</param>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Services.SystemServices.Importer.HasLegacySettings(System.String)">
-            <summary>
-            レガシー設定ファイルの存在をチェックします
-            </summary>
-            <param name="path">チェックするパス</param>
-            <returns>存在する場合はtrue</returns>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Services.SystemServices.Importer.CreateBackup(System.String,System.String)">
-            <summary>
-            レガシー設定ファイルのバックアップを作成します
-            </summary>
-            <param name="sourcePath">ソースパス</param>
-            <param name="backupPath">バックアップパス</param>
-            <returns>バックアップが成功した場合はtrue</returns>
-        </member>
-        <member name="T:BrowserChooser3.Classes.Services.SystemServices.BC2Settings">
-            <summary>
-            Browser Chooser 2の設定クラス（XMLデシリアライゼーション用）
-            </summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.FileVersion">
-            <summary>ファイルバージョン</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.IconWidth">
-            <summary>アイコン幅</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.IconHeight">
-            <summary>アイコン高さ</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.IconGapWidth">
-            <summary>アイコン間隔（幅）</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.IconGapHeight">
-            <summary>アイコン間隔（高さ）</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.IconScale">
-            <summary>アイコンスケール</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.OptionsShortcut">
-            <summary>オプションショートカットキー</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.DefaultMessage">
-            <summary>デフォルトメッセージ</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.DefaultDelay">
-            <summary>デフォルト遅延時間</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.DefaultBrowserGuid">
-            <summary>デフォルトブラウザのGUID</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.ShowFocus">
-            <summary>フォーカス表示の有効/無効</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.UseAero">
-            <summary>Aero効果の有効/無効</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.FocusBoxLineWidth">
-            <summary>フォーカスボックスの線幅</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.FocusBoxColor">
-            <summary>フォーカスボックスの色</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.UserAgent">
-            <summary>ユーザーエージェント</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.BackgroundColor">
-            <summary>背景色</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.StartingPosition">
-            <summary>開始位置</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.OffsetX">
-            <summary>X座標オフセット</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.OffsetY">
-            <summary>Y座標オフセット</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.AllowStayOpen">
-            <summary>開いたままにするかどうか</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.Canonicalize">
-            <summary>正規化の有効/無効</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.CanonicalizeAppendedText">
-            <summary>正規化時に追加するテキスト</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.EnableLogging">
-            <summary>ログの有効/無効</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.LogLevel">
-            <summary>ログレベル</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.Browsers">
-            <summary>ブラウザリスト</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.Protocols">
-            <summary>プロトコルリスト</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.FileTypes">
-            <summary>ファイルタイプリスト</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Settings.URLs">
-            <summary>URLリスト</summary>
-        </member>
-        <member name="T:BrowserChooser3.Classes.Services.SystemServices.BC2Browser">
-            <summary>
-            Browser Chooser 2のブラウザクラス
-            </summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Browser.Name">
-            <summary>ブラウザ名</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Browser.Target">
-            <summary>実行ファイルパス</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Browser.Arguments">
-            <summary>起動引数</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Browser.Guid">
-            <summary>ブラウザのGUID</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Browser.Hotkey">
-            <summary>ホットキー</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Browser.PosX">
-            <summary>X座標</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Browser.PosY">
-            <summary>Y座標</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Browser.Scale">
-            <summary>スケール</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Browser.IconIndex">
-            <summary>アイコンインデックス</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Browser.Category">
-            <summary>カテゴリ</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Browser.Visible">
-            <summary>表示フラグ</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Browser.IsDefault">
-            <summary>デフォルトブラウザフラグ</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Browser.CustomImagePath">
-            <summary>カスタム画像パス</summary>
-        </member>
-        <member name="T:BrowserChooser3.Classes.Services.SystemServices.BC2Protocol">
-            <summary>
-            Browser Chooser 2のプロトコルクラス
-            </summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Protocol.Name">
-            <summary>プロトコル名</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Protocol.Header">
-            <summary>プロトコルヘッダー</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Protocol.Guid">
-            <summary>プロトコルのGUID</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Protocol.SupportingBrowsers">
-            <summary>対応ブラウザのGUIDリスト</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Protocol.Category">
-            <summary>カテゴリ</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2Protocol.Active">
-            <summary>アクティブフラグ</summary>
-        </member>
-        <member name="T:BrowserChooser3.Classes.Services.SystemServices.BC2FileType">
-            <summary>
-            Browser Chooser 2のファイルタイプクラス
-            </summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2FileType.Name">
-            <summary>ファイルタイプ名</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2FileType.Extension">
-            <summary>ファイル拡張子</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2FileType.Guid">
-            <summary>ファイルタイプのGUID</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2FileType.SupportingBrowsers">
-            <summary>対応ブラウザのGUIDリスト</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2FileType.Category">
-            <summary>カテゴリ</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2FileType.Active">
-            <summary>アクティブフラグ</summary>
-        </member>
-        <member name="T:BrowserChooser3.Classes.Services.SystemServices.BC2URL">
-            <summary>
-            Browser Chooser 2のURLクラス
-            </summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2URL.Name">
-            <summary>URL名</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2URL.Pattern">
-            <summary>URLパターン</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2URL.Guid">
-            <summary>URLのGUID</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2URL.SupportingBrowsers">
-            <summary>対応ブラウザのGUIDリスト</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2URL.Category">
-            <summary>カテゴリ</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.BC2URL.Active">
-            <summary>アクティブフラグ</summary>
         </member>
         <member name="T:BrowserChooser3.Classes.Services.SystemServices.Policy">
             <summary>
@@ -1617,12 +1357,6 @@
             </summary>
             <param name="args">コマンドライン引数</param>
             <returns>初期化が成功した場合はtrue</returns>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Services.SystemServices.StartupLauncher.ProcessParts(BrowserChooser3.Classes.Utilities.URLUtilities.BC2URLParts)">
-            <summary>
-            URLパーツを処理し、対応ブラウザを検出します
-            </summary>
-            <param name="parts">URLパーツ</param>
         </member>
         <member name="M:BrowserChooser3.Classes.Services.SystemServices.StartupLauncher.Worker_DoWork_HTTP">
             <summary>
@@ -2089,6 +1823,12 @@
             Browser Chooser 2のBrowserUtilitiesと互換性を保ちます
             </summary>
         </member>
+        <member name="M:BrowserChooser3.Classes.Utilities.BrowserUtilities.IsTestEnvironment">
+            <summary>
+            テスト環境かどうかを判定する
+            </summary>
+            <returns>テスト環境の場合はtrue</returns>
+        </member>
         <member name="M:BrowserChooser3.Classes.Utilities.BrowserUtilities.LaunchBrowser(BrowserChooser3.Classes.Models.Browser,System.String,System.Boolean)">
             <summary>
             ブラウザを起動します
@@ -2321,6 +2061,12 @@
             現在のログレベル（デフォルトはInfo）
             </summary>
         </member>
+        <member name="M:BrowserChooser3.Classes.Utilities.Logger.IsTestEnvironment">
+            <summary>
+            テスト環境かどうかを判定する
+            </summary>
+            <returns>テスト環境の場合はtrue</returns>
+        </member>
         <member name="F:BrowserChooser3.Classes.Utilities.Logger._logQueue">
             <summary>
             ログメッセージのキュー
@@ -2386,29 +2132,6 @@
             URLの解析と処理を行うユーティリティクラス
             </summary>
         </member>
-        <member name="T:BrowserChooser3.Classes.Utilities.URLUtilities.BC2URLParts">
-            <summary>
-            Browser Chooser 2互換のURLパーツ構造体
-            </summary>
-        </member>
-        <member name="F:BrowserChooser3.Classes.Utilities.URLUtilities.BC2URLParts.IsProtocol">
-            <summary>プロトコルかどうか</summary>
-        </member>
-        <member name="F:BrowserChooser3.Classes.Utilities.URLUtilities.BC2URLParts.Protocol">
-            <summary>プロトコル</summary>
-        </member>
-        <member name="F:BrowserChooser3.Classes.Utilities.URLUtilities.BC2URLParts.Extension">
-            <summary>拡張子</summary>
-        </member>
-        <member name="F:BrowserChooser3.Classes.Utilities.URLUtilities.BC2URLParts.Remainder">
-            <summary>残りの部分</summary>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Utilities.URLUtilities.BC2URLParts.ToString">
-            <summary>
-            URLパーツを文字列に変換します
-            </summary>
-            <returns>URL文字列</returns>
-        </member>
         <member name="M:BrowserChooser3.Classes.Utilities.URLUtilities.IsValidURL(System.String)">
             <summary>
             URLが有効かどうかをチェックします
@@ -2445,20 +2168,6 @@
             <param name="url">短縮URL</param>
             <param name="userAgent">User-Agent文字列</param>
             <returns>展開されたURL</returns>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Utilities.URLUtilities.DetermineParts(System.String)">
-            <summary>
-            Browser Chooser 2互換のURLパーツ解析
-            </summary>
-            <param name="url">解析対象のURL</param>
-            <returns>URLパーツ</returns>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Utilities.URLUtilities.Canonicalize(BrowserChooser3.Classes.Utilities.URLUtilities.BC2URLParts)">
-            <summary>
-            Browser Chooser 2互換のURL正規化
-            </summary>
-            <param name="url">正規化対象のURLパーツ</param>
-            <returns>正規化されたURLパーツ</returns>
         </member>
         <member name="M:BrowserChooser3.Classes.Utilities.URLUtilities.MatchURLs(System.String,System.String)">
             <summary>
@@ -2780,6 +2489,12 @@
             フォーカスボックス色選択イベント
             </summary>
         </member>
+        <member name="M:BrowserChooser3.Forms.AccessibilitySettingsForm.IsTestEnvironment">
+            <summary>
+            テスト環境かどうかを判定する
+            </summary>
+            <returns>テスト環境の場合はtrue</returns>
+        </member>
         <member name="M:BrowserChooser3.Forms.AccessibilitySettingsForm.btnOK_Click(System.Object,System.EventArgs)">
             <summary>
             OKボタンクリックイベント
@@ -3041,103 +2756,6 @@
             <summary>
             OKボタンのクリックイベント
             </summary>
-        </member>
-        <member name="T:BrowserChooser3.Forms.ImportSourceForm">
-            <summary>
-            設定インポートフォーム
-            外部設定ファイルのインポート機能を提供します
-            </summary>
-        </member>
-        <member name="P:BrowserChooser3.Forms.ImportSourceForm.ImportPath">
-            <summary>
-            インポートパス
-            </summary>
-        </member>
-        <member name="P:BrowserChooser3.Forms.ImportSourceForm.ImportSuccessful">
-            <summary>
-            インポートが成功したかどうか
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.ImportSourceForm.#ctor">
-            <summary>
-            設定インポートフォームクラスの新しいインスタンスを初期化します
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.ImportSourceForm.InitializeComponent">
-            <summary>
-            フォームの初期化
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.ImportSourceForm.BtnBrowse_Click(System.Object,System.EventArgs)">
-            <summary>
-            参照ボタンのクリックイベント
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.ImportSourceForm.BtnOK_Click(System.Object,System.EventArgs)">
-            <summary>
-            OKボタンのクリックイベント
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.ImportSourceForm.GetImportOptions">
-            <summary>
-            インポートオプションを取得します
-            </summary>
-            <returns>インポートオプション</returns>
-        </member>
-        <member name="M:BrowserChooser3.Forms.ImportSourceForm.ImportSettings(System.String,BrowserChooser3.Forms.ImportSourceForm.ImportOptions)">
-            <summary>
-            設定をインポートします
-            </summary>
-            <param name="filePath">インポートファイルパス</param>
-            <param name="options">インポートオプション</param>
-            <returns>成功した場合はtrue</returns>
-        </member>
-        <member name="M:BrowserChooser3.Forms.ImportSourceForm.ImportBC2Settings(System.String,BrowserChooser3.Forms.ImportSourceForm.ImportOptions)">
-            <summary>
-            Browser Chooser 2の設定をインポートします
-            </summary>
-            <param name="filePath">ファイルパス</param>
-            <param name="options">インポートオプション</param>
-            <returns>成功した場合はtrue</returns>
-        </member>
-        <member name="M:BrowserChooser3.Forms.ImportSourceForm.ImportBC3Settings(System.String,BrowserChooser3.Forms.ImportSourceForm.ImportOptions)">
-            <summary>
-            Browser Chooser 3の設定をインポートします
-            </summary>
-            <param name="filePath">ファイルパス</param>
-            <param name="options">インポートオプション</param>
-            <returns>成功した場合はtrue</returns>
-        </member>
-        <member name="M:BrowserChooser3.Forms.ImportSourceForm.MergeSettings(BrowserChooser3.Classes.Settings,BrowserChooser3.Classes.Settings,BrowserChooser3.Forms.ImportSourceForm.ImportOptions)">
-            <summary>
-            設定をマージします
-            </summary>
-            <param name="target">ターゲット設定</param>
-            <param name="source">ソース設定</param>
-            <param name="options">マージオプション</param>
-        </member>
-        <member name="T:BrowserChooser3.Forms.ImportSourceForm.ImportOptions">
-            <summary>
-            インポートオプションクラス
-            </summary>
-        </member>
-        <member name="P:BrowserChooser3.Forms.ImportSourceForm.ImportOptions.ImportBrowsers">
-            <summary>ブラウザ設定のインポート</summary>
-        </member>
-        <member name="P:BrowserChooser3.Forms.ImportSourceForm.ImportOptions.ImportURLs">
-            <summary>URL設定のインポート</summary>
-        </member>
-        <member name="P:BrowserChooser3.Forms.ImportSourceForm.ImportOptions.ImportProtocols">
-            <summary>プロトコル設定のインポート</summary>
-        </member>
-        <member name="P:BrowserChooser3.Forms.ImportSourceForm.ImportOptions.ImportFileTypes">
-            <summary>ファイルタイプ設定のインポート</summary>
-        </member>
-        <member name="P:BrowserChooser3.Forms.ImportSourceForm.ImportOptions.ImportGeneral">
-            <summary>一般設定のインポート</summary>
-        </member>
-        <member name="P:BrowserChooser3.Forms.ImportSourceForm.ImportOptions.OverwriteExisting">
-            <summary>既存設定の上書き</summary>
         </member>
         <member name="T:BrowserChooser3.Forms.MainForm">
             <summary>

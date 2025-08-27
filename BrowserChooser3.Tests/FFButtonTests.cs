@@ -137,8 +137,6 @@ namespace BrowserChooser3.Tests
             var form = new Form();
             form.Controls.Add(button);
             form.Show();
-            bool clickPerformed = false;
-            button.Click += (sender, e) => clickPerformed = true;
 
             // Act
             button.Focus();
@@ -160,8 +158,6 @@ namespace BrowserChooser3.Tests
             var form = new Form();
             form.Controls.Add(button);
             form.Show();
-            bool clickPerformed = false;
-            button.Click += (sender, e) => clickPerformed = true;
 
             // Act
             button.Focus();

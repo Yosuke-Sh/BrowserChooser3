@@ -69,22 +69,13 @@ namespace BrowserChooser3.Classes.Services.SystemServices
         public static void SetURL(string url, bool unShorten, UpdateURL updateDelegate)
         {
             _delegate = updateDelegate;
-            var parts = URLUtilities.DetermineParts(url);
-            
-            if (parts.IsProtocol == Settings.TriState.True)
-            {
-                _url = parts.ToString();
-            }
-            else
-            {
-                _url = url; // ファイル名
-            }
-            
-            ProcessParts(parts);
+            _url = url;
 
-            if (unShorten && !string.IsNullOrEmpty(_url) && parts.IsProtocol == Settings.TriState.True)
+            if (unShorten && !string.IsNullOrEmpty(_url))
             {
-                if (parts.Protocol == "http" || parts.Protocol == "https")
+                // HTTP/HTTPS URLの場合のみ短縮URL展開を実行
+                if (_url.StartsWith("http://", StringComparison.OrdinalIgnoreCase) || 
+                    _url.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
                 {
                     _worker = new System.Threading.Thread(Worker_DoWork_HTTP);
                     _worker.IsBackground = true;
@@ -106,22 +97,13 @@ namespace BrowserChooser3.Classes.Services.SystemServices
             _delay = delay;
             _browser = browser;
             _delegate = updateDelegate;
-            var parts = URLUtilities.DetermineParts(url);
-            
-            if (parts.IsProtocol == Settings.TriState.True)
-            {
-                _url = parts.ToString();
-            }
-            else
-            {
-                _url = url; // ファイル名
-            }
-            
-            ProcessParts(parts);
+            _url = url;
 
-            if (unShorten && !string.IsNullOrEmpty(_url) && parts.IsProtocol == Settings.TriState.True)
+            if (unShorten && !string.IsNullOrEmpty(_url))
             {
-                if (parts.Protocol == "http" || parts.Protocol == "https")
+                // HTTP/HTTPS URLの場合のみ短縮URL展開を実行
+                if (_url.StartsWith("http://", StringComparison.OrdinalIgnoreCase) || 
+                    _url.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
                 {
                     _worker = new System.Threading.Thread(Worker_DoWork_HTTP);
                     _worker.IsBackground = true;
@@ -322,65 +304,7 @@ namespace BrowserChooser3.Classes.Services.SystemServices
             }
         }
 
-        /// <summary>
-        /// URLパーツを処理し、対応ブラウザを検出します
-        /// </summary>
-        /// <param name="parts">URLパーツ</param>
-        private static void ProcessParts(URLUtilities.BC2URLParts parts)
-        {
-            _supportingBrowsers = new List<Guid>();
 
-            if (parts.IsProtocol == Settings.TriState.True)
-            {
-                // プロトコルベースの処理
-                foreach (var protocol in Settings.Current.Protocols)
-                {
-                    if (protocol.Header == parts.Protocol)
-                    {
-                        foreach (var browser in Settings.Current.Browsers)
-                        {
-                            if (protocol.SupportingBrowsers.Contains(browser.Guid))
-                            {
-                                _supportingBrowsers.Add(browser.Guid);
-                            }
-                        }
-                        break; // short circuit
-                    }
-                }
-            }
-            else if (parts.IsProtocol == Settings.TriState.False)
-            {
-                // ファイル拡張子ベースの処理
-                foreach (var fileType in Settings.Current.FileTypes)
-                {
-                    if (fileType.Extension.ToLower() == parts.Extension.ToLower())
-                    {
-                        foreach (var browser in Settings.Current.Browsers)
-                        {
-                            if (fileType.SupportingBrowsers.Contains(browser.Guid))
-                            {
-                                _supportingBrowsers.Add(browser.Guid);
-                            }
-                        }
-                        break; // short circuit
-                    }
-                }
-            }
-            else
-            {
-                // デフォルト処理 - すべてのブラウザを表示
-                foreach (var protocol in Settings.Current.Protocols)
-                {
-                    foreach (var browser in Settings.Current.Browsers)
-                    {
-                        if (protocol.SupportingBrowsers.Contains(browser.Guid))
-                        {
-                            _supportingBrowsers.Add(browser.Guid);
-                        }
-                    }
-                }
-            }
-        }
 
         #region ShortURL deshortening
         /// <summary>
@@ -423,18 +347,7 @@ namespace BrowserChooser3.Classes.Services.SystemServices
             // クリーンアップとデリゲート呼び出し
             if (_delegate != null)
             {
-                string finalUrl;
-                var parts = URLUtilities.DetermineParts(_url);
-                if (parts.IsProtocol == Settings.TriState.True)
-                {
-                    finalUrl = parts.ToString();
-                }
-                else
-                {
-                    finalUrl = _url;
-                }
-
-                _delegate.Invoke(finalUrl);
+                _delegate.Invoke(_url);
             }
 
             _worker = null;

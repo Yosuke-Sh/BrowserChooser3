@@ -8,39 +8,7 @@ namespace BrowserChooser3.Classes.Utilities
     /// </summary>
     public static class URLUtilities
     {
-        /// <summary>
-        /// Browser Chooser 2互換のURLパーツ構造体
-        /// </summary>
-        public struct BC2URLParts
-        {
-            /// <summary>プロトコルかどうか</summary>
-            public Settings.TriState IsProtocol;
-            
-            /// <summary>プロトコル</summary>
-            public string Protocol;
-            
-            /// <summary>拡張子</summary>
-            public string Extension;
-            
-            /// <summary>残りの部分</summary>
-            public string Remainder;
 
-            /// <summary>
-            /// URLパーツを文字列に変換します
-            /// </summary>
-            /// <returns>URL文字列</returns>
-            public override string ToString()
-            {
-                if (IsProtocol == Settings.TriState.True)
-                {
-                    return $"{Protocol}://{Remainder}";
-                }
-                else
-                {
-                    return $"{Extension}.{Remainder}";
-                }
-            }
-        }
 
         /// <summary>
         /// URLが有効かどうかをチェックします
@@ -184,114 +152,9 @@ namespace BrowserChooser3.Classes.Utilities
             }
         }
 
-        /// <summary>
-        /// Browser Chooser 2互換のURLパーツ解析
-        /// </summary>
-        /// <param name="url">解析対象のURL</param>
-        /// <returns>URLパーツ</returns>
-        public static BC2URLParts DetermineParts(string url)
-        {
-            Logger.LogInfo("URLUtilities.DetermineParts", "Start", url);
-            var parts = new BC2URLParts();
 
-            if (string.IsNullOrEmpty(url))
-            {
-                parts.IsProtocol = Settings.TriState.UseDefault;
-                return Canonicalize(parts);
-            }
 
-            // プロトコルの検出
-            var protocolIndex = url.IndexOf("://");
-            if (protocolIndex > 0)
-            {
-                parts.IsProtocol = Settings.TriState.True;
-                parts.Protocol = url.Substring(0, protocolIndex);
-                parts.Remainder = url.Substring(protocolIndex + 3);
-            }
-            else if (url.Contains('.'))
-            {
-                // ファイル拡張子
-                parts.IsProtocol = Settings.TriState.False;
-                var lastDotIndex = url.LastIndexOf('.');
-                parts.Extension = url.Substring(lastDotIndex + 1);
-                parts.Remainder = url.Substring(0, lastDotIndex);
-            }
-            else if (url.Contains('/'))
-            {
-                // ドメインなしのプロトコル
-                parts.IsProtocol = Settings.TriState.True;
-                parts.Protocol = "https";
-                parts.Remainder = url;
-            }
-            else
-            {
-                parts.IsProtocol = Settings.TriState.UseDefault;
-            }
 
-            Logger.LogInfo("URLUtilities.DetermineParts", "End", parts.IsProtocol, parts.Protocol ?? "", parts.Extension ?? "", parts.Remainder ?? "");
-            return Canonicalize(parts);
-        }
-
-        /// <summary>
-        /// Browser Chooser 2互換のURL正規化
-        /// </summary>
-        /// <param name="url">正規化対象のURLパーツ</param>
-        /// <returns>正規化されたURLパーツ</returns>
-        public static BC2URLParts Canonicalize(BC2URLParts url)
-        {
-            var settings = Settings.Current;
-            
-            // 正規化が有効で、プロトコルが設定されている場合
-            if (url.IsProtocol == Settings.TriState.True && settings?.Canonicalize == true)
-            {
-                var firstSlash = url.Remainder.IndexOf('/');
-                var firstQuestion = url.Remainder.IndexOf('?');
-                var firstDot = url.Remainder.IndexOf('.');
-
-                string subIn;
-                
-                if (firstDot == -1 && firstSlash > 0 && (firstQuestion == -1 || firstQuestion > firstSlash))
-                {
-                    // ドットなし、スラッシュが最初の疑問符より前
-                    Logger.LogInfo("URLUtilities.Canonicalize", "Select 1", firstSlash, firstQuestion, firstDot);
-                    subIn = $"{url.Remainder.Substring(0, firstSlash)}{settings.CanonicalizeAppendedText}{url.Remainder.Substring(firstSlash)}";
-                }
-                else if (firstDot == -1 && firstQuestion > 0 && (firstSlash == -1 || firstSlash > firstQuestion))
-                {
-                    // ドットなし、疑問符が最初のスラッシュより前
-                    Logger.LogInfo("URLUtilities.Canonicalize", "Select 2", firstSlash, firstQuestion, firstDot);
-                    subIn = $"{url.Remainder.Substring(0, firstQuestion)}{settings.CanonicalizeAppendedText}{url.Remainder.Substring(firstQuestion)}";
-                }
-                else if (firstDot == -1 && firstSlash == -1 && firstQuestion == -1)
-                {
-                    // ドット、スラッシュ、疑問符なし
-                    Logger.LogInfo("URLUtilities.Canonicalize", "Select 3", firstSlash, firstQuestion, firstDot);
-                    subIn = $"{url.Remainder}.{settings.CanonicalizeAppendedText}";
-                }
-                else if (firstSlash > 0 && firstSlash < firstDot && (firstQuestion == -1 || firstQuestion > firstSlash))
-                {
-                    // ドットがあるが、スラッシュがドットより前で、疑問符より前
-                    Logger.LogInfo("URLUtilities.Canonicalize", "Select 4", firstSlash, firstQuestion, firstDot);
-                    subIn = $"{url.Remainder.Substring(0, firstSlash)}{settings.CanonicalizeAppendedText}{url.Remainder.Substring(firstSlash)}";
-                }
-                else if (firstQuestion > 0 && firstQuestion < firstDot && (firstSlash == -1 || firstSlash > firstQuestion))
-                {
-                    // 疑問符がドットより前で、スラッシュより前
-                    Logger.LogInfo("URLUtilities.Canonicalize", "Select 5", firstSlash, firstQuestion, firstDot);
-                    subIn = $"{url.Remainder.Substring(0, firstQuestion)}{settings.CanonicalizeAppendedText}{url.Remainder.Substring(firstQuestion)}";
-                }
-                else
-                {
-                    // その他の場合（ドットがスラッシュや疑問符より前）
-                    Logger.LogInfo("URLUtilities.Canonicalize", "Select 6", firstSlash, firstQuestion, firstDot);
-                    subIn = url.Remainder;
-                }
-
-                url.Remainder = subIn;
-            }
-
-            return url;
-        }
 
         /// <summary>
         /// URLマッチング（Browser Chooser 2互換）

@@ -22,7 +22,7 @@ namespace BrowserChooser3.Tests
 
         public void Dispose()
         {
-            _settings = null;
+            _settings = null!;
         }
 
         #region NormalizeTargetテスト
@@ -117,10 +117,10 @@ namespace BrowserChooser3.Tests
                 Name = "Test Browser",
                 Target = @"C:\Test\browser.exe"
             };
-            _settings.Browsers.Add(browser);
+            var browsers = new List<Browser> { browser };
 
             // Act
-            var result = BrowserUtilities.GetBrowserByGUID(guid);
+            var result = BrowserUtilities.GetBrowserByGUID(guid, browsers);
 
             // Assert
             result.Should().NotBeNull();
@@ -139,10 +139,10 @@ namespace BrowserChooser3.Tests
                 Name = "Test Browser",
                 Target = @"C:\Test\browser.exe"
             };
-            _settings.Browsers.Add(browser);
+            var browsers = new List<Browser> { browser };
 
             // Act
-            var result = BrowserUtilities.GetBrowserByGUID(invalidGuid);
+            var result = BrowserUtilities.GetBrowserByGUID(invalidGuid, browsers);
 
             // Assert
             result.Should().BeNull();
@@ -223,8 +223,18 @@ namespace BrowserChooser3.Tests
             var terminate = false;
 
             // Act & Assert
-            var action = () => BrowserUtilities.LaunchBrowser(browser, url, terminate);
-            action.Should().NotThrow();
+            try
+            {
+                BrowserUtilities.LaunchBrowser(browser, url, terminate);
+                // 成功した場合は何もしない
+            }
+            catch (Exception ex)
+            {
+                // 例外が発生した場合は詳細を出力
+                Console.WriteLine($"Exception occurred: {ex.GetType().Name}: {ex.Message}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                throw; // 例外を再スロー
+            }
         }
 
         [Fact]
@@ -278,6 +288,24 @@ namespace BrowserChooser3.Tests
             action.Should().NotThrow();
         }
 
+        [Fact]
+        public void LaunchBrowser_WithValidBrowser_ShouldNotThrowException()
+        {
+            // Arrange
+            var browser = new Browser
+            {
+                Name = "Test Browser",
+                Target = @"C:\Test\browser.exe",
+                Arguments = ""
+            };
+            var url = "https://example.com";
+            var terminate = false;
+
+            // Act & Assert
+            var action = () => BrowserUtilities.LaunchBrowser(browser, url, terminate);
+            action.Should().NotThrow();
+        }
+
         #endregion
 
         #region 境界値テスト
@@ -316,11 +344,10 @@ namespace BrowserChooser3.Tests
             var guid2 = Guid.NewGuid();
             var browser1 = new Browser { Guid = guid1, Name = "Browser 1" };
             var browser2 = new Browser { Guid = guid2, Name = "Browser 2" };
-            _settings.Browsers.Add(browser1);
-            _settings.Browsers.Add(browser2);
+            var browsers = new List<Browser> { browser1, browser2 };
 
             // Act
-            var result = BrowserUtilities.GetBrowserByGUID(guid2);
+            var result = BrowserUtilities.GetBrowserByGUID(guid2, browsers);
 
             // Assert
             result.Should().NotBeNull();
@@ -365,8 +392,8 @@ namespace BrowserChooser3.Tests
             var browser = new Browser
             {
                 Name = "",
-                Target = null,
-                Arguments = null
+                Target = null!,
+                Arguments = null!
             };
             var url = "https://example.com";
             var terminate = false;
@@ -392,10 +419,10 @@ namespace BrowserChooser3.Tests
                 Target = @"C:\Test\browser.exe",
                 Arguments = "--new-window"
             };
-            _settings.Browsers.Add(browser);
+            var browsers = new List<Browser> { browser };
 
             // Act
-            var foundBrowser = BrowserUtilities.GetBrowserByGUID(guid);
+            var foundBrowser = BrowserUtilities.GetBrowserByGUID(guid, browsers);
 
             // Assert
             foundBrowser.Should().NotBeNull();

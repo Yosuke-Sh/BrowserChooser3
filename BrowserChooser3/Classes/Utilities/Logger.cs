@@ -40,6 +40,34 @@ namespace BrowserChooser3.Classes.Utilities
         public static LogLevel CurrentLogLevel { get; set; } = LogLevel.Info;
 
         /// <summary>
+        /// テスト環境かどうかを判定する
+        /// </summary>
+        /// <returns>テスト環境の場合はtrue</returns>
+        private static bool IsTestEnvironment()
+        {
+            try
+            {
+                // 環境変数でダイアログ無効化が設定されている場合
+                var disableDialogs = Environment.GetEnvironmentVariable("DISABLE_DIALOGS");
+                if (!string.IsNullOrEmpty(disableDialogs) && disableDialogs.Equals("true", StringComparison.OrdinalIgnoreCase))
+                    return true;
+
+                // 環境変数でテスト環境が設定されている場合
+                var testEnvironment = Environment.GetEnvironmentVariable("TEST_ENVIRONMENT");
+                if (!string.IsNullOrEmpty(testEnvironment) && testEnvironment.Equals("true", StringComparison.OrdinalIgnoreCase))
+                    return true;
+
+                return false;
+            }
+            catch (Exception ex)
+            {
+                // エラーが発生した場合は、テスト環境ではないと判断
+                Console.WriteLine($"IsTestEnvironment check failed: {ex.Message}");
+                return false;
+            }
+        }
+
+        /// <summary>
         /// ログメッセージのキュー
         /// </summary>
         private static readonly Queue<string> _logQueue = new Queue<string>();
@@ -61,6 +89,12 @@ namespace BrowserChooser3.Classes.Utilities
         public static void AddToLog(LogLevel level, string caller, string message, params object[] extraVars)
         {
             if (level > CurrentLogLevel) return;
+
+            // テスト環境ではログ出力をスキップ
+            if (IsTestEnvironment())
+            {
+                return;
+            }
 
             var timestamp = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
             var levelName = level.ToString().ToUpper();

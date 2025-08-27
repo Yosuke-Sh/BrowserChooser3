@@ -31,9 +31,7 @@
     <Compile Update="Forms\IconSelectionForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="Forms\ImportSourceForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
+
     <Compile Update="Forms\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>

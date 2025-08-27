@@ -197,8 +197,6 @@ namespace BrowserChooser3.Tests
             var form = new Form();
             form.Controls.Add(checkBox);
             form.Show();
-            bool eventRaised = false;
-            checkBox.GotFocus += (sender, e) => eventRaised = true;
 
             // Act
             checkBox.Focus();
@@ -221,8 +219,6 @@ namespace BrowserChooser3.Tests
             form.Controls.Add(checkBox);
             form.Controls.Add(otherControl);
             form.Show();
-            bool eventRaised = false;
-            checkBox.LostFocus += (sender, e) => eventRaised = true;
 
             // Act
             checkBox.Focus();
