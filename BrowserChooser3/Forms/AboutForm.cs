@@ -55,17 +55,20 @@ namespace BrowserChooser3.Forms
             // 
             // pictureBox1
             // 
+            pictureBox1.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             pictureBox1.ErrorImage = Properties.Resources.BrowserChooserIcon;
             pictureBox1.InitialImage = Properties.Resources.BrowserChooserIcon;
-            pictureBox1.Location = new Point(12, 12);
+            pictureBox1.Location = new Point(38, 12);
             pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(48, 48);
+            pictureBox1.Size = new Size(612, 273);
             pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBox1.TabIndex = 0;
             pictureBox1.TabStop = false;
             // 
             // pictureBox2
             // 
+            pictureBox2.ErrorImage = Properties.Resources.BrowserChooser3;
+            pictureBox2.InitialImage = Properties.Resources.BrowserChooser3;
             pictureBox2.Location = new Point(12, 66);
             pictureBox2.Name = "pictureBox2";
             pictureBox2.Size = new Size(48, 48);
@@ -144,10 +147,10 @@ namespace BrowserChooser3.Forms
             tabControl1.Controls.Add(tpContrib);
             tabControl1.Controls.Add(tpAttributions);
             tabControl1.Controls.Add(tpDiagnostics);
-            tabControl1.Location = new Point(12, 120);
+            tabControl1.Location = new Point(38, 295);
             tabControl1.Name = "tabControl1";
             tabControl1.SelectedIndex = 0;
-            tabControl1.Size = new Size(532, 265);
+            tabControl1.Size = new Size(600, 300);
             tabControl1.TabIndex = 8;
             // 
             // tpInfo
@@ -155,10 +158,10 @@ namespace BrowserChooser3.Forms
             tpInfo.Controls.Add(lblForkedFrom);
             tpInfo.Controls.Add(lblThisVersionHere);
             tpInfo.Controls.Add(lblOriginalVersion);
-            tpInfo.Location = new Point(8, 44);
+            tpInfo.Location = new Point(4, 32);
             tpInfo.Name = "tpInfo";
             tpInfo.Padding = new Padding(3);
-            tpInfo.Size = new Size(516, 213);
+            tpInfo.Size = new Size(592, 264);
             tpInfo.TabIndex = 0;
             tpInfo.Text = "Information";
             tpInfo.UseVisualStyleBackColor = true;
@@ -168,7 +171,7 @@ namespace BrowserChooser3.Forms
             lblForkedFrom.AutoSize = true;
             lblForkedFrom.Location = new Point(3, 12);
             lblForkedFrom.Name = "lblForkedFrom";
-            lblForkedFrom.Size = new Size(139, 30);
+            lblForkedFrom.Size = new Size(106, 23);
             lblForkedFrom.TabIndex = 0;
             lblForkedFrom.Text = "Forked from:";
             // 
@@ -177,7 +180,7 @@ namespace BrowserChooser3.Forms
             lblThisVersionHere.AutoSize = true;
             lblThisVersionHere.Location = new Point(3, 35);
             lblThisVersionHere.Name = "lblThisVersionHere";
-            lblThisVersionHere.Size = new Size(391, 30);
+            lblThisVersionHere.Size = new Size(303, 23);
             lblThisVersionHere.TabIndex = 1;
             lblThisVersionHere.Text = "Latest version: BrowserChooser3 v3.0.0";
             // 
@@ -186,7 +189,7 @@ namespace BrowserChooser3.Forms
             lblOriginalVersion.AutoSize = true;
             lblOriginalVersion.Location = new Point(79, 12);
             lblOriginalVersion.Name = "lblOriginalVersion";
-            lblOriginalVersion.Size = new Size(197, 30);
+            lblOriginalVersion.Size = new Size(152, 23);
             lblOriginalVersion.TabIndex = 2;
             lblOriginalVersion.TabStop = true;
             lblOriginalVersion.Text = "Browser Chooser 2";
@@ -195,10 +198,10 @@ namespace BrowserChooser3.Forms
             // tpContrib
             // 
             tpContrib.Controls.Add(lblContributors);
-            tpContrib.Location = new Point(8, 44);
+            tpContrib.Location = new Point(4, 34);
             tpContrib.Name = "tpContrib";
             tpContrib.Padding = new Padding(3);
-            tpContrib.Size = new Size(516, 213);
+            tpContrib.Size = new Size(592, 262);
             tpContrib.TabIndex = 1;
             tpContrib.Text = "Contributors";
             tpContrib.UseVisualStyleBackColor = true;
@@ -209,7 +212,7 @@ namespace BrowserChooser3.Forms
             lblContributors.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblContributors.Location = new Point(3, 12);
             lblContributors.Name = "lblContributors";
-            lblContributors.Size = new Size(684, 384);
+            lblContributors.Size = new Size(505, 300);
             lblContributors.TabIndex = 0;
             lblContributors.Text = resources.GetString("lblContributors.Text");
             // 
@@ -217,10 +220,10 @@ namespace BrowserChooser3.Forms
             // 
             tpAttributions.Controls.Add(lblAttributions);
             tpAttributions.Controls.Add(llSebCboLb);
-            tpAttributions.Location = new Point(8, 44);
+            tpAttributions.Location = new Point(4, 34);
             tpAttributions.Name = "tpAttributions";
             tpAttributions.Padding = new Padding(3);
-            tpAttributions.Size = new Size(516, 213);
+            tpAttributions.Size = new Size(592, 262);
             tpAttributions.TabIndex = 2;
             tpAttributions.Text = "Attributions";
             tpAttributions.UseVisualStyleBackColor = true;
@@ -231,7 +234,7 @@ namespace BrowserChooser3.Forms
             lblAttributions.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblAttributions.Location = new Point(3, 12);
             lblAttributions.Name = "lblAttributions";
-            lblAttributions.Size = new Size(736, 256);
+            lblAttributions.Size = new Size(543, 200);
             lblAttributions.TabIndex = 0;
             lblAttributions.Text = resources.GetString("lblAttributions.Text");
             // 
@@ -241,7 +244,7 @@ namespace BrowserChooser3.Forms
             llSebCboLb.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
             llSebCboLb.Location = new Point(3, 100);
             llSebCboLb.Name = "llSebCboLb";
-            llSebCboLb.Size = new Size(229, 32);
+            llSebCboLb.Size = new Size(173, 25);
             llSebCboLb.TabIndex = 1;
             llSebCboLb.TabStop = true;
             llSebCboLb.Text = "GitHub Contributors";
@@ -252,10 +255,10 @@ namespace BrowserChooser3.Forms
             tpDiagnostics.Controls.Add(cmdSaveLogs);
             tpDiagnostics.Controls.Add(btnCopy);
             tpDiagnostics.Controls.Add(lblDiagnostics);
-            tpDiagnostics.Location = new Point(8, 44);
+            tpDiagnostics.Location = new Point(4, 34);
             tpDiagnostics.Name = "tpDiagnostics";
             tpDiagnostics.Padding = new Padding(3);
-            tpDiagnostics.Size = new Size(516, 213);
+            tpDiagnostics.Size = new Size(592, 262);
             tpDiagnostics.TabIndex = 3;
             tpDiagnostics.Text = "Diagnostics";
             tpDiagnostics.UseVisualStyleBackColor = true;
@@ -287,7 +290,7 @@ namespace BrowserChooser3.Forms
             OKButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             OKButton.DialogResult = DialogResult.OK;
             OKButton.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            OKButton.Location = new Point(464, 381);
+            OKButton.Location = new Point(587, 603);
             OKButton.Name = "OKButton";
             OKButton.Size = new Size(80, 28);
             OKButton.TabIndex = 9;
@@ -297,11 +300,11 @@ namespace BrowserChooser3.Forms
             // AboutForm
             // 
             AcceptButton = OKButton;
-            AutoScaleDimensions = new SizeF(12F, 30F);
+            AutoScaleDimensions = new SizeF(9F, 23F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.White;
             CancelButton = OKButton;
-            ClientSize = new Size(555, 426);
+            ClientSize = new Size(678, 644);
             Controls.Add(tabControl1);
             Controls.Add(OKButton);
             Controls.Add(pictureBox1);
@@ -411,13 +414,11 @@ namespace BrowserChooser3.Forms
             try
             {
                 // pictureBox1のアイコン読み込み（BrowserChooser3アイコン）
-                var icon1 = Properties.Resources.BrowserChooser3Icon.ToBitmap();
-                pictureBox1.Image = ImageUtilities.ResizeImage(icon1, 48, 48);
-                
+                pictureBox1.Image = Properties.Resources.BrowserChooserIcon;
+
                 // pictureBox2のアイコン読み込み（BCLogoアイコン）
-                var icon2 = Properties.Resources.BCLogoIcon.ToBitmap();
-                pictureBox2.Image = ImageUtilities.ResizeImage(icon2, 48, 48);
-                
+                pictureBox2.Image = Properties.Resources.BCLogoIcon.ToBitmap();
+
                 Logger.LogInfo("AboutForm.LoadIcons", "アイコン読み込み完了");
             }
             catch (Exception ex)

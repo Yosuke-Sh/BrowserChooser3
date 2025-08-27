@@ -593,25 +593,162 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             };
             currentY += 50;
 
-            // 透明背景ボタン
-            var transparentButton = new Button
+            // 透明化設定チェックボックス
+            var chkEnableTransparency = new CheckBox
             {
-                Name = "btnTransparent",
-                Text = "Set Transparent Background",
+                Name = "chkEnableTransparency",
+                Text = "Enable Transparency",
+                TextAlign = ContentAlignment.MiddleLeft,
                 Location = new Point(6, currentY),
-                Size = new Size(200, 40),
+                Size = new Size(200, 25),
+                Checked = settings.EnableTransparency,
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
+            chkEnableTransparency.CheckedChanged += (s, e) => setModified(true);
 
-            var lblTransparentDesc = new Label
+            var lblEnableTransparencyDesc = new Label
             {
-                Text = "メイン画面を透明にします",
-                Location = new Point(220, currentY + 10),
-                Size = new Size(400, 20),
+                Text = "メイン画面を透明化します",
+                Location = new Point(220, currentY + 3),
+                Size = new Size(400, 23),
                 Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
                 ForeColor = Color.Gray
             };
-            currentY += 50;
+            currentY += 35;
+
+            // 透明化色設定
+            var lblTransparencyColor = new Label
+            {
+                Text = "Transparency Color:",
+                Location = new Point(6, currentY - 5),
+                Size = new Size(120, 23),
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+
+            var pbTransparencyColor = new PictureBox
+            {
+                Name = "pbTransparencyColor",
+                Location = new Point(130, currentY),
+                Size = new Size(30, 23),
+                BackColor = Color.FromArgb(settings.TransparencyColor),
+                BorderStyle = BorderStyle.FixedSingle
+            };
+            pbTransparencyColor.Click += (s, e) =>
+            {
+                // テスト環境ではダイアログを表示しない
+                if (IsTestEnvironment())
+                {
+                    return;
+                }
+
+                using var colorDialog = new ColorDialog
+                {
+                    Color = Color.FromArgb(settings.TransparencyColor)
+                };
+                if (colorDialog.ShowDialog() == DialogResult.OK)
+                {
+                    pbTransparencyColor.BackColor = colorDialog.Color;
+                    settings.TransparencyColor = colorDialog.Color.ToArgb();
+                    setModified(true);
+                }
+            };
+
+            var lblTransparencyColorDesc = new Label
+            {
+                Text = "透明化に使用する色を設定します",
+                Location = new Point(170, currentY + 3),
+                Size = new Size(400, 23),
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                ForeColor = Color.Gray
+            };
+            currentY += 35;
+
+            // 透明度設定
+            var lblOpacity = new Label
+            {
+                Text = "Opacity:",
+                Location = new Point(6, currentY),
+                Size = new Size(80, 23),
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+
+            var nudOpacity = new NumericUpDown
+            {
+                Name = "nudOpacity",
+                Location = new Point(90, currentY - 3),
+                Size = new Size(60, 23),
+                DecimalPlaces = 2,
+                Increment = 0.01m,
+                Minimum = 0.01m,
+                Maximum = 1.00m,
+                Value = (decimal)settings.Opacity,
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+            nudOpacity.ValueChanged += (s, e) => setModified(true);
+
+            var lblOpacityDesc = new Label
+            {
+                Text = "透明度を設定します（0.01-1.00）",
+                Location = new Point(160, currentY + 3),
+                Size = new Size(400, 23),
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                ForeColor = Color.Gray
+            };
+            currentY += 35;
+
+            // タイトルバー非表示設定
+            var chkHideTitleBar = new CheckBox
+            {
+                Name = "chkHideTitleBar",
+                Text = "Hide Title Bar",
+                TextAlign = ContentAlignment.MiddleLeft,
+                Location = new Point(6, currentY),
+                Size = new Size(200, 25),
+                Checked = settings.HideTitleBar,
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+            chkHideTitleBar.CheckedChanged += (s, e) => setModified(true);
+
+            var lblHideTitleBarDesc = new Label
+            {
+                Text = "メイン画面のタイトルバーを非表示にします",
+                Location = new Point(220, currentY + 3),
+                Size = new Size(400, 23),
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                ForeColor = Color.Gray
+            };
+            currentY += 35;
+
+            // 角を丸くする設定
+            var lblRoundedCorners = new Label
+            {
+                Text = "Rounded Corners Radius:",
+                Location = new Point(6, currentY + 3),
+                Size = new Size(150, 23),
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+
+            var nudRoundedCorners = new NumericUpDown
+            {
+                Name = "nudRoundedCorners",
+                Location = new Point(160, currentY),
+                Size = new Size(60, 25),
+                Minimum = 0,
+                Maximum = 50,
+                Value = settings.RoundedCornersRadius,
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+            nudRoundedCorners.ValueChanged += (s, e) => setModified(true);
+
+            var lblRoundedCornersDesc = new Label
+            {
+                Text = "メイン画面の角を丸くする半径を設定します（0で無効、1-50で有効）",
+                Location = new Point(230, currentY + 3),
+                Size = new Size(400, 23),
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                ForeColor = Color.Gray
+            };
+            currentY += 40;
 
             // === Display Effects ===
             // レイアウト変数の定義
@@ -630,28 +767,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             };
             currentY += 34;
 
-            // Aero効果使用設定
-            var chkUseAero = new CheckBox
-            {
-                Name = "chkUseAero",
-                Text = "Use Aero Effects",
-                TextAlign = ContentAlignment.MiddleLeft,
-                Location = new Point(displayBaseX, currentY),
-                Size = new Size(200, 25),
-                Checked = settings.UseAero,
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            };
-            chkUseAero.CheckedChanged += (s, e) => setModified(true);
 
-            var lblUseAeroDesc = new Label
-            {
-                Text = "Windows Aero効果を使用してウィンドウを表示します",
-                Location = new Point(displayDescOffset, currentY + 3),
-                Size = new Size(400, 23),
-                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
-                ForeColor = Color.Gray
-            };
-            currentY += displayItemSpacing;
 
             // アクセシブルレンダリング使用設定
             var chkUseAccessibleRendering = new CheckBox
@@ -854,12 +970,21 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             panel.Controls.Add(backgroundColorButton);
             panel.Controls.Add(lblBackgroundColorDesc);
             panel.Controls.Add(pbBackgroundColor);
-            panel.Controls.Add(transparentButton);
-            panel.Controls.Add(lblTransparentDesc);
+            panel.Controls.Add(chkEnableTransparency);
+            panel.Controls.Add(lblEnableTransparencyDesc);
+            panel.Controls.Add(lblTransparencyColor);
+            panel.Controls.Add(pbTransparencyColor);
+            panel.Controls.Add(lblTransparencyColorDesc);
+            panel.Controls.Add(lblOpacity);
+            panel.Controls.Add(nudOpacity);
+            panel.Controls.Add(lblOpacityDesc);
+            panel.Controls.Add(chkHideTitleBar);
+            panel.Controls.Add(lblHideTitleBarDesc);
+            panel.Controls.Add(lblRoundedCorners);
+            panel.Controls.Add(nudRoundedCorners);
+            panel.Controls.Add(lblRoundedCornersDesc);
             
             panel.Controls.Add(lblEffectsTitle);
-            panel.Controls.Add(chkUseAero);
-            panel.Controls.Add(lblUseAeroDesc);
             panel.Controls.Add(chkUseAccessibleRendering);
             panel.Controls.Add(lblUseAccessibleRenderingDesc);
             

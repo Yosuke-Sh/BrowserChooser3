@@ -27,27 +27,44 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
         }
 
         /// <summary>
-        /// 透明背景設定
+        /// 透明化設定を適用
         /// </summary>
-        public void SetTransparentBackground()
+        public void ApplyTransparencySettings()
         {
             try
             {
-                _settings.BackgroundColorValue = Color.Transparent;
-                
-                var pbBackgroundColor = _form.Controls.Find("pbBackgroundColor", true).FirstOrDefault() as PictureBox;
-                if (pbBackgroundColor != null)
+                if (_settings.EnableTransparency)
                 {
-                    pbBackgroundColor.BackColor = Color.Transparent;
+                    // 透明化が有効な場合の設定
+                    _settings.BackgroundColorValue = Color.FromArgb(128, 255, 255, 255);
+                    
+                    var pbBackgroundColor = _form.Controls.Find("pbBackgroundColor", true).FirstOrDefault() as PictureBox;
+                    if (pbBackgroundColor != null)
+                    {
+                        pbBackgroundColor.BackColor = _settings.BackgroundColorValue;
+                    }
                 }
+                else
+                {
+                    // 透明化が無効な場合の設定
+                    _settings.BackgroundColorValue = Color.FromArgb(255, 255, 255, 255);
+                    
+                    var pbBackgroundColor = _form.Controls.Find("pbBackgroundColor", true).FirstOrDefault() as PictureBox;
+                    if (pbBackgroundColor != null)
+                    {
+                        pbBackgroundColor.BackColor = _settings.BackgroundColorValue;
+                    }
+                }
+                
                 _setModified(true);
                 
-                Logger.LogInfo("OptionsFormBackgroundHandlers.SetTransparentBackground", "透明背景を設定しました");
+                Logger.LogInfo("OptionsFormBackgroundHandlers.ApplyTransparencySettings", 
+                    $"透明化設定を適用しました: Enable={_settings.EnableTransparency}, Opacity={_settings.Opacity}");
             }
             catch (Exception ex)
             {
-                Logger.LogError("OptionsFormBackgroundHandlers.SetTransparentBackground", "透明背景設定エラー", ex.Message, ex.StackTrace ?? "");
-                MessageBox.Show($"透明背景の設定に失敗しました: {ex.Message}", "エラー", 
+                Logger.LogError("OptionsFormBackgroundHandlers.ApplyTransparencySettings", "透明化設定エラー", ex.Message, ex.StackTrace ?? "");
+                MessageBox.Show($"透明化の設定に失敗しました: {ex.Message}", "エラー", 
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -99,11 +116,11 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
         }
 
         /// <summary>
-        /// 透明背景ボタンのクリックイベント
+        /// 透明化設定の適用
         /// </summary>
         public void TransparentButton_Click(object? sender, EventArgs e)
         {
-            SetTransparentBackground();
+            ApplyTransparencySettings();
         }
 
         /// <summary>
@@ -114,16 +131,12 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
         {
             try
             {
-                // 環境変数でダイアログ無効化が設定されている場合
+                // 環境変数でダイアログ無効化が設定されている場合のみ
                 var disableDialogs = Environment.GetEnvironmentVariable("DISABLE_DIALOGS");
                 if (!string.IsNullOrEmpty(disableDialogs) && disableDialogs.Equals("true", StringComparison.OrdinalIgnoreCase))
                     return true;
 
-                // デバッガーがアタッチされている場合
-                if (System.Diagnostics.Debugger.IsAttached)
-                    return true;
-
-                // アセンブリ名に"Test"が含まれている場合
+                // アセンブリ名に"Test"が含まれている場合のみ（テストプロジェクトの場合）
                 var assemblyName = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
                 if (assemblyName?.Contains("Test", StringComparison.OrdinalIgnoreCase) == true)
                     return true;

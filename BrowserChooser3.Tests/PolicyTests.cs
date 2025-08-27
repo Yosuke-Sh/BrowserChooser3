@@ -425,7 +425,10 @@ namespace BrowserChooser3.Tests
         [Fact]
         public void Initialize_WithEnvironmentVariables_ShouldLoadCorrectly()
         {
-            // Arrange
+            // Arrange - まずポリシーをリセット
+            Policy.Reset();
+            
+            // 環境変数を設定
             Environment.SetEnvironmentVariable("BROWSERCHOOSER_IGNORE_SETTINGS", "true");
             Environment.SetEnvironmentVariable("BROWSERCHOOSER_ICON_SCALE", "2.0");
             Environment.SetEnvironmentVariable("BROWSERCHOOSER_CANONICALIZE", "true");
@@ -433,12 +436,15 @@ namespace BrowserChooser3.Tests
 
             try
             {
-                // Act
+                // Act - 環境変数を読み込む
                 Policy.Initialize();
 
                 // Assert
                 // 環境変数が正しく読み込まれることを確認
                 Policy.IgnoreSettingsFile.Should().BeTrue();
+                Policy.IconScale.Should().Be(2.0);
+                Policy.Canonicalize.Should().BeTrue();
+                Policy.CanonicalizeAppendedText.Should().Be("test");
             }
             finally
             {
@@ -447,6 +453,9 @@ namespace BrowserChooser3.Tests
                 Environment.SetEnvironmentVariable("BROWSERCHOOSER_ICON_SCALE", null);
                 Environment.SetEnvironmentVariable("BROWSERCHOOSER_CANONICALIZE", null);
                 Environment.SetEnvironmentVariable("BROWSERCHOOSER_CANONICALIZE_TEXT", null);
+                
+                // ポリシーをリセット
+                Policy.Reset();
             }
         }
 

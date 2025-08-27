@@ -209,6 +209,20 @@ namespace BrowserChooser3.Forms
             CancelButton = btnCancel;
             KeyPreview = true;
             
+            // Windows 11風の最新スタイルを適用
+            try
+            {
+                if (Environment.OSVersion.Version.Major >= 10)
+                {
+                    // Windows 10/11の最新スタイル
+                    this.WindowState = FormWindowState.Normal;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("MainForm.ConfigureForm", "最新スタイル適用エラー", ex.Message);
+            }
+            
             // フォントの設定（現代的で日本語・英語両対応）
             Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0);
             
@@ -219,21 +233,153 @@ namespace BrowserChooser3.Forms
             // サイズ変更イベントの設定
             Resize += MainForm_Resize;
             
-            // Aero効果の適用
-            if (_settings?.UseAero == true && GeneralUtilities.IsAeroEnabled())
+            // 透明化設定の適用
+            ApplyTransparencySettings();
+            
+            // 透明化が無効な場合の背景色設定
+            if (!_settings?.EnableTransparency == true)
             {
-                GeneralUtilities.MakeFormGlassy(this);
-                _hasAero = true; // Aero効果が有効な場合のフラグを立てる
-                Logger.LogInfo("MainForm.ConfigureForm", "Aero効果を適用");
-            }
-            else
-            {
-                // Aero効果が無効の場合の背景色設定
                 BackColor = Color.FromArgb(185, 209, 234);
-                StyleXP(); // Aero効果が無効の場合のスタイル設定
+                StyleXP(); // 透明化が無効の場合のスタイル設定
             }
             
             Logger.LogInfo("MainForm.ConfigureForm", "End");
+        }
+
+        /// <summary>
+        /// 透明化設定を適用
+        /// </summary>
+        private void ApplyTransparencySettings()
+        {
+            try
+            {
+                if (_settings?.EnableTransparency == true)
+                {
+                    // 透明化が有効な場合
+                    this.SetStyle(ControlStyles.SupportsTransparentBackColor, true);
+                    this.TransparencyKey = Color.FromArgb(_settings.TransparencyColor);
+                    this.Opacity = _settings.Opacity;
+                    
+                    // タイトルバー非表示設定
+                    if (_settings.HideTitleBar)
+                    {
+                        this.FormBorderStyle = FormBorderStyle.None;
+                    }
+                    else
+                    {
+                        // 最新のWindowsスタイルを使用（サイズ変更可能）
+                        this.FormBorderStyle = FormBorderStyle.Sizable;
+                        this.WindowState = FormWindowState.Normal;
+                        this.MaximizeBox = true;
+                        this.MinimizeBox = true;
+                        this.SizeGripStyle = SizeGripStyle.Show;
+                        
+                        // Windows 11風の最新スタイルを適用
+                        try
+                        {
+                            // DWM（Desktop Window Manager）を使用して最新のスタイルを適用
+                            if (Environment.OSVersion.Version.Major >= 10)
+                            {
+                                // Windows 10/11の最新スタイル
+                                this.StartPosition = FormStartPosition.CenterScreen;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.LogError("MainForm.ApplyTransparencySettings", "最新スタイル適用エラー", ex.Message);
+                        }
+                    }
+                    
+                    // 背景色を透明化色に設定
+                    this.BackColor = Color.FromArgb(_settings.TransparencyColor);
+                    
+                    // 角を丸くする設定
+                    if (_settings.RoundedCornersRadius > 0)
+                    {
+                        ApplyRoundedCorners(_settings.RoundedCornersRadius);
+                    }
+                    
+                    Logger.LogInfo("MainForm.ApplyTransparencySettings", 
+                        $"透明化設定を適用: Opacity={_settings.Opacity}, TransparencyKey={_settings.TransparencyColor}, HideTitleBar={_settings.HideTitleBar}, RoundedCornersRadius={_settings.RoundedCornersRadius}");
+                }
+                else
+                {
+                    // 透明化が無効な場合
+                    this.SetStyle(ControlStyles.SupportsTransparentBackColor, false);
+                    this.TransparencyKey = Color.Empty;
+                    this.Opacity = 1.0;
+                    
+                    // 最新のWindowsスタイルを使用（サイズ変更可能）
+                    this.FormBorderStyle = FormBorderStyle.Sizable;
+                    this.WindowState = FormWindowState.Normal;
+                    this.MaximizeBox = true;
+                    this.MinimizeBox = true;
+                    this.SizeGripStyle = SizeGripStyle.Show;
+                    this.BackColor = _settings?.BackgroundColorValue ?? Color.FromArgb(185, 209, 234);
+                    
+                    // リージョンをクリア（角を丸くする設定を無効化）
+                    this.Region = null;
+                    
+                    // Windows 11風の最新スタイルを適用
+                    try
+                    {
+                        if (Environment.OSVersion.Version.Major >= 10)
+                        {
+                            this.StartPosition = FormStartPosition.CenterScreen;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError("MainForm.ApplyTransparencySettings", "最新スタイル適用エラー", ex.Message);
+                    }
+                    
+                    Logger.LogInfo("MainForm.ApplyTransparencySettings", "透明化を無効にしました");
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("MainForm.ApplyTransparencySettings", "透明化設定エラー", ex.Message, ex.StackTrace ?? "");
+            }
+        }
+
+        /// <summary>
+        /// 角を丸くする設定を適用
+        /// </summary>
+        /// <param name="radius">角の半径</param>
+        private void ApplyRoundedCorners(int radius)
+        {
+            try
+            {
+                // Windows APIを使用して角を丸くする
+                var region = CreateRoundedRectangleRegion(0, 0, this.Width, this.Height, radius);
+                this.Region = region;
+                
+                Logger.LogInfo("MainForm.ApplyRoundedCorners", $"角を丸くする設定を適用しました（半径: {radius}）");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("MainForm.ApplyRoundedCorners", "角を丸くする設定エラー", ex.Message, ex.StackTrace ?? "");
+            }
+        }
+
+        /// <summary>
+        /// 角が丸い矩形のリージョンを作成
+        /// </summary>
+        /// <param name="x">X座標</param>
+        /// <param name="y">Y座標</param>
+        /// <param name="width">幅</param>
+        /// <param name="height">高さ</param>
+        /// <param name="radius">角の半径</param>
+        /// <returns>角が丸い矩形のリージョン</returns>
+        private Region CreateRoundedRectangleRegion(int x, int y, int width, int height, int radius)
+        {
+            var path = new System.Drawing.Drawing2D.GraphicsPath();
+            path.AddArc(x, y, radius * 2, radius * 2, 180, 90); // 左上
+            path.AddArc(width - radius * 2, y, radius * 2, radius * 2, 270, 90); // 右上
+            path.AddArc(width - radius * 2, height - radius * 2, radius * 2, radius * 2, 0, 90); // 右下
+            path.AddArc(x, height - radius * 2, radius * 2, radius * 2, 90, 90); // 左下
+            path.CloseFigure();
+            return new Region(path);
         }
 
         /// <summary>
@@ -243,11 +389,21 @@ namespace BrowserChooser3.Forms
         {
             try
             {
+                // 透明化が有効で角を丸くする設定がある場合、リージョンを更新
+                if (_settings?.EnableTransparency == true && _settings.RoundedCornersRadius > 0)
+                {
+                    ApplyRoundedCorners(_settings.RoundedCornersRadius);
+                }
+                
                 // ブラウザボタンの再配置
                 RecalculateButtonLayout();
                 
                 // 互換性UIコントロールの位置調整
                 AdjustCompatibilityUILayout();
+                
+                // フォームの再描画を強制
+                this.Invalidate();
+                this.Update();
                 
                 Logger.LogTrace("MainForm.MainForm_Resize", "フォームサイズ変更完了", ClientSize.Width, ClientSize.Height);
             }
@@ -735,6 +891,13 @@ namespace BrowserChooser3.Forms
         /// </summary>
         public void UpdateURL(string url)
         {
+            // UIスレッドで実行する必要があるため、InvokeRequiredをチェック
+            if (InvokeRequired)
+            {
+                Invoke(new Action<string>(UpdateURL), url);
+                return;
+            }
+
             Logger.LogInfo("MainForm.UpdateURL", "URL更新", url);
             _currentUrl = url;
             

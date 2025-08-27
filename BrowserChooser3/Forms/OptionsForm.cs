@@ -563,13 +563,30 @@ namespace BrowserChooser3.Forms
                 var displayTab = tabSettings.TabPages["tabDisplay"];
                 if (displayTab != null)
                 {
+                    Logger.LogInfo("OptionsForm.SetupDisplayPanelButtons", "Displayタブが見つかりました");
+                    
                     var accessibilityButton = displayTab.Controls.Find("btnAccessibility", true).FirstOrDefault() as Button;
                     var backgroundColorButton = displayTab.Controls.Find("btnBackgroundColor", true).FirstOrDefault() as Button;
-                    var transparentButton = displayTab.Controls.Find("btnTransparent", true).FirstOrDefault() as Button;
 
-                    if (accessibilityButton != null) accessibilityButton.Click += _accessibilityHandlers.AccessibilityButton_Click;
-                    if (backgroundColorButton != null) backgroundColorButton.Click += _backgroundHandlers.BackgroundColorButton_Click;
-                    if (transparentButton != null) transparentButton.Click += _backgroundHandlers.TransparentButton_Click;
+                    Logger.LogInfo("OptionsForm.SetupDisplayPanelButtons", 
+                        $"アクセシビリティボタン: {(accessibilityButton != null ? "見つかりました" : "見つかりませんでした")}");
+                    Logger.LogInfo("OptionsForm.SetupDisplayPanelButtons", 
+                        $"背景色ボタン: {(backgroundColorButton != null ? "見つかりました" : "見つかりませんでした")}");
+
+                    if (accessibilityButton != null) 
+                    {
+                        accessibilityButton.Click += _accessibilityHandlers.AccessibilityButton_Click;
+                        Logger.LogInfo("OptionsForm.SetupDisplayPanelButtons", "アクセシビリティボタンのイベントを設定しました");
+                    }
+                    if (backgroundColorButton != null) 
+                    {
+                        backgroundColorButton.Click += _backgroundHandlers.BackgroundColorButton_Click;
+                        Logger.LogInfo("OptionsForm.SetupDisplayPanelButtons", "背景色ボタンのイベントを設定しました");
+                    }
+                }
+                else
+                {
+                    Logger.LogError("OptionsForm.SetupDisplayPanelButtons", "Displayタブが見つかりませんでした");
                 }
             }
             catch (Exception ex)
@@ -802,8 +819,7 @@ namespace BrowserChooser3.Forms
             var chkShowFocus = Controls.Find("chkShowFocus", true).FirstOrDefault() as CheckBox;
             if (chkShowFocus != null) chkShowFocus.Checked = _settings.ShowFocus;
 
-            var chkUseAeroNew = Controls.Find("chkUseAero", true).FirstOrDefault() as CheckBox;
-            if (chkUseAeroNew != null) chkUseAeroNew.Checked = _settings.UseAero;
+
 
             var chkUseAccessibleRenderingNew = Controls.Find("chkUseAccessibleRendering", true).FirstOrDefault() as CheckBox;
             if (chkUseAccessibleRenderingNew != null) chkUseAccessibleRenderingNew.Checked = _settings.UseAccessibleRendering;
@@ -1213,8 +1229,7 @@ namespace BrowserChooser3.Forms
                 var chkUseAccessibleRendering = Controls.Find("chkUseAccessibleRendering", true).FirstOrDefault() as CheckBox;
                 if (chkUseAccessibleRendering != null) chkUseAccessibleRendering.Checked = _settings.UseAccessibleRendering;
 
-                var chkUseAero = Controls.Find("chkUseAero", true).FirstOrDefault() as CheckBox;
-                if (chkUseAero != null) chkUseAero.Checked = _settings.UseAero;
+
 
                 // フォーカス設定
                 var chkShowFocus = Controls.Find("chkShowFocus", true).FirstOrDefault() as CheckBox;
@@ -1235,6 +1250,22 @@ namespace BrowserChooser3.Forms
                 // 背景色設定
                 var pbBackgroundColorLoad = Controls.Find("pbBackgroundColor", true).FirstOrDefault() as PictureBox;
                 if (pbBackgroundColorLoad != null) pbBackgroundColorLoad.BackColor = _settings.BackgroundColorValue;
+
+                // 透明化設定
+                var chkEnableTransparency = Controls.Find("chkEnableTransparency", true).FirstOrDefault() as CheckBox;
+                if (chkEnableTransparency != null) chkEnableTransparency.Checked = _settings.EnableTransparency;
+
+                var pbTransparencyColor = Controls.Find("pbTransparencyColor", true).FirstOrDefault() as PictureBox;
+                if (pbTransparencyColor != null) pbTransparencyColor.BackColor = Color.FromArgb(_settings.TransparencyColor);
+
+                var nudOpacity = Controls.Find("nudOpacity", true).FirstOrDefault() as NumericUpDown;
+                if (nudOpacity != null) nudOpacity.Value = (decimal)_settings.Opacity;
+
+                var chkHideTitleBar = Controls.Find("chkHideTitleBar", true).FirstOrDefault() as CheckBox;
+                if (chkHideTitleBar != null) chkHideTitleBar.Checked = _settings.HideTitleBar;
+
+                var nudRoundedCorners = Controls.Find("nudRoundedCorners", true).FirstOrDefault() as NumericUpDown;
+                if (nudRoundedCorners != null) nudRoundedCorners.Value = _settings.RoundedCornersRadius;
 
                 // ショートカット設定
                 var txtOptionsShortcut = Controls.Find("txtOptionsShortcut", true).FirstOrDefault() as TextBox;
@@ -1517,8 +1548,7 @@ namespace BrowserChooser3.Forms
                 var chkUseAccessibleRendering = Controls.Find("chkUseAccessibleRendering", true).FirstOrDefault() as CheckBox;
                 if (chkUseAccessibleRendering != null) _settings.UseAccessibleRendering = chkUseAccessibleRendering.Checked;
 
-                var chkUseAero = Controls.Find("chkUseAero", true).FirstOrDefault() as CheckBox;
-                if (chkUseAero != null) _settings.UseAero = chkUseAero.Checked;
+
 
                 // フォーカス設定
                 var chkShowFocus = Controls.Find("chkShowFocus", true).FirstOrDefault() as CheckBox;
@@ -1539,6 +1569,22 @@ namespace BrowserChooser3.Forms
                 // 背景色設定
                 var pbBackgroundColorSave = Controls.Find("pbBackgroundColor", true).FirstOrDefault() as PictureBox;
                 if (pbBackgroundColorSave != null) _settings.BackgroundColorValue = pbBackgroundColorSave.BackColor;
+
+                // 透明化設定
+                var chkEnableTransparency = Controls.Find("chkEnableTransparency", true).FirstOrDefault() as CheckBox;
+                if (chkEnableTransparency != null) _settings.EnableTransparency = chkEnableTransparency.Checked;
+
+                var pbTransparencyColor = Controls.Find("pbTransparencyColor", true).FirstOrDefault() as PictureBox;
+                if (pbTransparencyColor != null) _settings.TransparencyColor = pbTransparencyColor.BackColor.ToArgb();
+
+                var nudOpacity = Controls.Find("nudOpacity", true).FirstOrDefault() as NumericUpDown;
+                if (nudOpacity != null) _settings.Opacity = (double)nudOpacity.Value;
+
+                var chkHideTitleBar = Controls.Find("chkHideTitleBar", true).FirstOrDefault() as CheckBox;
+                if (chkHideTitleBar != null) _settings.HideTitleBar = chkHideTitleBar.Checked;
+
+                var nudRoundedCorners = Controls.Find("nudRoundedCorners", true).FirstOrDefault() as NumericUpDown;
+                if (nudRoundedCorners != null) _settings.RoundedCornersRadius = (int)nudRoundedCorners.Value;
 
                 // ショートカット設定
                 var txtOptionsShortcut = Controls.Find("txtOptionsShortcut", true).FirstOrDefault() as TextBox;
