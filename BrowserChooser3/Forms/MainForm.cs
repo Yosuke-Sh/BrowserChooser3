@@ -209,6 +209,20 @@ namespace BrowserChooser3.Forms
             CancelButton = btnCancel;
             KeyPreview = true;
             
+            // Windows 11風の最新スタイルを適用
+            try
+            {
+                if (Environment.OSVersion.Version.Major >= 10)
+                {
+                    // Windows 10/11の最新スタイル
+                    this.WindowState = FormWindowState.Normal;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("MainForm.ConfigureForm", "最新スタイル適用エラー", ex.Message);
+            }
+            
             // フォントの設定（現代的で日本語・英語両対応）
             Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0);
             
@@ -253,20 +267,40 @@ namespace BrowserChooser3.Forms
                     }
                     else
                     {
+                        // 最新のWindowsスタイルを使用（サイズ変更可能）
                         this.FormBorderStyle = FormBorderStyle.Sizable;
+                        this.WindowState = FormWindowState.Normal;
+                        this.MaximizeBox = true;
+                        this.MinimizeBox = true;
+                        this.SizeGripStyle = SizeGripStyle.Show;
+                        
+                        // Windows 11風の最新スタイルを適用
+                        try
+                        {
+                            // DWM（Desktop Window Manager）を使用して最新のスタイルを適用
+                            if (Environment.OSVersion.Version.Major >= 10)
+                            {
+                                // Windows 10/11の最新スタイル
+                                this.StartPosition = FormStartPosition.CenterScreen;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.LogError("MainForm.ApplyTransparencySettings", "最新スタイル適用エラー", ex.Message);
+                        }
                     }
                     
                     // 背景色を透明化色に設定
                     this.BackColor = Color.FromArgb(_settings.TransparencyColor);
                     
                     // 角を丸くする設定
-                    if (_settings.RoundedCorners)
+                    if (_settings.RoundedCornersRadius > 0)
                     {
-                        ApplyRoundedCorners();
+                        ApplyRoundedCorners(_settings.RoundedCornersRadius);
                     }
                     
                     Logger.LogInfo("MainForm.ApplyTransparencySettings", 
-                        $"透明化設定を適用: Opacity={_settings.Opacity}, TransparencyKey={_settings.TransparencyColor}, HideTitleBar={_settings.HideTitleBar}, RoundedCorners={_settings.RoundedCorners}");
+                        $"透明化設定を適用: Opacity={_settings.Opacity}, TransparencyKey={_settings.TransparencyColor}, HideTitleBar={_settings.HideTitleBar}, RoundedCornersRadius={_settings.RoundedCornersRadius}");
                 }
                 else
                 {
@@ -274,8 +308,30 @@ namespace BrowserChooser3.Forms
                     this.SetStyle(ControlStyles.SupportsTransparentBackColor, false);
                     this.TransparencyKey = Color.Empty;
                     this.Opacity = 1.0;
+                    
+                    // 最新のWindowsスタイルを使用（サイズ変更可能）
                     this.FormBorderStyle = FormBorderStyle.Sizable;
+                    this.WindowState = FormWindowState.Normal;
+                    this.MaximizeBox = true;
+                    this.MinimizeBox = true;
+                    this.SizeGripStyle = SizeGripStyle.Show;
                     this.BackColor = _settings?.BackgroundColorValue ?? Color.FromArgb(185, 209, 234);
+                    
+                    // リージョンをクリア（角を丸くする設定を無効化）
+                    this.Region = null;
+                    
+                    // Windows 11風の最新スタイルを適用
+                    try
+                    {
+                        if (Environment.OSVersion.Version.Major >= 10)
+                        {
+                            this.StartPosition = FormStartPosition.CenterScreen;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError("MainForm.ApplyTransparencySettings", "最新スタイル適用エラー", ex.Message);
+                    }
                     
                     Logger.LogInfo("MainForm.ApplyTransparencySettings", "透明化を無効にしました");
                 }
@@ -289,15 +345,16 @@ namespace BrowserChooser3.Forms
         /// <summary>
         /// 角を丸くする設定を適用
         /// </summary>
-        private void ApplyRoundedCorners()
+        /// <param name="radius">角の半径</param>
+        private void ApplyRoundedCorners(int radius)
         {
             try
             {
                 // Windows APIを使用して角を丸くする
-                var region = CreateRoundedRectangleRegion(0, 0, this.Width, this.Height, 20);
+                var region = CreateRoundedRectangleRegion(0, 0, this.Width, this.Height, radius);
                 this.Region = region;
                 
-                Logger.LogInfo("MainForm.ApplyRoundedCorners", "角を丸くする設定を適用しました");
+                Logger.LogInfo("MainForm.ApplyRoundedCorners", $"角を丸くする設定を適用しました（半径: {radius}）");
             }
             catch (Exception ex)
             {
@@ -332,11 +389,21 @@ namespace BrowserChooser3.Forms
         {
             try
             {
+                // 透明化が有効で角を丸くする設定がある場合、リージョンを更新
+                if (_settings?.EnableTransparency == true && _settings.RoundedCornersRadius > 0)
+                {
+                    ApplyRoundedCorners(_settings.RoundedCornersRadius);
+                }
+                
                 // ブラウザボタンの再配置
                 RecalculateButtonLayout();
                 
                 // 互換性UIコントロールの位置調整
                 AdjustCompatibilityUILayout();
+                
+                // フォームの再描画を強制
+                this.Invalidate();
+                this.Update();
                 
                 Logger.LogTrace("MainForm.MainForm_Resize", "フォームサイズ変更完了", ClientSize.Width, ClientSize.Height);
             }

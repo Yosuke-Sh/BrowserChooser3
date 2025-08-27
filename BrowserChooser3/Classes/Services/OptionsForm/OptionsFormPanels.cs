@@ -720,22 +720,30 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             currentY += 35;
 
             // 角を丸くする設定
-            var chkRoundedCorners = new CheckBox
+            var lblRoundedCorners = new Label
             {
-                Name = "chkRoundedCorners",
-                Text = "Rounded Corners",
-                TextAlign = ContentAlignment.MiddleLeft,
-                Location = new Point(6, currentY),
-                Size = new Size(200, 25),
-                Checked = settings.RoundedCorners,
+                Text = "Rounded Corners Radius:",
+                Location = new Point(6, currentY + 3),
+                Size = new Size(150, 23),
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
-            chkRoundedCorners.CheckedChanged += (s, e) => setModified(true);
+
+            var nudRoundedCorners = new NumericUpDown
+            {
+                Name = "nudRoundedCorners",
+                Location = new Point(160, currentY),
+                Size = new Size(60, 25),
+                Minimum = 0,
+                Maximum = 50,
+                Value = settings.RoundedCornersRadius,
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+            nudRoundedCorners.ValueChanged += (s, e) => setModified(true);
 
             var lblRoundedCornersDesc = new Label
             {
-                Text = "メイン画面の角を丸くします",
-                Location = new Point(220, currentY + 3),
+                Text = "メイン画面の角を丸くする半径を設定します（0で無効、1-50で有効）",
+                Location = new Point(230, currentY + 3),
                 Size = new Size(400, 23),
                 Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
                 ForeColor = Color.Gray
@@ -972,7 +980,8 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             panel.Controls.Add(lblOpacityDesc);
             panel.Controls.Add(chkHideTitleBar);
             panel.Controls.Add(lblHideTitleBarDesc);
-            panel.Controls.Add(chkRoundedCorners);
+            panel.Controls.Add(lblRoundedCorners);
+            panel.Controls.Add(nudRoundedCorners);
             panel.Controls.Add(lblRoundedCornersDesc);
             
             panel.Controls.Add(lblEffectsTitle);

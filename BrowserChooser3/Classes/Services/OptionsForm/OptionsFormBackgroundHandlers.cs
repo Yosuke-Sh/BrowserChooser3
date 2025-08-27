@@ -131,16 +131,12 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
         {
             try
             {
-                // 環境変数でダイアログ無効化が設定されている場合
+                // 環境変数でダイアログ無効化が設定されている場合のみ
                 var disableDialogs = Environment.GetEnvironmentVariable("DISABLE_DIALOGS");
                 if (!string.IsNullOrEmpty(disableDialogs) && disableDialogs.Equals("true", StringComparison.OrdinalIgnoreCase))
                     return true;
 
-                // デバッガーがアタッチされている場合
-                if (System.Diagnostics.Debugger.IsAttached)
-                    return true;
-
-                // アセンブリ名に"Test"が含まれている場合
+                // アセンブリ名に"Test"が含まれている場合のみ（テストプロジェクトの場合）
                 var assemblyName = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
                 if (assemblyName?.Contains("Test", StringComparison.OrdinalIgnoreCase) == true)
                     return true;

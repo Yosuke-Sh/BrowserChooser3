@@ -182,8 +182,8 @@ namespace BrowserChooser3.Classes
             /// <summary>タイトルバー非表示</summary>
             HideTitleBar,
             
-            /// <summary>角を丸くする</summary>
-            RoundedCorners
+            /// <summary>角を丸くする半径</summary>
+            RoundedCornersRadius
         }
 
         /// <summary>
@@ -228,7 +228,7 @@ namespace BrowserChooser3.Classes
             { DefaultField.TransparencyColor, Color.Magenta.ToArgb() },
             { DefaultField.Opacity, 0.9 },
             { DefaultField.HideTitleBar, true },
-            { DefaultField.RoundedCorners, false }
+            { DefaultField.RoundedCornersRadius, 0 }
         };
 
         /// <summary>設定ファイル名</summary>
@@ -431,8 +431,8 @@ namespace BrowserChooser3.Classes
         /// <summary>タイトルバー非表示</summary>
         public bool HideTitleBar { get; set; } = true;
 
-        /// <summary>角を丸くする</summary>
-        public bool RoundedCorners { get; set; } = false;
+        /// <summary>角を丸くする半径（0で無効、1-50で有効）</summary>
+        public int RoundedCornersRadius { get; set; } = 0;
 
 
 
@@ -847,7 +847,7 @@ namespace BrowserChooser3.Classes
             settings.TransparencyColor = Color.Magenta.ToArgb();
             settings.Opacity = 0.9;
             settings.HideTitleBar = true;
-            settings.RoundedCorners = false;
+            settings.RoundedCornersRadius = 0;
             
             // 背景色をデフォルトの透明化色に更新
             settings.BackgroundColor = Color.FromArgb(128, 255, 255, 255).ToArgb();

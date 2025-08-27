@@ -632,7 +632,7 @@ namespace BrowserChooser3.Tests
             ((int)Settings.DefaultField.TransparencyColor).Should().Be(30);
             ((int)Settings.DefaultField.Opacity).Should().Be(31);
             ((int)Settings.DefaultField.HideTitleBar).Should().Be(32);
-            ((int)Settings.DefaultField.RoundedCorners).Should().Be(33);
+            ((int)Settings.DefaultField.RoundedCornersRadius).Should().Be(33);
         }
 
         #endregion

@@ -1540,8 +1540,8 @@
         <member name="F:BrowserChooser3.Classes.Settings.DefaultField.HideTitleBar">
             <summary>タイトルバー非表示</summary>
         </member>
-        <member name="F:BrowserChooser3.Classes.Settings.DefaultField.RoundedCorners">
-            <summary>角を丸くする</summary>
+        <member name="F:BrowserChooser3.Classes.Settings.DefaultField.RoundedCornersRadius">
+            <summary>角を丸くする半径</summary>
         </member>
         <member name="F:BrowserChooser3.Classes.Settings.Defaults">
             <summary>
@@ -1742,8 +1742,8 @@
         <member name="P:BrowserChooser3.Classes.Settings.HideTitleBar">
             <summary>タイトルバー非表示</summary>
         </member>
-        <member name="P:BrowserChooser3.Classes.Settings.RoundedCorners">
-            <summary>角を丸くする</summary>
+        <member name="P:BrowserChooser3.Classes.Settings.RoundedCornersRadius">
+            <summary>角を丸くする半径（0で無効、1-50で有効）</summary>
         </member>
         <member name="P:BrowserChooser3.Classes.Settings.SafeMode">
             <summary>セーフモード（ファイルが読み込めない場合のみtrue - 保存を防止）</summary>
@@ -2834,10 +2834,11 @@
             透明化設定を適用
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Forms.MainForm.ApplyRoundedCorners">
+        <member name="M:BrowserChooser3.Forms.MainForm.ApplyRoundedCorners(System.Int32)">
             <summary>
             角を丸くする設定を適用
             </summary>
+            <param name="radius">角の半径</param>
         </member>
         <member name="M:BrowserChooser3.Forms.MainForm.CreateRoundedRectangleRegion(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)">
             <summary>
@@ -3411,6 +3412,31 @@
               現在のスレッドの CurrentUICulture プロパティをオーバーライドします。
             </summary>
         </member>
+        <member name="P:BrowserChooser3.Properties.Resources.BCLogoIcon">
+            <summary>
+              (アイコン) に類似した型 System.Drawing.Icon のローカライズされたリソースを検索します。
+            </summary>
+        </member>
+        <member name="P:BrowserChooser3.Properties.Resources.BrowserChooser2Icon">
+            <summary>
+              (アイコン) に類似した型 System.Drawing.Icon のローカライズされたリソースを検索します。
+            </summary>
+        </member>
+        <member name="P:BrowserChooser3.Properties.Resources.BrowserChooser3">
+            <summary>
+              型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
+            </summary>
+        </member>
+        <member name="P:BrowserChooser3.Properties.Resources.BrowserChooser3Icon">
+            <summary>
+              (アイコン) に類似した型 System.Drawing.Icon のローカライズされたリソースを検索します。
+            </summary>
+        </member>
+        <member name="P:BrowserChooser3.Properties.Resources.BrowserChooserIcon">
+            <summary>
+              型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
+            </summary>
+        </member>
         <member name="P:BrowserChooser3.Properties.Resources.Icon122">
             <summary>
               型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
@@ -3421,32 +3447,12 @@
               型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
             </summary>
         </member>
-        <member name="P:BrowserChooser3.Properties.Resources.BrowserChooserIcon">
+        <member name="P:BrowserChooser3.Properties.Resources.PasteAndCloseIcon">
             <summary>
               型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
-            </summary>
-        </member>
-        <member name="P:BrowserChooser3.Properties.Resources.BrowserChooser2Icon">
-            <summary>
-              型 System.Drawing.Icon のローカライズされたリソースを検索します。
-            </summary>
-        </member>
-        <member name="P:BrowserChooser3.Properties.Resources.BrowserChooser3Icon">
-            <summary>
-              型 System.Drawing.Icon のローカライズされたリソースを検索します。
-            </summary>
-        </member>
-        <member name="P:BrowserChooser3.Properties.Resources.BCLogoIcon">
-            <summary>
-              型 System.Drawing.Icon のローカライズされたリソースを検索します。
             </summary>
         </member>
         <member name="P:BrowserChooser3.Properties.Resources.PasteIcon">
-            <summary>
-              型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
-            </summary>
-        </member>
-        <member name="P:BrowserChooser3.Properties.Resources.PasteAndCloseIcon">
             <summary>
               型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
             </summary>
