@@ -238,3 +238,4 @@ BrowserChooser3's transparency system is completely new and doesn't migrate sett
 ---
 
 *For more information about other display settings, see the [Configuration Guide](Configuration-Guide).*
+

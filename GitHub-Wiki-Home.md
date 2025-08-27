@@ -116,3 +116,4 @@ BrowserChooser3 is released under the MIT License. See the [LICENSE](https://git
 ---
 
 *This wiki is maintained by the BrowserChooser3 community. If you find any errors or have suggestions for improvement, please [create an issue](https://github.com/your-username/BrowserChooser3/issues) or [submit a pull request](https://github.com/your-username/BrowserChooser3/pulls).*
+

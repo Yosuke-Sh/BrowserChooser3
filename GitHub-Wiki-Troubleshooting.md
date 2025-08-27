@@ -302,3 +302,4 @@ For specific issues, try partial resets:
 ---
 
 *If you can't find a solution here, please [create a GitHub issue](https://github.com/your-username/BrowserChooser3/issues) with detailed information about your problem.*
+

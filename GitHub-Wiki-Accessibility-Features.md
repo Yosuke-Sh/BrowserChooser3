@@ -290,3 +290,4 @@ If you encounter accessibility issues:
 ---
 
 *For more information about BrowserChooser3's features, see the [Configuration Guide](Configuration-Guide) and [User Guide](User-Guide).*
+
