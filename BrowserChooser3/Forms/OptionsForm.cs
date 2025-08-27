@@ -802,8 +802,7 @@ namespace BrowserChooser3.Forms
             var chkShowFocus = Controls.Find("chkShowFocus", true).FirstOrDefault() as CheckBox;
             if (chkShowFocus != null) chkShowFocus.Checked = _settings.ShowFocus;
 
-            var chkUseAeroNew = Controls.Find("chkUseAero", true).FirstOrDefault() as CheckBox;
-            if (chkUseAeroNew != null) chkUseAeroNew.Checked = _settings.UseAero;
+
 
             var chkUseAccessibleRenderingNew = Controls.Find("chkUseAccessibleRendering", true).FirstOrDefault() as CheckBox;
             if (chkUseAccessibleRenderingNew != null) chkUseAccessibleRenderingNew.Checked = _settings.UseAccessibleRendering;
@@ -1213,8 +1212,7 @@ namespace BrowserChooser3.Forms
                 var chkUseAccessibleRendering = Controls.Find("chkUseAccessibleRendering", true).FirstOrDefault() as CheckBox;
                 if (chkUseAccessibleRendering != null) chkUseAccessibleRendering.Checked = _settings.UseAccessibleRendering;
 
-                var chkUseAero = Controls.Find("chkUseAero", true).FirstOrDefault() as CheckBox;
-                if (chkUseAero != null) chkUseAero.Checked = _settings.UseAero;
+
 
                 // フォーカス設定
                 var chkShowFocus = Controls.Find("chkShowFocus", true).FirstOrDefault() as CheckBox;
@@ -1517,8 +1515,7 @@ namespace BrowserChooser3.Forms
                 var chkUseAccessibleRendering = Controls.Find("chkUseAccessibleRendering", true).FirstOrDefault() as CheckBox;
                 if (chkUseAccessibleRendering != null) _settings.UseAccessibleRendering = chkUseAccessibleRendering.Checked;
 
-                var chkUseAero = Controls.Find("chkUseAero", true).FirstOrDefault() as CheckBox;
-                if (chkUseAero != null) _settings.UseAero = chkUseAero.Checked;
+
 
                 // フォーカス設定
                 var chkShowFocus = Controls.Find("chkShowFocus", true).FirstOrDefault() as CheckBox;

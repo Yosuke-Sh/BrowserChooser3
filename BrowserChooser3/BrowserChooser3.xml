@@ -630,9 +630,9 @@
             <param name="settings">設定オブジェクト</param>
             <param name="setModified">変更フラグ設定アクション</param>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormBackgroundHandlers.SetTransparentBackground">
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormBackgroundHandlers.ApplyTransparencySettings">
             <summary>
-            透明背景設定
+            透明化設定を適用
             </summary>
         </member>
         <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormBackgroundHandlers.ChangeBackgroundColor">
@@ -647,7 +647,7 @@
         </member>
         <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormBackgroundHandlers.TransparentButton_Click(System.Object,System.EventArgs)">
             <summary>
-            透明背景ボタンのクリックイベント
+            透明化設定の適用
             </summary>
         </member>
         <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormBackgroundHandlers.IsTestEnvironment">
@@ -1384,6 +1384,7 @@
             - Version 3: プロトコルとファイルタイプを再構築、アクセシビリティ設定を追加
             - Version 4: アクセシビリティ設定を再構築、v3を模倣
             - Version 5: レジストリチェック用（キャンセル時はバージョンを更新しない）
+            - Version 6: 透明化設定を追加（EnableTransparency, TransparencyColor, Opacity, HideTitleBar, RoundedCorners）
             </summary>
         </member>
         <member name="T:BrowserChooser3.Classes.Settings.AvailableStartingPositions">
@@ -1485,9 +1486,6 @@
         <member name="F:BrowserChooser3.Classes.Settings.DefaultField.ShowFocus">
             <summary>フォーカス表示</summary>
         </member>
-        <member name="F:BrowserChooser3.Classes.Settings.DefaultField.UseAero">
-            <summary>Aero効果使用</summary>
-        </member>
         <member name="F:BrowserChooser3.Classes.Settings.DefaultField.FocusBoxLineWidth">
             <summary>フォーカスボックス線幅</summary>
         </member>
@@ -1529,6 +1527,21 @@
         </member>
         <member name="F:BrowserChooser3.Classes.Settings.DefaultField.LogLevel">
             <summary>ログレベル</summary>
+        </member>
+        <member name="F:BrowserChooser3.Classes.Settings.DefaultField.EnableTransparency">
+            <summary>透明化有効</summary>
+        </member>
+        <member name="F:BrowserChooser3.Classes.Settings.DefaultField.TransparencyColor">
+            <summary>透明化色</summary>
+        </member>
+        <member name="F:BrowserChooser3.Classes.Settings.DefaultField.Opacity">
+            <summary>透明度</summary>
+        </member>
+        <member name="F:BrowserChooser3.Classes.Settings.DefaultField.HideTitleBar">
+            <summary>タイトルバー非表示</summary>
+        </member>
+        <member name="F:BrowserChooser3.Classes.Settings.DefaultField.RoundedCorners">
+            <summary>角を丸くする</summary>
         </member>
         <member name="F:BrowserChooser3.Classes.Settings.Defaults">
             <summary>
@@ -1622,9 +1635,6 @@
         </member>
         <member name="P:BrowserChooser3.Classes.Settings.ShowFocus">
             <summary>フォーカス表示</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Settings.UseAero">
-            <summary>Aero効果使用</summary>
         </member>
         <member name="P:BrowserChooser3.Classes.Settings.UseAccessibleRendering">
             <summary>アクセシブルレンダリング使用</summary>
@@ -1720,6 +1730,21 @@
         <member name="P:BrowserChooser3.Classes.Settings.StartupMessage">
             <summary>起動メッセージ</summary>
         </member>
+        <member name="P:BrowserChooser3.Classes.Settings.EnableTransparency">
+            <summary>透明化有効</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Settings.TransparencyColor">
+            <summary>透明化色</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Settings.Opacity">
+            <summary>透明度（0.01-1.0）</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Settings.HideTitleBar">
+            <summary>タイトルバー非表示</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Settings.RoundedCorners">
+            <summary>角を丸くする</summary>
+        </member>
         <member name="P:BrowserChooser3.Classes.Settings.SafeMode">
             <summary>セーフモード（ファイルが読み込めない場合のみtrue - 保存を防止）</summary>
         </member>
@@ -1807,6 +1832,12 @@
         <member name="M:BrowserChooser3.Classes.Settings.MigrateFromVersion4(BrowserChooser3.Classes.Settings)">
             <summary>
             バージョン4から5へのマイグレーション
+            </summary>
+            <param name="settings">設定オブジェクト</param>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Settings.MigrateFromVersion5(BrowserChooser3.Classes.Settings)">
+            <summary>
+            バージョン5から6へのマイグレーション
             </summary>
             <param name="settings">設定オブジェクト</param>
         </member>
@@ -2797,6 +2828,27 @@
             <summary>
             フォームの設定
             </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.MainForm.ApplyTransparencySettings">
+            <summary>
+            透明化設定を適用
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.MainForm.ApplyRoundedCorners">
+            <summary>
+            角を丸くする設定を適用
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.MainForm.CreateRoundedRectangleRegion(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            角が丸い矩形のリージョンを作成
+            </summary>
+            <param name="x">X座標</param>
+            <param name="y">Y座標</param>
+            <param name="width">幅</param>
+            <param name="height">高さ</param>
+            <param name="radius">角の半径</param>
+            <returns>角が丸い矩形のリージョン</returns>
         </member>
         <member name="M:BrowserChooser3.Forms.MainForm.MainForm_Resize(System.Object,System.EventArgs)">
             <summary>

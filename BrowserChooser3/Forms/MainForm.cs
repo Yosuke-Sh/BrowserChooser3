@@ -219,21 +219,110 @@ namespace BrowserChooser3.Forms
             // サイズ変更イベントの設定
             Resize += MainForm_Resize;
             
-            // Aero効果の適用
-            if (_settings?.UseAero == true && GeneralUtilities.IsAeroEnabled())
+            // 透明化設定の適用
+            ApplyTransparencySettings();
+            
+            // 透明化が無効な場合の背景色設定
+            if (!_settings?.EnableTransparency == true)
             {
-                GeneralUtilities.MakeFormGlassy(this);
-                _hasAero = true; // Aero効果が有効な場合のフラグを立てる
-                Logger.LogInfo("MainForm.ConfigureForm", "Aero効果を適用");
-            }
-            else
-            {
-                // Aero効果が無効の場合の背景色設定
                 BackColor = Color.FromArgb(185, 209, 234);
-                StyleXP(); // Aero効果が無効の場合のスタイル設定
+                StyleXP(); // 透明化が無効の場合のスタイル設定
             }
             
             Logger.LogInfo("MainForm.ConfigureForm", "End");
+        }
+
+        /// <summary>
+        /// 透明化設定を適用
+        /// </summary>
+        private void ApplyTransparencySettings()
+        {
+            try
+            {
+                if (_settings?.EnableTransparency == true)
+                {
+                    // 透明化が有効な場合
+                    this.SetStyle(ControlStyles.SupportsTransparentBackColor, true);
+                    this.TransparencyKey = Color.FromArgb(_settings.TransparencyColor);
+                    this.Opacity = _settings.Opacity;
+                    
+                    // タイトルバー非表示設定
+                    if (_settings.HideTitleBar)
+                    {
+                        this.FormBorderStyle = FormBorderStyle.None;
+                    }
+                    else
+                    {
+                        this.FormBorderStyle = FormBorderStyle.Sizable;
+                    }
+                    
+                    // 背景色を透明化色に設定
+                    this.BackColor = Color.FromArgb(_settings.TransparencyColor);
+                    
+                    // 角を丸くする設定
+                    if (_settings.RoundedCorners)
+                    {
+                        ApplyRoundedCorners();
+                    }
+                    
+                    Logger.LogInfo("MainForm.ApplyTransparencySettings", 
+                        $"透明化設定を適用: Opacity={_settings.Opacity}, TransparencyKey={_settings.TransparencyColor}, HideTitleBar={_settings.HideTitleBar}, RoundedCorners={_settings.RoundedCorners}");
+                }
+                else
+                {
+                    // 透明化が無効な場合
+                    this.SetStyle(ControlStyles.SupportsTransparentBackColor, false);
+                    this.TransparencyKey = Color.Empty;
+                    this.Opacity = 1.0;
+                    this.FormBorderStyle = FormBorderStyle.Sizable;
+                    this.BackColor = _settings?.BackgroundColorValue ?? Color.FromArgb(185, 209, 234);
+                    
+                    Logger.LogInfo("MainForm.ApplyTransparencySettings", "透明化を無効にしました");
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("MainForm.ApplyTransparencySettings", "透明化設定エラー", ex.Message, ex.StackTrace ?? "");
+            }
+        }
+
+        /// <summary>
+        /// 角を丸くする設定を適用
+        /// </summary>
+        private void ApplyRoundedCorners()
+        {
+            try
+            {
+                // Windows APIを使用して角を丸くする
+                var region = CreateRoundedRectangleRegion(0, 0, this.Width, this.Height, 20);
+                this.Region = region;
+                
+                Logger.LogInfo("MainForm.ApplyRoundedCorners", "角を丸くする設定を適用しました");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("MainForm.ApplyRoundedCorners", "角を丸くする設定エラー", ex.Message, ex.StackTrace ?? "");
+            }
+        }
+
+        /// <summary>
+        /// 角が丸い矩形のリージョンを作成
+        /// </summary>
+        /// <param name="x">X座標</param>
+        /// <param name="y">Y座標</param>
+        /// <param name="width">幅</param>
+        /// <param name="height">高さ</param>
+        /// <param name="radius">角の半径</param>
+        /// <returns>角が丸い矩形のリージョン</returns>
+        private Region CreateRoundedRectangleRegion(int x, int y, int width, int height, int radius)
+        {
+            var path = new System.Drawing.Drawing2D.GraphicsPath();
+            path.AddArc(x, y, radius * 2, radius * 2, 180, 90); // 左上
+            path.AddArc(width - radius * 2, y, radius * 2, radius * 2, 270, 90); // 右上
+            path.AddArc(width - radius * 2, height - radius * 2, radius * 2, radius * 2, 0, 90); // 右下
+            path.AddArc(x, height - radius * 2, radius * 2, radius * 2, 90, 90); // 左下
+            path.CloseFigure();
+            return new Region(path);
         }
 
         /// <summary>
@@ -735,6 +824,13 @@ namespace BrowserChooser3.Forms
         /// </summary>
         public void UpdateURL(string url)
         {
+            // UIスレッドで実行する必要があるため、InvokeRequiredをチェック
+            if (InvokeRequired)
+            {
+                Invoke(new Action<string>(UpdateURL), url);
+                return;
+            }
+
             Logger.LogInfo("MainForm.UpdateURL", "URL更新", url);
             _currentUrl = url;
             

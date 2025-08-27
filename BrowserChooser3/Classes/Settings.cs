@@ -22,8 +22,9 @@ namespace BrowserChooser3.Classes
         /// - Version 3: プロトコルとファイルタイプを再構築、アクセシビリティ設定を追加
         /// - Version 4: アクセシビリティ設定を再構築、v3を模倣
         /// - Version 5: レジストリチェック用（キャンセル時はバージョンを更新しない）
+        /// - Version 6: 透明化設定を追加（EnableTransparency, TransparencyColor, Opacity, HideTitleBar, RoundedCorners）
         /// </summary>
-        public const int CURRENT_FILE_VERSION = 5;
+        public const int CURRENT_FILE_VERSION = 6;
 
         /// <summary>
         /// ウィンドウの開始位置を定義する列挙型
@@ -125,8 +126,7 @@ namespace BrowserChooser3.Classes
             /// <summary>フォーカス表示</summary>
             ShowFocus,
             
-            /// <summary>Aero効果使用</summary>
-            UseAero,
+
             
             /// <summary>フォーカスボックス線幅</summary>
             FocusBoxLineWidth,
@@ -168,7 +168,22 @@ namespace BrowserChooser3.Classes
             ExtractDLLs,
             
             /// <summary>ログレベル</summary>
-            LogLevel
+            LogLevel,
+            
+            /// <summary>透明化有効</summary>
+            EnableTransparency,
+            
+            /// <summary>透明化色</summary>
+            TransparencyColor,
+            
+            /// <summary>透明度</summary>
+            Opacity,
+            
+            /// <summary>タイトルバー非表示</summary>
+            HideTitleBar,
+            
+            /// <summary>角を丸くする</summary>
+            RoundedCorners
         }
 
         /// <summary>
@@ -194,12 +209,12 @@ namespace BrowserChooser3.Classes
             { DefaultField.AdvancedScreens, false },
             { DefaultField.Separator, " - " },
             { DefaultField.ShowFocus, true },
-            { DefaultField.UseAero, false },
+
             { DefaultField.FocusBoxLineWidth, 1 },
             { DefaultField.FocusBoxColor, Color.Transparent.ToArgb() },
             { DefaultField.UserAgent, "Mozilla/5.0" },
             { DefaultField.DownloadDetectionFile, true },
-            { DefaultField.BackgroundColor, Color.Transparent.ToArgb() },
+            { DefaultField.BackgroundColor, Color.FromArgb(128, 255, 255, 255).ToArgb() },
             { DefaultField.StartingPosition, AvailableStartingPositions.CenterScreen },
             { DefaultField.OffsetX, 0 },
             { DefaultField.OffsetY, 0 },
@@ -208,7 +223,12 @@ namespace BrowserChooser3.Classes
             { DefaultField.CanonicalizeAppendedText, string.Empty },
             { DefaultField.EnableLogging, false },
             { DefaultField.ExtractDLLs, false },
-            { DefaultField.LogLevel, 3 }
+            { DefaultField.LogLevel, 3 },
+            { DefaultField.EnableTransparency, true },
+            { DefaultField.TransparencyColor, Color.Magenta.ToArgb() },
+            { DefaultField.Opacity, 0.9 },
+            { DefaultField.HideTitleBar, true },
+            { DefaultField.RoundedCorners, false }
         };
 
         /// <summary>設定ファイル名</summary>
@@ -299,8 +319,7 @@ namespace BrowserChooser3.Classes
         /// <summary>フォーカス表示</summary>
         public bool ShowFocus { get; set; } = true;
         
-        /// <summary>Aero効果使用</summary>
-        public bool UseAero { get; set; } = false;
+
         
         /// <summary>アクセシブルレンダリング使用</summary>
         public bool UseAccessibleRendering { get; set; } = false;
@@ -328,7 +347,7 @@ namespace BrowserChooser3.Classes
         public bool DownloadDetectionFile { get; set; } = true;
         
         /// <summary>背景色</summary>
-        public int BackgroundColor { get; set; } = Color.Transparent.ToArgb();
+        public int BackgroundColor { get; set; } = Color.FromArgb(128, 255, 255, 255).ToArgb();
         
         /// <summary>背景色（Color型、Browser Chooser 2互換）</summary>
         public Color BackgroundColorValue 
@@ -399,6 +418,21 @@ namespace BrowserChooser3.Classes
 
         /// <summary>起動メッセージ</summary>
         public string StartupMessage { get; set; } = "BrowserChooser3 Started";
+
+        /// <summary>透明化有効</summary>
+        public bool EnableTransparency { get; set; } = true;
+
+        /// <summary>透明化色</summary>
+        public int TransparencyColor { get; set; } = Color.Magenta.ToArgb();
+
+        /// <summary>透明度（0.01-1.0）</summary>
+        public double Opacity { get; set; } = 0.9;
+
+        /// <summary>タイトルバー非表示</summary>
+        public bool HideTitleBar { get; set; } = true;
+
+        /// <summary>角を丸くする</summary>
+        public bool RoundedCorners { get; set; } = false;
 
 
 
@@ -692,6 +726,14 @@ namespace BrowserChooser3.Classes
                     settings.FileVersion = 5;
                 }
 
+                // バージョン5から6へのマイグレーション
+                if (settings.FileVersion == 5)
+                {
+                    Logger.LogInfo("Settings.MigrateSettings", "バージョン5から6へのマイグレーション");
+                    MigrateFromVersion5(settings);
+                    settings.FileVersion = 6;
+                }
+
                 // 最新バージョンに更新
                 if (settings.FileVersion < CURRENT_FILE_VERSION)
                 {
@@ -791,6 +833,24 @@ namespace BrowserChooser3.Classes
         {
             // レジストリチェック機能の追加
             // 既存の設定を保持
+        }
+
+        /// <summary>
+        /// バージョン5から6へのマイグレーション
+        /// </summary>
+        /// <param name="settings">設定オブジェクト</param>
+        private static void MigrateFromVersion5(Settings settings)
+        {
+            // 透明化設定の追加
+            // デフォルト値を設定
+            settings.EnableTransparency = true;
+            settings.TransparencyColor = Color.Magenta.ToArgb();
+            settings.Opacity = 0.9;
+            settings.HideTitleBar = true;
+            settings.RoundedCorners = false;
+            
+            // 背景色をデフォルトの透明化色に更新
+            settings.BackgroundColor = Color.FromArgb(128, 255, 255, 255).ToArgb();
         }
 
         /// <summary>

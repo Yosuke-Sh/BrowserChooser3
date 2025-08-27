@@ -282,11 +282,25 @@ namespace BrowserChooser3.Tests
             // Assert
             var accessibilityButton = tabPage.Controls.Find("btnAccessibility", true).FirstOrDefault() as Button;
             var backgroundColorButton = tabPage.Controls.Find("btnBackgroundColor", true).FirstOrDefault() as Button;
-            var transparentButton = tabPage.Controls.Find("btnTransparent", true).FirstOrDefault() as Button;
+            var enableTransparencyCheckBox = tabPage.Controls.Find("chkEnableTransparency", true).FirstOrDefault() as CheckBox;
+            var transparencyColorPictureBox = tabPage.Controls.Find("pbTransparencyColor", true).FirstOrDefault() as PictureBox;
+            var opacityNumericUpDown = tabPage.Controls.Find("nudOpacity", true).FirstOrDefault() as NumericUpDown;
+            var hideTitleBarCheckBox = tabPage.Controls.Find("chkHideTitleBar", true).FirstOrDefault() as CheckBox;
+            var roundedCornersCheckBox = tabPage.Controls.Find("chkRoundedCorners", true).FirstOrDefault() as CheckBox;
 
             accessibilityButton.Should().NotBeNull();
             backgroundColorButton.Should().NotBeNull();
-            transparentButton.Should().NotBeNull();
+            enableTransparencyCheckBox.Should().NotBeNull();
+            transparencyColorPictureBox.Should().NotBeNull();
+            opacityNumericUpDown.Should().NotBeNull();
+            hideTitleBarCheckBox.Should().NotBeNull();
+            roundedCornersCheckBox.Should().NotBeNull();
+            
+            // デフォルト値の確認
+            enableTransparencyCheckBox.Checked.Should().Be(_settings.EnableTransparency);
+            opacityNumericUpDown.Value.Should().Be((decimal)_settings.Opacity);
+            hideTitleBarCheckBox.Checked.Should().Be(_settings.HideTitleBar);
+            roundedCornersCheckBox.Checked.Should().Be(_settings.RoundedCorners);
         }
 
         #endregion
