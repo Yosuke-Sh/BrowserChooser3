@@ -24,7 +24,8 @@ namespace BrowserChooser3.Classes
         /// - Version 5: レジストリチェック用（キャンセル時はバージョンを更新しない）
         /// - Version 6: 透明化設定を追加（EnableTransparency, TransparencyColor, Opacity, HideTitleBar, RoundedCorners）
         /// </summary>
-        public const int CURRENT_FILE_VERSION = 6;
+        // バージョン管理は廃止
+        public const int CURRENT_FILE_VERSION = 1;
 
         /// <summary>
         /// ウィンドウの開始位置を定義する列挙型
@@ -233,15 +234,14 @@ namespace BrowserChooser3.Classes
         public bool RevealShortURL { get; set; } = false;
         
         /// <summary>ファイルバージョン</summary>
+        // バージョン管理は廃止
         public int FileVersion { get; set; } = CURRENT_FILE_VERSION;
         
         /// <summary>プロトコルリスト</summary>
         public List<Protocol> Protocols { get; set; } = new();
         
         
-        /// <summary>ファイルタイプリスト</summary>
-        // FileTypes機能は未実装のため削除
-        // public List<FileType> FileTypes { get; set; } = new();
+
         
         /// <summary>URLリスト</summary>
         public List<URL> URLs { get; set; } = new();
@@ -324,8 +324,24 @@ namespace BrowserChooser3.Classes
         /// <summary>背景色（Color型、Browser Chooser 2互換）</summary>
         public Color BackgroundColorValue 
         { 
-            get => Color.FromArgb(BackgroundColor);
-            set => BackgroundColor = value.ToArgb();
+            get
+            {
+                // BackgroundColorが無効値（-1）の場合はデフォルト色を返す
+                if (BackgroundColor == -1 || BackgroundColor == Color.Transparent.ToArgb())
+                {
+                    return Color.FromArgb(185, 209, 234); // デフォルトの青系色
+                }
+                
+                var c = Color.FromArgb(BackgroundColor);
+                // 常に不透明（A=255）で返す
+                return c.A == 255 ? c : Color.FromArgb(255, c.R, c.G, c.B);
+            }
+            set
+            {
+                // 常に不透明（A=255）で保存
+                var c = value.A == 255 ? value : Color.FromArgb(255, value.R, value.G, value.B);
+                BackgroundColor = c.ToArgb();
+            }
         }
         
         /// <summary>開始位置</summary>
@@ -622,11 +638,7 @@ namespace BrowserChooser3.Classes
                     else if (output?.Height < 1)
                         output.Height = 1;
 
-                    // 設定ファイルのバージョン管理と自動マイグレーション
-                    if (output != null)
-                    {
-                        output = MigrateSettings(output, path);
-                    }
+                    // 設定ファイルのマイグレーション処理は廃止（既存値をそのまま使用）
 
                     Logger.LogInfo("Settings.Load", "設定ファイル読み込み成功", path, output?.Browsers?.Count ?? 0);
                     return output!;
@@ -647,177 +659,7 @@ namespace BrowserChooser3.Classes
             return defaultSettings;
         }
 
-        /// <summary>
-        /// 設定ファイルのバージョン管理と自動マイグレーション
-        /// </summary>
-        /// <param name="settings">設定オブジェクト</param>
-        /// <param name="path">設定ファイルパス</param>
-        /// <returns>マイグレーション後の設定オブジェクト</returns>
-        private static Settings MigrateSettings(Settings settings, string path)
-        {
-            Logger.LogInfo("Settings.MigrateSettings", "マイグレーション開始", settings.FileVersion);
-
-            try
-            {
-                // バージョン1から2へのマイグレーション
-                if (settings.FileVersion == 1)
-                {
-                    Logger.LogInfo("Settings.MigrateSettings", "バージョン1から2へのマイグレーション");
-                    MigrateFromVersion1(settings);
-                    settings.FileVersion = 2;
-                }
-
-                // バージョン2から3へのマイグレーション
-                if (settings.FileVersion == 2)
-                {
-                    Logger.LogInfo("Settings.MigrateSettings", "バージョン2から3へのマイグレーション");
-                    MigrateFromVersion2(settings);
-                    settings.FileVersion = 3;
-                }
-
-                // バージョン3から4へのマイグレーション
-                if (settings.FileVersion == 3)
-                {
-                    Logger.LogInfo("Settings.MigrateSettings", "バージョン3から4へのマイグレーション");
-                    MigrateFromVersion3(settings);
-                    settings.FileVersion = 4;
-                }
-
-                // バージョン4から5へのマイグレーション
-                if (settings.FileVersion == 4)
-                {
-                    Logger.LogInfo("Settings.MigrateSettings", "バージョン4から5へのマイグレーション");
-                    MigrateFromVersion4(settings);
-                    settings.FileVersion = 5;
-                }
-
-                // バージョン5から6へのマイグレーション
-                if (settings.FileVersion == 5)
-                {
-                    Logger.LogInfo("Settings.MigrateSettings", "バージョン5から6へのマイグレーション");
-                    MigrateFromVersion5(settings);
-                    settings.FileVersion = 6;
-                }
-
-                // 最新バージョンに更新
-                if (settings.FileVersion < CURRENT_FILE_VERSION)
-                {
-                    Logger.LogInfo("Settings.MigrateSettings", $"バージョン{settings.FileVersion}から{CURRENT_FILE_VERSION}へのマイグレーション");
-                    settings.FileVersion = CURRENT_FILE_VERSION;
-                }
-
-                // マイグレーション後に保存
-                if (settings.FileVersion != CURRENT_FILE_VERSION)
-                {
-                    settings.DoSave(true);
-                }
-
-                Logger.LogInfo("Settings.MigrateSettings", "マイグレーション完了", settings.FileVersion);
-                return settings;
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("Settings.MigrateSettings", "マイグレーションエラー", ex.Message);
-                return settings;
-            }
-        }
-
-        /// <summary>
-        /// バージョン1から2へのマイグレーション
-        /// </summary>
-        /// <param name="settings">設定オブジェクト</param>
-        private static void MigrateFromVersion1(Settings settings)
-        {
-            // プロトコルとファイルタイプの追加
-            if (settings.Protocols == null || settings.Protocols.Count == 0)
-            {
-                settings.Protocols = new List<Protocol>();
-                CreateDefaultProtocols(settings);
-            }
-
-            // FileTypes機能は未実装のため削除
-            // if (settings.FileTypes == null || settings.FileTypes.Count == 0)
-            // {
-            //     settings.FileTypes = new List<FileType>();
-            //     CreateDefaultFileTypes(settings);
-            // }
-
-            // ブラウザのGUID生成と位置調整
-            foreach (var browser in settings.Browsers)
-            {
-                if (browser.Guid == Guid.Empty)
-                {
-                    browser.Guid = Guid.NewGuid();
-                }
-
-                // 位置の調整
-                if (browser.PosX > 5)
-                {
-                    browser.PosY = (int)Math.Ceiling((double)browser.PosX / 5);
-                    browser.PosX = browser.PosX % 5;
-                    if (browser.PosX == 0) browser.PosX = 5;
-                }
-            }
-        }
-
-        /// <summary>
-        /// バージョン2から3へのマイグレーション
-        /// </summary>
-        /// <param name="settings">設定オブジェクト</param>
-        private static void MigrateFromVersion2(Settings settings)
-        {
-            // アクセシビリティ設定の追加
-            if (string.IsNullOrEmpty(settings.Separator))
-            {
-                settings.Separator = " - ";
-            }
-
-            // スクリーンリーダーの検出
-            var hasScreenReader = GeneralUtilities.HasScreenReader();
-            settings.UseAccessibleRendering = hasScreenReader;
-            if (hasScreenReader)
-            {
-                settings.ShowFocus = true;
-            }
-        }
-
-        /// <summary>
-        /// バージョン3から4へのマイグレーション
-        /// </summary>
-        /// <param name="settings">設定オブジェクト</param>
-        private static void MigrateFromVersion3(Settings settings)
-        {
-            // アクセシビリティ設定の再構築
-            // 既存の設定を保持
-        }
-
-        /// <summary>
-        /// バージョン4から5へのマイグレーション
-        /// </summary>
-        /// <param name="settings">設定オブジェクト</param>
-        private static void MigrateFromVersion4(Settings settings)
-        {
-            // レジストリチェック機能の追加
-            // 既存の設定を保持
-        }
-
-        /// <summary>
-        /// バージョン5から6へのマイグレーション
-        /// </summary>
-        /// <param name="settings">設定オブジェクト</param>
-        private static void MigrateFromVersion5(Settings settings)
-        {
-            // 透明化設定の追加
-            // デフォルト値を設定
-            settings.EnableTransparency = true;
-            settings.TransparencyColor = Color.Magenta.ToArgb();
-            settings.Opacity = 0.9;
-            settings.HideTitleBar = true;
-            settings.RoundedCornersRadius = 0;
-            
-            // 背景色をデフォルトの透明化色に更新
-            settings.BackgroundColor = Color.FromArgb(128, 255, 255, 255).ToArgb();
-        }
+        // 旧マイグレーション関連コードは削除（不要化）
 
         /// <summary>
         /// デフォルトプロトコルを作成します
@@ -838,24 +680,6 @@ namespace BrowserChooser3.Classes
             });
         }
 
-        /// <summary>
-        /// デフォルトファイルタイプを作成します
-        /// </summary>
-        /// <param name="settings">設定オブジェクト</param>
-        // FileTypes機能は未実装のため削除
-        // private static void CreateDefaultFileTypes(Settings settings)
-        // {
-        //     var browserGuids = settings.Browsers.Select(b => b.Guid).ToList();
-        //     var defaultCategories = new List<string> { "Default" };
-        // 
-        //     settings.FileTypes.AddRange(new[]
-        //     {
-        //         new FileType("XHTML", "xhtml", browserGuids, defaultCategories),
-        //         new FileType("XHT", "xht", browserGuids, defaultCategories),
-        //         new FileType("SHTML", "shtml", browserGuids, defaultCategories),
-        //         new FileType("HTML", "html", browserGuids, defaultCategories),
-        //         new FileType("HTM", "htm", browserGuids, defaultCategories)
-        //     });
-        // }
+
     }
 }
