@@ -17,9 +17,10 @@ namespace BrowserChooser3.Forms
         private List<Browser>? _browsers;
         private string _currentUrl = string.Empty;
         
-        // URL表示用のUI要素（現在は使用されていない）
-        // private Label? _urlLabel;
-        // private TextBox? _urlTextBox;
+        /// <summary>
+        /// URL表示用テキストボックス
+        /// </summary>
+        private TextBox? _urlDisplayTextBox;
         
         private System.Windows.Forms.Timer? _countdownTimer;
         private int _currentDelay;
@@ -73,6 +74,9 @@ namespace BrowserChooser3.Forms
                 // ブラウザボタンの作成
                 CreateBrowserButtons();
                 
+                // URL表示用テキストボックスの作成
+                CreateURLDisplayTextBox();
+                
                 // カウントダウンラベルの作成
                 CreateCountdownLabel();
                 
@@ -88,6 +92,9 @@ namespace BrowserChooser3.Forms
                 // キーボードイベントの設定
                 KeyPreview = true;
                 KeyDown += MainForm_KeyDown;
+                
+                // フォームリサイズイベントの設定
+                Resize += MainForm_Resize;
                 
                 // AutoCloseとAutoOpenの初期化
                 InitializeAutoCloseAndAutoOpen();
@@ -439,6 +446,13 @@ namespace BrowserChooser3.Forms
                 
                 // 互換性UIコントロールの位置調整
                 AdjustCompatibilityUILayout();
+                
+                // URL表示テキストボックスの位置とサイズを調整
+                if (_urlDisplayTextBox != null)
+                {
+                    _urlDisplayTextBox.Location = new Point(20, ClientSize.Height - 110);
+                    _urlDisplayTextBox.Size = new Size(ClientSize.Width - 60, 20);
+                }
                 
                 // リサイズ処理を再開
                 this.ResumeLayout(false);
@@ -1005,53 +1019,31 @@ namespace BrowserChooser3.Forms
         }
         
         /// <summary>
-        /// URL表示ラベルを更新
+        /// URL表示テキストボックスを更新
         /// </summary>
         private void UpdateURLLabel()
         {
             try
             {
-                if (!string.IsNullOrEmpty(_currentUrl))
+                if (_urlDisplayTextBox != null)
                 {
-                    // URLが長すぎる場合は省略表示
-                    var displayUrl = _currentUrl.Length > 100 ? _currentUrl.Substring(0, 97) + "..." : _currentUrl;
-                    
-                    // URL表示機能は現在実装されていません
-                    // URLラベルの更新
-                    // if (_urlLabel != null)
-                    // {
-                    //     _urlLabel.Text = displayUrl;
-                    //     _urlLabel.Visible = _settings?.ShowURL == true;
-                    // }
-                    
-                    // URLテキストボックスの更新
-                    // if (_urlTextBox != null)
-                    // {
-                    //     _urlTextBox.Text = _currentUrl;
-                    //     _urlTextBox.Visible = _settings?.ShowURL == true;
-                    // }
-                }
-                else
-                {
-                    // URL表示機能は現在実装されていません
-                    // URLラベルの更新
-                    // if (_urlLabel != null)
-                    // {
-                    //     _urlLabel.Text = "";
-                    //     _urlLabel.Visible = false;
-                    // }
-                    
-                    // URLテキストボックスの更新
-                    // if (_urlTextBox != null)
-                    // {
-                    //     _urlTextBox.Text = "";
-                    //     _urlTextBox.Visible = false;
-                    // }
+                    if (!string.IsNullOrEmpty(_currentUrl))
+                    {
+                        // URLが長すぎる場合は省略表示
+                        var displayUrl = _currentUrl.Length > 100 ? _currentUrl.Substring(0, 97) + "..." : _currentUrl;
+                        _urlDisplayTextBox.Text = displayUrl;
+                        _urlDisplayTextBox.Visible = _settings?.ShowURL == true;
+                    }
+                    else
+                    {
+                        _urlDisplayTextBox.Text = "";
+                        _urlDisplayTextBox.Visible = false;
+                    }
                 }
             }
             catch (Exception ex)
             {
-                Logger.LogError("MainForm.UpdateURLLabel", "URL表示ラベル更新エラー", ex.Message);
+                Logger.LogError("MainForm.UpdateURLLabel", "URL表示テキストボックス更新エラー", ex.Message);
             }
         }
 
@@ -1233,6 +1225,28 @@ namespace BrowserChooser3.Forms
 
             if (chkAutoOpen != null)
                 _toolTip.SetToolTip(chkAutoOpen, "デフォルトブラウザで自動的にURLを開きます");
+        }
+
+        /// <summary>
+        /// URL表示用テキストボックスの作成
+        /// </summary>
+        private void CreateURLDisplayTextBox()
+        {
+            _urlDisplayTextBox = new TextBox
+            {
+                Name = "txtURLDisplay",
+                ReadOnly = true,
+                Location = new Point(20, ClientSize.Height - 110),
+                Size = new Size(ClientSize.Width - 60, 20),
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                BackColor = Color.LightGray,
+                ForeColor = Color.Black,
+                BorderStyle = BorderStyle.FixedSingle,
+                TextAlign = HorizontalAlignment.Left,
+                Visible = false
+            };
+            
+            Controls.Add(_urlDisplayTextBox);
         }
 
         /// <summary>
@@ -1428,6 +1442,8 @@ namespace BrowserChooser3.Forms
             Logger.LogInfo("MainForm.miEditMode_Click", "編集モードを開く");
             OpenOptionsForm();
         }
+
+
 
         /// <summary>
         /// キーボードイベントの処理（Browser Chooser 2互換）

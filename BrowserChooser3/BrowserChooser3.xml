@@ -2687,6 +2687,11 @@
             ブラウザ選択画面の表示、UI操作、ブラウザ起動を管理します
             </summary>
         </member>
+        <member name="F:BrowserChooser3.Forms.MainForm._urlDisplayTextBox">
+            <summary>
+            URL表示用テキストボックス
+            </summary>
+        </member>
         <member name="M:BrowserChooser3.Forms.MainForm.#ctor">
             <summary>
             MainFormクラスの新しいインスタンスを初期化します
@@ -2819,7 +2824,7 @@
         </member>
         <member name="M:BrowserChooser3.Forms.MainForm.UpdateURLLabel">
             <summary>
-            URL表示ラベルを更新
+            URL表示テキストボックスを更新
             </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.MainForm.AdjustCompatibilityUILayout">
@@ -2845,6 +2850,11 @@
         <member name="M:BrowserChooser3.Forms.MainForm.SetupButtonToolTips">
             <summary>
             ボタンにツールチップを設定
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.MainForm.CreateURLDisplayTextBox">
+            <summary>
+            URL表示用テキストボックスの作成
             </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.MainForm.CreateCountdownLabel">
