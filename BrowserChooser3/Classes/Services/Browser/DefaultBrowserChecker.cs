@@ -273,14 +273,78 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
                     return false;
                 }
 
+                // Windows 11対応のデフォルトブラウザ設定
+                if (IsWindows11())
+                {
+                    return SetDefaultBrowserWindows11(browserPath, protocol);
+                }
+                else
+                {
+                    return SetDefaultBrowserLegacy(browserPath, protocol);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("DefaultBrowserChecker.SetDefaultBrowser", "デフォルトブラウザ設定エラー", ex.Message);
+                return false;
+            }
+        }
+        
+        /// <summary>
+        /// Windows 11かどうかを判定
+        /// </summary>
+        /// <returns>Windows 11の場合はtrue</returns>
+        private static bool IsWindows11()
+        {
+            try
+            {
+                var osVersion = Environment.OSVersion;
+                return osVersion.Version.Major == 10 && osVersion.Version.Build >= 22000;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+        
+        /// <summary>
+        /// Windows 11用のデフォルトブラウザ設定
+        /// </summary>
+        /// <param name="browserPath">ブラウザのパス</param>
+        /// <param name="protocol">プロトコル</param>
+        /// <returns>成功した場合はtrue</returns>
+        private static bool SetDefaultBrowserWindows11(string browserPath, string protocol)
+        {
+            try
+            {
+                // Windows 11では、アプリケーションの関連付けを使用
+                var browserName = GetBrowserNameFromPath(browserPath);
+                var appId = GetAppIdFromPath(browserPath);
+                
+                if (string.IsNullOrEmpty(appId))
+                {
+                    Logger.LogWarning("DefaultBrowserChecker.SetDefaultBrowserWindows11", "AppIdを取得できませんでした", browserPath);
+                    return SetDefaultBrowserLegacy(browserPath, protocol);
+                }
+                
                 // プロトコルハンドラーを設定
                 var command = $"\"{browserPath}\" \"%1\"";
                 
+                // レジストリに設定
                 using var key = Registry.ClassesRoot.CreateSubKey($"{protocol}\\shell\\open\\command");
                 if (key != null)
                 {
                     key.SetValue("", command);
-                    Logger.LogInfo("DefaultBrowserChecker.SetDefaultBrowser", "デフォルトブラウザ設定完了", protocol);
+                    
+                    // Windows 11用の追加設定
+                    using var userChoiceKey = Registry.CurrentUser.CreateSubKey(
+                        $"Software\\Microsoft\\Windows\\Shell\\Associations\\UrlAssociations\\{protocol}\\UserChoice");
+                    if (userChoiceKey != null)
+                    {
+                        userChoiceKey.SetValue("ProgId", appId);
+                    }
+                    
+                    Logger.LogInfo("DefaultBrowserChecker.SetDefaultBrowserWindows11", "Windows 11デフォルトブラウザ設定完了", protocol);
                     return true;
                 }
 
@@ -288,8 +352,74 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
             }
             catch (Exception ex)
             {
-                Logger.LogError("DefaultBrowserChecker.SetDefaultBrowser", "デフォルトブラウザ設定エラー", ex.Message);
+                Logger.LogError("DefaultBrowserChecker.SetDefaultBrowserWindows11", "Windows 11デフォルトブラウザ設定エラー", ex.Message);
+                return SetDefaultBrowserLegacy(browserPath, protocol);
+            }
+        }
+        
+        /// <summary>
+        /// 従来のデフォルトブラウザ設定
+        /// </summary>
+        /// <param name="browserPath">ブラウザのパス</param>
+        /// <param name="protocol">プロトコル</param>
+        /// <returns>成功した場合はtrue</returns>
+        private static bool SetDefaultBrowserLegacy(string browserPath, string protocol)
+        {
+            try
+            {
+                // プロトコルハンドラーを設定
+                var command = $"\"{browserPath}\" \"%1\"";
+                
+                using var key = Registry.ClassesRoot.CreateSubKey($"{protocol}\\shell\\open\\command");
+                if (key != null)
+                {
+                    key.SetValue("", command);
+                    Logger.LogInfo("DefaultBrowserChecker.SetDefaultBrowserLegacy", "従来のデフォルトブラウザ設定完了", protocol);
+                    return true;
+                }
+
                 return false;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("DefaultBrowserChecker.SetDefaultBrowserLegacy", "従来のデフォルトブラウザ設定エラー", ex.Message);
+                return false;
+            }
+        }
+        
+        /// <summary>
+        /// パスからAppIdを取得
+        /// </summary>
+        /// <param name="browserPath">ブラウザのパス</param>
+        /// <returns>AppId</returns>
+        private static string GetAppIdFromPath(string browserPath)
+        {
+            try
+            {
+                var fileName = Path.GetFileNameWithoutExtension(browserPath);
+                
+                // 主要ブラウザのAppId
+                switch (fileName.ToLower())
+                {
+                    case "chrome":
+                        return "ChromeHTML";
+                    case "firefox":
+                        return "FirefoxURL";
+                    case "msedge":
+                        return "MSEdgeHTM";
+                    case "iexplore":
+                        return "IE.HTTP";
+                    case "opera":
+                        return "OperaStable";
+                    case "brave":
+                        return "BraveHTML";
+                    default:
+                        return "";
+                }
+            }
+            catch
+            {
+                return "";
             }
         }
 

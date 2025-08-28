@@ -468,6 +468,35 @@
             <param name="protocol">プロトコル</param>
             <returns>成功した場合はtrue</returns>
         </member>
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.DefaultBrowserChecker.IsWindows11">
+            <summary>
+            Windows 11かどうかを判定
+            </summary>
+            <returns>Windows 11の場合はtrue</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.DefaultBrowserChecker.SetDefaultBrowserWindows11(System.String,System.String)">
+            <summary>
+            Windows 11用のデフォルトブラウザ設定
+            </summary>
+            <param name="browserPath">ブラウザのパス</param>
+            <param name="protocol">プロトコル</param>
+            <returns>成功した場合はtrue</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.DefaultBrowserChecker.SetDefaultBrowserLegacy(System.String,System.String)">
+            <summary>
+            従来のデフォルトブラウザ設定
+            </summary>
+            <param name="browserPath">ブラウザのパス</param>
+            <param name="protocol">プロトコル</param>
+            <returns>成功した場合はtrue</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.DefaultBrowserChecker.GetAppIdFromPath(System.String)">
+            <summary>
+            パスからAppIdを取得
+            </summary>
+            <param name="browserPath">ブラウザのパス</param>
+            <returns>AppId</returns>
+        </member>
         <member name="M:BrowserChooser3.Classes.Services.BrowserServices.DefaultBrowserChecker.ResetDefaultBrowser(System.String)">
             <summary>
             デフォルトブラウザの設定をリセットします
@@ -588,74 +617,6 @@
             オンライン定義
             </summary>
         </member>
-        <member name="T:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormAccessibilityHandlers">
-            <summary>
-            OptionsFormのアクセシビリティ設定関連イベントハンドラーを管理するクラス
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormAccessibilityHandlers.#ctor(BrowserChooser3.Forms.OptionsForm,BrowserChooser3.Classes.Settings,System.Action{System.Boolean})">
-            <summary>
-            OptionsFormAccessibilityHandlersクラスの新しいインスタンスを初期化します
-            </summary>
-            <param name="form">親フォーム</param>
-            <param name="settings">設定オブジェクト</param>
-            <param name="setModified">変更フラグ設定アクション</param>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormAccessibilityHandlers.OpenAccessibilitySettings">
-            <summary>
-            アクセシビリティ設定を開く
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormAccessibilityHandlers.AccessibilityButton_Click(System.Object,System.EventArgs)">
-            <summary>
-            アクセシビリティボタンのクリックイベント
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormAccessibilityHandlers.IsTestEnvironment">
-            <summary>
-            テスト環境かどうかを判定する
-            </summary>
-            <returns>テスト環境の場合はtrue</returns>
-        </member>
-        <member name="T:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormBackgroundHandlers">
-            <summary>
-            OptionsFormの背景色関連イベントハンドラーを管理するクラス
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormBackgroundHandlers.#ctor(BrowserChooser3.Forms.OptionsForm,BrowserChooser3.Classes.Settings,System.Action{System.Boolean})">
-            <summary>
-            OptionsFormBackgroundHandlersクラスの新しいインスタンスを初期化します
-            </summary>
-            <param name="form">親フォーム</param>
-            <param name="settings">設定オブジェクト</param>
-            <param name="setModified">変更フラグ設定アクション</param>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormBackgroundHandlers.ApplyTransparencySettings">
-            <summary>
-            透明化設定を適用
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormBackgroundHandlers.ChangeBackgroundColor">
-            <summary>
-            背景色変更
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormBackgroundHandlers.BackgroundColorButton_Click(System.Object,System.EventArgs)">
-            <summary>
-            背景色ボタンのクリックイベント
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormBackgroundHandlers.TransparentButton_Click(System.Object,System.EventArgs)">
-            <summary>
-            透明化設定の適用
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormBackgroundHandlers.IsTestEnvironment">
-            <summary>
-            テスト環境かどうかを判定する
-            </summary>
-            <returns>テスト環境の場合はtrue</returns>
-        </member>
         <member name="T:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormBrowserHandlers">
             <summary>
             OptionsFormのブラウザ管理イベントハンドラーを管理するクラス
@@ -700,7 +661,7 @@
         </member>
         <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormBrowserHandlers.GetBrowserProtocolsAndFileTypes(BrowserChooser3.Classes.Models.Browser)">
             <summary>
-            ブラウザのプロトコルとファイルタイプを取得
+            ブラウザのプロトコルを取得（FileTypesは未実装のため削除）
             </summary>
         </member>
         <member name="T:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormCategoryHandlers">
@@ -914,6 +875,17 @@
             保存ボタンのクリックイベント
             </summary>
         </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormFormHandlers.CheckTransparencySettingChange">
+            <summary>
+            透明化設定の変更を検出し、必要に応じて情報メッセージを表示
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormFormHandlers.GetCurrentTransparencyEnabled">
+            <summary>
+            現在の透明化設定を取得
+            </summary>
+            <returns>透明化が有効かどうか</returns>
+        </member>
         <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormFormHandlers.HelpButton_Click(System.Object,System.EventArgs)">
             <summary>
             ヘルプボタンのクリックイベント
@@ -1037,6 +1009,27 @@
             <param name="mBrowser">ブラウザ辞書</param>
             <param name="setModified">変更フラグ設定アクション</param>
             <returns>作成されたTabPage</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormPanels.CreateDefaultBrowserPanel(BrowserChooser3.Classes.Settings,System.Action{System.Boolean})">
+            <summary>
+            Windows Defaultパネルの作成
+            </summary>
+            <param name="settings">設定オブジェクト</param>
+            <param name="setModified">変更フラグ設定アクション</param>
+            <returns>作成されたTabPage</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormPanels.GetInstalledBrowsers">
+            <summary>
+            インストールされているブラウザのリストを取得
+            </summary>
+            <returns>ブラウザ名のリスト</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormPanels.GetBrowserPath(System.String)">
+            <summary>
+            ブラウザ名からパスを取得
+            </summary>
+            <param name="browserName">ブラウザ名</param>
+            <returns>ブラウザのパス</returns>
         </member>
         <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormPanels.CreateFileTypesPanel(BrowserChooser3.Classes.Settings,System.Collections.Generic.Dictionary{System.Int32,BrowserChooser3.Classes.Models.FileType},System.Collections.Generic.Dictionary{System.Int32,BrowserChooser3.Classes.Models.Browser},System.Action{System.Boolean})">
             <summary>
@@ -1471,20 +1464,17 @@
         <member name="F:BrowserChooser3.Classes.Settings.DefaultField.DefaultBrowserGuid">
             <summary>デフォルトブラウザGUID</summary>
         </member>
-        <member name="F:BrowserChooser3.Classes.Settings.DefaultField.AutomaticUpdates">
-            <summary>自動更新</summary>
-        </member>
-        <member name="F:BrowserChooser3.Classes.Settings.DefaultField.CheckDefaultOnLaunch">
-            <summary>起動時にデフォルトをチェック</summary>
-        </member>
-        <member name="F:BrowserChooser3.Classes.Settings.DefaultField.AdvancedScreens">
-            <summary>高度な画面</summary>
-        </member>
         <member name="F:BrowserChooser3.Classes.Settings.DefaultField.Separator">
             <summary>セパレータ</summary>
         </member>
         <member name="F:BrowserChooser3.Classes.Settings.DefaultField.ShowFocus">
             <summary>フォーカス表示</summary>
+        </member>
+        <member name="F:BrowserChooser3.Classes.Settings.DefaultField.ShowURL">
+            <summary>URL表示</summary>
+        </member>
+        <member name="F:BrowserChooser3.Classes.Settings.DefaultField.RevealShortURL">
+            <summary>短縮URL展開</summary>
         </member>
         <member name="F:BrowserChooser3.Classes.Settings.DefaultField.FocusBoxLineWidth">
             <summary>フォーカスボックス線幅</summary>
@@ -1513,12 +1503,6 @@
         <member name="F:BrowserChooser3.Classes.Settings.DefaultField.AllowStayOpen">
             <summary>開いたまま許可</summary>
         </member>
-        <member name="F:BrowserChooser3.Classes.Settings.DefaultField.Canonicalize">
-            <summary>正規化</summary>
-        </member>
-        <member name="F:BrowserChooser3.Classes.Settings.DefaultField.CanonicalizeAppendedText">
-            <summary>正規化追加テキスト</summary>
-        </member>
         <member name="F:BrowserChooser3.Classes.Settings.DefaultField.EnableLogging">
             <summary>ログ有効化</summary>
         </member>
@@ -1543,6 +1527,9 @@
         <member name="F:BrowserChooser3.Classes.Settings.DefaultField.RoundedCornersRadius">
             <summary>角を丸くする半径</summary>
         </member>
+        <member name="F:BrowserChooser3.Classes.Settings.DefaultField.EnableBackgroundGradient">
+            <summary>背景グラデーション有効</summary>
+        </member>
         <member name="F:BrowserChooser3.Classes.Settings.Defaults">
             <summary>
             デフォルト値の辞書
@@ -1561,23 +1548,14 @@
         <member name="P:BrowserChooser3.Classes.Settings.ShowURL">
             <summary>URL表示</summary>
         </member>
-        <member name="P:BrowserChooser3.Classes.Settings.ShowURLs">
-            <summary>URL表示（Browser Chooser 2互換）</summary>
-        </member>
         <member name="P:BrowserChooser3.Classes.Settings.RevealShortURL">
             <summary>短縮URL展開</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Settings.RevealShortURLs">
-            <summary>短縮URL展開（Browser Chooser 2互換）</summary>
         </member>
         <member name="P:BrowserChooser3.Classes.Settings.FileVersion">
             <summary>ファイルバージョン</summary>
         </member>
         <member name="P:BrowserChooser3.Classes.Settings.Protocols">
             <summary>プロトコルリスト</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Settings.FileTypes">
-            <summary>ファイルタイプリスト</summary>
         </member>
         <member name="P:BrowserChooser3.Classes.Settings.URLs">
             <summary>URLリスト</summary>
@@ -1620,15 +1598,6 @@
         </member>
         <member name="P:BrowserChooser3.Classes.Settings.DefaultBrowserGuid">
             <summary>デフォルトブラウザGUID</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Settings.AutomaticUpdates">
-            <summary>自動更新</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Settings.CheckDefaultOnLaunch">
-            <summary>起動時にデフォルトをチェック</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Settings.AdvancedScreens">
-            <summary>高度な画面</summary>
         </member>
         <member name="P:BrowserChooser3.Classes.Settings.Separator">
             <summary>セパレータ</summary>
@@ -1679,12 +1648,6 @@
         <member name="P:BrowserChooser3.Classes.Settings.AllowStayOpen">
             <summary>開いたまま許可</summary>
         </member>
-        <member name="P:BrowserChooser3.Classes.Settings.Canonicalize">
-            <summary>正規化</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Settings.CanonicalizeAppendedText">
-            <summary>正規化追加テキスト</summary>
-        </member>
         <member name="P:BrowserChooser3.Classes.Settings.EnableLogging">
             <summary>ログ有効化</summary>
         </member>
@@ -1715,9 +1678,6 @@
         <member name="P:BrowserChooser3.Classes.Settings.AllowDataCollection">
             <summary>データ収集許可</summary>
         </member>
-        <member name="P:BrowserChooser3.Classes.Settings.AutoStart">
-            <summary>自動起動</summary>
-        </member>
         <member name="P:BrowserChooser3.Classes.Settings.StartMinimized">
             <summary>最小化で起動</summary>
         </member>
@@ -1744,6 +1704,9 @@
         </member>
         <member name="P:BrowserChooser3.Classes.Settings.RoundedCornersRadius">
             <summary>角を丸くする半径（0で無効、1-50で有効）</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Settings.EnableBackgroundGradient">
+            <summary>背景グラデーション有効</summary>
         </member>
         <member name="P:BrowserChooser3.Classes.Settings.SafeMode">
             <summary>セーフモード（ファイルが読み込めない場合のみtrue - 保存を防止）</summary>
@@ -1803,53 +1766,9 @@
             <param name="path">設定ファイルのパス</param>
             <returns>設定オブジェクト</returns>
         </member>
-        <member name="M:BrowserChooser3.Classes.Settings.MigrateSettings(BrowserChooser3.Classes.Settings,System.String)">
-            <summary>
-            設定ファイルのバージョン管理と自動マイグレーション
-            </summary>
-            <param name="settings">設定オブジェクト</param>
-            <param name="path">設定ファイルパス</param>
-            <returns>マイグレーション後の設定オブジェクト</returns>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Settings.MigrateFromVersion1(BrowserChooser3.Classes.Settings)">
-            <summary>
-            バージョン1から2へのマイグレーション
-            </summary>
-            <param name="settings">設定オブジェクト</param>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Settings.MigrateFromVersion2(BrowserChooser3.Classes.Settings)">
-            <summary>
-            バージョン2から3へのマイグレーション
-            </summary>
-            <param name="settings">設定オブジェクト</param>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Settings.MigrateFromVersion3(BrowserChooser3.Classes.Settings)">
-            <summary>
-            バージョン3から4へのマイグレーション
-            </summary>
-            <param name="settings">設定オブジェクト</param>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Settings.MigrateFromVersion4(BrowserChooser3.Classes.Settings)">
-            <summary>
-            バージョン4から5へのマイグレーション
-            </summary>
-            <param name="settings">設定オブジェクト</param>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Settings.MigrateFromVersion5(BrowserChooser3.Classes.Settings)">
-            <summary>
-            バージョン5から6へのマイグレーション
-            </summary>
-            <param name="settings">設定オブジェクト</param>
-        </member>
         <member name="M:BrowserChooser3.Classes.Settings.CreateDefaultProtocols(BrowserChooser3.Classes.Settings)">
             <summary>
             デフォルトプロトコルを作成します
-            </summary>
-            <param name="settings">設定オブジェクト</param>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Settings.CreateDefaultFileTypes(BrowserChooser3.Classes.Settings)">
-            <summary>
-            デフォルトファイルタイプを作成します
             </summary>
             <param name="settings">設定オブジェクト</param>
         </member>
@@ -2108,9 +2027,31 @@
             ログメッセージのキュー
             </summary>
         </member>
+        <member name="M:BrowserChooser3.Classes.Utilities.Logger.IsInstalledViaInstaller">
+            <summary>
+            インストーラー経由でインストールされたかどうかを判定
+            </summary>
+            <returns>インストーラー経由の場合はtrue</returns>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Utilities.Logger.LogDirectory">
+            <summary>
+            ログディレクトリのパス
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Utilities.Logger.GetLogFileName">
+            <summary>
+            現在の日付に基づくログファイル名を取得
+            </summary>
+            <returns>ログファイル名</returns>
+        </member>
         <member name="P:BrowserChooser3.Classes.Utilities.Logger.LogFilePath">
             <summary>
             ログファイルのパス
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Utilities.Logger.CleanupOldLogFiles">
+            <summary>
+            古いログファイルを削除（30日以上古いファイル）
             </summary>
         </member>
         <member name="M:BrowserChooser3.Classes.Utilities.Logger.AddToLog(BrowserChooser3.Classes.Utilities.Logger.LogLevel,System.String,System.String,System.Object[])">
@@ -2500,64 +2441,6 @@
             テスト環境かどうかを判定
             </summary>
         </member>
-        <member name="T:BrowserChooser3.Forms.AccessibilitySettingsForm">
-            <summary>
-            アクセシビリティ設定ダイアログ
-            </summary>
-        </member>
-        <member name="P:BrowserChooser3.Forms.AccessibilitySettingsForm.ShowFocus">
-            <summary>
-            フォーカス表示フラグ
-            </summary>
-        </member>
-        <member name="P:BrowserChooser3.Forms.AccessibilitySettingsForm.FocusBoxColor">
-            <summary>
-            フォーカスボックスの色
-            </summary>
-        </member>
-        <member name="P:BrowserChooser3.Forms.AccessibilitySettingsForm.FocusBoxWidth">
-            <summary>
-            フォーカスボックスの線幅
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.AccessibilitySettingsForm.#ctor">
-            <summary>
-            アクセシビリティ設定ダイアログの新しいインスタンスを初期化します
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.AccessibilitySettingsForm.pbFocusColor_Click(System.Object,System.EventArgs)">
-            <summary>
-            フォーカスボックス色選択イベント
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.AccessibilitySettingsForm.IsTestEnvironment">
-            <summary>
-            テスト環境かどうかを判定する
-            </summary>
-            <returns>テスト環境の場合はtrue</returns>
-        </member>
-        <member name="M:BrowserChooser3.Forms.AccessibilitySettingsForm.btnOK_Click(System.Object,System.EventArgs)">
-            <summary>
-            OKボタンクリックイベント
-            </summary>
-        </member>
-        <member name="F:BrowserChooser3.Forms.AccessibilitySettingsForm.components">
-            <summary>
-            Required designer variable.
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.AccessibilitySettingsForm.Dispose(System.Boolean)">
-            <summary>
-            Clean up any resources being used.
-            </summary>
-            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        </member>
-        <member name="M:BrowserChooser3.Forms.AccessibilitySettingsForm.InitializeComponent">
-            <summary>
-            Required method for Designer support - do not modify
-            the contents of this method with the code editor.
-            </summary>
-        </member>
         <member name="T:BrowserChooser3.Forms.AddEditBrowserForm">
             <summary>
             ブラウザ追加・編集ダイアログ
@@ -2804,6 +2687,11 @@
             ブラウザ選択画面の表示、UI操作、ブラウザ起動を管理します
             </summary>
         </member>
+        <member name="F:BrowserChooser3.Forms.MainForm._urlDisplayTextBox">
+            <summary>
+            URL表示用テキストボックス
+            </summary>
+        </member>
         <member name="M:BrowserChooser3.Forms.MainForm.#ctor">
             <summary>
             MainFormクラスの新しいインスタンスを初期化します
@@ -2834,6 +2722,11 @@
             透明化設定を適用
             </summary>
         </member>
+        <member name="M:BrowserChooser3.Forms.MainForm.ApplyWindows11Style">
+            <summary>
+            Windows 11スタイルを適用
+            </summary>
+        </member>
         <member name="M:BrowserChooser3.Forms.MainForm.ApplyRoundedCorners(System.Int32)">
             <summary>
             角を丸くする設定を適用
@@ -2850,6 +2743,16 @@
             <param name="height">高さ</param>
             <param name="radius">角の半径</param>
             <returns>角が丸い矩形のリージョン</returns>
+        </member>
+        <member name="M:BrowserChooser3.Forms.MainForm.MainForm_Paint(System.Object,System.Windows.Forms.PaintEventArgs)">
+            <summary>
+            背景グラデーション描画イベント
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.MainForm.MainForm_Load(System.Object,System.EventArgs)">
+            <summary>
+            フォームLoadイベントの処理
+            </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.MainForm.MainForm_Resize(System.Object,System.EventArgs)">
             <summary>
@@ -2872,6 +2775,11 @@
             <summary>
             XPスタイルの設定
             Aero効果が無効の場合のフォームスタイルを設定します
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.MainForm.ApplyDefaultBackColorToChildControls">
+            <summary>
+            子コントロールの背景色を既定色に戻す（フォームのBackColor変更の影響を抑制）
             </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.MainForm.CreateBrowserButtons">
@@ -2909,6 +2817,11 @@
             ブラウザを起動
             </summary>
         </member>
+        <member name="M:BrowserChooser3.Forms.MainForm.SetInitialURL(System.String)">
+            <summary>
+            初期URLを設定（Loadイベントで使用）
+            </summary>
+        </member>
         <member name="M:BrowserChooser3.Forms.MainForm.UpdateURL(System.String)">
             <summary>
             URLを更新
@@ -2917,6 +2830,11 @@
         <member name="M:BrowserChooser3.Forms.MainForm.OnURLUpdated(System.String)">
             <summary>
             URL更新時のコールバック
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.MainForm.UpdateURLLabel">
+            <summary>
+            URL表示テキストボックスを更新
             </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.MainForm.AdjustCompatibilityUILayout">
@@ -2944,6 +2862,11 @@
             ボタンにツールチップを設定
             </summary>
         </member>
+        <member name="M:BrowserChooser3.Forms.MainForm.CreateURLDisplayTextBox">
+            <summary>
+            URL表示用テキストボックスの作成
+            </summary>
+        </member>
         <member name="M:BrowserChooser3.Forms.MainForm.CreateCountdownLabel">
             <summary>
             カウントダウンラベルの作成
@@ -2967,11 +2890,6 @@
         <member name="M:BrowserChooser3.Forms.MainForm.UpdateAutoOpenText">
             <summary>
             自動開くテキストの更新（Browser Chooser 2互換）
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.MainForm.MainForm_Load(System.Object,System.EventArgs)">
-            <summary>
-            フォーム読み込み時の処理
             </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.MainForm.btnInfo_Click(System.Object,System.EventArgs)">
@@ -3123,11 +3041,6 @@
             自動オープンテキストを更新します（スペースキー対応版）
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Forms.MainForm.CreateBasicControls">
-            <summary>
-            基本コントロールを再作成
-            </summary>
-        </member>
         <member name="F:BrowserChooser3.Forms.MainForm.components">
             <summary>
             Required designer variable.
@@ -3156,6 +3069,12 @@
             OptionsFormクラスの新しいインスタンスを初期化します
             </summary>
             <param name="settings">設定オブジェクト</param>
+        </member>
+        <member name="M:BrowserChooser3.Forms.OptionsForm.GetSettings">
+            <summary>
+            設定オブジェクトを取得
+            </summary>
+            <returns>設定オブジェクト</returns>
         </member>
         <member name="M:BrowserChooser3.Forms.OptionsForm.InitializeForm">
             <summary>
@@ -3208,19 +3127,29 @@
             Auto URL削除ボタンのクリックイベント
             </summary>
         </member>
+        <member name="M:BrowserChooser3.Forms.OptionsForm.MoveUpAutoURL_Click(System.Object,System.EventArgs)">
+            <summary>
+            Auto URL上移動ボタンのクリックイベント
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.OptionsForm.MoveDownAutoURL_Click(System.Object,System.EventArgs)">
+            <summary>
+            Auto URL下移動ボタンのクリックイベント
+            </summary>
+        </member>
         <member name="M:BrowserChooser3.Forms.OptionsForm.SetupProtocolsPanelButtons">
             <summary>
             プロトコルパネルのボタンイベントハンドラー設定
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.SetupFileTypesPanelButtons">
-            <summary>
-            ファイルタイプパネルのボタンイベントハンドラー設定
-            </summary>
-        </member>
         <member name="M:BrowserChooser3.Forms.OptionsForm.SetupDisplayPanelButtons">
             <summary>
             Displayパネルのボタンイベントハンドラー設定
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.OptionsForm.AdjustLayout">
+            <summary>
+            レイアウト調整メソッド（初期化時とリサイズ時に使用）
             </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.OptionsForm.OptionsForm_Resize(System.Object,System.EventArgs)">
@@ -3230,62 +3159,52 @@
         </member>
         <member name="M:BrowserChooser3.Forms.OptionsForm.ResetToDefaults_Click(System.Object,System.EventArgs)">
             <summary>
-            設定をデフォルト値にリセットします
+            現在表示されているパネルの設定をデフォルト値にリセットします
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.ResetBrowsersPanel">
+        <member name="M:BrowserChooser3.Forms.OptionsForm.ResetCurrentPanelToDefaults(System.Windows.Forms.TabPage)">
             <summary>
-            ブラウザパネルをリセット
+            現在表示されているパネルの設定をデフォルト値にリセットします
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.ResetAutoURLsPanel">
+        <member name="M:BrowserChooser3.Forms.OptionsForm.ResetDisplayPanelToDefaults(System.Windows.Forms.TabPage)">
             <summary>
-            Auto URLsパネルをリセット
+            表示パネルの設定をデフォルト値にリセットし、UIに反映します
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.ResetProtocolsPanel">
+        <member name="M:BrowserChooser3.Forms.OptionsForm.ResetGridPanelToDefaults(System.Windows.Forms.TabPage)">
             <summary>
-            プロトコルパネルをリセット
+            グリッドパネルの設定をデフォルト値にリセットし、UIに反映します
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.ResetFileTypesPanel">
+        <member name="M:BrowserChooser3.Forms.OptionsForm.ResetPrivacyPanelToDefaults(System.Windows.Forms.TabPage)">
             <summary>
-            ファイルタイプパネルをリセット
+            プライバシーパネルの設定をデフォルト値にリセットし、UIに反映します
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.ResetCategoriesPanel">
+        <member name="M:BrowserChooser3.Forms.OptionsForm.ResetStartupPanelToDefaults(System.Windows.Forms.TabPage)">
             <summary>
-            カテゴリパネルをリセット
+            スタートアップパネルの設定をデフォルト値にリセットし、UIに反映します
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.ResetDisplayPanel">
+        <member name="M:BrowserChooser3.Forms.OptionsForm.ResetOthersPanelToDefaults(System.Windows.Forms.TabPage)">
             <summary>
-            表示パネルをリセット
+            その他パネルの設定をデフォルト値にリセットし、UIに反映します
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.ResetGridPanel">
+        <member name="M:BrowserChooser3.Forms.OptionsForm.ResetBrowsersPanelToDefaults(System.Windows.Forms.TabPage)">
             <summary>
-            グリッドパネルをリセット
+            ブラウザパネルの設定をデフォルト値にリセットし、UIに反映します
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.ResetPrivacyPanel">
+        <member name="M:BrowserChooser3.Forms.OptionsForm.ResetAutoURLsPanelToDefaults(System.Windows.Forms.TabPage)">
             <summary>
-            プライバシーパネルをリセット
+            Auto URLsパネルの設定をデフォルト値にリセットし、UIに反映します
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.ResetStartupPanel">
+        <member name="M:BrowserChooser3.Forms.OptionsForm.ResetProtocolsPanelToDefaults(System.Windows.Forms.TabPage)">
             <summary>
-            スタートアップパネルをリセット
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.ResetOthersPanel">
-            <summary>
-            その他パネルをリセット
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.AdjustLayout">
-            <summary>
-            レイアウトの調整
+            プロトコルパネルの設定をデフォルト値にリセットし、UIに反映します
             </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.OptionsForm.TreeSettings_AfterSelect(System.Object,System.Windows.Forms.TreeViewEventArgs)">
@@ -3339,11 +3258,6 @@
         <member name="M:BrowserChooser3.Forms.OptionsForm.SetupURLDragDrop">
             <summary>
             URLドラッグ&amp;ドロップ機能の設定
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.SetupCategoryManagement">
-            <summary>
-            カテゴリ管理機能の設定
             </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.OptionsForm.LoadCategories">

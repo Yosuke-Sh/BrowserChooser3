@@ -1,186 +1,186 @@
-# Installation Guide
+# インストールガイド
 
-This guide will help you install and set up BrowserChooser3 on your Windows system.
+このガイドは、WindowsシステムにBrowserChooser3をインストールしてセットアップするのに役立ちます。
 
-## 📋 System Requirements
+## 📋 システム要件
 
-### Minimum Requirements
-- **Operating System**: Windows 10 (version 1903 or later) or Windows 11
-- **Architecture**: x64 (64-bit)
-- **.NET Runtime**: .NET 8.0 Runtime
-- **RAM**: 100 MB available memory
-- **Storage**: 50 MB free disk space
+### 最小要件
+- **オペレーティングシステム**: Windows 10（バージョン1903以降）またはWindows 11
+- **アーキテクチャ**: x64（64ビット）
+- **.NETランタイム**: .NET 8.0 Runtime
+- **RAM**: 100 MBの利用可能メモリ
+- **ストレージ**: 50 MBの空きディスク容量
 
-### Recommended Requirements
-- **Operating System**: Windows 11 (latest version)
-- **RAM**: 200 MB available memory
-- **Storage**: 100 MB free disk space
+### 推奨要件
+- **オペレーティングシステム**: Windows 11（最新バージョン）
+- **RAM**: 200 MBの利用可能メモリ
+- **ストレージ**: 100 MBの空きディスク容量
 
-## 🔽 Download Options
+## 🔽 ダウンロードオプション
 
-### Option 1: Pre-built Executable (Recommended)
-1. Go to the [Releases page](https://github.com/your-username/BrowserChooser3/releases)
-2. Download the latest `BrowserChooser3.exe` file
-3. Save it to your desired location (e.g., `C:\Programs\BrowserChooser3\`)
+### オプション1: 事前ビルド済み実行ファイル（推奨）
+1. [リリースページ](https://github.com/Yosuke-Sh/BrowserChooser3/releases)にアクセス
+2. 最新の`BrowserChooser3-vX.X.X.zip`ファイルをダウンロード
+3. 希望する場所に保存（例：`C:\Programs\BrowserChooser3\`）
 
-### Option 2: Build from Source
-If you prefer to build from source or want the latest development version:
+### オプション2: ソースからビルド
+ソースからビルドしたい場合や最新の開発版が必要な場合：
 
 ```bash
-git clone https://github.com/your-username/BrowserChooser3.git
+git clone https://github.com/Yosuke-Sh/BrowserChooser3.git
 cd BrowserChooser3
 dotnet build --configuration Release
 ```
 
-## 🛠️ Installation Steps
+## 🛠️ インストール手順
 
-### Step 1: Install .NET 8.0 Runtime
-BrowserChooser3 requires .NET 8.0 Runtime to run.
+### ステップ1: .NET 8.0 Runtimeのインストール
+BrowserChooser3の実行には.NET 8.0 Runtimeが必要です。
 
-1. Visit [Microsoft .NET Download](https://dotnet.microsoft.com/download/dotnet/8.0)
-2. Download the **.NET 8.0 Runtime** (not SDK) for Windows x64
-3. Run the installer and follow the setup wizard
-4. Restart your computer if prompted
+1. [Microsoft .NET ダウンロード](https://dotnet.microsoft.com/download/dotnet/8.0)にアクセス
+2. Windows x64用の**.NET 8.0 Runtime**（SDKではない）をダウンロード
+3. インストーラーを実行し、セットアップウィザードに従う
+4. プロンプトが表示されたらコンピューターを再起動
 
-### Step 2: Download BrowserChooser3
-1. Download `BrowserChooser3.exe` from the releases page
-2. Create a folder for BrowserChooser3 (e.g., `C:\Programs\BrowserChooser3\`)
-3. Place the executable in this folder
+### ステップ2: BrowserChooser3のダウンロード
+1. リリースページから`BrowserChooser3-vX.X.X.zip`をダウンロード
+2. BrowserChooser3用のフォルダを作成（例：`C:\Programs\BrowserChooser3\`）
+3. ZIPファイルを展開して実行ファイルをこのフォルダに配置
 
-### Step 3: First Run Setup
-1. Double-click `BrowserChooser3.exe` to run it
-2. The application will create a configuration file (`BrowserChooser3Config.xml`)
-3. Press `O` to open the options dialog
-4. Configure your browsers and settings as needed
+### ステップ3: 初回実行セットアップ
+1. `BrowserChooser3.exe`をダブルクリックして実行
+2. アプリケーションが設定ファイル（`BrowserChooser3Config.xml`）を作成
+3. `O`キーを押してオプションダイアログを開く
+4. 必要に応じてブラウザと設定を構成
 
-## 🔧 Installation Methods
+## 🔧 インストール方法
 
-### Portable Installation (Recommended)
-BrowserChooser3 is designed to be portable and doesn't require installation.
+### ポータブルインストール（推奨）
+BrowserChooser3はポータブル設計で、インストールは不要です。
 
-**Advantages:**
-- No registry modifications
-- Easy to move between computers
-- No uninstall process needed
-- Can run from USB drives
+**利点:**
+- レジストリの変更なし
+- コンピューター間での移動が簡単
+- アンインストールプロセス不要
+- USBドライブから実行可能
 
-**Steps:**
-1. Create a folder: `C:\Programs\BrowserChooser3\`
-2. Download and place `BrowserChooser3.exe` in this folder
-3. Run the executable
+**手順:**
+1. フォルダを作成: `C:\Programs\BrowserChooser3\`
+2. `BrowserChooser3.exe`をダウンロードしてこのフォルダに配置
+3. 実行ファイルを実行
 
-### System-wide Installation
-For system-wide access, you can add BrowserChooser3 to your system PATH.
+### システム全体インストール
+システム全体でアクセスするには、BrowserChooser3をシステムPATHに追加できます。
 
-**Steps:**
-1. Place `BrowserChooser3.exe` in a permanent location
-2. Add the folder to your system PATH:
-   - Open System Properties → Advanced → Environment Variables
-   - Add the BrowserChooser3 folder to the PATH variable
-3. Restart your command prompt or terminal
+**手順:**
+1. `BrowserChooser3.exe`を永続的な場所に配置
+2. フォルダをシステムPATHに追加:
+   - システムのプロパティ → 詳細設定 → 環境変数を開く
+   - BrowserChooser3フォルダをPATH変数に追加
+3. コマンドプロンプトまたはターミナルを再起動
 
-### Auto-start Configuration
-To make BrowserChooser3 start automatically:
+### 自動起動設定
+BrowserChooser3を自動起動させるには：
 
-**Method 1: Startup Folder**
-1. Press `Win + R`, type `shell:startup`, and press Enter
-2. Create a shortcut to `BrowserChooser3.exe` in the startup folder
+**方法1: スタートアップフォルダ**
+1. `Win + R`を押し、`shell:startup`と入力してEnter
+2. スタートアップフォルダに`BrowserChooser3.exe`へのショートカットを作成
 
-**Method 2: Task Scheduler**
-1. Open Task Scheduler
-2. Create a new task
-3. Set the action to start `BrowserChooser3.exe`
-4. Configure the trigger (e.g., at logon)
+**方法2: タスクスケジューラー**
+1. タスクスケジューラーを開く
+2. 新しいタスクを作成
+3. アクションを`BrowserChooser3.exe`の開始に設定
+4. トリガーを設定（例：ログオン時）
 
-## 🧪 Verification
+## 🧪 検証
 
-After installation, verify that BrowserChooser3 is working correctly:
+インストール後、BrowserChooser3が正しく動作することを確認してください：
 
-### Test 1: Basic Functionality
+### テスト1: 基本機能
 ```bash
-# Open Command Prompt and navigate to BrowserChooser3 folder
+# コマンドプロンプトを開き、BrowserChooser3フォルダに移動
 cd C:\Programs\BrowserChooser3
 BrowserChooser3.exe https://www.google.com
 ```
 
-### Test 2: Options Dialog
-1. Run BrowserChooser3
-2. Press `O` to open options
-3. Verify all tabs are accessible
-4. Check that browser detection is working
+### テスト2: オプションダイアログ
+1. BrowserChooser3を実行
+2. `O`キーを押してオプションを開く
+3. すべてのタブがアクセス可能であることを確認
+4. ブラウザ検出が動作していることを確認
 
-### Test 3: Transparency Features
-1. Open options dialog
-2. Go to Display tab
-3. Enable transparency
-4. Adjust opacity and test rounded corners
+### テスト3: 透明化機能
+1. オプションダイアログを開く
+2. Displayタブに移動
+3. 透明化を有効にする
+4. 透明度を調整し、角の丸みをテスト
 
-## 🚨 Troubleshooting Installation
+## 🚨 インストールのトラブルシューティング
 
-### Common Issues
+### よくある問題
 
-**Issue: "Application failed to start"**
-- **Solution**: Install .NET 8.0 Runtime
-- **Check**: Verify .NET installation with `dotnet --version`
+**問題: "アプリケーションの開始に失敗しました"**
+- **解決策**: .NET 8.0 Runtimeをインストール
+- **確認**: `dotnet --version`で.NETインストールを確認
 
-**Issue: "File not found" errors**
-- **Solution**: Ensure all files are in the same folder
-- **Check**: Verify file permissions
+**問題: "ファイルが見つかりません"エラー**
+- **解決策**: すべてのファイルが同じフォルダにあることを確認
+- **確認**: ファイルの権限を確認
 
-**Issue: BrowserChooser3 doesn't respond**
-- **Solution**: Run as administrator
-- **Check**: Check Windows Defender or antivirus settings
+**問題: BrowserChooser3が応答しない**
+- **解決策**: 管理者として実行
+- **確認**: Windows Defenderまたはアンチウイルス設定を確認
 
-**Issue: Transparency not working**
-- **Solution**: Update graphics drivers
-- **Check**: Verify Windows transparency effects are enabled
+**問題: 透明化が動作しない**
+- **解決策**: グラフィックドライバーを更新
+- **確認**: Windows透明化効果が有効であることを確認
 
-### Logging for Troubleshooting
-If you encounter issues, enable logging:
+### トラブルシューティング用ログ
+問題が発生した場合、ログを有効にしてください：
 
 ```bash
 BrowserChooser3.exe --log
 ```
 
-Check the `Logs/` folder for detailed error information.
+詳細なエラー情報については`Logs/`フォルダを確認してください。
 
-## 🔄 Updates
+## 🔄 更新
 
-### Automatic Updates
-BrowserChooser3 can check for updates automatically:
-1. Open options dialog (`O` key)
-2. Go to "Other" tab
-3. Enable "Automatic Updates"
+### 自動更新
+BrowserChooser3は自動的に更新をチェックできます：
+1. オプションダイアログを開く（`O`キー）
+2. "Other"タブに移動
+3. "Automatic Updates"を有効にする
 
-### Manual Updates
-1. Download the latest release
-2. Replace the old `BrowserChooser3.exe` with the new one
-3. Your configuration file will be preserved
+### 手動更新
+1. 最新リリースをダウンロード
+2. 古い`BrowserChooser3.exe`を新しいものに置き換え
+3. 設定ファイルは保持されます
 
-## 🗑️ Uninstallation
+## 🗑️ アンインストール
 
-Since BrowserChooser3 is portable, uninstallation is simple:
+BrowserChooser3はポータブルなので、アンインストールは簡単です：
 
-1. **Delete the folder** containing BrowserChooser3
-2. **Remove shortcuts** you may have created
-3. **Remove from PATH** if you added it system-wide
-4. **Remove from startup** if configured for auto-start
+1. **BrowserChooser3を含むフォルダを削除**
+2. **作成したショートカットを削除**
+3. **システム全体に追加した場合はPATHから削除**
+4. **自動起動を設定した場合は削除**
 
-**Note**: Your configuration file (`BrowserChooser3Config.xml`) will be deleted along with the application folder. If you want to preserve settings, back up this file before deletion.
+**注意**: 設定ファイル（`BrowserChooser3Config.xml`）はアプリケーションフォルダと一緒に削除されます。設定を保持したい場合は、削除前にこのファイルをバックアップしてください。
 
-## 📞 Support
+## 📞 サポート
 
-If you encounter installation issues:
+インストールで問題が発生した場合：
 
-1. **Check the FAQ** for common solutions
-2. **Search existing issues** on GitHub
-3. **Create a new issue** with detailed information:
-   - Windows version
-   - .NET version
-   - Error messages
-   - Steps to reproduce
+1. **FAQを確認**して一般的な解決策を探す
+2. **GitHubで既存の問題を検索**
+3. **詳細な情報で新しい問題を作成**:
+   - Windowsバージョン
+   - .NETバージョン
+   - エラーメッセージ
+   - 再現手順
 
 ---
 
-*For more detailed information, see the [Configuration Guide](Configuration-Guide) and [Troubleshooting](Troubleshooting) pages.*
+*より詳細な情報については、[設定ガイド](Configuration-Guide)と[トラブルシューティング](Troubleshooting)ページをご覧ください。*
 

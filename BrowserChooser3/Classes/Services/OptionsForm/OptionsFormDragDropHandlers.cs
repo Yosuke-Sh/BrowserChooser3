@@ -251,7 +251,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                             Hotkey = '\0'
                         };
 
-                        if (addEditForm.EditBrowser(newBrowser, _mBrowser, _mProtocols, _mFileTypes, _settings.AdvancedScreens))
+                        if (addEditForm.EditBrowser(newBrowser, _mBrowser, _mProtocols, _mFileTypes, false))
                         {
                             var finalBrowser = addEditForm.GetData();
                             _mBrowser.Add(_mBrowser.Count + 1, finalBrowser);
@@ -398,7 +398,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                                     Hotkey = '\0'
                                 };
 
-                                if (addEditForm.EditBrowser(newBrowser, _mBrowser, _mProtocols, _mFileTypes, _settings.AdvancedScreens))
+                                if (addEditForm.EditBrowser(newBrowser, _mBrowser, _mProtocols, _mFileTypes, false))
                                 {
                                     var finalBrowser = addEditForm.GetData();
                                     _mBrowser.Add(_mBrowser.Count + 1, finalBrowser);

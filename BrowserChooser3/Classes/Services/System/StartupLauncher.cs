@@ -285,11 +285,11 @@ namespace BrowserChooser3.Classes.Services.SystemServices
                 // ポリシーの初期化
                 Policy.Initialize();
 
-                // デフォルトブラウザチェック
-                if (Settings.Current.CheckDefaultOnLaunch)
-                {
-                    CheckDefaultBrowser();
-                }
+                // デフォルトブラウザチェック（削除された設定のため、常に実行しない）
+                // if (Settings.Current.CheckDefaultOnLaunch)
+                // {
+                //     CheckDefaultBrowser();
+                // }
 
                 // コマンドライン引数の処理
                 var result = ProcessCommandLineArgs(commandLineArgs);

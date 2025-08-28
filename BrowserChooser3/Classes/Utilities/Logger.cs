@@ -73,11 +73,145 @@ namespace BrowserChooser3.Classes.Utilities
         private static readonly Queue<string> _logQueue = new Queue<string>();
 
         /// <summary>
+        /// インストーラー経由でインストールされたかどうかを判定
+        /// </summary>
+        /// <returns>インストーラー経由の場合はtrue</returns>
+        private static bool IsInstalledViaInstaller()
+        {
+            try
+            {
+                // 実行ファイルがProgram FilesまたはProgram Files (x86)にある場合はインストーラー経由と判定
+                var executablePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
+                var programFilesPath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+                var programFilesX86Path = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
+                
+                return executablePath.StartsWith(programFilesPath, StringComparison.OrdinalIgnoreCase) ||
+                       executablePath.StartsWith(programFilesX86Path, StringComparison.OrdinalIgnoreCase);
+            }
+            catch (Exception ex)
+            {
+                // エラーが発生した場合は、インストーラー経由ではないと判断
+                Console.WriteLine($"IsInstalledViaInstaller check failed: {ex.Message}");
+                return false;
+            }
+        }
+        
+        /// <summary>
+        /// ログディレクトリのパス
+        /// </summary>
+        private static string LogDirectory
+        {
+            get
+            {
+                if (IsInstalledViaInstaller())
+                {
+                    // インストーラー経由でインストールされた場合はLocalApplicationData
+                    var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                    var logDir = Path.Combine(localAppData, "BrowserChooser3", "Logs");
+                    
+                    // ディレクトリが存在しない場合は作成
+                    if (!Directory.Exists(logDir))
+                    {
+                        try
+                        {
+                            Directory.CreateDirectory(logDir);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Failed to create log directory: {ex.Message}");
+                            // 作成に失敗した場合はTempPathにフォールバック
+                            return Path.GetTempPath();
+                        }
+                    }
+                    
+                    return logDir;
+                }
+                else
+                {
+                    // その他の場合は実行フォルダ
+                    var startupPath = Application.StartupPath;
+                    var logDir = Path.Combine(startupPath, "Logs");
+                    
+                    // ディレクトリが存在しない場合は作成
+                    if (!Directory.Exists(logDir))
+                    {
+                        try
+                        {
+                            Directory.CreateDirectory(logDir);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Failed to create log directory: {ex.Message}");
+                            // 作成に失敗した場合は実行フォルダにフォールバック
+                            return startupPath;
+                        }
+                    }
+                    
+                    return logDir;
+                }
+            }
+        }
+        
+        /// <summary>
+        /// 現在の日付に基づくログファイル名を取得
+        /// </summary>
+        /// <returns>ログファイル名</returns>
+        private static string GetLogFileName()
+        {
+            var today = DateTime.Now.ToString("yyyy-MM-dd");
+            return $"bc3_{today}.log";
+        }
+        
+        /// <summary>
         /// ログファイルのパス
         /// </summary>
-        private static string LogFilePath => Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.Desktop), 
-            "bc3.log");
+        private static string LogFilePath
+        {
+            get
+            {
+                var logDir = LogDirectory;
+                var fileName = GetLogFileName();
+                return Path.Combine(logDir, fileName);
+            }
+        }
+        
+        /// <summary>
+        /// 古いログファイルを削除（30日以上古いファイル）
+        /// </summary>
+        private static void CleanupOldLogFiles()
+        {
+            try
+            {
+                var logDir = LogDirectory;
+                if (!Directory.Exists(logDir))
+                    return;
+                
+                var cutoffDate = DateTime.Now.AddDays(-30); // 30日以上古いファイルを削除
+                var logFiles = Directory.GetFiles(logDir, "bc3_*.log");
+                
+                foreach (var logFile in logFiles)
+                {
+                    try
+                    {
+                        var fileInfo = new FileInfo(logFile);
+                        if (fileInfo.CreationTime < cutoffDate)
+                        {
+                            File.Delete(logFile);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        // 個別ファイルの削除に失敗しても他のファイルの処理を続行
+                        Console.WriteLine($"Failed to delete old log file {logFile}: {ex.Message}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // クリーンアップに失敗してもログ出力は続行
+                Console.WriteLine($"Failed to cleanup old log files: {ex.Message}");
+            }
+        }
 
         /// <summary>
         /// ログを追加する（基本メソッド）
@@ -166,16 +300,8 @@ namespace BrowserChooser3.Classes.Utilities
         {
             try
             {
-                TextWriter writer;
-                if (Application.StartupPath == Environment.SystemDirectory)
-                {
-                    writer = new StreamWriter(LogFilePath, true, Encoding.UTF8);
-                }
-                else
-                {
-                    var logPath = Path.Combine(Application.StartupPath, "bc3.log");
-                    writer = new StreamWriter(logPath, true, Encoding.UTF8);
-                }
+                var logPath = LogFilePath;
+                var writer = new StreamWriter(logPath, true, Encoding.UTF8);
 
                 lock (_logQueue)
                 {
@@ -187,6 +313,17 @@ namespace BrowserChooser3.Classes.Utilities
                 }
 
                 writer.Close();
+                
+                // 定期的に古いログファイルをクリーンアップ（1日1回程度）
+                var lastCleanupKey = "LastLogCleanupDate";
+                var lastCleanupDate = Environment.GetEnvironmentVariable(lastCleanupKey);
+                var today = DateTime.Now.ToString("yyyy-MM-dd");
+                
+                if (lastCleanupDate != today)
+                {
+                    CleanupOldLogFiles();
+                    Environment.SetEnvironmentVariable(lastCleanupKey, today);
+                }
             }
             catch (Exception)
             {

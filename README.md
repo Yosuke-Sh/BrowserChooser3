@@ -48,16 +48,26 @@ BrowserChooser3は、Windows環境で複数のブラウザから選択してURL�
 
 ## 🛠️ インストール
 
-### ダウンロード
-1. [Releases](https://github.com/your-username/BrowserChooser3/releases)ページから最新版をダウンロード
-2. `BrowserChooser3.exe`を任意のフォルダに配置
+### 📦 リリース版のダウンロード（推奨）
+1. [Releases](https://github.com/Yosuke-Sh/BrowserChooser3/releases)ページから最新版をダウンロード
+2. `BrowserChooser3-vX.X.X.zip`をダウンロード
+3. ZIPファイルを展開して任意のフォルダに配置
+4. `.NET 8.0 Runtime`をインストール（未インストールの場合）
+   - [.NET 8.0 Runtime ダウンロード](https://dotnet.microsoft.com/download/dotnet/8.0)
+5. `BrowserChooser3.exe`をダブルクリックして起動
 
-### ビルド（開発者向け）
+### 🔧 ビルド（開発者向け）
 ```bash
-git clone https://github.com/your-username/BrowserChooser3.git
+git clone https://github.com/Yosuke-Sh/BrowserChooser3.git
 cd BrowserChooser3
 dotnet build
 ```
+
+### 📋 システム要件
+- **OS**: Windows 10/11
+- **.NET**: .NET 8.0 Runtime
+- **アーキテクチャ**: x64
+- **ディスク容量**: 約2MB（アプリケーションのみ）
 
 ## 🎯 使用方法
 
@@ -172,9 +182,9 @@ dotnet test
 
 ## 📞 サポート
 
-- **Issues**: [GitHub Issues](https://github.com/your-username/BrowserChooser3/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/your-username/BrowserChooser3/discussions)
-- **Wiki**: [GitHub Wiki](https://github.com/your-username/BrowserChooser3/wiki)
+- **Issues**: [GitHub Issues](https://github.com/Yosuke-Sh/BrowserChooser3/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/Yosuke-Sh/BrowserChooser3/discussions)
+- **Wiki**: [GitHub Wiki](https://github.com/Yosuke-Sh/BrowserChooser3/wiki)
 
 ---
 

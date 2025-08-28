@@ -145,25 +145,30 @@ namespace BrowserChooser3.Forms
         private void InitializeComponent()
         {
             Text = "Add/Edit Auto URL";
-            Size = new Size(450, 250);
+            Size = new Size(550, 300);
             StartPosition = FormStartPosition.CenterParent;
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
             MinimizeBox = false;
+            
+            // Windows 11 風スタイル
+            Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
 
             // 基本設定
             var lblURL = new Label { Text = "URL:", Location = new Point(10, 20), AutoSize = true };
-            var txtURL = new TextBox { Name = "txtURL", Location = new Point(120, 17), Size = new Size(300, 23) };
+            var txtURL = new TextBox { Name = "txtURL", Location = new Point(120, 17), Size = new Size(320, 23) };
 
-            var lblBrowser = new Label { Text = "Browser:", Location = new Point(10, 50), AutoSize = true };
-            var cmbBrowser = new ComboBox { Name = "cmbBrowser", Location = new Point(120, 47), Size = new Size(300, 23), DropDownStyle = ComboBoxStyle.DropDownList };
+            var lblBrowser = new Label { Text = "Browser:", Location = new Point(10, 60), AutoSize = true };
+            var cmbBrowser = new ComboBox { Name = "cmbBrowser", Location = new Point(120, 57), Size = new Size(320, 23), DropDownStyle = ComboBoxStyle.DropDownList };
 
-            var lblDelay = new Label { Text = "Delay (seconds):", Location = new Point(10, 80), AutoSize = true };
-            var txtDelay = new TextBox { Name = "txtDelay", Location = new Point(120, 77), Size = new Size(100, 23) };
+            var lblDelay = new Label { Text = "Delay (seconds):", Location = new Point(10, 100), AutoSize = true };
+            var txtDelay = new TextBox { Name = "txtDelay", Location = new Point(200, 97), Size = new Size(120, 23) };
 
             // ボタン
-            var btnOK = new Button { Text = "OK", DialogResult = DialogResult.OK, Location = new Point(250, 170), Size = new Size(75, 23) };
-            var btnCancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, Location = new Point(335, 170), Size = new Size(75, 23) };
+            var btnOK = new Button { Text = "OK", DialogResult = DialogResult.OK, Location = new Point(300, 170), Size = new Size(90, 30) };
+            var btnCancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, Location = new Point(395, 170), Size = new Size(90, 30) };
+            btnOK.FlatStyle = FlatStyle.System;
+            btnCancel.FlatStyle = FlatStyle.System;
 
             // コントロールの追加
             Controls.AddRange(new Control[] 
@@ -175,38 +180,46 @@ namespace BrowserChooser3.Forms
             });
 
             // イベントハンドラー
-            btnOK.Click += (s, e) =>
+            // フォームが閉じられる前の検証
+            this.FormClosing += (s, e) =>
             {
-                // データの検証
-                if (string.IsNullOrWhiteSpace(txtURL.Text))
+                if (DialogResult == DialogResult.OK)
                 {
-                    MessageBox.Show("URLを入力してください。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
+                    // データの検証
+                    if (string.IsNullOrWhiteSpace(txtURL.Text))
+                    {
+                        MessageBox.Show("URLを入力してください。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        txtURL.Focus();
+                        e.Cancel = true; // フォームを閉じない
+                        return;
+                    }
 
-                if (cmbBrowser.SelectedItem == null)
-                {
-                    MessageBox.Show("ブラウザを選択してください。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
+                    if (cmbBrowser.SelectedItem == null)
+                    {
+                        MessageBox.Show("ブラウザを選択してください。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        cmbBrowser.Focus();
+                        e.Cancel = true; // フォームを閉じない
+                        return;
+                    }
 
-                // データの保存
-                _url.URLPattern = txtURL.Text;
-                
-                var selectedBrowserName = cmbBrowser.SelectedItem.ToString();
-                var selectedBrowser = _browsers.Values.FirstOrDefault(b => b.Name == selectedBrowserName);
-                if (selectedBrowser != null)
-                {
-                    _url.Guid = selectedBrowser.Guid;
-                }
-                
-                if (int.TryParse(txtDelay.Text, out var delay))
-                {
-                    _url.DelayTime = delay;
-                }
-                else
-                {
-                    _url.DelayTime = -1; // Default
+                    // データの保存
+                    _url.URLPattern = txtURL.Text;
+                    
+                    var selectedBrowserName = cmbBrowser.SelectedItem.ToString();
+                    var selectedBrowser = _browsers.Values.FirstOrDefault(b => b.Name == selectedBrowserName);
+                    if (selectedBrowser != null)
+                    {
+                        _url.Guid = selectedBrowser.Guid;
+                    }
+                    
+                    if (int.TryParse(txtDelay.Text, out var delay))
+                    {
+                        _url.DelayTime = delay;
+                    }
+                    else
+                    {
+                        _url.DelayTime = -1; // Default
+                    }
                 }
             };
         }

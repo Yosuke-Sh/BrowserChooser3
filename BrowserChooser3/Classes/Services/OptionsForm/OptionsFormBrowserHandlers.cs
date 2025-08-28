@@ -56,7 +56,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             try
             {
                 var addEditForm = new AddEditBrowserForm();
-                if (addEditForm.AddBrowser(_mBrowser, _mProtocols, _mFileTypes, _settings.AdvancedScreens, 
+                if (addEditForm.AddBrowser(_mBrowser, _mProtocols, _mFileTypes, false, 
                     new Point(_settings.GridWidth, _settings.GridHeight)))
                 {
                     var newBrowser = addEditForm.GetData();
@@ -120,7 +120,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                     if (selectedIndex == -1 || !_mBrowser.ContainsKey(selectedIndex)) return;
                     
                     var addEditForm = new AddEditBrowserForm();
-                    if (addEditForm.EditBrowser(_mBrowser[selectedIndex], _mBrowser, _mProtocols, _mFileTypes, _settings.AdvancedScreens))
+                    if (addEditForm.EditBrowser(_mBrowser[selectedIndex], _mBrowser, _mProtocols, _mFileTypes, false))
                     {
                         var updatedBrowser = addEditForm.GetData();
                         _mBrowser[selectedIndex] = updatedBrowser;
@@ -217,7 +217,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                     
                     var templateBrowser = _mBrowser[selectedIndex];
                     var addEditForm = new AddEditBrowserForm();
-                    if (addEditForm.AddBrowser(_mBrowser, _mProtocols, _mFileTypes, _settings.AdvancedScreens, 
+                    if (addEditForm.AddBrowser(_mBrowser, _mProtocols, _mFileTypes, false, 
                         new Point(_settings.GridWidth, _settings.GridHeight), templateBrowser))
                     {
                         var clonedBrowser = addEditForm.GetData();
@@ -388,15 +388,15 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
         }
 
         /// <summary>
-        /// ブラウザのプロトコルとファイルタイプを取得
+        /// ブラウザのプロトコルを取得（FileTypesは未実装のため削除）
         /// </summary>
         public string GetBrowserProtocolsAndFileTypes(Browser browser)
         {
             var protocols = _mProtocols.Values.Where(p => p.BrowserGuid == browser.Guid).Select(p => p.Name);
-            var fileTypes = _mFileTypes.Values.Where(f => f.BrowserGuid == browser.Guid).Select(f => f.Name);
+            // var fileTypes = _mFileTypes.Values.Where(f => f.BrowserGuid == browser.Guid).Select(f => f.Name);
             
-            var allItems = protocols.Concat(fileTypes);
-            return string.Join(", ", allItems);
+            // var allItems = protocols.Concat(fileTypes);
+            return string.Join(", ", protocols);
         }
     }
 }

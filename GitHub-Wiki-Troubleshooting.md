@@ -1,305 +1,305 @@
-# Troubleshooting
+# トラブルシューティング
 
-This comprehensive troubleshooting guide will help you resolve common issues with BrowserChooser3.
+この包括的なトラブルシューティングガイドは、BrowserChooser3の一般的な問題を解決するのに役立ちます。
 
-## 🚨 Quick Diagnostics
+## 🚨 クイック診断
 
-### Enable Debug Logging
-First, enable logging to get detailed information about any issues:
+### デバッグログの有効化
+まず、問題の詳細情報を取得するためにログを有効にしてください：
 
 ```bash
 BrowserChooser3.exe --log
 ```
 
-This will create a `Logs/` folder with detailed log files that can help diagnose problems.
+これにより、問題の診断に役立つ詳細なログファイルを含む`Logs/`フォルダが作成されます。
 
-### Check System Requirements
-Ensure your system meets the minimum requirements:
-- Windows 10 (1903+) or Windows 11
-- .NET 8.0 Runtime installed
-- x64 architecture
-- 100 MB available RAM
+### システム要件の確認
+システムが最小要件を満たしていることを確認してください：
+- Windows 10（1903以降）またはWindows 11
+- .NET 8.0 Runtimeがインストール済み
+- x64アーキテクチャ
+- 100 MBの利用可能RAM
 
-## 🔧 Common Issues
+## 🔧 よくある問題
 
-### Application Won't Start
+### アプリケーションが起動しない
 
-#### Issue: "Application failed to start" or "Missing .NET Framework"
-**Symptoms**: Error message about missing .NET or application won't launch
-**Solutions**:
-1. **Install .NET 8.0 Runtime**:
-   - Download from [Microsoft .NET Download](https://dotnet.microsoft.com/download/dotnet/8.0)
-   - Choose "Runtime" (not SDK) for Windows x64
-   - Run the installer and restart your computer
+#### 問題: "アプリケーションの開始に失敗しました"または".NET Frameworkが見つかりません"
+**症状**: .NETが見つからないエラーメッセージまたはアプリケーションが起動しない
+**解決策**:
+1. **.NET 8.0 Runtimeをインストール**:
+   - [Microsoft .NET ダウンロード](https://dotnet.microsoft.com/download/dotnet/8.0)からダウンロード
+   - Windows x64用の"Runtime"（SDKではない）を選択
+   - インストーラーを実行し、コンピューターを再起動
 
-2. **Verify Installation**:
+2. **インストールを確認**:
    ```bash
    dotnet --version
    ```
-   Should show version 8.0.x
+   バージョン8.0.xが表示されるはずです
 
-3. **Check Architecture**:
-   - Ensure you downloaded the x64 version
-   - Verify your system is 64-bit
+3. **アーキテクチャを確認**:
+   - x64バージョンをダウンロードしたことを確認
+   - システムが64ビットであることを確認
 
-#### Issue: "File not found" or "Path not found"
-**Symptoms**: Error about missing files or paths
-**Solutions**:
-1. **Check File Location**: Ensure all files are in the same folder
-2. **Verify Permissions**: Run as administrator if needed
-3. **Check Antivirus**: Some antivirus software may block the application
+#### 問題: "ファイルが見つかりません"または"パスが見つかりません"
+**症状**: ファイルまたはパスが見つからないエラー
+**解決策**:
+1. **ファイルの場所を確認**: すべてのファイルが同じフォルダにあることを確認
+2. **権限を確認**: 必要に応じて管理者として実行
+3. **アンチウイルスを確認**: 一部のアンチウイルスソフトウェアがアプリケーションをブロックする可能性があります
 
-#### Issue: Application starts but immediately closes
-**Symptoms**: BrowserChooser3 appears briefly then disappears
-**Solutions**:
-1. **Check Command Line**: Run from command prompt to see error messages
-2. **Enable Logging**: Use `--log` flag to capture startup errors
-3. **Check Dependencies**: Verify all required files are present
+#### 問題: アプリケーションが起動するがすぐに閉じる
+**症状**: BrowserChooser3が一瞬表示されてから消える
+**解決策**:
+1. **コマンドラインを確認**: エラーメッセージを確認するためにコマンドプロンプトから実行
+2. **ログを有効化**: 起動エラーをキャプチャするために`--log`フラグを使用
+3. **依存関係を確認**: 必要なファイルがすべて存在することを確認
 
-### Transparency Issues
+### 透明化の問題
 
-#### Issue: Transparency not working
-**Symptoms**: Window appears opaque despite transparency settings
-**Solutions**:
-1. **Check Windows Settings**:
-   - Go to Settings → Personalization → Colors
-   - Ensure "Transparency effects" is enabled
-   - Restart BrowserChooser3
+#### 問題: 透明化が動作しない
+**症状**: 透明化設定にもかかわらずウィンドウが不透明に見える
+**解決策**:
+1. **Windows設定を確認**:
+   - 設定 → 個人用設定 → 色に移動
+   - "透明効果"が有効になっていることを確認
+   - BrowserChooser3を再起動
 
-2. **Update Graphics Drivers**:
-   - Check for graphics driver updates
-   - Restart after updating drivers
+2. **グラフィックドライバーを更新**:
+   - グラフィックドライバーの更新を確認
+   - ドライバー更新後に再起動
 
-3. **Try Different Settings**:
-   - Change transparency color
-   - Adjust opacity value
-   - Test with different corner radius
+3. **異なる設定を試す**:
+   - 透明化色を変更
+   - 透明度値を調整
+   - 異なる角の丸みでテスト
 
-4. **Check .NET Version**:
-   - Ensure .NET 8.0 is installed
-   - Try reinstalling .NET if needed
+4. **.NETバージョンを確認**:
+   - .NET 8.0がインストールされていることを確認
+   - 必要に応じて.NETを再インストール
 
-#### Issue: Rounded corners appear jagged
-**Symptoms**: Corners are pixelated or not smooth
-**Solutions**:
-1. **Enable Hardware Acceleration**:
-   - Update graphics drivers
-   - Check Windows graphics settings
+#### 問題: 角の丸みがギザギザに見える
+**症状**: 角がピクセル化されているか滑らかでない
+**解決策**:
+1. **ハードウェアアクセラレーションを有効化**:
+   - グラフィックドライバーを更新
+   - Windowsグラフィック設定を確認
 
-2. **Adjust DPI Settings**:
-   - Check Windows DPI scaling
-   - Try different DPI settings
+2. **DPI設定を調整**:
+   - Windows DPIスケーリングを確認
+   - 異なるDPI設定を試す
 
-3. **Reduce Corner Radius**:
-   - Use smaller radius values
-   - Test with radius 5-10
+3. **角の丸みを減らす**:
+   - より小さな半径値を使用
+   - 半径5-10でテスト
 
-### Browser Detection Issues
+### ブラウザ検出の問題
 
-#### Issue: Browsers not detected automatically
-**Symptoms**: No browsers appear in the list
-**Solutions**:
-1. **Manual Browser Addition**:
-   - Press `O` to open options
-   - Go to "Browsers" tab
-   - Click "Add" to manually add browsers
+#### 問題: ブラウザが自動検出されない
+**症状**: リストにブラウザが表示されない
+**解決策**:
+1. **手動でブラウザを追加**:
+   - `O`キーを押してオプションを開く
+   - "Browsers"タブに移動
+   - "Add"をクリックして手動でブラウザを追加
 
-2. **Check Browser Installation**:
-   - Verify browsers are properly installed
-   - Check if browsers are in standard locations
+2. **ブラウザのインストールを確認**:
+   - ブラウザが適切にインストールされていることを確認
+   - ブラウザが標準的な場所にあることを確認
 
-3. **Registry Issues**:
-   - Some browsers may not register properly
-   - Try reinstalling problematic browsers
+3. **レジストリの問題**:
+   - 一部のブラウザが適切に登録されていない可能性
+   - 問題のあるブラウザを再インストール
 
-#### Issue: Custom browser won't launch
-**Symptoms**: Browser appears in list but won't start
-**Solutions**:
-1. **Check Path**: Verify the executable path is correct
-2. **Check Arguments**: Ensure launch arguments are valid
-3. **Test Manually**: Try running the browser manually with the same arguments
-4. **Check Permissions**: Ensure BrowserChooser3 has permission to launch the browser
+#### 問題: カスタムブラウザが起動しない
+**症状**: ブラウザがリストに表示されるが起動しない
+**解決策**:
+1. **パスを確認**: 実行ファイルのパスが正しいことを確認
+2. **引数を確認**: 起動引数が有効であることを確認
+3. **手動でテスト**: 同じ引数でブラウザを手動実行
+4. **権限を確認**: BrowserChooser3がブラウザを起動する権限があることを確認
 
-### Performance Issues
+### パフォーマンスの問題
 
-#### Issue: Slow startup or high CPU usage
-**Symptoms**: Application takes long to start or uses excessive CPU
-**Solutions**:
-1. **Disable Transparency**: Temporarily disable transparency effects
-2. **Reduce Corner Radius**: Use smaller corner radius values
-3. **Check Background Processes**: Close unnecessary background applications
-4. **Update Graphics Drivers**: Ensure drivers are up to date
+#### 問題: 起動が遅いまたはCPU使用率が高い
+**症状**: アプリケーションの起動に時間がかかるか、過度のCPUを使用する
+**解決策**:
+1. **透明化を無効化**: 一時的に透明化効果を無効にする
+2. **角の丸みを減らす**: より小さな角の丸み値を使用
+3. **バックグラウンドプロセスを確認**: 不要なバックグラウンドアプリケーションを閉じる
+4. **グラフィックドライバーを更新**: ドライバーが最新であることを確認
 
-#### Issue: Memory usage keeps increasing
-**Symptoms**: Memory usage grows over time
-**Solutions**:
-1. **Restart Application**: Close and restart BrowserChooser3
-2. **Check for Memory Leaks**: Monitor with Task Manager
-3. **Report Issue**: Create a GitHub issue with memory usage details
+#### 問題: メモリ使用量が増え続ける
+**症状**: メモリ使用量が時間とともに増加する
+**解決策**:
+1. **アプリケーションを再起動**: BrowserChooser3を閉じて再起動
+2. **メモリリークを確認**: タスクマネージャーで監視
+3. **問題を報告**: メモリ使用量の詳細でGitHub issueを作成
 
-### Configuration Issues
+### 設定の問題
 
-#### Issue: Settings not saving
-**Symptoms**: Changes to settings are lost after restart
-**Solutions**:
-1. **Check File Permissions**: Ensure write access to the configuration file
-2. **Check File Location**: Verify `BrowserChooser3Config.xml` is in the correct location
-3. **Run as Administrator**: Try running with elevated privileges
+#### 問題: 設定が保存されない
+**症状**: 設定の変更が再起動後に失われる
+**解決策**:
+1. **ファイル権限を確認**: 設定ファイルへの書き込みアクセスを確認
+2. **ファイルの場所を確認**: `BrowserChooser3Config.xml`が正しい場所にあることを確認
+3. **管理者として実行**: 管理者権限で実行を試す
 
-#### Issue: Configuration file corrupted
-**Symptoms**: Application won't start or shows errors
-**Solutions**:
-1. **Backup and Delete**: Rename or delete `BrowserChooser3Config.xml`
-2. **Restart Application**: BrowserChooser3 will create a new configuration file
-3. **Restore Settings**: Manually reconfigure your settings
+#### 問題: 設定ファイルが破損している
+**症状**: アプリケーションが起動しないかエラーが表示される
+**解決策**:
+1. **バックアップして削除**: `BrowserChooser3Config.xml`をリネームまたは削除
+2. **アプリケーションを再起動**: BrowserChooser3が新しい設定ファイルを作成
+3. **設定を復元**: 設定を手動で再構成
 
-### Display Issues
+### 表示の問題
 
-#### Issue: Window appears in wrong location
-**Symptoms**: Window opens off-screen or in unexpected position
-**Solutions**:
-1. **Reset Position**: Delete configuration file to reset window position
-2. **Check Multiple Monitors**: Ensure window isn't on a disconnected monitor
-3. **Use Alt+Tab**: Try Alt+Tab to bring window to foreground
+#### 問題: ウィンドウが間違った場所に表示される
+**症状**: ウィンドウが画面外または予期しない位置で開く
+**解決策**:
+1. **位置をリセット**: 設定ファイルを削除してウィンドウ位置をリセット
+2. **複数モニターを確認**: ウィンドウが切断されたモニターにないことを確認
+3. **Alt+Tabを使用**: Alt+Tabでウィンドウを前面に表示
 
-#### Issue: Text appears blurry or pixelated
-**Symptoms**: Text is hard to read or appears fuzzy
-**Solutions**:
-1. **Check DPI Settings**: Adjust Windows DPI scaling
-2. **Update Graphics Drivers**: Ensure drivers support high DPI
-3. **Disable Transparency**: Try without transparency effects
+#### 問題: テキストがぼやけているかピクセル化されている
+**症状**: テキストが読みにくいかぼやけて見える
+**解決策**:
+1. **DPI設定を確認**: Windows DPIスケーリングを調整
+2. **グラフィックドライバーを更新**: ドライバーが高DPIをサポートしていることを確認
+3. **透明化を無効化**: 透明化効果なしで試す
 
-## 🔍 Advanced Troubleshooting
+## 🔍 高度なトラブルシューティング
 
-### Log Analysis
+### ログ分析
 
-#### Enable Detailed Logging
+#### 詳細ログの有効化
 ```bash
 BrowserChooser3.exe --log
 ```
 
-#### Key Log Files
-- `BrowserChooser3.log`: Main application log
-- `Startup.log`: Startup and initialization log
-- `Error.log`: Error-specific log
+#### 主要ログファイル
+- `BrowserChooser3.log`: メインアプリケーションログ
+- `Startup.log`: 起動と初期化ログ
+- `Error.log`: エラー専用ログ
 
-#### Common Log Messages
-- `"Application started"`: Normal startup
-- `"Transparency settings applied"`: Transparency working
-- `"Browser detected"`: Browser detection working
-- `"Configuration loaded"`: Settings loaded successfully
+#### 一般的なログメッセージ
+- `"Application started"`: 正常な起動
+- `"Transparency settings applied"`: 透明化が動作中
+- `"Browser detected"`: ブラウザ検出が動作中
+- `"Configuration loaded"`: 設定が正常に読み込まれた
 
-### Registry Issues
+### レジストリの問題
 
-#### Check Browser Registration
+#### ブラウザ登録の確認
 ```bash
 reg query "HKEY_CLASSES_ROOT\http\shell\open\command"
 reg query "HKEY_CLASSES_ROOT\https\shell\open\command"
 ```
 
-#### Reset Browser Associations
-1. Open Settings → Apps → Default apps
-2. Choose default browser
-3. Restart BrowserChooser3
+#### ブラウザ関連付けのリセット
+1. 設定 → アプリ → 既定のアプリを開く
+2. 既定のブラウザを選択
+3. BrowserChooser3を再起動
 
-### Network Issues
+### ネットワークの問題
 
-#### Issue: URLs not opening
-**Symptoms**: Clicking browser buttons doesn't open URLs
-**Solutions**:
-1. **Check URL Format**: Ensure URLs start with `http://` or `https://`
-2. **Test Browser**: Try opening the URL directly in the browser
-3. **Check Firewall**: Ensure firewall isn't blocking the application
-4. **Check Antivirus**: Some antivirus software may block URL opening
+#### 問題: URLが開かない
+**症状**: ブラウザボタンをクリックしてもURLが開かない
+**解決策**:
+1. **URL形式を確認**: URLが`http://`または`https://`で始まることを確認
+2. **ブラウザをテスト**: ブラウザで直接URLを開いてみる
+3. **ファイアウォールを確認**: ファイアウォールがアプリケーションをブロックしていないことを確認
+4. **アンチウイルスを確認**: 一部のアンチウイルスソフトウェアがURLの開封をブロックする可能性
 
-## 🛠️ Diagnostic Tools
+## 🛠️ 診断ツール
 
-### Built-in Diagnostics
-BrowserChooser3 includes several diagnostic features:
+### 内蔵診断
+BrowserChooser3にはいくつかの診断機能が含まれています：
 
-#### System Information
-- Press `O` to open options
-- Check system information in the "Other" tab
-- Verify .NET version and system details
+#### システム情報
+- `O`キーを押してオプションを開く
+- "Other"タブでシステム情報を確認
+- .NETバージョンとシステム詳細を確認
 
-#### Browser Detection Test
-- Go to "Browsers" tab in options
-- Click "Detect Browsers" to test detection
-- Check if browsers are found
+#### ブラウザ検出テスト
+- オプションの"Browsers"タブに移動
+- "Detect Browsers"をクリックして検出をテスト
+- ブラウザが見つかるかどうかを確認
 
-### External Tools
+### 外部ツール
 
 #### Process Monitor
-Use Process Monitor to track file and registry access:
-1. Download Process Monitor from Microsoft
-2. Run BrowserChooser3 with Process Monitor
-3. Look for access denied errors
+Process Monitorを使用してファイルとレジストリアクセスを追跡：
+1. MicrosoftからProcess Monitorをダウンロード
+2. Process Monitorと一緒にBrowserChooser3を実行
+3. アクセス拒否エラーを探す
 
 #### Dependency Walker
-Use Dependency Walker to check for missing DLLs:
-1. Download Dependency Walker
-2. Open BrowserChooser3.exe
-3. Check for missing dependencies
+Dependency Walkerを使用して不足しているDLLを確認：
+1. Dependency Walkerをダウンロード
+2. BrowserChooser3.exeを開く
+3. 不足している依存関係を確認
 
-## 📞 Getting Help
+## 📞 ヘルプの取得
 
-### Before Asking for Help
-1. **Enable Logging**: Use `--log` flag
-2. **Check This Guide**: Look for similar issues
-3. **Search GitHub Issues**: Check existing reports
-4. **Gather Information**: Collect system details and error messages
+### ヘルプを求める前に
+1. **ログを有効化**: `--log`フラグを使用
+2. **このガイドを確認**: 類似の問題を探す
+3. **GitHub Issuesを検索**: 既存の報告を確認
+4. **情報を収集**: システム詳細とエラーメッセージを収集
 
-### Information to Include
-When reporting issues, include:
-- **Windows Version**: Windows 10/11 version
-- **.NET Version**: Output of `dotnet --version`
-- **Error Messages**: Exact error text
-- **Steps to Reproduce**: How to trigger the issue
-- **Log Files**: Relevant log entries
-- **System Specs**: CPU, RAM, graphics card
+### 含めるべき情報
+問題を報告する際は、以下を含めてください：
+- **Windowsバージョン**: Windows 10/11バージョン
+- **.NETバージョン**: `dotnet --version`の出力
+- **エラーメッセージ**: 正確なエラーテキスト
+- **再現手順**: 問題を引き起こす方法
+- **ログファイル**: 関連するログエントリ
+- **システム仕様**: CPU、RAM、グラフィックカード
 
-### Reporting Issues
-1. **GitHub Issues**: Create a new issue on GitHub
-2. **Include Logs**: Attach relevant log files
-3. **Be Specific**: Provide detailed information
-4. **Test Solutions**: Try suggested solutions and report results
+### 問題の報告
+1. **GitHub Issues**: GitHubで新しいissueを作成
+2. **ログを含める**: 関連するログファイルを添付
+3. **具体的に**: 詳細な情報を提供
+4. **解決策をテスト**: 提案された解決策を試して結果を報告
 
-## 🔄 Recovery Procedures
+## 🔄 復旧手順
 
-### Complete Reset
-If all else fails, perform a complete reset:
+### 完全リセット
+他のすべてが失敗した場合、完全リセットを実行：
 
-1. **Close BrowserChooser3**
-2. **Delete Configuration File**: Remove `BrowserChooser3Config.xml`
-3. **Delete Log Files**: Remove `Logs/` folder
-4. **Restart Application**: Launch BrowserChooser3
-5. **Reconfigure Settings**: Set up your preferences again
+1. **BrowserChooser3を閉じる**
+2. **設定ファイルを削除**: `BrowserChooser3Config.xml`を削除
+3. **ログファイルを削除**: `Logs/`フォルダを削除
+4. **アプリケーションを再起動**: BrowserChooser3を起動
+5. **設定を再構成**: 設定を再度セットアップ
 
-### Partial Reset
-For specific issues, try partial resets:
+### 部分リセット
+特定の問題については、部分リセットを試してください：
 
-#### Reset Transparency Settings
-1. Open options dialog
-2. Go to Display tab
-3. Disable transparency
-4. Restart application
-5. Re-enable transparency with default settings
+#### 透明化設定のリセット
+1. オプションダイアログを開く
+2. Displayタブに移動
+3. 透明化を無効にする
+4. アプリケーションを再起動
+5. デフォルト設定で透明化を再有効化
 
-#### Reset Browser Settings
-1. Open options dialog
-2. Go to Browsers tab
-3. Remove all browsers
-4. Click "Detect Browsers"
-5. Manually add any missing browsers
+#### ブラウザ設定のリセット
+1. オプションダイアログを開く
+2. Browsersタブに移動
+3. すべてのブラウザを削除
+4. "Detect Browsers"をクリック
+5. 不足しているブラウザを手動で追加
 
-## 📚 Related Resources
+## 📚 関連リソース
 
-- [Installation Guide](Installation-Guide)
-- [Configuration Guide](Configuration-Guide)
-- [Transparency Settings](Transparency-Settings)
-- [Accessibility Features](Accessibility-Features)
+- [インストールガイド](Installation-Guide)
+- [設定ガイド](Configuration-Guide)
+- [透明化設定](Transparency-Settings)
+- [アクセシビリティ機能](Accessibility-Features)
 
 ---
 
-*If you can't find a solution here, please [create a GitHub issue](https://github.com/your-username/BrowserChooser3/issues) with detailed information about your problem.*
+*ここで解決策が見つからない場合は、問題の詳細情報とともに[GitHub issueを作成](https://github.com/Yosuke-Sh/BrowserChooser3/issues)してください。*
 
