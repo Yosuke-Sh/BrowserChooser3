@@ -111,6 +111,9 @@ namespace BrowserChooser3.Forms
                     UpdateURLLabel();
                 }
                 
+                // フォームの初期化完了を通知
+                Logger.LogInfo("MainForm.InitializeApplication", "フォーム初期化完了");
+                
                 Logger.LogInfo("MainForm.InitializeApplication", "End");
             }
             catch (Exception ex)
@@ -1025,6 +1028,8 @@ namespace BrowserChooser3.Forms
         {
             try
             {
+                Logger.LogInfo("MainForm.UpdateURLLabel", "URL表示更新開始", $"URL: {_currentUrl}, ShowURL: {_settings?.ShowURL}");
+                
                 if (_urlDisplayTextBox != null)
                 {
                     if (!string.IsNullOrEmpty(_currentUrl))
@@ -1033,12 +1038,18 @@ namespace BrowserChooser3.Forms
                         var displayUrl = _currentUrl.Length > 100 ? _currentUrl.Substring(0, 97) + "..." : _currentUrl;
                         _urlDisplayTextBox.Text = displayUrl;
                         _urlDisplayTextBox.Visible = _settings?.ShowURL == true;
+                        Logger.LogInfo("MainForm.UpdateURLLabel", "URL表示設定完了", $"DisplayURL: {displayUrl}, Visible: {_urlDisplayTextBox.Visible}");
                     }
                     else
                     {
                         _urlDisplayTextBox.Text = "";
                         _urlDisplayTextBox.Visible = false;
+                        Logger.LogInfo("MainForm.UpdateURLLabel", "URL表示を非表示に設定");
                     }
+                }
+                else
+                {
+                    Logger.LogWarning("MainForm.UpdateURLLabel", "URL表示テキストボックスがnullです");
                 }
             }
             catch (Exception ex)

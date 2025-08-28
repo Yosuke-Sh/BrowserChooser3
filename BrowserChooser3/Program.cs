@@ -58,8 +58,11 @@ namespace BrowserChooser3
                     if (!string.IsNullOrEmpty(firstNonOptionArg))
                     {
                         url = firstNonOptionArg;
-                        mainForm.UpdateURL(url);
-                        Logger.LogInfo("Program.Main", "URL設定", url);
+                        // フォームの初期化完了後にURLを設定
+                        mainForm.BeginInvoke(() => {
+                            mainForm.UpdateURL(url);
+                            Logger.LogInfo("Program.Main", "URL設定", url);
+                        });
                     }
                 }
 
