@@ -823,36 +823,6 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             };
             currentY += 34;
 
-            // アクセシビリティボタンは削除（機能はDisplayパネルに統合済み）
-            // var accessibilityButton = new Button
-            // {
-            //     Name = "btnAccessibility",
-            //     Text = "Accessibility Settings",
-            //     Location = new Point(6, currentY),
-            //     Size = new Size(200, 40),
-            //     Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            // };
-            // 
-            // var lblAccessibilityDesc = new Label
-            // {
-            //     Text = "フォーカス表示やキーボードナビゲーションの設定を行います",
-            //     Location = new Point(220, currentY + 10),
-            //     Size = new Size(400, 20),
-            //     Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
-            //     ForeColor = Color.Gray
-            // };
-            // currentY += 50;
-
-            // 背景色ボタンは削除（pbBackgroundColorのクリックで色ダイアログを表示）
-            // var backgroundColorButton = new Button
-            // {
-            //     Name = "btnBackgroundColor",
-            //     Text = "Change Background Color",
-            //     Location = new Point(6, currentY),
-            //     Size = new Size(200, 40),
-            //     Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            // };
-            // 背景色表示用PictureBox（クリックで色ダイアログを表示）
             var pbBackgroundColor = new PictureBox
             {
                 Name = "pbBackgroundColor",
@@ -901,6 +871,28 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             };
             currentY += 50;
 
+            // 背景グラデーション設定
+            var chkEnableBackgroundGradient = new CheckBox
+            {
+                Name = "chkEnableBackgroundGradient",
+                Text = "Enable Background Gradient",
+                TextAlign = ContentAlignment.MiddleLeft,
+                Location = new Point(6, currentY),
+                Size = new Size(200, 25),
+                Checked = settings.EnableBackgroundGradient,
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+            chkEnableBackgroundGradient.CheckedChanged += (s, e) => setModified(true);
+
+            var lblEnableBackgroundGradientDesc = new Label
+            {
+                Text = "メイン画面の背景に縦方向のグラデーションを適用します",
+                Location = new Point(220, currentY + 3),
+                Size = new Size(400, 23),
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                ForeColor = Color.Gray
+            };
+            currentY += 35;
             // 透明化設定チェックボックス
             var chkEnableTransparency = new CheckBox
             {
@@ -1057,29 +1049,6 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 ForeColor = Color.Gray
             };
             currentY += 40;
-
-            // 背景グラデーション設定
-            var chkEnableBackgroundGradient = new CheckBox
-            {
-                Name = "chkEnableBackgroundGradient",
-                Text = "Enable Background Gradient",
-                TextAlign = ContentAlignment.MiddleLeft,
-                Location = new Point(6, currentY),
-                Size = new Size(200, 25),
-                Checked = settings.EnableBackgroundGradient,
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            };
-            chkEnableBackgroundGradient.CheckedChanged += (s, e) => setModified(true);
-
-            var lblEnableBackgroundGradientDesc = new Label
-            {
-                Text = "メイン画面の背景に縦方向のグラデーションを適用します",
-                Location = new Point(220, currentY + 3),
-                Size = new Size(400, 23),
-                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
-                ForeColor = Color.Gray
-            };
-            currentY += 35;
 
             // === Display Effects ===
             // レイアウト変数の定義

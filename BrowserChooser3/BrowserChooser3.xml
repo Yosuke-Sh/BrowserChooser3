@@ -1527,6 +1527,9 @@
         <member name="F:BrowserChooser3.Classes.Settings.DefaultField.RoundedCornersRadius">
             <summary>角を丸くする半径</summary>
         </member>
+        <member name="F:BrowserChooser3.Classes.Settings.DefaultField.EnableBackgroundGradient">
+            <summary>背景グラデーション有効</summary>
+        </member>
         <member name="F:BrowserChooser3.Classes.Settings.Defaults">
             <summary>
             デフォルト値の辞書
@@ -1701,6 +1704,9 @@
         </member>
         <member name="P:BrowserChooser3.Classes.Settings.RoundedCornersRadius">
             <summary>角を丸くする半径（0で無効、1-50で有効）</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Settings.EnableBackgroundGradient">
+            <summary>背景グラデーション有効</summary>
         </member>
         <member name="P:BrowserChooser3.Classes.Settings.SafeMode">
             <summary>セーフモード（ファイルが読み込めない場合のみtrue - 保存を防止）</summary>
@@ -2738,6 +2744,11 @@
             <param name="radius">角の半径</param>
             <returns>角が丸い矩形のリージョン</returns>
         </member>
+        <member name="M:BrowserChooser3.Forms.MainForm.MainForm_Paint(System.Object,System.Windows.Forms.PaintEventArgs)">
+            <summary>
+            背景グラデーション描画イベント
+            </summary>
+        </member>
         <member name="M:BrowserChooser3.Forms.MainForm.MainForm_Resize(System.Object,System.EventArgs)">
             <summary>
             フォームサイズ変更時の処理
@@ -3015,11 +3026,6 @@
             自動オープンテキストを更新します（スペースキー対応版）
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Forms.MainForm.CreateBasicControls">
-            <summary>
-            基本コントロールを再作成
-            </summary>
-        </member>
         <member name="F:BrowserChooser3.Forms.MainForm.components">
             <summary>
             Required designer variable.
@@ -3237,11 +3243,6 @@
         <member name="M:BrowserChooser3.Forms.OptionsForm.SetupURLDragDrop">
             <summary>
             URLドラッグ&amp;ドロップ機能の設定
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.SetupCategoryManagement">
-            <summary>
-            カテゴリ管理機能の設定
             </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.OptionsForm.LoadCategories">

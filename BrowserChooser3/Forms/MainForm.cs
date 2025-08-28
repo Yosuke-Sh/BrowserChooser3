@@ -407,9 +407,9 @@ namespace BrowserChooser3.Forms
                     var rect = new Rectangle(0, 0, this.Width, this.Height);
                     using var brush = new LinearGradientBrush(rect, _settings.BackgroundColorValue, 
                         Color.FromArgb(255, 
-                            Math.Max(0, _settings.BackgroundColorValue.R - 30),
-                            Math.Max(0, _settings.BackgroundColorValue.G - 30),
-                            Math.Max(0, _settings.BackgroundColorValue.B - 30)), 
+                            Math.Max(0, _settings.BackgroundColorValue.R - 50),
+                            Math.Max(0, _settings.BackgroundColorValue.G - 50),
+                            Math.Max(0, _settings.BackgroundColorValue.B - 50)), 
                         LinearGradientMode.Vertical);
                     
                     e.Graphics.FillRectangle(brush, rect);
@@ -1074,7 +1074,7 @@ namespace BrowserChooser3.Forms
 
                 if (btnOptions != null)
                 {
-                    btnOptions.Location = new Point(ClientSize.Width - 30, 10);
+                    btnOptions.Location = new Point(ClientSize.Width - 35, 10);
                     btnOptions.ImageAlign = ContentAlignment.MiddleCenter;
                     btnOptions.Size = new Size(28, 28);
                     btnOptions.Anchor = AnchorStyles.Top | AnchorStyles.Right;
@@ -1851,139 +1851,6 @@ namespace BrowserChooser3.Forms
             {
                 var pauseStatus = tmrDelay?.Enabled == false ? "un" : "";
                 chkAutoOpen.Text = $"Open {_defaultBrowser.Name} in {_currentDelay} seconds. [Space: {pauseStatus}pause timer]";
-            }
-        }
-
-        /// <summary>
-        /// 基本コントロールを再作成
-        /// </summary>
-        private void CreateBasicControls()
-        {
-            Logger.LogInfo("MainForm.CreateBasicControls", "Start");
-            
-            try
-            {
-                // 設定ボタン
-                btnOptions = Controls.Find("btnOptions", true).FirstOrDefault() as Button;
-                if (btnOptions == null)
-                {
-                    btnOptions = new Button
-                    {
-                        Name = "btnOptions",
-                        Text = "Settings",
-                        Size = new Size(80, 25),
-                        Location = new Point(ClientSize.Width - 90, 5),
-                        Anchor = AnchorStyles.Top | AnchorStyles.Right
-                    };
-                    btnOptions.Click += (s, e) => OpenOptionsForm();
-                    Controls.Add(btnOptions);
-                }
-                
-                // キャンセルボタン
-                btnCancel = Controls.Find("btnCancel", true).FirstOrDefault() as Button;
-                if (btnCancel == null)
-                {
-                    btnCancel = new Button
-                    {
-                        Name = "btnCancel",
-                        Text = "Cancel",
-                        Size = new Size(80, 25),
-                        Location = new Point(ClientSize.Width - 90, ClientSize.Height - 30),
-                        Anchor = AnchorStyles.Bottom | AnchorStyles.Right
-                    };
-                    btnCancel.Click += (s, e) => Close();
-                    Controls.Add(btnCancel);
-                }
-                
-                // Auto Close チェックボックス
-                chkAutoClose = Controls.Find("chkAutoClose", true).FirstOrDefault() as CheckBox;
-                if (chkAutoClose == null)
-                {
-                    chkAutoClose = new CheckBox
-                    {
-                        Name = "chkAutoClose",
-                        Text = "Auto Close",
-                        Size = new Size(100, 20),
-                        Location = new Point(20, ClientSize.Height - 50),
-                        Anchor = AnchorStyles.Bottom | AnchorStyles.Left,
-                        Checked = true
-                    };
-                    Controls.Add(chkAutoClose);
-                }
-                
-                // Auto Open チェックボックス
-                chkAutoOpen = Controls.Find("chkAutoOpen", true).FirstOrDefault() as CheckBox;
-                if (chkAutoOpen == null)
-                {
-                    chkAutoOpen = new CheckBox
-                    {
-                        Name = "chkAutoOpen",
-                        Text = "Auto Open",
-                        Size = new Size(100, 20),
-                        Location = new Point(130, ClientSize.Height - 50),
-                        Anchor = AnchorStyles.Bottom | AnchorStyles.Left,
-                        Checked = false, // デフォルトは無効
-                        Visible = true   // 常に表示
-                    };
-                    Controls.Add(chkAutoOpen);
-                }
-                
-                // URL表示ラベル
-                _urlLabel = Controls.Find("urlLabel", true).FirstOrDefault() as Label;
-                if (_urlLabel == null)
-                {
-                    _urlLabel = new Label
-                    {
-                        Name = "urlLabel",
-                        Text = "",
-                        Size = new Size(ClientSize.Width - 40, 20),
-                        Location = new Point(20, 10),
-                        Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
-                        AutoSize = false,
-                        TextAlign = ContentAlignment.MiddleLeft,
-                        BackColor = Color.Transparent,
-                        ForeColor = Color.Black,
-                        Font = new Font("Segoe UI", 9F, FontStyle.Regular),
-                        Visible = true
-                    };
-                    Controls.Add(_urlLabel);
-                }
-
-                // URL表示テキストボックス
-                _urlTextBox = Controls.Find("txtURL", true).FirstOrDefault() as TextBox;
-                if (_urlTextBox == null)
-                {
-                    _urlTextBox = new TextBox
-                    {
-                        Name = "txtURL",
-                        Text = "",
-                        Size = new Size(ClientSize.Width - 40, 20),
-                        Location = new Point(20, 35),
-                        Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
-                        ReadOnly = true,
-                        BackColor = Color.White,
-                        BorderStyle = BorderStyle.FixedSingle,
-                        Font = new Font("Segoe UI", 9F, FontStyle.Regular),
-                        Visible = false
-                    };
-                    Controls.Add(_urlTextBox);
-                }
-                
-                // カウントダウンタイマー
-                if (tmrDelay == null)
-                {
-                    tmrDelay = new System.Windows.Forms.Timer
-                    {
-                        Interval = 1000
-                    };
-                    tmrDelay.Tick += TmrDelay_Tick;
-                }
-                
-                Logger.LogInfo("MainForm.CreateBasicControls", "End");
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("MainForm.CreateBasicControls", "基本コントロール作成エラー", ex.Message);
             }
         }
     }

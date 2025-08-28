@@ -203,23 +203,23 @@ namespace BrowserChooser3.Classes
             { DefaultField.RevealShortURL, false },
 
             { DefaultField.FocusBoxLineWidth, 1 },
-            { DefaultField.FocusBoxColor, Color.Transparent.ToArgb() },
+            { DefaultField.FocusBoxColor, Color.White.ToArgb() },
             { DefaultField.UserAgent, "Mozilla/5.0" },
             { DefaultField.DownloadDetectionFile, true },
-            { DefaultField.BackgroundColor, Color.FromArgb(128, 255, 255, 255).ToArgb() },
+            { DefaultField.BackgroundColor, Color.White.ToArgb() },
             { DefaultField.StartingPosition, AvailableStartingPositions.CenterScreen },
             { DefaultField.OffsetX, 0 },
             { DefaultField.OffsetY, 0 },
             { DefaultField.AllowStayOpen, false },
             { DefaultField.EnableLogging, true },
             { DefaultField.ExtractDLLs, false },
-            { DefaultField.LogLevel, 3 },
+            { DefaultField.LogLevel, 2 },
             { DefaultField.EnableTransparency, false },
-            { DefaultField.TransparencyColor, Color.Magenta.ToArgb() },
+            { DefaultField.TransparencyColor, Color.FromArgb(255, 255, 0, 255).ToArgb() },
             { DefaultField.Opacity, 0.8 },
             { DefaultField.HideTitleBar, false },
             { DefaultField.RoundedCornersRadius, 20 },
-            { DefaultField.EnableBackgroundGradient, false }
+            { DefaultField.EnableBackgroundGradient, true }
         };
 
         /// <summary>設定ファイル名</summary>
@@ -304,7 +304,7 @@ namespace BrowserChooser3.Classes
         public int FocusBoxLineWidth { get; set; } = 1;
         
         /// <summary>フォーカスボックス色</summary>
-        public int FocusBoxColor { get; set; } = Color.Transparent.ToArgb();
+        public int FocusBoxColor { get; set; } = Color.White.ToArgb();
 
         /// <summary>
         /// 視覚的フォーカス表示の有効/無効
@@ -323,7 +323,7 @@ namespace BrowserChooser3.Classes
         public bool DownloadDetectionFile { get; set; } = true;
         
         /// <summary>背景色</summary>
-        public int BackgroundColor { get; set; } = Color.FromArgb(128, 255, 255, 255).ToArgb();
+        public int BackgroundColor { get; set; } = Color.White.ToArgb();
         
         /// <summary>背景色（Color型、Browser Chooser 2互換）</summary>
         public Color BackgroundColorValue 
@@ -380,13 +380,13 @@ namespace BrowserChooser3.Classes
         public bool ExtractDLLs { get; set; } = false;
         
         /// <summary>ログレベル</summary>
-        public int LogLevel { get; set; } = 3;
+        public int LogLevel { get; set; } = 2;
 
         /// <summary>グリッド表示</summary>
         public bool ShowGrid { get; set; } = false;
 
         /// <summary>グリッド色</summary>
-        public int GridColor { get; set; } = Color.Gray.ToArgb();
+        public int GridColor { get; set; } = Color.FromArgb(255, 192, 192, 192).ToArgb();
 
         /// <summary>グリッド線幅</summary>
         public int GridLineWidth { get; set; } = 1;
@@ -421,7 +421,7 @@ namespace BrowserChooser3.Classes
         public bool EnableTransparency { get; set; } = false;
 
         /// <summary>透明化色</summary>
-        public int TransparencyColor { get; set; } = Color.Magenta.ToArgb();
+        public int TransparencyColor { get; set; } = Color.FromArgb(255, 255, 0, 255).ToArgb();
 
         /// <summary>透明度（0.01-1.0）</summary>
         public double Opacity { get; set; } = 0.8;
@@ -433,7 +433,7 @@ namespace BrowserChooser3.Classes
         public int RoundedCornersRadius { get; set; } = 20;
         
         /// <summary>背景グラデーション有効</summary>
-        public bool EnableBackgroundGradient { get; set; } = false;
+        public bool EnableBackgroundGradient { get; set; } = true;
 
 
 

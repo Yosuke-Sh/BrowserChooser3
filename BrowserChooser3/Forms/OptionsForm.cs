@@ -18,16 +18,12 @@ namespace BrowserChooser3.Forms
 
         // イベントハンドラークラス
         private OptionsFormFormHandlers _formHandlers;
-        private OptionsFormCategoryHandlers _categoryHandlers;
         private OptionsFormBrowserHandlers _browserHandlers;
         private OptionsFormProtocolHandlers _protocolHandlers;
-        // private OptionsFormFileTypeHandlers _fileTypeHandlers;
         private OptionsFormListHandlers _listHandlers;
         private OptionsFormDragDropHandlers _dragDropHandlers;
         private OptionsFormCheckBoxHandlers _checkBoxHandlers;
-        // private OptionsFormBackgroundHandlers _backgroundHandlers;
         private OptionsFormHelpHandlers _helpHandlers;
-        // private OptionsFormAccessibilityHandlers _accessibilityHandlers;
 
         // UIパネル作成クラス
         private OptionsFormPanels _panels;
@@ -56,7 +52,6 @@ namespace BrowserChooser3.Forms
 
             // イベントハンドラークラスの初期化
             _formHandlers = new OptionsFormFormHandlers(this, LoadSettingsToControls, SaveSettings, () => _isModified);
-            _categoryHandlers = new OptionsFormCategoryHandlers(this, (modified) => _isModified = modified, LoadCategories);
             _browserHandlers = new OptionsFormBrowserHandlers(this, _settings, _mBrowser, _mProtocols, null!, _imBrowserIcons, SetModified);
             _protocolHandlers = new OptionsFormProtocolHandlers(this, _mProtocols, _mBrowser, SetModified);
             _listHandlers = new OptionsFormListHandlers(this);
@@ -279,11 +274,6 @@ namespace BrowserChooser3.Forms
                 // メインボタンのイベントハンドラー設定
                 saveButton.Click += _formHandlers.SaveButton_Click;
                 helpButton.Click += _formHandlers.HelpButton_Click;
-                
-                // カテゴリ管理ボタンのイベントハンドラー設定
-                btnAddCategory.Click += _categoryHandlers.BtnAddCategory_Click;
-                btnEditCategory.Click += _categoryHandlers.BtnEditCategory_Click;
-                btnDeleteCategory.Click += _categoryHandlers.BtnDeleteCategory_Click;
                 
                 // TabControlのイベントハンドラー設定
                 tabSettings.SelectedIndexChanged += TabSettings_SelectedIndexChanged;
@@ -2050,32 +2040,6 @@ namespace BrowserChooser3.Forms
         }
 
         /// <summary>
-        /// カテゴリ管理機能の設定
-        /// </summary>
-        private void SetupCategoryManagement()
-        {
-            Logger.LogInfo("OptionsForm.SetupCategoryManagement", "カテゴリ管理機能設定開始");
-
-            try
-            {
-                // カテゴリ管理用のコントロールは Designer で定義済み
-                // イベントハンドラーの設定
-                btnAddCategory.Click += _categoryHandlers.BtnAddCategory_Click;
-                btnEditCategory.Click += _categoryHandlers.BtnEditCategory_Click;
-                btnDeleteCategory.Click += _categoryHandlers.BtnDeleteCategory_Click;
-
-                // カテゴリデータの読み込み
-                LoadCategories();
-
-                Logger.LogInfo("OptionsForm.SetupCategoryManagement", "カテゴリ管理機能設定完了");
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("OptionsForm.SetupCategoryManagement", "カテゴリ管理機能設定エラー", ex.Message);
-            }
-        }
-
-        /// <summary>
         /// カテゴリデータを読み込みます
         /// </summary>
         private void LoadCategories()
@@ -2103,11 +2067,6 @@ namespace BrowserChooser3.Forms
                     .Where(c => !string.IsNullOrEmpty(c))
                     .Distinct());
 
-                // ファイルタイプからカテゴリを収集（未実装のため削除）
-                // categories.AddRange(_mFileTypes.Values
-                //     .Select(f => f.Category)
-                //     .Where(c => !string.IsNullOrEmpty(c))
-                //     .Distinct());
 
                 // 重複を除去してソート
                 categories = categories.Distinct().OrderBy(c => c).ToList();
