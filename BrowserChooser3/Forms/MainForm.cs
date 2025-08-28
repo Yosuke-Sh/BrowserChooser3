@@ -30,8 +30,6 @@ namespace BrowserChooser3.Forms
         private Label? _countdownLabel;
         private bool _isPaused = false;
 
-        // Aero効果関連
-        private bool _hasAero = false;
         private string _currentText = string.Empty;
 
         // Browser Chooser 2互換のUI要素（デザイナーファイルで定義済み）
