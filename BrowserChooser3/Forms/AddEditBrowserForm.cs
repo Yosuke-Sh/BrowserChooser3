@@ -165,38 +165,45 @@ namespace BrowserChooser3.Forms
         private void InitializeComponent()
         {
             Text = "Add/Edit Browser";
-            Size = new Size(550, 430);
+            Size = new Size(600, 480);
             StartPosition = FormStartPosition.CenterParent;
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
             MinimizeBox = false;
+            
+            // Windows 11 風スタイル
+            Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            BackColor = Color.FromArgb(250, 250, 250);
 
             // 基本設定
             var lblName = new Label { Text = "Name:", Location = new Point(10, 20), AutoSize = true };
             var txtName = new TextBox { Name = "txtName", Location = new Point(120, 17), Size = new Size(300, 23) };
 
-            var lblTarget = new Label { Text = "Target:", Location = new Point(10, 50), AutoSize = true };
-            var txtTarget = new TextBox { Name = "txtTarget", Location = new Point(120, 47), Size = new Size(250, 23) };
-            var btnBrowse = new Button { Text = "Browse", Location = new Point(380, 46), Size = new Size(85, 28) };
+            // 行間 +5px（2行目以降）
+            var lblTarget = new Label { Text = "Target:", Location = new Point(10, 55), AutoSize = true };
+            var txtTarget = new TextBox { Name = "txtTarget", Location = new Point(120, 52), Size = new Size(250, 23) };
+            var btnBrowse = new Button { Text = "Browse", Location = new Point(380, 51), Size = new Size(85, 28) };
 
-            var lblArguments = new Label { Text = "Arguments:", Location = new Point(10, 80), AutoSize = true };
-            var txtArguments = new TextBox { Name = "txtArguments", Location = new Point(120, 77), Size = new Size(300, 23) };
+            var lblArguments = new Label { Text = "Arguments:", Location = new Point(10, 90), AutoSize = true };
+            var txtArguments = new TextBox { Name = "txtArguments", Location = new Point(120, 87), Size = new Size(300, 23) };
 
-            var lblHotkey = new Label { Text = "Hotkey:", Location = new Point(10, 110), AutoSize = true };
-            var txtHotkey = new TextBox { Name = "txtHotkey", Location = new Point(120, 107), Size = new Size(50, 23), MaxLength = 1 };
+            var lblHotkey = new Label { Text = "Hotkey:", Location = new Point(10, 120), AutoSize = true };
+            var txtHotkey = new TextBox { Name = "txtHotkey", Location = new Point(120, 117), Size = new Size(50, 23), MaxLength = 1 };
 
-            var lblCategory = new Label { Text = "Category:", Location = new Point(10, 140), AutoSize = true };
-            var txtCategory = new TextBox { Name = "txtCategory", Location = new Point(120, 137), Size = new Size(300, 23) };
+            var lblCategory = new Label { Text = "Category:", Location = new Point(10, 150), AutoSize = true };
+            var txtCategory = new TextBox { Name = "txtCategory", Location = new Point(120, 147), Size = new Size(300, 23) };
 
-            var lblRow = new Label { Text = "Row:", Location = new Point(10, 170), AutoSize = true };
-            var nudRow = new NumericUpDown { Name = "nudRow", Location = new Point(120, 167), Size = new Size(80, 23), Minimum = 0, Maximum = 100 };
+            var lblRow = new Label { Text = "Row:", Location = new Point(10, 180), AutoSize = true };
+            var nudRow = new NumericUpDown { Name = "nudRow", Location = new Point(120, 177), Size = new Size(80, 23), Minimum = 0, Maximum = 100 };
 
-            var lblCol = new Label { Text = "Column:", Location = new Point(220, 170), AutoSize = true };
-            var nudCol = new NumericUpDown { Name = "nudCol", Location = new Point(290, 167), Size = new Size(80, 23), Minimum = 0, Maximum = 100 };
+            var lblCol = new Label { Text = "Column:", Location = new Point(220, 180), AutoSize = true };
+            var nudCol = new NumericUpDown { Name = "nudCol", Location = new Point(300, 177), Size = new Size(80, 23), Minimum = 0, Maximum = 100 };
 
             // ボタン
-            var btnOK = new Button { Text = "OK", DialogResult = DialogResult.OK, Location = new Point(300, 350), Size = new Size(85, 28) };
-            var btnCancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, Location = new Point(395, 350), Size = new Size(85, 28) };
+            var btnOK = new Button { Text = "OK", DialogResult = DialogResult.OK, Location = new Point(300, 400), Size = new Size(90, 30) };
+            var btnCancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, Location = new Point(400, 400), Size = new Size(90, 30) };
+            btnOK.FlatStyle = FlatStyle.System;
+            btnCancel.FlatStyle = FlatStyle.System;
 
             // コントロールの追加
             Controls.AddRange(new Control[] 

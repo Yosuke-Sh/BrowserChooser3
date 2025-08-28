@@ -145,25 +145,31 @@ namespace BrowserChooser3.Forms
         private void InitializeComponent()
         {
             Text = "Add/Edit Auto URL";
-            Size = new Size(450, 250);
+            Size = new Size(500, 300);
             StartPosition = FormStartPosition.CenterParent;
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
             MinimizeBox = false;
+            
+            // Windows 11 風スタイル
+            Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            BackColor = Color.FromArgb(250, 250, 250);
 
             // 基本設定
             var lblURL = new Label { Text = "URL:", Location = new Point(10, 20), AutoSize = true };
-            var txtURL = new TextBox { Name = "txtURL", Location = new Point(120, 17), Size = new Size(300, 23) };
+            var txtURL = new TextBox { Name = "txtURL", Location = new Point(120, 17), Size = new Size(320, 23) };
 
-            var lblBrowser = new Label { Text = "Browser:", Location = new Point(10, 50), AutoSize = true };
-            var cmbBrowser = new ComboBox { Name = "cmbBrowser", Location = new Point(120, 47), Size = new Size(300, 23), DropDownStyle = ComboBoxStyle.DropDownList };
+            var lblBrowser = new Label { Text = "Browser:", Location = new Point(10, 55), AutoSize = true };
+            var cmbBrowser = new ComboBox { Name = "cmbBrowser", Location = new Point(120, 52), Size = new Size(320, 23), DropDownStyle = ComboBoxStyle.DropDownList };
 
-            var lblDelay = new Label { Text = "Delay (seconds):", Location = new Point(10, 80), AutoSize = true };
-            var txtDelay = new TextBox { Name = "txtDelay", Location = new Point(120, 77), Size = new Size(100, 23) };
+            var lblDelay = new Label { Text = "Delay (seconds):", Location = new Point(10, 90), AutoSize = true };
+            var txtDelay = new TextBox { Name = "txtDelay", Location = new Point(120, 87), Size = new Size(120, 23) };
 
             // ボタン
-            var btnOK = new Button { Text = "OK", DialogResult = DialogResult.OK, Location = new Point(250, 170), Size = new Size(75, 23) };
-            var btnCancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, Location = new Point(335, 170), Size = new Size(75, 23) };
+            var btnOK = new Button { Text = "OK", DialogResult = DialogResult.OK, Location = new Point(300, 220), Size = new Size(90, 30) };
+            var btnCancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, Location = new Point(395, 220), Size = new Size(90, 30) };
+            btnOK.FlatStyle = FlatStyle.System;
+            btnCancel.FlatStyle = FlatStyle.System;
 
             // コントロールの追加
             Controls.AddRange(new Control[] 

@@ -124,24 +124,30 @@ namespace BrowserChooser3.Forms
         private void InitializeComponent()
         {
             Text = "Add/Edit Protocol";
-            Size = new Size(400, 200);
+            Size = new Size(500, 250);
             StartPosition = FormStartPosition.CenterParent;
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
             MinimizeBox = false;
+            
+            // Windows 11 風スタイル
+            Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            BackColor = Color.FromArgb(250, 250, 250);
 
             // 基本設定
             var lblName = new Label { Text = "Name:", Location = new Point(10, 20), AutoSize = true };
-            var txtName = new TextBox { Name = "txtName", Location = new Point(120, 17), Size = new Size(250, 23) };
+            var txtName = new TextBox { Name = "txtName", Location = new Point(120, 17), Size = new Size(300, 23) };
 
-            var lblBrowser = new Label { Text = "Browser:", Location = new Point(10, 50), AutoSize = true };
-            var cmbBrowser = new ComboBox { Name = "cmbBrowser", Location = new Point(120, 47), Size = new Size(250, 23), DropDownStyle = ComboBoxStyle.DropDownList };
+            var lblBrowser = new Label { Text = "Browser:", Location = new Point(10, 55), AutoSize = true };
+            var cmbBrowser = new ComboBox { Name = "cmbBrowser", Location = new Point(120, 52), Size = new Size(300, 23), DropDownStyle = ComboBoxStyle.DropDownList };
 
-            var chkActive = new CheckBox { Name = "chkActive", Text = "Active", Location = new Point(120, 80), AutoSize = true, Checked = true };
+            var chkActive = new CheckBox { Name = "chkActive", Text = "Active", Location = new Point(120, 85), AutoSize = true, Checked = true };
 
             // ボタン
-            var btnOK = new Button { Text = "OK", DialogResult = DialogResult.OK, Location = new Point(200, 120), Size = new Size(75, 23) };
-            var btnCancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, Location = new Point(285, 120), Size = new Size(75, 23) };
+            var btnOK = new Button { Text = "OK", DialogResult = DialogResult.OK, Location = new Point(250, 170), Size = new Size(90, 30) };
+            var btnCancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, Location = new Point(350, 170), Size = new Size(90, 30) };
+            btnOK.FlatStyle = FlatStyle.System;
+            btnCancel.FlatStyle = FlatStyle.System;
 
             // コントロールの追加
             Controls.AddRange(new Control[] 
