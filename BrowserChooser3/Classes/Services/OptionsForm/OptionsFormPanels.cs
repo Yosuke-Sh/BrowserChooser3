@@ -1,6 +1,7 @@
 using BrowserChooser3.Classes.Models;
 using BrowserChooser3.Classes.Utilities;
 using BrowserChooser3.CustomControls;
+using BrowserChooser3.Classes.Services.BrowserServices;
 
 namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
 {
@@ -400,6 +401,304 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
 
             tabPage.Controls.Add(panel);
             return tabPage;
+        }
+
+        /// <summary>
+        /// Windows Defaultパネルの作成
+        /// </summary>
+        /// <param name="settings">設定オブジェクト</param>
+        /// <param name="setModified">変更フラグ設定アクション</param>
+        /// <returns>作成されたTabPage</returns>
+        public TabPage CreateDefaultBrowserPanel(
+            Settings settings,
+            Action<bool> setModified)
+        {
+            var tabPage = new TabPage("Windows Default");
+            tabPage.Name = "tabDefaultBrowser";
+            
+            var panel = new Panel
+            {
+                Dock = DockStyle.Fill,
+                Padding = new Padding(10)
+            };
+
+            // 現在のデフォルトブラウザ情報を取得
+            var defaultBrowserInfo = DefaultBrowserChecker.GetDefaultBrowser();
+            
+            // タイトルラベル
+            var titleLabel = new Label
+            {
+                Text = "Windows Default Browser Settings",
+                Font = new Font("Segoe UI", 12, FontStyle.Bold),
+                Location = new Point(10, 10),
+                AutoSize = true
+            };
+            panel.Controls.Add(titleLabel);
+
+            // 現在のデフォルトブラウザ情報表示
+            var currentBrowserLabel = new Label
+            {
+                Text = "Current Default Browser:",
+                Font = new Font("Segoe UI", 9, FontStyle.Bold),
+                Location = new Point(10, 50),
+                AutoSize = true
+            };
+            panel.Controls.Add(currentBrowserLabel);
+
+            var currentBrowserInfoLabel = new Label
+            {
+                Text = $"{defaultBrowserInfo.Name} ({defaultBrowserInfo.Path})",
+                Font = new Font("Segoe UI", 9),
+                Location = new Point(10, 70),
+                Size = new Size(400, 40),
+                AutoSize = false
+            };
+            panel.Controls.Add(currentBrowserInfoLabel);
+
+            // ブラウザ選択コンボボックス
+            var browserLabel = new Label
+            {
+                Text = "Select Browser to Set as Default:",
+                Font = new Font("Segoe UI", 9, FontStyle.Bold),
+                Location = new Point(10, 120),
+                AutoSize = true
+            };
+            panel.Controls.Add(browserLabel);
+
+            var browserComboBox = new ComboBox
+            {
+                Name = "cboDefaultBrowser",
+                Location = new Point(10, 140),
+                Size = new Size(300, 25),
+                DropDownStyle = ComboBoxStyle.DropDownList
+            };
+            panel.Controls.Add(browserComboBox);
+
+            // ブラウザリストを取得してコンボボックスに追加
+            var browsers = GetInstalledBrowsers();
+            foreach (var browser in browsers)
+            {
+                browserComboBox.Items.Add(browser);
+            }
+
+            // 現在のデフォルトブラウザを選択
+            var currentIndex = browserComboBox.Items.Cast<string>()
+                .ToList()
+                .FindIndex(b => b.Contains(defaultBrowserInfo.Name));
+            if (currentIndex >= 0)
+            {
+                browserComboBox.SelectedIndex = currentIndex;
+            }
+
+            // 設定ボタン
+            var setButton = new Button
+            {
+                Name = "btnSetDefaultBrowser",
+                Text = "Set as Default Browser",
+                Location = new Point(10, 180),
+                Size = new Size(150, 30)
+            };
+            setButton.Click += (sender, e) =>
+            {
+                try
+                {
+                    if (browserComboBox.SelectedItem != null)
+                    {
+                        var selectedBrowser = browserComboBox.SelectedItem.ToString();
+                        var browserPath = GetBrowserPath(selectedBrowser);
+                        
+                        if (!string.IsNullOrEmpty(browserPath))
+                        {
+                            var success = DefaultBrowserChecker.SetDefaultBrowser(browserPath);
+                            if (success)
+                            {
+                                MessageBox.Show(
+                                    $"Successfully set {selectedBrowser} as the default browser.",
+                                    "Success",
+                                    MessageBoxButtons.OK,
+                                    MessageBoxIcon.Information);
+                                
+                                // 設定を更新
+                                settings.DefaultBrowserGuid = Guid.NewGuid();
+                                setModified(true);
+                                
+                                // 情報を更新
+                                var newDefaultBrowser = DefaultBrowserChecker.GetDefaultBrowser();
+                                currentBrowserInfoLabel.Text = $"{newDefaultBrowser.Name} ({newDefaultBrowser.Path})";
+                            }
+                            else
+                            {
+                                MessageBox.Show(
+                                    $"Failed to set {selectedBrowser} as the default browser.",
+                                    "Error",
+                                    MessageBoxButtons.OK,
+                                    MessageBoxIcon.Error);
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show(
+                                $"Could not find the path for {selectedBrowser}.",
+                                "Error",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError("OptionsFormPanels.CreateDefaultBrowserPanel", "デフォルトブラウザ設定エラー", ex.Message);
+                    MessageBox.Show(
+                        $"Error setting default browser: {ex.Message}",
+                        "Error",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                }
+            };
+            panel.Controls.Add(setButton);
+
+            // リセットボタン
+            var resetButton = new Button
+            {
+                Name = "btnResetDefaultBrowser",
+                Text = "Reset to System Default",
+                Location = new Point(180, 180),
+                Size = new Size(150, 30)
+            };
+            resetButton.Click += (sender, e) =>
+            {
+                try
+                {
+                    var success = DefaultBrowserChecker.ResetDefaultBrowser();
+                    if (success)
+                    {
+                        MessageBox.Show(
+                            "Successfully reset to system default browser.",
+                            "Success",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
+                        
+                        // 設定を更新
+                        settings.DefaultBrowserGuid = Guid.Empty;
+                        setModified(true);
+                        
+                        // 情報を更新
+                        var newDefaultBrowser = DefaultBrowserChecker.GetDefaultBrowser();
+                        currentBrowserInfoLabel.Text = $"{newDefaultBrowser.Name} ({newDefaultBrowser.Path})";
+                        
+                        // コンボボックスを更新
+                        browserComboBox.Items.Clear();
+                        var updatedBrowsers = GetInstalledBrowsers();
+                        foreach (var browser in updatedBrowsers)
+                        {
+                            browserComboBox.Items.Add(browser);
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show(
+                            "Failed to reset to system default browser.",
+                            "Error",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError("OptionsFormPanels.CreateDefaultBrowserPanel", "デフォルトブラウザリセットエラー", ex.Message);
+                    MessageBox.Show(
+                        $"Error resetting default browser: {ex.Message}",
+                        "Error",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                }
+            };
+            panel.Controls.Add(resetButton);
+
+            // 注意事項
+            var noteLabel = new Label
+            {
+                Text = "Note: Setting the default browser may require administrator privileges on Windows 11.",
+                Font = new Font("Segoe UI", 8),
+                ForeColor = Color.Gray,
+                Location = new Point(10, 230),
+                Size = new Size(400, 40),
+                AutoSize = false
+            };
+            panel.Controls.Add(noteLabel);
+
+            tabPage.Controls.Add(panel);
+            return tabPage;
+        }
+        
+        /// <summary>
+        /// インストールされているブラウザのリストを取得
+        /// </summary>
+        /// <returns>ブラウザ名のリスト</returns>
+        private List<string> GetInstalledBrowsers()
+        {
+            var browsers = new List<string>();
+            
+            try
+            {
+                // 主要ブラウザの一般的なインストール場所をチェック
+                var browserPaths = new Dictionary<string, string>
+                {
+                    { "Google Chrome", @"C:\Program Files\Google\Chrome\Application\chrome.exe" },
+                    { "Google Chrome (x86)", @"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" },
+                    { "Microsoft Edge", @"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" },
+                    { "Firefox", @"C:\Program Files\Mozilla Firefox\firefox.exe" },
+                    { "Firefox (x86)", @"C:\Program Files (x86)\Mozilla Firefox\firefox.exe" },
+                    { "Internet Explorer", @"C:\Program Files\Internet Explorer\iexplore.exe" },
+                    { "Internet Explorer (x86)", @"C:\Program Files (x86)\Internet Explorer\iexplore.exe" },
+                    { "Opera", @"C:\Program Files\Opera\launcher.exe" },
+                    { "Opera (x86)", @"C:\Program Files (x86)\Opera\launcher.exe" },
+                    { "Brave", @"C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe" },
+                    { "Brave (x86)", @"C:\Program Files (x86)\BraveSoftware\Brave-Browser\Application\brave.exe" }
+                };
+
+                foreach (var browser in browserPaths)
+                {
+                    if (File.Exists(browser.Value))
+                    {
+                        browsers.Add(browser.Key);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("OptionsFormPanels.GetInstalledBrowsers", "ブラウザ検出エラー", ex.Message);
+            }
+
+            return browsers;
+        }
+        
+        /// <summary>
+        /// ブラウザ名からパスを取得
+        /// </summary>
+        /// <param name="browserName">ブラウザ名</param>
+        /// <returns>ブラウザのパス</returns>
+        private string GetBrowserPath(string? browserName)
+        {
+            if (string.IsNullOrEmpty(browserName))
+                return "";
+                
+            var browserPaths = new Dictionary<string, string>
+            {
+                { "Google Chrome", @"C:\Program Files\Google\Chrome\Application\chrome.exe" },
+                { "Google Chrome (x86)", @"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" },
+                { "Microsoft Edge", @"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" },
+                { "Firefox", @"C:\Program Files\Mozilla Firefox\firefox.exe" },
+                { "Firefox (x86)", @"C:\Program Files (x86)\Mozilla Firefox\firefox.exe" },
+                { "Internet Explorer", @"C:\Program Files\Internet Explorer\iexplore.exe" },
+                { "Internet Explorer (x86)", @"C:\Program Files (x86)\Internet Explorer\iexplore.exe" },
+                { "Opera", @"C:\Program Files\Opera\launcher.exe" },
+                { "Opera (x86)", @"C:\Program Files (x86)\Opera\launcher.exe" },
+                { "Brave", @"C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe" },
+                { "Brave (x86)", @"C:\Program Files (x86)\BraveSoftware\Brave-Browser\Application\brave.exe" }
+            };
+
+            return browserPaths.TryGetValue(browserName, out var path) ? path : "";
         }
 
         /// <summary>

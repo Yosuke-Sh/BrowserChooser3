@@ -134,7 +134,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 }
 
                 // ヘルプファイルまたはオンラインヘルプを開く
-                var helpUrl = "https://github.com/your-repo/browser-chooser/wiki";
+                var helpUrl = "https://github.com/Yosuke-Sh/BrowserChooser3";
                 System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
                 {
                     FileName = helpUrl,

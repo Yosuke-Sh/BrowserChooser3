@@ -468,6 +468,35 @@
             <param name="protocol">プロトコル</param>
             <returns>成功した場合はtrue</returns>
         </member>
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.DefaultBrowserChecker.IsWindows11">
+            <summary>
+            Windows 11かどうかを判定
+            </summary>
+            <returns>Windows 11の場合はtrue</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.DefaultBrowserChecker.SetDefaultBrowserWindows11(System.String,System.String)">
+            <summary>
+            Windows 11用のデフォルトブラウザ設定
+            </summary>
+            <param name="browserPath">ブラウザのパス</param>
+            <param name="protocol">プロトコル</param>
+            <returns>成功した場合はtrue</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.DefaultBrowserChecker.SetDefaultBrowserLegacy(System.String,System.String)">
+            <summary>
+            従来のデフォルトブラウザ設定
+            </summary>
+            <param name="browserPath">ブラウザのパス</param>
+            <param name="protocol">プロトコル</param>
+            <returns>成功した場合はtrue</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.DefaultBrowserChecker.GetAppIdFromPath(System.String)">
+            <summary>
+            パスからAppIdを取得
+            </summary>
+            <param name="browserPath">ブラウザのパス</param>
+            <returns>AppId</returns>
+        </member>
         <member name="M:BrowserChooser3.Classes.Services.BrowserServices.DefaultBrowserChecker.ResetDefaultBrowser(System.String)">
             <summary>
             デフォルトブラウザの設定をリセットします
@@ -1048,6 +1077,27 @@
             <param name="mBrowser">ブラウザ辞書</param>
             <param name="setModified">変更フラグ設定アクション</param>
             <returns>作成されたTabPage</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormPanels.CreateDefaultBrowserPanel(BrowserChooser3.Classes.Settings,System.Action{System.Boolean})">
+            <summary>
+            Windows Defaultパネルの作成
+            </summary>
+            <param name="settings">設定オブジェクト</param>
+            <param name="setModified">変更フラグ設定アクション</param>
+            <returns>作成されたTabPage</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormPanels.GetInstalledBrowsers">
+            <summary>
+            インストールされているブラウザのリストを取得
+            </summary>
+            <returns>ブラウザ名のリスト</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormPanels.GetBrowserPath(System.String)">
+            <summary>
+            ブラウザ名からパスを取得
+            </summary>
+            <param name="browserName">ブラウザ名</param>
+            <returns>ブラウザのパス</returns>
         </member>
         <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormPanels.CreateFileTypesPanel(BrowserChooser3.Classes.Settings,System.Collections.Generic.Dictionary{System.Int32,BrowserChooser3.Classes.Models.FileType},System.Collections.Generic.Dictionary{System.Int32,BrowserChooser3.Classes.Models.Browser},System.Action{System.Boolean})">
             <summary>

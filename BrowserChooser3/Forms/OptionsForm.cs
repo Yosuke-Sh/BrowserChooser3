@@ -136,6 +136,7 @@ namespace BrowserChooser3.Forms
                 var autoUrlsTab = _panels.CreateAutoURLsPanel(_settings, _mURLs, _mBrowser, SetModified, RebuildAutoURLs);
                 var protocolsTab = _panels.CreateProtocolsPanel(_settings, _mProtocols, _mBrowser, SetModified);
                 var fileTypesTab = _panels.CreateFileTypesPanel(_settings, _mFileTypes, _mBrowser, SetModified);
+                var defaultBrowserTab = _panels.CreateDefaultBrowserPanel(_settings, SetModified);
                 var categoriesTab = _panels.CreateCategoriesPanel();
                 var displayTab = _panels.CreateDisplayPanel(_settings, SetModified);
                 var gridTab = _panels.CreateGridPanel(_settings, SetModified);
@@ -147,6 +148,7 @@ namespace BrowserChooser3.Forms
                 tabSettings.TabPages.Add(autoUrlsTab);
                 tabSettings.TabPages.Add(protocolsTab);
                 tabSettings.TabPages.Add(fileTypesTab);
+                tabSettings.TabPages.Add(defaultBrowserTab);
                 tabSettings.TabPages.Add(categoriesTab);
                 tabSettings.TabPages.Add(displayTab);
                 tabSettings.TabPages.Add(gridTab);
