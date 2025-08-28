@@ -21,7 +21,7 @@ namespace BrowserChooser3.Forms
         private OptionsFormCategoryHandlers _categoryHandlers;
         private OptionsFormBrowserHandlers _browserHandlers;
         private OptionsFormProtocolHandlers _protocolHandlers;
-        private OptionsFormFileTypeHandlers _fileTypeHandlers;
+        // private OptionsFormFileTypeHandlers _fileTypeHandlers;
         private OptionsFormListHandlers _listHandlers;
         private OptionsFormDragDropHandlers _dragDropHandlers;
         private OptionsFormCheckBoxHandlers _checkBoxHandlers;
@@ -36,13 +36,14 @@ namespace BrowserChooser3.Forms
         private Dictionary<int, Browser> _mBrowser = new();
         private SortedDictionary<int, URL> _mURLs = new();
         private Dictionary<int, Protocol> _mProtocols = new();
-        private Dictionary<int, FileType> _mFileTypes = new();
+        // FileTypes機能は未実装のため削除
+        // private Dictionary<int, FileType> _mFileTypes = new();
         private bool _mProtocolsAreDirty = false;
-        private bool _mFileTypesAreDirty = false;
+        // private bool _mFileTypesAreDirty = false;
         private int _mLastBrowserID = 0;
         private int _mLastURLID = 0;
         private int _mLastProtocolID = 0;
-        private int _mLastFileTypeID = 0;
+        // private int _mLastFileTypeID = 0;
 
         // ImageList（Browser Chooser 2互換）
         private ImageList? _imBrowserIcons => _panels?.GetBrowserIcons();
@@ -61,11 +62,11 @@ namespace BrowserChooser3.Forms
             // イベントハンドラークラスの初期化
             _formHandlers = new OptionsFormFormHandlers(this, LoadSettingsToControls, SaveSettings, () => _isModified);
             _categoryHandlers = new OptionsFormCategoryHandlers(this, (modified) => _isModified = modified, LoadCategories);
-            _browserHandlers = new OptionsFormBrowserHandlers(this, _settings, _mBrowser, _mProtocols, _mFileTypes, _imBrowserIcons, SetModified);
+            _browserHandlers = new OptionsFormBrowserHandlers(this, _settings, _mBrowser, _mProtocols, null, _imBrowserIcons, SetModified);
             _protocolHandlers = new OptionsFormProtocolHandlers(this, _mProtocols, _mBrowser, SetModified);
-            _fileTypeHandlers = new OptionsFormFileTypeHandlers(this, _mFileTypes, _mBrowser, SetModified);
+            // _fileTypeHandlers = new OptionsFormFileTypeHandlers(this, _mFileTypes, _mBrowser, SetModified);
             _listHandlers = new OptionsFormListHandlers(this);
-            _dragDropHandlers = new OptionsFormDragDropHandlers(this, _settings, _mBrowser, _mProtocols, _mFileTypes, SetModified, RebuildAutoURLs);
+            _dragDropHandlers = new OptionsFormDragDropHandlers(this, _settings, _mBrowser, _mProtocols, null, SetModified, RebuildAutoURLs);
             _checkBoxHandlers = new OptionsFormCheckBoxHandlers(this, _settings, SetModified);
             _backgroundHandlers = new OptionsFormBackgroundHandlers(this, _settings, SetModified);
             _helpHandlers = new OptionsFormHelpHandlers(this);
@@ -114,8 +115,9 @@ namespace BrowserChooser3.Forms
 
                 var associationsNode = new TreeNode("Associations");
                 associationsNode.Nodes.Add(new TreeNode("Protocols") { Tag = "tabProtocols" });
-                associationsNode.Nodes.Add(new TreeNode("File Types") { Tag = "tabFileTypes" });
-                associationsNode.Nodes.Add(new TreeNode("Categories") { Tag = "tabCategories" });
+                // FileTypesとCategories機能は未実装のため削除
+                // associationsNode.Nodes.Add(new TreeNode("File Types") { Tag = "tabFileTypes" });
+                // associationsNode.Nodes.Add(new TreeNode("Categories") { Tag = "tabCategories" });
 
                 var settingsNode = new TreeNode("Settings");
                 settingsNode.Nodes.Add(new TreeNode("Display") { Tag = "tabDisplay" });
@@ -132,12 +134,12 @@ namespace BrowserChooser3.Forms
                 treeSettings.Nodes.Add(defaultBrowserNode);
 
                 // タブページの作成
-                var browsersTab = _panels.CreateBrowsersPanel(_settings, _mBrowser, _mProtocols, _mFileTypes, _mLastBrowserID, _imBrowserIcons, SetModified, RebuildAutoURLs);
+                var browsersTab = _panels.CreateBrowsersPanel(_settings, _mBrowser, _mProtocols, null, _mLastBrowserID, _imBrowserIcons, SetModified, RebuildAutoURLs);
                 var autoUrlsTab = _panels.CreateAutoURLsPanel(_settings, _mURLs, _mBrowser, SetModified, RebuildAutoURLs);
                 var protocolsTab = _panels.CreateProtocolsPanel(_settings, _mProtocols, _mBrowser, SetModified);
-                var fileTypesTab = _panels.CreateFileTypesPanel(_settings, _mFileTypes, _mBrowser, SetModified);
+                // var fileTypesTab = _panels.CreateFileTypesPanel(_settings, _mFileTypes, _mBrowser, SetModified);
                 var defaultBrowserTab = _panels.CreateDefaultBrowserPanel(_settings, SetModified);
-                var categoriesTab = _panels.CreateCategoriesPanel();
+                // var categoriesTab = _panels.CreateCategoriesPanel();
                 var displayTab = _panels.CreateDisplayPanel(_settings, SetModified);
                 var gridTab = _panels.CreateGridPanel(_settings, SetModified);
                 var privacyTab = _panels.CreatePrivacyPanel(_settings, SetModified);
@@ -147,9 +149,9 @@ namespace BrowserChooser3.Forms
                 tabSettings.TabPages.Add(browsersTab);
                 tabSettings.TabPages.Add(autoUrlsTab);
                 tabSettings.TabPages.Add(protocolsTab);
-                tabSettings.TabPages.Add(fileTypesTab);
+                // tabSettings.TabPages.Add(fileTypesTab);
                 tabSettings.TabPages.Add(defaultBrowserTab);
-                tabSettings.TabPages.Add(categoriesTab);
+                // tabSettings.TabPages.Add(categoriesTab);
                 tabSettings.TabPages.Add(displayTab);
                 tabSettings.TabPages.Add(gridTab);
                 tabSettings.TabPages.Add(privacyTab);
@@ -267,7 +269,7 @@ namespace BrowserChooser3.Forms
                 SetupProtocolsPanelButtons();
                 
                 // ファイルタイプパネルのボタンイベントハンドラー設定
-                SetupFileTypesPanelButtons();
+                // SetupFileTypesPanelButtons();
                 
                 // Displayパネルのボタンイベントハンドラー設定
                 SetupDisplayPanelButtons();
@@ -537,39 +539,40 @@ namespace BrowserChooser3.Forms
         /// <summary>
         /// ファイルタイプパネルのボタンイベントハンドラー設定
         /// </summary>
-        private void SetupFileTypesPanelButtons()
-        {
-            try
-            {
-                var fileTypesTab = tabSettings.TabPages["tabFileTypes"];
-                if (fileTypesTab != null)
-                {
-                    var addButton = fileTypesTab.Controls.Find("btnAdd", true).FirstOrDefault() as Button;
-                    var editButton = fileTypesTab.Controls.Find("btnEdit", true).FirstOrDefault() as Button;
-                    var deleteButton = fileTypesTab.Controls.Find("btnDelete", true).FirstOrDefault() as Button;
-                    var listView = fileTypesTab.Controls.Find("lstFileTypes", true).FirstOrDefault() as ListView;
-
-                    if (addButton != null) addButton.Click += _fileTypeHandlers.AddFileType_Click;
-                    if (editButton != null) editButton.Click += _fileTypeHandlers.EditFileType_Click;
-                    if (deleteButton != null) deleteButton.Click += _fileTypeHandlers.DeleteFileType_Click;
-                    
-                    // ListViewの選択変更イベントを設定
-                    if (listView != null)
-                    {
-                        listView.SelectedIndexChanged += (sender, e) =>
-                        {
-                            var hasSelection = listView.SelectedItems.Count > 0;
-                            if (editButton != null) editButton.Enabled = hasSelection;
-                            if (deleteButton != null) deleteButton.Enabled = hasSelection;
-                        };
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("OptionsForm.SetupFileTypesPanelButtons", "ファイルタイプパネルボタン設定エラー", ex.Message);
-            }
-        }
+        // FileTypes機能は未実装のため削除
+        // private void SetupFileTypesPanelButtons()
+        // {
+        //     try
+        //     {
+        //         var fileTypesTab = tabSettings.TabPages["tabFileTypes"];
+        //         if (fileTypesTab != null)
+        //         {
+        //         var addButton = fileTypesTab.Controls.Find("btnAdd", true).FirstOrDefault() as Button;
+        //         var editButton = fileTypesTab.Controls.Find("btnEdit", true).FirstOrDefault() as Button;
+        //         var deleteButton = fileTypesTab.Controls.Find("btnDelete", true).FirstOrDefault() as Button;
+        //         var listView = fileTypesTab.Controls.Find("lstFileTypes", true).FirstOrDefault() as ListView;
+        // 
+        //         if (addButton != null) addButton.Click += _fileTypeHandlers.AddFileType_Click;
+        //         if (editButton != null) editButton.Click += _fileTypeHandlers.EditFileType_Click;
+        //         if (deleteButton != null) deleteButton.Click += _fileTypeHandlers.DeleteFileType_Click;
+        //         
+        //         // ListViewの選択変更イベントを設定
+        //         if (listView != null)
+        //         {
+        //         listView.SelectedIndexChanged += (sender, e) =>
+        //         {
+        //         var hasSelection = listView.SelectedItems.Count > 0;
+        //         if (editButton != null) editButton.Enabled = hasSelection;
+        //         if (deleteButton != null) deleteButton.Enabled = hasSelection;
+        //         };
+        //         }
+        //         }
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         Logger.LogError("OptionsForm.SetupFileTypesPanelButtons", "ファイルタイプパネルボタン設定エラー", ex.Message);
+        //     }
+        // }
 
         /// <summary>
         /// Displayパネルのボタンイベントハンドラー設定
@@ -736,12 +739,12 @@ namespace BrowserChooser3.Forms
                 case "tabProtocols":
                     ResetProtocolsPanelToDefaults(currentTab);
                     break;
-                case "tabFileTypes":
-                    ResetFileTypesPanelToDefaults(currentTab);
-                    break;
-                case "tabCategories":
-                    ResetCategoriesPanelToDefaults(currentTab);
-                    break;
+                // case "tabFileTypes":
+                //     ResetFileTypesPanelToDefaults(currentTab);
+                //     break;
+                // case "tabCategories":
+                //     ResetCategoriesPanelToDefaults(currentTab);
+                //     break;
                 default:
                     Logger.LogInfo("OptionsForm.ResetCurrentPanelToDefaults", $"未対応のタブ: {currentTab.Name}");
                     break;
@@ -1014,35 +1017,36 @@ namespace BrowserChooser3.Forms
             }
         }
 
-        /// <summary>
-        /// ファイルタイプパネルの設定をデフォルト値にリセットし、UIに反映します
-        /// </summary>
-        private void ResetFileTypesPanelToDefaults(TabPage tabPage)
-        {
-            // ファイルタイプリストをクリア
-            _settings.FileTypes.Clear();
-            _mFileTypes.Clear();
-
-            // UIに反映
-            var listView = tabPage.Controls.Find("lstFileTypes", true).FirstOrDefault() as ListView;
-            if (listView != null)
-            {
-                listView.Items.Clear();
-            }
-        }
-
-        /// <summary>
-        /// カテゴリパネルの設定をデフォルト値にリセットし、UIに反映します
-        /// </summary>
-        private void ResetCategoriesPanelToDefaults(TabPage tabPage)
-        {
-            // カテゴリリストをクリア
-            var listView = tabPage.Controls.Find("lstCategories", true).FirstOrDefault() as ListView;
-            if (listView != null)
-            {
-                listView.Items.Clear();
-            }
-        }
+        // FileTypesとCategories機能は未実装のため削除
+        // /// <summary>
+        // /// ファイルタイプパネルの設定をデフォルト値にリセットし、UIに反映します
+        // /// </summary>
+        // private void ResetFileTypesPanelToDefaults(TabPage tabPage)
+        // {
+        //     // ファイルタイプリストをクリア
+        //     _settings.FileTypes.Clear();
+        //     _mFileTypes.Clear();
+        // 
+        //     // UIに反映
+        //     var listView = tabPage.Controls.Find("lstFileTypes", true).FirstOrDefault() as ListView;
+        //     if (listView != null)
+        //     {
+        //         listView.Items.Clear();
+        //     }
+        // }
+        // 
+        // /// <summary>
+        // /// カテゴリパネルの設定をデフォルト値にリセットし、UIに反映します
+        // /// </summary>
+        // private void ResetCategoriesPanelToDefaults(TabPage tabPage)
+        // {
+        //     // カテゴリリストをクリア
+        //     var listView = tabPage.Controls.Find("lstCategories", true).FirstOrDefault() as ListView;
+        //     if (listView != null)
+        //     {
+        //         listView.Items.Clear();
+        //     }
+        // }
 
 
 
@@ -1106,13 +1110,13 @@ namespace BrowserChooser3.Forms
                 }
                 _mLastProtocolID = _mProtocols.Count - 1;
 
-                // ファイルタイプ設定の読み込み
-                _mFileTypes.Clear();
-                foreach (var fileType in _settings.FileTypes)
-                {
-                    _mFileTypes.Add(_mFileTypes.Count, fileType.Clone());
-                }
-                _mLastFileTypeID = _mFileTypes.Count - 1;
+                // ファイルタイプ設定の読み込み（未実装のため削除）
+                // _mFileTypes.Clear();
+                // foreach (var fileType in _settings.FileTypes)
+                // {
+                //     _mFileTypes.Add(_mFileTypes.Count, fileType.Clone());
+                // }
+                // _mLastFileTypeID = _mFileTypes.Count - 1;
 
                 // ブラウザ設定の読み込み
                 _mBrowser.Clear();
@@ -1513,19 +1517,19 @@ namespace BrowserChooser3.Forms
                     _settings.Protocols.Add(protocol.Value.Clone());
                 }
 
-                // ファイルタイプ設定の保存
-                _settings.FileTypes = new List<FileType>();
-                foreach (var fileType in _mFileTypes)
-                {
-                    _settings.FileTypes.Add(fileType.Value.Clone());
-                }
+                // ファイルタイプ設定の保存（未実装のため削除）
+                // _settings.FileTypes = new List<FileType>();
+                // foreach (var fileType in _mFileTypes)
+                // {
+                //     _settings.FileTypes.Add(fileType.Value.Clone());
+                // }
 
                 // プロトコル・ファイルタイプが変更された場合の確認
-                if (_mFileTypesAreDirty || _mProtocolsAreDirty)
-                {
-                    var result = MessageBox.Show("You have changed the accepted Protocols or Filetypes.",
-                        "Protocols/Filetypes Updated", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
+                // if (_mFileTypesAreDirty || _mProtocolsAreDirty)
+                // {
+                //     var result = MessageBox.Show("You have changed the accepted Protocols or Filetypes.",
+                //         "Protocols/Filetypes Updated", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                // }
 
                 // 各コントロールから設定値を取得して保存
                 // 基本設定
@@ -1828,7 +1832,7 @@ namespace BrowserChooser3.Forms
                                     Category = "Default"
                                 };
 
-                                if (addEditForm.AddBrowser(_mBrowser, _mProtocols, _mFileTypes, false,
+                                if (addEditForm.AddBrowser(_mBrowser, _mProtocols, null, false,
                                     new Point(_settings.GridWidth, _settings.GridHeight), newBrowser))
                                 {
                                     var browser = addEditForm.GetData();
@@ -1960,11 +1964,11 @@ namespace BrowserChooser3.Forms
                     .Where(c => !string.IsNullOrEmpty(c))
                     .Distinct());
 
-                // ファイルタイプからカテゴリを収集
-                categories.AddRange(_mFileTypes.Values
-                    .Select(f => f.Category)
-                    .Where(c => !string.IsNullOrEmpty(c))
-                    .Distinct());
+                // ファイルタイプからカテゴリを収集（未実装のため削除）
+                // categories.AddRange(_mFileTypes.Values
+                //     .Select(f => f.Category)
+                //     .Where(c => !string.IsNullOrEmpty(c))
+                //     .Distinct());
 
                 // 重複を除去してソート
                 categories = categories.Distinct().OrderBy(c => c).ToList();
@@ -1993,7 +1997,7 @@ namespace BrowserChooser3.Forms
             count += _mBrowser.Values.Count(b => b.Category == category);
             count += _mURLs.Values.Count(u => u.Category == category);
             count += _mProtocols.Values.Count(p => p.Category == category);
-            count += _mFileTypes.Values.Count(f => f.Category == category);
+            // count += _mFileTypes.Values.Count(f => f.Category == category);
             return count;
         }
 

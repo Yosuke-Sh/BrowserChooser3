@@ -388,15 +388,15 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
         }
 
         /// <summary>
-        /// ブラウザのプロトコルとファイルタイプを取得
+        /// ブラウザのプロトコルを取得（FileTypesは未実装のため削除）
         /// </summary>
         public string GetBrowserProtocolsAndFileTypes(Browser browser)
         {
             var protocols = _mProtocols.Values.Where(p => p.BrowserGuid == browser.Guid).Select(p => p.Name);
-            var fileTypes = _mFileTypes.Values.Where(f => f.BrowserGuid == browser.Guid).Select(f => f.Name);
+            // var fileTypes = _mFileTypes.Values.Where(f => f.BrowserGuid == browser.Guid).Select(f => f.Name);
             
-            var allItems = protocols.Concat(fileTypes);
-            return string.Join(", ", allItems);
+            // var allItems = protocols.Concat(fileTypes);
+            return string.Join(", ", protocols);
         }
     }
 }

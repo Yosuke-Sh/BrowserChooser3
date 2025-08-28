@@ -729,7 +729,7 @@
         </member>
         <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormBrowserHandlers.GetBrowserProtocolsAndFileTypes(BrowserChooser3.Classes.Models.Browser)">
             <summary>
-            ブラウザのプロトコルとファイルタイプを取得
+            ブラウザのプロトコルを取得（FileTypesは未実装のため削除）
             </summary>
         </member>
         <member name="T:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormCategoryHandlers">
@@ -1622,9 +1622,6 @@
         <member name="P:BrowserChooser3.Classes.Settings.Protocols">
             <summary>プロトコルリスト</summary>
         </member>
-        <member name="P:BrowserChooser3.Classes.Settings.FileTypes">
-            <summary>ファイルタイプリスト</summary>
-        </member>
         <member name="P:BrowserChooser3.Classes.Settings.URLs">
             <summary>URLリスト</summary>
         </member>
@@ -1872,12 +1869,6 @@
         <member name="M:BrowserChooser3.Classes.Settings.CreateDefaultProtocols(BrowserChooser3.Classes.Settings)">
             <summary>
             デフォルトプロトコルを作成します
-            </summary>
-            <param name="settings">設定オブジェクト</param>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Settings.CreateDefaultFileTypes(BrowserChooser3.Classes.Settings)">
-            <summary>
-            デフォルトファイルタイプを作成します
             </summary>
             <param name="settings">設定オブジェクト</param>
         </member>
@@ -3279,11 +3270,6 @@
             プロトコルパネルのボタンイベントハンドラー設定
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.SetupFileTypesPanelButtons">
-            <summary>
-            ファイルタイプパネルのボタンイベントハンドラー設定
-            </summary>
-        </member>
         <member name="M:BrowserChooser3.Forms.OptionsForm.SetupDisplayPanelButtons">
             <summary>
             Displayパネルのボタンイベントハンドラー設定
@@ -3347,16 +3333,6 @@
         <member name="M:BrowserChooser3.Forms.OptionsForm.ResetProtocolsPanelToDefaults(System.Windows.Forms.TabPage)">
             <summary>
             プロトコルパネルの設定をデフォルト値にリセットし、UIに反映します
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.ResetFileTypesPanelToDefaults(System.Windows.Forms.TabPage)">
-            <summary>
-            ファイルタイプパネルの設定をデフォルト値にリセットし、UIに反映します
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.ResetCategoriesPanelToDefaults(System.Windows.Forms.TabPage)">
-            <summary>
-            カテゴリパネルの設定をデフォルト値にリセットし、UIに反映します
             </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.OptionsForm.TreeSettings_AfterSelect(System.Object,System.Windows.Forms.TreeViewEventArgs)">

@@ -1302,6 +1302,71 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             panel.Controls.Add(pbFocusBoxColor);
             panel.Controls.Add(lblFocusBoxColorDesc);
 
+            // === URL Display Settings ===
+            currentY += focusItemSpacing + 10;
+
+            var lblURLTitle = new Label
+            {
+                Text = "URL Display Settings",
+                Location = new Point(6, currentY),
+                Size = new Size(200, 25),
+                Font = new Font("Segoe UI", 10.0f, FontStyle.Bold, GraphicsUnit.Point, 0),
+                ForeColor = Color.DarkBlue
+            };
+            currentY += 34;
+
+            // ShowURL設定
+            var chkShowURLs = new CheckBox
+            {
+                Name = "chkShowURLs",
+                Text = "Show URLs in User Interface",
+                TextAlign = ContentAlignment.MiddleLeft,
+                Location = new Point(6, currentY),
+                Size = new Size(240, 25),
+                Checked = settings.ShowURL,
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+            chkShowURLs.CheckedChanged += (s, e) => setModified(true);
+
+            var lblShowURLsDesc = new Label
+            {
+                Text = "メイン画面でURLを表示します",
+                Location = new Point(250, currentY + 3),
+                Size = new Size(400, 23),
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                ForeColor = Color.Gray
+            };
+            currentY += 35;
+
+            // RevealShortURL設定
+            var chkRevealShortURLs = new CheckBox
+            {
+                Name = "chkRevealShortURLs",
+                Text = "Reveal Shortened URLs",
+                TextAlign = ContentAlignment.MiddleLeft,
+                Location = new Point(6, currentY),
+                Size = new Size(240, 25),
+                Checked = settings.RevealShortURL,
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+            chkRevealShortURLs.CheckedChanged += (s, e) => setModified(true);
+
+            var lblRevealShortURLsDesc = new Label
+            {
+                Text = "短縮URLを展開して表示します",
+                Location = new Point(250, currentY + 3),
+                Size = new Size(400, 23),
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                ForeColor = Color.Gray
+            };
+
+            // 新しいコントロールを追加
+            panel.Controls.Add(lblURLTitle);
+            panel.Controls.Add(chkShowURLs);
+            panel.Controls.Add(lblShowURLsDesc);
+            panel.Controls.Add(chkRevealShortURLs);
+            panel.Controls.Add(lblRevealShortURLsDesc);
+
             tabPage.Controls.Add(panel);
             return tabPage;
         }

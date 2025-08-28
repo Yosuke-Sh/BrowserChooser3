@@ -21,6 +21,7 @@ namespace BrowserChooser3.Forms
         /// URL表示ラベル
         /// </summary>
         private Label? _urlLabel;
+        private TextBox? _urlTextBox;
         
 
         private System.Windows.Forms.Timer? _countdownTimer;
@@ -975,17 +976,40 @@ namespace BrowserChooser3.Forms
         {
             try
             {
-                if (_urlLabel != null && !string.IsNullOrEmpty(_currentUrl))
+                if (!string.IsNullOrEmpty(_currentUrl))
                 {
                     // URLが長すぎる場合は省略表示
                     var displayUrl = _currentUrl.Length > 100 ? _currentUrl.Substring(0, 97) + "..." : _currentUrl;
-                    _urlLabel.Text = displayUrl;
-                    _urlLabel.Visible = true;
+                    
+                    // URLラベルの更新
+                    if (_urlLabel != null)
+                    {
+                        _urlLabel.Text = displayUrl;
+                        _urlLabel.Visible = _settings?.ShowURL == true;
+                    }
+                    
+                    // URLテキストボックスの更新
+                    if (_urlTextBox != null)
+                    {
+                        _urlTextBox.Text = _currentUrl;
+                        _urlTextBox.Visible = _settings?.ShowURL == true;
+                    }
                 }
-                else if (_urlLabel != null)
+                else
                 {
-                    _urlLabel.Text = "";
-                    _urlLabel.Visible = false;
+                    // URLラベルの更新
+                    if (_urlLabel != null)
+                    {
+                        _urlLabel.Text = "";
+                        _urlLabel.Visible = false;
+                    }
+                    
+                    // URLテキストボックスの更新
+                    if (_urlTextBox != null)
+                    {
+                        _urlTextBox.Text = "";
+                        _urlTextBox.Visible = false;
+                    }
                 }
             }
             catch (Exception ex)
@@ -1886,6 +1910,26 @@ namespace BrowserChooser3.Forms
                         Visible = true
                     };
                     Controls.Add(_urlLabel);
+                }
+
+                // URL表示テキストボックス
+                _urlTextBox = Controls.Find("txtURL", true).FirstOrDefault() as TextBox;
+                if (_urlTextBox == null)
+                {
+                    _urlTextBox = new TextBox
+                    {
+                        Name = "txtURL",
+                        Text = "",
+                        Size = new Size(ClientSize.Width - 40, 20),
+                        Location = new Point(20, 35),
+                        Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
+                        ReadOnly = true,
+                        BackColor = Color.White,
+                        BorderStyle = BorderStyle.FixedSingle,
+                        Font = new Font("Segoe UI", 9F, FontStyle.Regular),
+                        Visible = false
+                    };
+                    Controls.Add(_urlTextBox);
                 }
                 
                 // カウントダウンタイマー

@@ -240,7 +240,8 @@ namespace BrowserChooser3.Classes
         
         
         /// <summary>ファイルタイプリスト</summary>
-        public List<FileType> FileTypes { get; set; } = new();
+        // FileTypes機能は未実装のため削除
+        // public List<FileType> FileTypes { get; set; } = new();
         
         /// <summary>URLリスト</summary>
         public List<URL> URLs { get; set; } = new();
@@ -734,11 +735,12 @@ namespace BrowserChooser3.Classes
                 CreateDefaultProtocols(settings);
             }
 
-            if (settings.FileTypes == null || settings.FileTypes.Count == 0)
-            {
-                settings.FileTypes = new List<FileType>();
-                CreateDefaultFileTypes(settings);
-            }
+            // FileTypes機能は未実装のため削除
+            // if (settings.FileTypes == null || settings.FileTypes.Count == 0)
+            // {
+            //     settings.FileTypes = new List<FileType>();
+            //     CreateDefaultFileTypes(settings);
+            // }
 
             // ブラウザのGUID生成と位置調整
             foreach (var browser in settings.Browsers)
@@ -840,19 +842,20 @@ namespace BrowserChooser3.Classes
         /// デフォルトファイルタイプを作成します
         /// </summary>
         /// <param name="settings">設定オブジェクト</param>
-        private static void CreateDefaultFileTypes(Settings settings)
-        {
-            var browserGuids = settings.Browsers.Select(b => b.Guid).ToList();
-            var defaultCategories = new List<string> { "Default" };
-
-            settings.FileTypes.AddRange(new[]
-            {
-                new FileType("XHTML", "xhtml", browserGuids, defaultCategories),
-                new FileType("XHT", "xht", browserGuids, defaultCategories),
-                new FileType("SHTML", "shtml", browserGuids, defaultCategories),
-                new FileType("HTML", "html", browserGuids, defaultCategories),
-                new FileType("HTM", "htm", browserGuids, defaultCategories)
-            });
-        }
+        // FileTypes機能は未実装のため削除
+        // private static void CreateDefaultFileTypes(Settings settings)
+        // {
+        //     var browserGuids = settings.Browsers.Select(b => b.Guid).ToList();
+        //     var defaultCategories = new List<string> { "Default" };
+        // 
+        //     settings.FileTypes.AddRange(new[]
+        //     {
+        //         new FileType("XHTML", "xhtml", browserGuids, defaultCategories),
+        //         new FileType("XHT", "xht", browserGuids, defaultCategories),
+        //         new FileType("SHTML", "shtml", browserGuids, defaultCategories),
+        //         new FileType("HTML", "html", browserGuids, defaultCategories),
+        //         new FileType("HTM", "htm", browserGuids, defaultCategories)
+        //     });
+        // }
     }
 }

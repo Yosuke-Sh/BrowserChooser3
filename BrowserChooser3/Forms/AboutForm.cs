@@ -394,7 +394,7 @@ namespace BrowserChooser3.Forms
                 diagnostics.AppendLine($"Logging Enabled: {Settings.Current.EnableLogging}");
                 diagnostics.AppendLine($"Browser Count: {Settings.Current.Browsers.Count}");
                 diagnostics.AppendLine($"Protocol Count: {Settings.Current.Protocols.Count}");
-                diagnostics.AppendLine($"File Type Count: {Settings.Current.FileTypes.Count}");
+                // diagnostics.AppendLine($"File Type Count: {Settings.Current.FileTypes.Count}");
                 
                 lblDiagnostics.Text = diagnostics.ToString();
                 
