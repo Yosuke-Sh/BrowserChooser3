@@ -159,15 +159,15 @@ namespace BrowserChooser3.Forms
             var lblURL = new Label { Text = "URL:", Location = new Point(10, 20), AutoSize = true };
             var txtURL = new TextBox { Name = "txtURL", Location = new Point(120, 17), Size = new Size(320, 23) };
 
-            var lblBrowser = new Label { Text = "Browser:", Location = new Point(10, 55), AutoSize = true };
-            var cmbBrowser = new ComboBox { Name = "cmbBrowser", Location = new Point(120, 52), Size = new Size(320, 23), DropDownStyle = ComboBoxStyle.DropDownList };
+            var lblBrowser = new Label { Text = "Browser:", Location = new Point(10, 60), AutoSize = true };
+            var cmbBrowser = new ComboBox { Name = "cmbBrowser", Location = new Point(120, 57), Size = new Size(320, 23), DropDownStyle = ComboBoxStyle.DropDownList };
 
-            var lblDelay = new Label { Text = "Delay (seconds):", Location = new Point(10, 90), AutoSize = true };
-            var txtDelay = new TextBox { Name = "txtDelay", Location = new Point(120, 87), Size = new Size(120, 23) };
+            var lblDelay = new Label { Text = "Delay (seconds):", Location = new Point(10, 100), AutoSize = true };
+            var txtDelay = new TextBox { Name = "txtDelay", Location = new Point(120, 97), Size = new Size(120, 23) };
 
             // ボタン
-            var btnOK = new Button { Text = "OK", DialogResult = DialogResult.OK, Location = new Point(300, 220), Size = new Size(90, 30) };
-            var btnCancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, Location = new Point(395, 220), Size = new Size(90, 30) };
+            var btnOK = new Button { Text = "OK", DialogResult = DialogResult.OK, Location = new Point(300, 170), Size = new Size(90, 30) };
+            var btnCancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, Location = new Point(395, 170), Size = new Size(90, 30) };
             btnOK.FlatStyle = FlatStyle.System;
             btnCancel.FlatStyle = FlatStyle.System;
 
