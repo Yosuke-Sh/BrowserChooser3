@@ -221,6 +221,12 @@ namespace BrowserChooser3.Forms
             
             // サイズの設定（動的サイズ変更対応）
             MinimumSize = new Size(600, 300);  // 最小サイズを設定
+            
+            // 背景グラデーション設定
+            if (_settings?.EnableBackgroundGradient == true)
+            {
+                this.Paint += MainForm_Paint;
+            }
             ClientSize = new Size(600, 220);   // 初期サイズ
             
             // サイズ変更イベントの設定
@@ -387,6 +393,32 @@ namespace BrowserChooser3.Forms
             path.AddArc(x, height - radius * 2, radius * 2, radius * 2, 90, 90); // 左下
             path.CloseFigure();
             return new Region(path);
+        }
+
+        /// <summary>
+        /// 背景グラデーション描画イベント
+        /// </summary>
+        private void MainForm_Paint(object? sender, PaintEventArgs e)
+        {
+            if (_settings?.EnableBackgroundGradient == true)
+            {
+                try
+                {
+                    var rect = new Rectangle(0, 0, this.Width, this.Height);
+                    using var brush = new LinearGradientBrush(rect, _settings.BackgroundColorValue, 
+                        Color.FromArgb(255, 
+                            Math.Max(0, _settings.BackgroundColorValue.R - 30),
+                            Math.Max(0, _settings.BackgroundColorValue.G - 30),
+                            Math.Max(0, _settings.BackgroundColorValue.B - 30)), 
+                        LinearGradientMode.Vertical);
+                    
+                    e.Graphics.FillRectangle(brush, rect);
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError("MainForm.MainForm_Paint", "背景グラデーション描画エラー", ex.Message);
+                }
+            }
         }
 
         /// <summary>

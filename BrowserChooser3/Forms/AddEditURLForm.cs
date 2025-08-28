@@ -145,7 +145,7 @@ namespace BrowserChooser3.Forms
         private void InitializeComponent()
         {
             Text = "Add/Edit Auto URL";
-            Size = new Size(500, 300);
+            Size = new Size(550, 300);
             StartPosition = FormStartPosition.CenterParent;
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
@@ -153,7 +153,6 @@ namespace BrowserChooser3.Forms
             
             // Windows 11 風スタイル
             Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
-            BackColor = Color.FromArgb(250, 250, 250);
 
             // 基本設定
             var lblURL = new Label { Text = "URL:", Location = new Point(10, 20), AutoSize = true };
@@ -163,7 +162,7 @@ namespace BrowserChooser3.Forms
             var cmbBrowser = new ComboBox { Name = "cmbBrowser", Location = new Point(120, 57), Size = new Size(320, 23), DropDownStyle = ComboBoxStyle.DropDownList };
 
             var lblDelay = new Label { Text = "Delay (seconds):", Location = new Point(10, 100), AutoSize = true };
-            var txtDelay = new TextBox { Name = "txtDelay", Location = new Point(120, 97), Size = new Size(120, 23) };
+            var txtDelay = new TextBox { Name = "txtDelay", Location = new Point(200, 97), Size = new Size(120, 23) };
 
             // ボタン
             var btnOK = new Button { Text = "OK", DialogResult = DialogResult.OK, Location = new Point(300, 170), Size = new Size(90, 30) };
@@ -187,12 +186,14 @@ namespace BrowserChooser3.Forms
                 if (string.IsNullOrWhiteSpace(txtURL.Text))
                 {
                     MessageBox.Show("URLを入力してください。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtURL.Focus();
                     return;
                 }
 
                 if (cmbBrowser.SelectedItem == null)
                 {
                     MessageBox.Show("ブラウザを選択してください。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    cmbBrowser.Focus();
                     return;
                 }
 

@@ -132,7 +132,6 @@ namespace BrowserChooser3.Forms
             
             // Windows 11 風スタイル
             Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
-            BackColor = Color.FromArgb(250, 250, 250);
 
             // 基本設定
             var lblName = new Label { Text = "Name:", Location = new Point(10, 20), AutoSize = true };
@@ -141,11 +140,11 @@ namespace BrowserChooser3.Forms
             var lblBrowser = new Label { Text = "Browser:", Location = new Point(10, 60), AutoSize = true };
             var cmbBrowser = new ComboBox { Name = "cmbBrowser", Location = new Point(120, 57), Size = new Size(300, 23), DropDownStyle = ComboBoxStyle.DropDownList };
 
-            var chkActive = new CheckBox { Name = "chkActive", Text = "Active", Location = new Point(120, 90), AutoSize = true, Checked = true };
+            var chkActive = new CheckBox { Name = "chkActive", Text = "Active", Location = new Point(120, 95), AutoSize = true, Checked = true };
 
             // ボタン
-            var btnOK = new Button { Text = "OK", DialogResult = DialogResult.OK, Location = new Point(250, 120), Size = new Size(90, 30) };
-            var btnCancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, Location = new Point(350, 120), Size = new Size(90, 30) };
+            var btnOK = new Button { Text = "OK", DialogResult = DialogResult.OK, Location = new Point(250, 130), Size = new Size(90, 30) };
+            var btnCancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, Location = new Point(350, 130), Size = new Size(90, 30) };
             btnOK.FlatStyle = FlatStyle.System;
             btnCancel.FlatStyle = FlatStyle.System;
 
@@ -165,12 +164,14 @@ namespace BrowserChooser3.Forms
                 if (string.IsNullOrWhiteSpace(txtName.Text))
                 {
                     MessageBox.Show("プロトコル名を入力してください。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtName.Focus();
                     return;
                 }
 
                 if (cmbBrowser.SelectedItem == null)
                 {
                     MessageBox.Show("ブラウザを選択してください。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    cmbBrowser.Focus();
                     return;
                 }
 

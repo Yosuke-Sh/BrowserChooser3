@@ -173,7 +173,6 @@ namespace BrowserChooser3.Forms
             
             // Windows 11 風スタイル
             Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
-            BackColor = Color.FromArgb(250, 250, 250);
 
             // 基本設定
             var lblName = new Label { Text = "Name:", Location = new Point(10, 20), AutoSize = true };
@@ -182,7 +181,7 @@ namespace BrowserChooser3.Forms
             // 行間 +10px（2行目以降）
             var lblTarget = new Label { Text = "Target:", Location = new Point(10, 60), AutoSize = true };
             var txtTarget = new TextBox { Name = "txtTarget", Location = new Point(120, 57), Size = new Size(250, 23) };
-            var btnBrowse = new Button { Text = "Browse", Location = new Point(380, 56), Size = new Size(85, 28) };
+            var btnBrowse = new Button { Text = "Browse", Location = new Point(380, 56), Size = new Size(85, 32) };
 
             var lblArguments = new Label { Text = "Arguments:", Location = new Point(10, 100), AutoSize = true };
             var txtArguments = new TextBox { Name = "txtArguments", Location = new Point(120, 97), Size = new Size(300, 23) };
@@ -260,12 +259,14 @@ namespace BrowserChooser3.Forms
                 if (string.IsNullOrWhiteSpace(txtName.Text))
                 {
                     MessageBox.Show("ブラウザ名を入力してください。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtName.Focus();
                     return;
                 }
 
                 if (string.IsNullOrWhiteSpace(txtTarget.Text))
                 {
                     MessageBox.Show("実行ファイルパスを入力してください。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtTarget.Focus();
                     return;
                 }
 

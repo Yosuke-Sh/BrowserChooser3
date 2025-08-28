@@ -173,7 +173,10 @@ namespace BrowserChooser3.Classes
             HideTitleBar,
             
             /// <summary>角を丸くする半径</summary>
-            RoundedCornersRadius
+            RoundedCornersRadius,
+            
+            /// <summary>背景グラデーション有効</summary>
+            EnableBackgroundGradient
         }
 
         /// <summary>
@@ -215,7 +218,8 @@ namespace BrowserChooser3.Classes
             { DefaultField.TransparencyColor, Color.Magenta.ToArgb() },
             { DefaultField.Opacity, 0.8 },
             { DefaultField.HideTitleBar, false },
-            { DefaultField.RoundedCornersRadius, 20 }
+            { DefaultField.RoundedCornersRadius, 20 },
+            { DefaultField.EnableBackgroundGradient, false }
         };
 
         /// <summary>設定ファイル名</summary>
@@ -427,6 +431,9 @@ namespace BrowserChooser3.Classes
 
         /// <summary>角を丸くする半径（0で無効、1-50で有効）</summary>
         public int RoundedCornersRadius { get; set; } = 20;
+        
+        /// <summary>背景グラデーション有効</summary>
+        public bool EnableBackgroundGradient { get; set; } = false;
 
 
 

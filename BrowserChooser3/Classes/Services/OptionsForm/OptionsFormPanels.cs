@@ -1058,6 +1058,29 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             };
             currentY += 40;
 
+            // 背景グラデーション設定
+            var chkEnableBackgroundGradient = new CheckBox
+            {
+                Name = "chkEnableBackgroundGradient",
+                Text = "Enable Background Gradient",
+                TextAlign = ContentAlignment.MiddleLeft,
+                Location = new Point(6, currentY),
+                Size = new Size(200, 25),
+                Checked = settings.EnableBackgroundGradient,
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+            chkEnableBackgroundGradient.CheckedChanged += (s, e) => setModified(true);
+
+            var lblEnableBackgroundGradientDesc = new Label
+            {
+                Text = "メイン画面の背景に縦方向のグラデーションを適用します",
+                Location = new Point(220, currentY + 3),
+                Size = new Size(400, 23),
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                ForeColor = Color.Gray
+            };
+            currentY += 35;
+
             // === Display Effects ===
             // レイアウト変数の定義
             const int displayBaseX = 6;           // 基本X位置
@@ -1291,6 +1314,8 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             panel.Controls.Add(lblRoundedCorners);
             panel.Controls.Add(nudRoundedCorners);
             panel.Controls.Add(lblRoundedCornersDesc);
+            panel.Controls.Add(chkEnableBackgroundGradient);
+            panel.Controls.Add(lblEnableBackgroundGradientDesc);
             
             panel.Controls.Add(lblEffectsTitle);
             panel.Controls.Add(chkUseAccessibleRendering);

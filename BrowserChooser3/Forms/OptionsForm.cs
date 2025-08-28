@@ -827,6 +827,7 @@ namespace BrowserChooser3.Forms
             _settings.HideTitleBar = (bool)_settings.Defaults[Settings.DefaultField.HideTitleBar];
             _settings.Opacity = (double)_settings.Defaults[Settings.DefaultField.Opacity];
             _settings.RoundedCornersRadius = (int)_settings.Defaults[Settings.DefaultField.RoundedCornersRadius];
+            _settings.EnableBackgroundGradient = (bool)_settings.Defaults[Settings.DefaultField.EnableBackgroundGradient];
             _settings.ShowFocus = (bool)_settings.Defaults[Settings.DefaultField.ShowFocus];
             _settings.ShowURL = (bool)_settings.Defaults[Settings.DefaultField.ShowURL];
             _settings.RevealShortURL = (bool)_settings.Defaults[Settings.DefaultField.RevealShortURL];
@@ -849,6 +850,9 @@ namespace BrowserChooser3.Forms
 
             var nudRoundedCorners = tabPage.Controls.Find("nudRoundedCorners", true).FirstOrDefault() as NumericUpDown;
             if (nudRoundedCorners != null) nudRoundedCorners.Value = _settings.RoundedCornersRadius;
+
+            var chkEnableBackgroundGradient = tabPage.Controls.Find("chkEnableBackgroundGradient", true).FirstOrDefault() as CheckBox;
+            if (chkEnableBackgroundGradient != null) chkEnableBackgroundGradient.Checked = _settings.EnableBackgroundGradient;
 
             var chkShowFocus = tabPage.Controls.Find("chkShowFocus", true).FirstOrDefault() as CheckBox;
             if (chkShowFocus != null) chkShowFocus.Checked = _settings.ShowFocus;
@@ -1474,6 +1478,9 @@ namespace BrowserChooser3.Forms
                 var nudRoundedCorners = Controls.Find("nudRoundedCorners", true).FirstOrDefault() as NumericUpDown;
                 if (nudRoundedCorners != null) nudRoundedCorners.Value = _settings.RoundedCornersRadius;
 
+                var chkEnableBackgroundGradient = Controls.Find("chkEnableBackgroundGradient", true).FirstOrDefault() as CheckBox;
+                if (chkEnableBackgroundGradient != null) chkEnableBackgroundGradient.Checked = _settings.EnableBackgroundGradient;
+
                 // ショートカット設定
                 var txtOptionsShortcut = Controls.Find("txtOptionsShortcut", true).FirstOrDefault() as TextBox;
                 if (txtOptionsShortcut != null && _settings.OptionsShortcut != char.MinValue)
@@ -1834,6 +1841,9 @@ namespace BrowserChooser3.Forms
 
                 var nudRoundedCorners = Controls.Find("nudRoundedCorners", true).FirstOrDefault() as NumericUpDown;
                 if (nudRoundedCorners != null) _settings.RoundedCornersRadius = (int)nudRoundedCorners.Value;
+
+                var chkEnableBackgroundGradient = Controls.Find("chkEnableBackgroundGradient", true).FirstOrDefault() as CheckBox;
+                if (chkEnableBackgroundGradient != null) _settings.EnableBackgroundGradient = chkEnableBackgroundGradient.Checked;
 
                 // ショートカット設定
                 var txtOptionsShortcut = Controls.Find("txtOptionsShortcut", true).FirstOrDefault() as TextBox;
