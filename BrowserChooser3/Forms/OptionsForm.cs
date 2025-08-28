@@ -1458,10 +1458,6 @@ namespace BrowserChooser3.Forms
                 var pbFocusBoxColor = Controls.Find("pbFocusBoxColor", true).FirstOrDefault() as PictureBox;
                 if (pbFocusBoxColor != null) pbFocusBoxColor.BackColor = Color.FromArgb(_settings.FocusBoxColor);
 
-                // 背景色設定
-                var pbBackgroundColorLoad = Controls.Find("pbBackgroundColor", true).FirstOrDefault() as PictureBox;
-                if (pbBackgroundColorLoad != null) pbBackgroundColorLoad.BackColor = _settings.BackgroundColorValue;
-
                 // 透明化設定
                 var chkEnableTransparency = Controls.Find("chkEnableTransparency", true).FirstOrDefault() as CheckBox;
                 if (chkEnableTransparency != null) chkEnableTransparency.Checked = _settings.EnableTransparency;
