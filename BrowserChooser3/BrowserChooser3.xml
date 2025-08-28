@@ -2749,6 +2749,11 @@
             背景グラデーション描画イベント
             </summary>
         </member>
+        <member name="M:BrowserChooser3.Forms.MainForm.MainForm_Load(System.Object,System.EventArgs)">
+            <summary>
+            フォームLoadイベントの処理
+            </summary>
+        </member>
         <member name="M:BrowserChooser3.Forms.MainForm.MainForm_Resize(System.Object,System.EventArgs)">
             <summary>
             フォームサイズ変更時の処理
@@ -2810,6 +2815,11 @@
         <member name="M:BrowserChooser3.Forms.MainForm.LaunchBrowser(BrowserChooser3.Classes.Models.Browser,System.String)">
             <summary>
             ブラウザを起動
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.MainForm.SetInitialURL(System.String)">
+            <summary>
+            初期URLを設定（Loadイベントで使用）
             </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.MainForm.UpdateURL(System.String)">

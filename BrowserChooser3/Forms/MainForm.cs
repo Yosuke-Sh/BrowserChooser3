@@ -16,6 +16,7 @@ namespace BrowserChooser3.Forms
         private Settings? _settings;
         private List<Browser>? _browsers;
         private string _currentUrl = string.Empty;
+        private string _initialUrl = string.Empty;
         
         /// <summary>
         /// URL表示用テキストボックス
@@ -95,6 +96,9 @@ namespace BrowserChooser3.Forms
                 
                 // フォームリサイズイベントの設定
                 Resize += MainForm_Resize;
+                
+                // フォームLoadイベントの設定
+                Load += MainForm_Load;
                 
                 // AutoCloseとAutoOpenの初期化
                 InitializeAutoCloseAndAutoOpen();
@@ -425,6 +429,30 @@ namespace BrowserChooser3.Forms
                 {
                     Logger.LogError("MainForm.MainForm_Paint", "背景グラデーション描画エラー", ex.Message);
                 }
+            }
+        }
+
+        /// <summary>
+        /// フォームLoadイベントの処理
+        /// </summary>
+        private void MainForm_Load(object? sender, EventArgs e)
+        {
+            try
+            {
+                Logger.LogInfo("MainForm.MainForm_Load", "フォームLoad開始");
+                
+                // 初期URLが設定されている場合は更新
+                if (!string.IsNullOrEmpty(_initialUrl))
+                {
+                    UpdateURL(_initialUrl);
+                    Logger.LogInfo("MainForm.MainForm_Load", "初期URL更新完了", _initialUrl);
+                }
+                
+                Logger.LogInfo("MainForm.MainForm_Load", "フォームLoad完了");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("MainForm.MainForm_Load", "フォームLoad処理エラー", ex.Message);
             }
         }
 
@@ -976,6 +1004,15 @@ namespace BrowserChooser3.Forms
             System.Diagnostics.Process.Start(startInfo);
             
             Logger.LogInfo("MainForm.LaunchBrowser", "End", browser.Name);
+        }
+
+        /// <summary>
+        /// 初期URLを設定（Loadイベントで使用）
+        /// </summary>
+        public void SetInitialURL(string url)
+        {
+            _initialUrl = url;
+            Logger.LogInfo("MainForm.SetInitialURL", "初期URL設定", url);
         }
 
         /// <summary>
