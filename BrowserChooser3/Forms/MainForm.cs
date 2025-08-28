@@ -1042,7 +1042,7 @@ namespace BrowserChooser3.Forms
 
                 if (btnOptions != null)
                 {
-                    btnOptions.Location = new Point(ClientSize.Width - 35, 15);
+                    btnOptions.Location = new Point(ClientSize.Width - 30, 10);
                     btnOptions.ImageAlign = ContentAlignment.MiddleCenter;
                     btnOptions.Size = new Size(28, 28);
                     btnOptions.Anchor = AnchorStyles.Top | AnchorStyles.Right;
@@ -1065,7 +1065,7 @@ namespace BrowserChooser3.Forms
                 }
                 if (btnCancel != null)
                 {
-                    btnCancel.Location = new Point(ClientSize.Width - 35, 113); // btnCopyToClipboardAndCloseの下
+                    btnCancel.Location = new Point(ClientSize.Width - 35, 120); // btnCopyToClipboardAndCloseの下
                     btnCancel.ImageAlign = ContentAlignment.MiddleCenter;
                     btnCancel.Size = new Size(28, 28);
                     btnCancel.Anchor = AnchorStyles.Top | AnchorStyles.Right;
@@ -1080,7 +1080,7 @@ namespace BrowserChooser3.Forms
                 if (chkAutoOpen != null)
                 {
                     chkAutoOpen.Location = new Point(20, ClientSize.Height - 50);
-                    chkAutoOpen.Size = new Size(450, 22);
+                    chkAutoOpen.Size = new Size(450, 24);
                 }
 
                 // 遅延タイマーの設定
