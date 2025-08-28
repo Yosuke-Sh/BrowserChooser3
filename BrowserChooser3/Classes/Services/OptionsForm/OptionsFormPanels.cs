@@ -2,6 +2,7 @@ using BrowserChooser3.Classes.Models;
 using BrowserChooser3.Classes.Utilities;
 using BrowserChooser3.CustomControls;
 using BrowserChooser3.Classes.Services.BrowserServices;
+using BrowserChooser3.Forms;
 
 namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
 {
@@ -278,6 +279,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
 
             var moveUpButton = new Button
             {
+                Name = "btnMoveUp",
                 Text = "Move Up",
                 Location = new Point(6, 144),
                 Size = new Size(85, 40),
@@ -287,6 +289,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
 
             var moveDownButton = new Button
             {
+                Name = "btnMoveDown",
                 Text = "Move Down",
                 Location = new Point(6, 188),
                 Size = new Size(85, 40),
@@ -381,23 +384,11 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 Enabled = false
             };
 
-            var selectDefaultButton = new Button
-            {
-                Text = "Select Default App",
-                Location = new Point(6, 144),
-                Size = new Size(85, 40),
-                Font = new Font("Segoe UI", 9.5f, FontStyle.Regular, GraphicsUnit.Point, 0),
-                Enabled = false
-            };
-
-
-
             // コントロールの追加
             panel.Controls.Add(listView);
             panel.Controls.Add(addButton);
             panel.Controls.Add(editButton);
             panel.Controls.Add(deleteButton);
-            panel.Controls.Add(selectDefaultButton);
 
             tabPage.Controls.Add(panel);
             return tabPage;
@@ -774,23 +765,11 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 Enabled = false
             };
 
-            var selectDefaultButton = new Button
-            {
-                Text = "Select Default App",
-                Location = new Point(6, 144),
-                Size = new Size(85, 40),
-                Font = new Font("Segoe UI", 9.5f, FontStyle.Regular, GraphicsUnit.Point, 0),
-                Enabled = false
-            };
-
-
-
             // コントロールの追加
             panel.Controls.Add(listView);
             panel.Controls.Add(addButton);
             panel.Controls.Add(editButton);
             panel.Controls.Add(deleteButton);
-            panel.Controls.Add(selectDefaultButton);
 
             tabPage.Controls.Add(panel);
             return tabPage;
@@ -844,48 +823,78 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             };
             currentY += 34;
 
-            // アクセシビリティボタン
-            var accessibilityButton = new Button
-            {
-                Name = "btnAccessibility",
-                Text = "Accessibility Settings",
-                Location = new Point(6, currentY),
-                Size = new Size(200, 40),
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            };
+            // アクセシビリティボタンは削除（機能はDisplayパネルに統合済み）
+            // var accessibilityButton = new Button
+            // {
+            //     Name = "btnAccessibility",
+            //     Text = "Accessibility Settings",
+            //     Location = new Point(6, currentY),
+            //     Size = new Size(200, 40),
+            //     Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            // };
+            // 
+            // var lblAccessibilityDesc = new Label
+            // {
+            //     Text = "フォーカス表示やキーボードナビゲーションの設定を行います",
+            //     Location = new Point(220, currentY + 10),
+            //     Size = new Size(400, 20),
+            //     Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+            //     ForeColor = Color.Gray
+            // };
+            // currentY += 50;
 
-            var lblAccessibilityDesc = new Label
-            {
-                Text = "フォーカス表示やキーボードナビゲーションの設定を行います",
-                Location = new Point(220, currentY + 10),
-                Size = new Size(400, 20),
-                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
-                ForeColor = Color.Gray
-            };
-            currentY += 50;
-
-            // 背景色ボタン
-            var backgroundColorButton = new Button
-            {
-                Name = "btnBackgroundColor",
-                Text = "Change Background Color",
-                Location = new Point(6, currentY),
-                Size = new Size(200, 40),
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            };
-            // 背景色表示用PictureBox（ChangeBackgroundボタンの横に配置）
+            // 背景色ボタンは削除（pbBackgroundColorのクリックで色ダイアログを表示）
+            // var backgroundColorButton = new Button
+            // {
+            //     Name = "btnBackgroundColor",
+            //     Text = "Change Background Color",
+            //     Location = new Point(6, currentY),
+            //     Size = new Size(200, 40),
+            //     Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            // };
+            // 背景色表示用PictureBox（クリックで色ダイアログを表示）
             var pbBackgroundColor = new PictureBox
             {
                 Name = "pbBackgroundColor",
-                Location = new Point(220, currentY),
+                Location = new Point(6, currentY),
                 Size = new Size(40, 40),
                 BackColor = settings.BackgroundColorValue,
                 BorderStyle = BorderStyle.FixedSingle
             };
+            pbBackgroundColor.Click += (s, e) =>
+            {
+                // テスト環境ではダイアログを表示しない
+                if (IsTestEnvironment())
+                {
+                    return;
+                }
+
+                using var colorDialog = new ColorDialog
+                {
+                    Color = settings.BackgroundColorValue
+                };
+                if (colorDialog.ShowDialog() == DialogResult.OK)
+                {
+                    pbBackgroundColor.BackColor = colorDialog.Color;
+                    Logger.LogInfo("OptionsFormPanels.CreateDisplayPanel", "背景色を変更しました", colorDialog.Color.ToString());
+                    Logger.LogInfo("OptionsFormPanels.CreateDisplayPanel", "PictureBoxのBackColorを設定しました", pbBackgroundColor.BackColor.ToString());
+                    // 即時に設定オブジェクトへも反映（保存前の不整合を防止）
+                    settings.BackgroundColorValue = colorDialog.Color;
+                    
+                    // メイン画面の背景色を即座に更新
+                    if (Application.OpenForms.OfType<MainForm>().FirstOrDefault() is MainForm mainForm)
+                    {
+                        mainForm.BackColor = colorDialog.Color;
+                        Logger.LogInfo("OptionsFormPanels.CreateDisplayPanel", "メイン画面の背景色を更新しました", colorDialog.Color.ToString());
+                    }
+                    
+                    setModified(true);
+                }
+            };
             var lblBackgroundColorDesc = new Label
             {
-                Text = "メイン画面の背景色を変更します",
-                Location = new Point(270, currentY + 10),
+                Text = "メイン画面の背景色を変更します（クリックで色選択）",
+                Location = new Point(50, currentY + 10),
                 Size = new Size(400, 20),
                 Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
                 ForeColor = Color.Gray
@@ -1264,9 +1273,9 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
 
             // コントロールの追加
             panel.Controls.Add(lblVisualTitle);
-            panel.Controls.Add(accessibilityButton);
-            panel.Controls.Add(lblAccessibilityDesc);
-            panel.Controls.Add(backgroundColorButton);
+            // panel.Controls.Add(accessibilityButton);
+            // panel.Controls.Add(lblAccessibilityDesc);
+            // panel.Controls.Add(backgroundColorButton);
             panel.Controls.Add(lblBackgroundColorDesc);
             panel.Controls.Add(pbBackgroundColor);
             panel.Controls.Add(chkEnableTransparency);
@@ -1788,7 +1797,21 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
             cmbLogLevel.Items.AddRange(new object[] { "Trace", "Debug", "Info", "Warning", "Error" });
-            cmbLogLevel.SelectedIndex = Math.Min(settings.LogLevel, cmbLogLevel.Items.Count - 1);
+            // Settings.LogLevel(int) → ComboBox.Index へのマッピング
+            int MapLogLevelToIndex(int level)
+            {
+                // Logger.LogLevel: None(0), Error(1), Warning(2), Info(3), Debug(4), Trace(5)
+                return level switch
+                {
+                    5 => 0, // Trace
+                    4 => 1, // Debug
+                    3 => 2, // Info
+                    2 => 3, // Warning
+                    1 => 4, // Error
+                    _ => 2  // 既定はInfo
+                };
+            }
+            cmbLogLevel.SelectedIndex = MapLogLevelToIndex(settings.LogLevel);
             cmbLogLevel.SelectedIndexChanged += (s, e) => setModified(true);
 
             // Log Level説明文

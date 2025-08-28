@@ -87,7 +87,7 @@ namespace BrowserChooser3.Forms
             btnCancel.FlatAppearance.BorderSize = 0;
             btnCancel.FlatStyle = FlatStyle.Flat;
             btnCancel.Image = Properties.Resources.WorldGoIcon;
-            btnCancel.Location = new Point(220, 96);
+            btnCancel.Location = new Point(222, 96);
             btnCancel.Margin = new Padding(0);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new Size(29, 29);

@@ -66,19 +66,10 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 // 現在の透明化設定を取得
                 var currentTransparencyEnabled = GetCurrentTransparencyEnabled();
                 
-                // 透明化が有効から無効に変更された場合
-                if (currentTransparencyEnabled == false)
-                {
-                    Logger.LogInfo("OptionsFormFormHandlers.CheckTransparencySettingChange", 
-                        "透明化設定が無効に変更されました。情報メッセージを表示します。");
-                    
-                    // 情報メッセージを表示
-                    MessageBox.Show(
-                        "透明化の解除を正常に反映するためには再起動が必要です",
-                        "情報",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
-                }
+                // 初期設定と比較して、透明化が有効から無効に変更された場合のみダイアログを表示
+                // この機能は削除（透明化変更の検出が困難なため）
+                Logger.LogInfo("OptionsFormFormHandlers.CheckTransparencySettingChange", 
+                    "透明化設定変更検出機能は無効化されました");
             }
             catch (Exception ex)
             {

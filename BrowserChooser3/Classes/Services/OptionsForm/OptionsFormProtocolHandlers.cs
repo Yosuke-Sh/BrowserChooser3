@@ -66,7 +66,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                         var browser = _mBrowser.Values.FirstOrDefault(b => b.Guid == newProtocol.BrowserGuid);
                         var item = new ListViewItem(newProtocol.Name)
                         {
-                            Tag = newProtocol
+                            Tag = newId
                         };
                         item.SubItems.Add(browser?.Name ?? "Unknown");
                         item.SubItems.Add("Default App");
@@ -91,7 +91,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
         {
             try
             {
-                Logger.LogInfo("OptionsFormProtocolHandlers.EditProtocol_Click", "プロトコル編集開始");
+                Logger.LogInfo("OptionsFormProtocolHandlers.EditProtocol_Click", "プロトコル編集開始 - イベントが呼び出されました");
 
                 var protocolsTab = _form.tabSettings.TabPages["tabProtocols"];
                 if (protocolsTab != null)
@@ -139,7 +139,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
         {
             try
             {
-                Logger.LogInfo("OptionsFormProtocolHandlers.DeleteProtocol_Click", "プロトコル削除開始");
+                Logger.LogInfo("OptionsFormProtocolHandlers.DeleteProtocol_Click", "プロトコル削除開始 - イベントが呼び出されました");
 
                 var protocolsTab = _form.tabSettings.TabPages["tabProtocols"];
                 if (protocolsTab != null)
