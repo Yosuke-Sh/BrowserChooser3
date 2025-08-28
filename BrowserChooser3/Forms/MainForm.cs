@@ -1029,7 +1029,7 @@ namespace BrowserChooser3.Forms
 
             Logger.LogInfo("MainForm.UpdateURL", "URL更新", url);
             _currentUrl = url;
-            
+            UpdateURLLabel();
             // StartupLauncherを使用してURLを処理
             StartupLauncher.SetURL(url, _settings?.RevealShortURL ?? false, OnURLUpdated);
             
@@ -1285,13 +1285,14 @@ namespace BrowserChooser3.Forms
                 Name = "txtURLDisplay",
                 ReadOnly = true,
                 Location = new Point(20, ClientSize.Height - 110),
-                Size = new Size(ClientSize.Width - 60, 20),
-                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                Size = new Size(ClientSize.Width - 60, 25),
+                Font = new Font("Segoe UI", 7.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
                 BackColor = Color.LightGray,
                 ForeColor = Color.Black,
                 BorderStyle = BorderStyle.FixedSingle,
                 TextAlign = HorizontalAlignment.Left,
-                Visible = false
+                Anchor=AnchorStyles.Left | AnchorStyles.Bottom,
+                Visible = true
             };
             
             Controls.Add(_urlDisplayTextBox);
