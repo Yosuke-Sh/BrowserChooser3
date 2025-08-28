@@ -17,6 +17,11 @@ namespace BrowserChooser3.Forms
         private List<Browser>? _browsers;
         private string _currentUrl = string.Empty;
         
+        /// <summary>
+        /// URL表示ラベル
+        /// </summary>
+        private Label? _urlLabel;
+        
 
         private System.Windows.Forms.Timer? _countdownTimer;
         private int _currentDelay;
@@ -96,6 +101,12 @@ namespace BrowserChooser3.Forms
                 
                 // URL短縮解除の設定
                 SetupURLUnshortening();
+                
+                // 初期化完了後にURL表示ラベルを更新（起動時のURLが設定されている場合）
+                if (!string.IsNullOrEmpty(_currentUrl))
+                {
+                    UpdateURLLabel();
+                }
                 
                 Logger.LogInfo("MainForm.InitializeApplication", "End");
             }
@@ -952,6 +963,35 @@ namespace BrowserChooser3.Forms
             
             _currentUrl = url;
             Logger.LogInfo("MainForm.OnURLUpdated", "URL更新完了", url);
+            
+            // URL表示ラベルを更新
+            UpdateURLLabel();
+        }
+        
+        /// <summary>
+        /// URL表示ラベルを更新
+        /// </summary>
+        private void UpdateURLLabel()
+        {
+            try
+            {
+                if (_urlLabel != null && !string.IsNullOrEmpty(_currentUrl))
+                {
+                    // URLが長すぎる場合は省略表示
+                    var displayUrl = _currentUrl.Length > 100 ? _currentUrl.Substring(0, 97) + "..." : _currentUrl;
+                    _urlLabel.Text = displayUrl;
+                    _urlLabel.Visible = true;
+                }
+                else if (_urlLabel != null)
+                {
+                    _urlLabel.Text = "";
+                    _urlLabel.Visible = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("MainForm.UpdateURLLabel", "URL表示ラベル更新エラー", ex.Message);
+            }
         }
 
         /// <summary>
@@ -1221,14 +1261,7 @@ namespace BrowserChooser3.Forms
             }
         }
 
-        /// <summary>
-        /// フォーム読み込み時の処理
-        /// </summary>
-        private void MainForm_Load(object? sender, EventArgs e)
-        {
-            // 既存のInitializeApplication()の内容をここに移動
-            InitializeApplication();
-        }
+
         
 
 
@@ -1832,6 +1865,27 @@ namespace BrowserChooser3.Forms
                         Visible = true   // 常に表示
                     };
                     Controls.Add(chkAutoOpen);
+                }
+                
+                // URL表示ラベル
+                _urlLabel = Controls.Find("urlLabel", true).FirstOrDefault() as Label;
+                if (_urlLabel == null)
+                {
+                    _urlLabel = new Label
+                    {
+                        Name = "urlLabel",
+                        Text = "",
+                        Size = new Size(ClientSize.Width - 40, 20),
+                        Location = new Point(20, 10),
+                        Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
+                        AutoSize = false,
+                        TextAlign = ContentAlignment.MiddleLeft,
+                        BackColor = Color.Transparent,
+                        ForeColor = Color.Black,
+                        Font = new Font("Segoe UI", 9F, FontStyle.Regular),
+                        Visible = true
+                    };
+                    Controls.Add(_urlLabel);
                 }
                 
                 // カウントダウンタイマー

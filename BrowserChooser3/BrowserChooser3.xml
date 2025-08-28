@@ -2086,9 +2086,31 @@
             ログメッセージのキュー
             </summary>
         </member>
+        <member name="M:BrowserChooser3.Classes.Utilities.Logger.IsInstalledViaInstaller">
+            <summary>
+            インストーラー経由でインストールされたかどうかを判定
+            </summary>
+            <returns>インストーラー経由の場合はtrue</returns>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Utilities.Logger.LogDirectory">
+            <summary>
+            ログディレクトリのパス
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Utilities.Logger.GetLogFileName">
+            <summary>
+            現在の日付に基づくログファイル名を取得
+            </summary>
+            <returns>ログファイル名</returns>
+        </member>
         <member name="P:BrowserChooser3.Classes.Utilities.Logger.LogFilePath">
             <summary>
             ログファイルのパス
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Utilities.Logger.CleanupOldLogFiles">
+            <summary>
+            古いログファイルを削除（30日以上古いファイル）
             </summary>
         </member>
         <member name="M:BrowserChooser3.Classes.Utilities.Logger.AddToLog(BrowserChooser3.Classes.Utilities.Logger.LogLevel,System.String,System.String,System.Object[])">
@@ -2782,6 +2804,11 @@
             ブラウザ選択画面の表示、UI操作、ブラウザ起動を管理します
             </summary>
         </member>
+        <member name="F:BrowserChooser3.Forms.MainForm._urlLabel">
+            <summary>
+            URL表示ラベル
+            </summary>
+        </member>
         <member name="M:BrowserChooser3.Forms.MainForm.#ctor">
             <summary>
             MainFormクラスの新しいインスタンスを初期化します
@@ -2902,6 +2929,11 @@
             URL更新時のコールバック
             </summary>
         </member>
+        <member name="M:BrowserChooser3.Forms.MainForm.UpdateURLLabel">
+            <summary>
+            URL表示ラベルを更新
+            </summary>
+        </member>
         <member name="M:BrowserChooser3.Forms.MainForm.AdjustCompatibilityUILayout">
             <summary>
             Browser Chooser 2互換のUI要素の位置調整
@@ -2950,11 +2982,6 @@
         <member name="M:BrowserChooser3.Forms.MainForm.UpdateAutoOpenText">
             <summary>
             自動開くテキストの更新（Browser Chooser 2互換）
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.MainForm.MainForm_Load(System.Object,System.EventArgs)">
-            <summary>
-            フォーム読み込み時の処理
             </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.MainForm.btnInfo_Click(System.Object,System.EventArgs)">

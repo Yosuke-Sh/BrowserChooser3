@@ -212,7 +212,6 @@ namespace BrowserChooser3.Forms
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Choose a Browser";
             TopMost = true;
-            Load += MainForm_Load;
             cmOptions.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
