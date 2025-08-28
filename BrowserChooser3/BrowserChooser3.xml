@@ -460,9 +460,21 @@
             </summary>
             <returns>設定されている場合はtrue</returns>
         </member>
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.DefaultBrowserChecker.ShowDefaultAppsSettings">
+            <summary>
+            Windows 11のデフォルトアプリ設定画面を表示します
+            </summary>
+            <returns>成功した場合はtrue</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.DefaultBrowserChecker.ShowHttpProtocolSettings">
+            <summary>
+            HTTP/HTTPSプロトコルのデフォルトアプリ設定画面を表示します
+            </summary>
+            <returns>成功した場合はtrue</returns>
+        </member>
         <member name="M:BrowserChooser3.Classes.Services.BrowserServices.DefaultBrowserChecker.SetDefaultBrowser(System.String,System.String)">
             <summary>
-            デフォルトブラウザの設定を更新します
+            デフォルトブラウザの設定を更新します（非推奨 - Windows 11では設定画面を表示することを推奨）
             </summary>
             <param name="browserPath">ブラウザのパス</param>
             <param name="protocol">プロトコル</param>
@@ -473,14 +485,6 @@
             Windows 11かどうかを判定
             </summary>
             <returns>Windows 11の場合はtrue</returns>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.DefaultBrowserChecker.SetDefaultBrowserWindows11(System.String,System.String)">
-            <summary>
-            Windows 11用のデフォルトブラウザ設定
-            </summary>
-            <param name="browserPath">ブラウザのパス</param>
-            <param name="protocol">プロトコル</param>
-            <returns>成功した場合はtrue</returns>
         </member>
         <member name="M:BrowserChooser3.Classes.Services.BrowserServices.DefaultBrowserChecker.SetDefaultBrowserLegacy(System.String,System.String)">
             <summary>
@@ -1012,7 +1016,7 @@
         </member>
         <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormPanels.CreateDefaultBrowserPanel(BrowserChooser3.Classes.Settings,System.Action{System.Boolean})">
             <summary>
-            Windows Defaultパネルの作成
+            デフォルトブラウザパネルの作成
             </summary>
             <param name="settings">設定オブジェクト</param>
             <param name="setModified">変更フラグ設定アクション</param>
@@ -2702,6 +2706,26 @@
             アプリケーションの初期化
             </summary>
         </member>
+        <member name="M:BrowserChooser3.Forms.MainForm.ApplyStartupSettings">
+            <summary>
+            StartUp設定を適用します
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.MainForm.ShowForm">
+            <summary>
+            フォームを表示します
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.MainForm.MinimizeToTray">
+            <summary>
+            システムトレイに最小化します
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.MainForm.ShowFromTray">
+            <summary>
+            システムトレイから復元します
+            </summary>
+        </member>
         <member name="M:BrowserChooser3.Forms.MainForm.SetupURLUnshortening">
             <summary>
             URL短縮解除の設定
@@ -3039,6 +3063,16 @@
         <member name="M:BrowserChooser3.Forms.MainForm.UpdateAutoOpenTextWithSpaceKey">
             <summary>
             自動オープンテキストを更新します（スペースキー対応版）
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.MainForm.OnFormClosing(System.Windows.Forms.FormClosingEventArgs)">
+            <summary>
+            フォームを閉じる際の処理
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.MainForm.InitializeSystemTray">
+            <summary>
+            システムトレイを初期化します
             </summary>
         </member>
         <member name="F:BrowserChooser3.Forms.MainForm.components">

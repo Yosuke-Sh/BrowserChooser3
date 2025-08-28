@@ -37,6 +37,10 @@ namespace BrowserChooser3.Forms
         // ツールチップ
         private ToolTip? _toolTip;
 
+        // システムトレイ関連
+        private NotifyIcon? _notifyIcon;
+        private bool _isInTray = false;
+
         /// <summary>
         /// MainFormクラスの新しいインスタンスを初期化します
         /// </summary>
@@ -68,6 +72,9 @@ namespace BrowserChooser3.Forms
 
                 // フォームの設定
                 ConfigureForm();
+                
+                // StartUp設定の適用
+                ApplyStartupSettings();
                 
                 // ツールチップの初期化
                 InitializeToolTips();
@@ -125,6 +132,130 @@ namespace BrowserChooser3.Forms
                 Logger.LogError("MainForm.InitializeApplication", "初期化エラー", ex.Message, ex.StackTrace ?? "");
                 MessageBox.Show($"アプリケーションの初期化に失敗しました: {ex.Message}", "エラー", 
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// StartUp設定を適用します
+        /// </summary>
+        private void ApplyStartupSettings()
+        {
+            Logger.LogInfo("MainForm.ApplyStartupSettings", "Start");
+            
+            try
+            {
+                if (_settings == null) return;
+
+                // 起動遅延の処理
+                if (_settings.StartupDelay > 0)
+                {
+                    Logger.LogInfo("MainForm.ApplyStartupSettings", $"起動遅延を適用: {_settings.StartupDelay}秒");
+                    var startupTimer = new System.Windows.Forms.Timer
+                    {
+                        Interval = _settings.StartupDelay * 1000,
+                        Enabled = true
+                    };
+                    startupTimer.Tick += (sender, e) =>
+                    {
+                        startupTimer.Stop();
+                        startupTimer.Dispose();
+                        ShowForm();
+                    };
+                    
+                    // フォームを非表示にする
+                    this.Hide();
+                    return;
+                }
+
+                // 最小化で起動の処理
+                if (_settings.StartMinimized)
+                {
+                    Logger.LogInfo("MainForm.ApplyStartupSettings", "最小化で起動を適用");
+                    WindowState = FormWindowState.Minimized;
+                }
+
+                // システムトレイで起動の処理
+                if (_settings.StartInTray)
+                {
+                    Logger.LogInfo("MainForm.ApplyStartupSettings", "システムトレイで起動を適用");
+                    InitializeSystemTray();
+                    MinimizeToTray();
+                }
+
+                Logger.LogInfo("MainForm.ApplyStartupSettings", "End");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("MainForm.ApplyStartupSettings", "StartUp設定適用エラー", ex.Message, ex.StackTrace ?? "");
+            }
+        }
+
+        /// <summary>
+        /// フォームを表示します
+        /// </summary>
+        private void ShowForm()
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new Action(ShowForm));
+                return;
+            }
+
+            if (_isInTray)
+            {
+                ShowFromTray();
+            }
+            else
+            {
+                Show();
+                WindowState = FormWindowState.Normal;
+                Activate();
+            }
+        }
+
+        /// <summary>
+        /// システムトレイに最小化します
+        /// </summary>
+        private void MinimizeToTray()
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new Action(MinimizeToTray));
+                return;
+            }
+
+            if (_notifyIcon != null)
+            {
+                _isInTray = true;
+                _notifyIcon.Visible = true;
+                Hide();
+                ShowInTaskbar = false;
+                
+                Logger.LogInfo("MainForm.MinimizeToTray", "システムトレイに最小化");
+            }
+        }
+
+        /// <summary>
+        /// システムトレイから復元します
+        /// </summary>
+        private void ShowFromTray()
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new Action(ShowFromTray));
+                return;
+            }
+
+            if (_notifyIcon != null)
+            {
+                _isInTray = false;
+                _notifyIcon.Visible = false;
+                Show();
+                ShowInTaskbar = true;
+                WindowState = FormWindowState.Normal;
+                Activate();
+                
+                Logger.LogInfo("MainForm.ShowFromTray", "システムトレイから復元");
             }
         }
 
@@ -1915,6 +2046,69 @@ namespace BrowserChooser3.Forms
             {
                 var pauseStatus = tmrDelay?.Enabled == false ? "un" : "";
                 chkAutoOpen.Text = $"Open {_defaultBrowser.Name} in {_currentDelay} seconds. [Space: {pauseStatus}pause timer]";
+            }
+        }
+
+        /// <summary>
+        /// フォームを閉じる際の処理
+        /// </summary>
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            try
+            {
+                // システムトレイアイコンのクリーンアップ
+                if (_notifyIcon != null)
+                {
+                    _notifyIcon.Visible = false;
+                    _notifyIcon.Dispose();
+                    _notifyIcon = null;
+                }
+
+                base.OnFormClosing(e);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("MainForm.OnFormClosing", "フォーム終了処理エラー", ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// システムトレイを初期化します
+        /// </summary>
+        private void InitializeSystemTray()
+        {
+            try
+            {
+                if (_notifyIcon != null) return;
+
+                _notifyIcon = new NotifyIcon
+                {
+                    Icon = Icon.FromHandle(Properties.Resources.BrowserChooser3.GetHicon()),
+                    Text = "Browser Chooser 3",
+                    Visible = false
+                };
+
+                // コンテキストメニューの作成
+                var contextMenu = new ContextMenuStrip();
+                
+                var showItem = new ToolStripMenuItem("表示(&S)");
+                showItem.Click += (sender, e) => ShowFromTray();
+                contextMenu.Items.Add(showItem);
+                
+                contextMenu.Items.Add(new ToolStripSeparator());
+                
+                var exitItem = new ToolStripMenuItem("終了(&X)");
+                exitItem.Click += (sender, e) => Application.Exit();
+                contextMenu.Items.Add(exitItem);
+
+                _notifyIcon.ContextMenuStrip = contextMenu;
+                _notifyIcon.DoubleClick += (sender, e) => ShowFromTray();
+
+                Logger.LogInfo("MainForm.InitializeSystemTray", "システムトレイ初期化完了");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("MainForm.InitializeSystemTray", "システムトレイ初期化エラー", ex.Message);
             }
         }
     }

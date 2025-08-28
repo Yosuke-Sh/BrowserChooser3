@@ -557,7 +557,7 @@ namespace BrowserChooser3.Tests
         public void Constants_ShouldHaveExpectedValues()
         {
             // Assert
-            Settings.CURRENT_FILE_VERSION.Should().Be(6);
+            Settings.CURRENT_FILE_VERSION.Should().Be(1);
             Settings.BrowserChooserConfigFileName.Should().Be("BrowserChooser3Config.xml");
         }
 
@@ -622,30 +622,30 @@ namespace BrowserChooser3.Tests
             // ((int)Settings.DefaultField.CheckDefaultOnLaunch).Should().Be(11);
             // AdvancedScreensは削除されたため、テストをコメントアウト
             // ((int)Settings.DefaultField.AdvancedScreens).Should().Be(12);
-            ((int)Settings.DefaultField.Separator).Should().Be(13);
-            ((int)Settings.DefaultField.ShowFocus).Should().Be(14);
-            ((int)Settings.DefaultField.ShowURL).Should().Be(15);
-            ((int)Settings.DefaultField.RevealShortURL).Should().Be(16);
-            ((int)Settings.DefaultField.FocusBoxLineWidth).Should().Be(17);
-            ((int)Settings.DefaultField.FocusBoxColor).Should().Be(18);
-            ((int)Settings.DefaultField.UserAgent).Should().Be(19);
-            ((int)Settings.DefaultField.DownloadDetectionFile).Should().Be(20);
-            ((int)Settings.DefaultField.BackgroundColor).Should().Be(21);
-            ((int)Settings.DefaultField.StartingPosition).Should().Be(22);
-            ((int)Settings.DefaultField.OffsetX).Should().Be(23);
-            ((int)Settings.DefaultField.OffsetY).Should().Be(24);
-            ((int)Settings.DefaultField.AllowStayOpen).Should().Be(25);
+            ((int)Settings.DefaultField.Separator).Should().Be(10);
+            ((int)Settings.DefaultField.ShowFocus).Should().Be(11);
+            ((int)Settings.DefaultField.ShowURL).Should().Be(12);
+            ((int)Settings.DefaultField.RevealShortURL).Should().Be(13);
+            ((int)Settings.DefaultField.FocusBoxLineWidth).Should().Be(14);
+            ((int)Settings.DefaultField.FocusBoxColor).Should().Be(15);
+            ((int)Settings.DefaultField.UserAgent).Should().Be(16);
+            ((int)Settings.DefaultField.DownloadDetectionFile).Should().Be(17);
+            ((int)Settings.DefaultField.BackgroundColor).Should().Be(18);
+            ((int)Settings.DefaultField.StartingPosition).Should().Be(19);
+            ((int)Settings.DefaultField.OffsetX).Should().Be(20);
+            ((int)Settings.DefaultField.OffsetY).Should().Be(21);
+            ((int)Settings.DefaultField.AllowStayOpen).Should().Be(22);
             // Canonicalize関連は削除されたため、テストをコメントアウト
             // ((int)Settings.DefaultField.Canonicalize).Should().Be(26);
             // ((int)Settings.DefaultField.CanonicalizeAppendedText).Should().Be(27);
-            ((int)Settings.DefaultField.EnableLogging).Should().Be(28);
-            ((int)Settings.DefaultField.ExtractDLLs).Should().Be(29);
-            ((int)Settings.DefaultField.LogLevel).Should().Be(30);
-            ((int)Settings.DefaultField.EnableTransparency).Should().Be(31);
-            ((int)Settings.DefaultField.TransparencyColor).Should().Be(32);
-            ((int)Settings.DefaultField.Opacity).Should().Be(33);
-            ((int)Settings.DefaultField.HideTitleBar).Should().Be(34);
-            ((int)Settings.DefaultField.RoundedCornersRadius).Should().Be(35);
+            ((int)Settings.DefaultField.EnableLogging).Should().Be(23);
+            ((int)Settings.DefaultField.ExtractDLLs).Should().Be(24);
+            ((int)Settings.DefaultField.LogLevel).Should().Be(25);
+            ((int)Settings.DefaultField.EnableTransparency).Should().Be(26);
+            ((int)Settings.DefaultField.TransparencyColor).Should().Be(27);
+            ((int)Settings.DefaultField.Opacity).Should().Be(28);
+            ((int)Settings.DefaultField.HideTitleBar).Should().Be(29);
+            ((int)Settings.DefaultField.RoundedCornersRadius).Should().Be(30);
         }
 
         #endregion

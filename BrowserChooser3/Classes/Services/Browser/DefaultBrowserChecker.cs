@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Diagnostics;
 using Microsoft.Win32;
 using BrowserChooser3.Classes.Models;
 using BrowserChooser3.Classes.Utilities;
@@ -218,7 +219,6 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
                 var fileName = Path.GetFileNameWithoutExtension(path).ToLower();
                 return fileName switch
                 {
-        
                     "chrome" => "Google Chrome",
                     "firefox" => "Mozilla Firefox",
                     "msedge" => "Microsoft Edge",
@@ -256,7 +256,93 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
         }
 
         /// <summary>
-        /// デフォルトブラウザの設定を更新します
+        /// Windows 11のデフォルトアプリ設定画面を表示します
+        /// </summary>
+        /// <returns>成功した場合はtrue</returns>
+        public static bool ShowDefaultAppsSettings()
+        {
+            Logger.LogInfo("DefaultBrowserChecker.ShowDefaultAppsSettings", "Windows 11デフォルトアプリ設定画面表示開始");
+
+            try
+            {
+                if (IsWindows11())
+                {
+                    // Windows 11用の設定画面を表示
+                    var result = Process.Start(new ProcessStartInfo
+                    {
+                        FileName = "ms-settings:defaultapps",
+                        UseShellExecute = true
+                    });
+                    
+                    Logger.LogInfo("DefaultBrowserChecker.ShowDefaultAppsSettings", "Windows 11デフォルトアプリ設定画面表示完了");
+                    return result != null;
+                }
+                else
+                {
+                    // Windows 10以前用の設定画面を表示
+                    var result = Process.Start(new ProcessStartInfo
+                    {
+                        FileName = "control",
+                        Arguments = "/name Microsoft.DefaultPrograms /page pageDefaultProgram\\pageAdvancedSettings?pszAppName=Microsoft.Windows.Shell.RunDialog",
+                        UseShellExecute = true
+                    });
+                    
+                    Logger.LogInfo("DefaultBrowserChecker.ShowDefaultAppsSettings", "Windows 10以前デフォルトアプリ設定画面表示完了");
+                    return result != null;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("DefaultBrowserChecker.ShowDefaultAppsSettings", "デフォルトアプリ設定画面表示エラー", ex.Message);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// HTTP/HTTPSプロトコルのデフォルトアプリ設定画面を表示します
+        /// </summary>
+        /// <returns>成功した場合はtrue</returns>
+        public static bool ShowHttpProtocolSettings()
+        {
+            Logger.LogInfo("DefaultBrowserChecker.ShowHttpProtocolSettings", "HTTP/HTTPSプロトコル設定画面表示開始");
+
+            try
+            {
+                if (IsWindows11())
+                {
+                    // Windows 11用のHTTP/HTTPSプロトコル設定画面を表示
+                    var result = Process.Start(new ProcessStartInfo
+                    {
+                        FileName = "ms-settings:defaultapps",
+                        UseShellExecute = true
+                    });
+                    
+                    Logger.LogInfo("DefaultBrowserChecker.ShowHttpProtocolSettings", "Windows 11 HTTP/HTTPSプロトコル設定画面表示完了");
+                    return result != null;
+                }
+                else
+                {
+                    // Windows 10以前用の設定画面を表示
+                    var result = Process.Start(new ProcessStartInfo
+                    {
+                        FileName = "control",
+                        Arguments = "/name Microsoft.DefaultPrograms /page pageDefaultProgram\\pageAdvancedSettings?pszAppName=Microsoft.Windows.Shell.RunDialog",
+                        UseShellExecute = true
+                    });
+                    
+                    Logger.LogInfo("DefaultBrowserChecker.ShowHttpProtocolSettings", "Windows 10以前 HTTP/HTTPSプロトコル設定画面表示完了");
+                    return result != null;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("DefaultBrowserChecker.ShowHttpProtocolSettings", "HTTP/HTTPSプロトコル設定画面表示エラー", ex.Message);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// デフォルトブラウザの設定を更新します（非推奨 - Windows 11では設定画面を表示することを推奨）
         /// </summary>
         /// <param name="browserPath">ブラウザのパス</param>
         /// <param name="protocol">プロトコル</param>
@@ -273,10 +359,11 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
                     return false;
                 }
 
-                // Windows 11対応のデフォルトブラウザ設定
+                // Windows 11では設定画面を表示することを推奨
                 if (IsWindows11())
                 {
-                    return SetDefaultBrowserWindows11(browserPath, protocol);
+                    Logger.LogWarning("DefaultBrowserChecker.SetDefaultBrowser", "Windows 11では設定画面を表示することを推奨します");
+                    return ShowHttpProtocolSettings();
                 }
                 else
                 {
@@ -304,56 +391,6 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
             catch
             {
                 return false;
-            }
-        }
-        
-        /// <summary>
-        /// Windows 11用のデフォルトブラウザ設定
-        /// </summary>
-        /// <param name="browserPath">ブラウザのパス</param>
-        /// <param name="protocol">プロトコル</param>
-        /// <returns>成功した場合はtrue</returns>
-        private static bool SetDefaultBrowserWindows11(string browserPath, string protocol)
-        {
-            try
-            {
-                // Windows 11では、アプリケーションの関連付けを使用
-                var browserName = GetBrowserNameFromPath(browserPath);
-                var appId = GetAppIdFromPath(browserPath);
-                
-                if (string.IsNullOrEmpty(appId))
-                {
-                    Logger.LogWarning("DefaultBrowserChecker.SetDefaultBrowserWindows11", "AppIdを取得できませんでした", browserPath);
-                    return SetDefaultBrowserLegacy(browserPath, protocol);
-                }
-                
-                // プロトコルハンドラーを設定
-                var command = $"\"{browserPath}\" \"%1\"";
-                
-                // レジストリに設定
-                using var key = Registry.ClassesRoot.CreateSubKey($"{protocol}\\shell\\open\\command");
-                if (key != null)
-                {
-                    key.SetValue("", command);
-                    
-                    // Windows 11用の追加設定
-                    using var userChoiceKey = Registry.CurrentUser.CreateSubKey(
-                        $"Software\\Microsoft\\Windows\\Shell\\Associations\\UrlAssociations\\{protocol}\\UserChoice");
-                    if (userChoiceKey != null)
-                    {
-                        userChoiceKey.SetValue("ProgId", appId);
-                    }
-                    
-                    Logger.LogInfo("DefaultBrowserChecker.SetDefaultBrowserWindows11", "Windows 11デフォルトブラウザ設定完了", protocol);
-                    return true;
-                }
-
-                return false;
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("DefaultBrowserChecker.SetDefaultBrowserWindows11", "Windows 11デフォルトブラウザ設定エラー", ex.Message);
-                return SetDefaultBrowserLegacy(browserPath, protocol);
             }
         }
         

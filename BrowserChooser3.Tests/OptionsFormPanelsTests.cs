@@ -280,27 +280,17 @@ namespace BrowserChooser3.Tests
             var tabPage = _panels.CreateDisplayPanel(_settings, setModified);
 
             // Assert
-            var accessibilityButton = tabPage.Controls.Find("btnAccessibility", true).FirstOrDefault() as Button;
-            var backgroundColorButton = tabPage.Controls.Find("btnBackgroundColor", true).FirstOrDefault() as Button;
+            var backgroundColorPictureBox = tabPage.Controls.Find("pbBackgroundColor", true).FirstOrDefault() as PictureBox;
+            var enableBackgroundGradientCheckBox = tabPage.Controls.Find("chkEnableBackgroundGradient", true).FirstOrDefault() as CheckBox;
             var enableTransparencyCheckBox = tabPage.Controls.Find("chkEnableTransparency", true).FirstOrDefault() as CheckBox;
-            var transparencyColorPictureBox = tabPage.Controls.Find("pbTransparencyColor", true).FirstOrDefault() as PictureBox;
-            var opacityNumericUpDown = tabPage.Controls.Find("nudOpacity", true).FirstOrDefault() as NumericUpDown;
-            var hideTitleBarCheckBox = tabPage.Controls.Find("chkHideTitleBar", true).FirstOrDefault() as CheckBox;
-            var roundedCornersNumericUpDown = tabPage.Controls.Find("nudRoundedCorners", true).FirstOrDefault() as NumericUpDown;
 
-            accessibilityButton.Should().NotBeNull();
-            backgroundColorButton.Should().NotBeNull();
+            backgroundColorPictureBox.Should().NotBeNull();
+            enableBackgroundGradientCheckBox.Should().NotBeNull();
             enableTransparencyCheckBox.Should().NotBeNull();
-            transparencyColorPictureBox.Should().NotBeNull();
-            opacityNumericUpDown.Should().NotBeNull();
-            hideTitleBarCheckBox.Should().NotBeNull();
-            roundedCornersNumericUpDown.Should().NotBeNull();
             
             // デフォルト値の確認
+            enableBackgroundGradientCheckBox.Checked.Should().Be(_settings.EnableBackgroundGradient);
             enableTransparencyCheckBox.Checked.Should().Be(_settings.EnableTransparency);
-            opacityNumericUpDown.Value.Should().Be((decimal)_settings.Opacity);
-            hideTitleBarCheckBox.Checked.Should().Be(_settings.HideTitleBar);
-            roundedCornersNumericUpDown.Value.Should().Be(_settings.RoundedCornersRadius);
         }
 
         #endregion
@@ -403,11 +393,13 @@ namespace BrowserChooser3.Tests
             var tabPage = _panels.CreateStartupPanel(_settings, setModified);
 
             // Assert
-            var autoStartControl = tabPage.Controls.Find("chkAutoStart", true).FirstOrDefault();
             var startMinimizedControl = tabPage.Controls.Find("chkStartMinimized", true).FirstOrDefault();
+            var startInTrayControl = tabPage.Controls.Find("chkStartInTray", true).FirstOrDefault();
+            var startupDelayControl = tabPage.Controls.Find("nudStartupDelay", true).FirstOrDefault();
 
-            autoStartControl.Should().NotBeNull();
             startMinimizedControl.Should().NotBeNull();
+            startInTrayControl.Should().NotBeNull();
+            startupDelayControl.Should().NotBeNull();
         }
 
         #endregion
@@ -439,10 +431,12 @@ namespace BrowserChooser3.Tests
 
             // Assert
             var portableModeControl = tabPage.Controls.Find("chkPortableMode", true).FirstOrDefault();
-            var autoCheckUpdateControl = tabPage.Controls.Find("chkAutoCheckUpdate", true).FirstOrDefault();
+            var allowStayOpenControl = tabPage.Controls.Find("chkAllowStayOpen", true).FirstOrDefault();
+            var defaultDelayControl = tabPage.Controls.Find("nudDefaultDelay", true).FirstOrDefault();
 
             portableModeControl.Should().NotBeNull();
-            autoCheckUpdateControl.Should().NotBeNull();
+            allowStayOpenControl.Should().NotBeNull();
+            defaultDelayControl.Should().NotBeNull();
         }
 
         #endregion
