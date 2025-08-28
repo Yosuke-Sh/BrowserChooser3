@@ -62,7 +62,7 @@ namespace BrowserChooser3.Forms
             treeSettings.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point, 0);
             treeSettings.Location = new Point(12, 12);
             treeSettings.Name = "treeSettings";
-            treeSettings.Size = new Size(200, 420);
+            treeSettings.Size = new Size(200, 640);
             treeSettings.TabIndex = 1;
             treeSettings.AfterSelect += TreeSettings_AfterSelect;
             // 
@@ -74,7 +74,7 @@ namespace BrowserChooser3.Forms
             tabSettings.Location = new Point(220, 12);
             tabSettings.Name = "tabSettings";
             tabSettings.SelectedIndex = 0;
-            tabSettings.Size = new Size(750, 430);
+            tabSettings.Size = new Size(760, 640);
             tabSettings.SizeMode = TabSizeMode.Fixed;
             tabSettings.TabIndex = 2;
             // 
@@ -82,7 +82,7 @@ namespace BrowserChooser3.Forms
             // 
             saveButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             saveButton.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            saveButton.Location = new Point(685, 450);
+            saveButton.Location = new Point(695, 660);
             saveButton.Name = "saveButton";
             saveButton.Size = new Size(85, 35);
             saveButton.TabIndex = 3;
@@ -94,7 +94,7 @@ namespace BrowserChooser3.Forms
             cancelButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             cancelButton.DialogResult = DialogResult.Cancel;
             cancelButton.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            cancelButton.Location = new Point(785, 450);
+            cancelButton.Location = new Point(795, 660);
             cancelButton.Name = "cancelButton";
             cancelButton.Size = new Size(85, 35);
             cancelButton.TabIndex = 4;
@@ -105,7 +105,7 @@ namespace BrowserChooser3.Forms
             // 
             helpButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             helpButton.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            helpButton.Location = new Point(885, 450);
+            helpButton.Location = new Point(895, 660);
             helpButton.Name = "helpButton";
             helpButton.Size = new Size(85, 35);
             helpButton.TabIndex = 5;
@@ -116,7 +116,7 @@ namespace BrowserChooser3.Forms
             // 
             resetButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             resetButton.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            resetButton.Location = new Point(585, 450);
+            resetButton.Location = new Point(595, 660);
             resetButton.Name = "resetButton";
             resetButton.Size = new Size(85, 35);
             resetButton.TabIndex = 6;
@@ -133,7 +133,7 @@ namespace BrowserChooser3.Forms
             categoryPanel.Controls.Add(categoryListView);
             categoryPanel.Location = new Point(230, 15);
             categoryPanel.Name = "categoryPanel";
-            categoryPanel.Size = new Size(630, 420);
+            categoryPanel.Size = new Size(740, 630);
             categoryPanel.TabIndex = 7;
             categoryPanel.Visible = false;
             // 
@@ -199,7 +199,7 @@ namespace BrowserChooser3.Forms
             // 
             AutoScaleDimensions = new SizeF(11F, 28F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(983, 494);
+            ClientSize = new Size(1000, 700);
             Controls.Add(lblHiddenBrowserGuid);
             Controls.Add(categoryPanel);
             Controls.Add(resetButton);

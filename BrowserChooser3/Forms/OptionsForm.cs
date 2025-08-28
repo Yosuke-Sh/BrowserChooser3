@@ -96,7 +96,7 @@ namespace BrowserChooser3.Forms
 
                 // TreeViewノードの作成
                 var commonNode = new TreeNode("Common");
-                commonNode.Nodes.Add(new TreeNode("Browsers & applications") { Tag = "tabBrowsers" });
+                commonNode.Nodes.Add(new TreeNode("Browsers & app") { Tag = "tabBrowsers" });
                 commonNode.Nodes.Add(new TreeNode("Auto URLs") { Tag = "tabAutoURLs" });
 
                 var associationsNode = new TreeNode("Associations");
@@ -165,6 +165,9 @@ namespace BrowserChooser3.Forms
                 {
                     Logger.LogInfo("OptionsForm.InitializeForm", "テスト環境のため、設定読み込みとイベントハンドラー設定をスキップしました");
                 }
+
+                // 初期化完了後にリサイズ処理を実行してレイアウトを調整
+                AdjustLayout();
 
                 Logger.LogInfo("OptionsForm.InitializeForm", "End");
             }
@@ -596,6 +599,37 @@ namespace BrowserChooser3.Forms
         }
 
         /// <summary>
+        /// レイアウト調整メソッド（初期化時とリサイズ時に使用）
+        /// </summary>
+        private void AdjustLayout()
+        {
+            try
+            {
+                Logger.LogTrace("OptionsForm.AdjustLayout", "レイアウト調整開始", ClientSize.Width, ClientSize.Height);
+
+                if (treeSettings != null)
+                {
+                    treeSettings.Size = new Size(200, ClientSize.Height - 80);
+                    // 左側のツリーと右側のグリッドの上部位置を合わせる
+                    treeSettings.Location = new Point(treeSettings.Location.X, 12);
+                }
+
+                if (tabSettings != null)
+                {
+                    // 左側のツリーと右側のグリッドの上部位置を合わせる
+                    tabSettings.Location = new Point(220, 12);
+                    tabSettings.Size = new Size(ClientSize.Width - 240, ClientSize.Height - 100);
+                }
+
+                Logger.LogTrace("OptionsForm.AdjustLayout", "レイアウト調整完了", ClientSize.Width, ClientSize.Height);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("OptionsForm.AdjustLayout", "レイアウト調整エラー", ex.Message, ex.StackTrace ?? "");
+            }
+        }
+
+        /// <summary>
         /// フォームサイズ変更時の処理
         /// </summary>
         private void OptionsForm_Resize(object? sender, EventArgs e)
@@ -995,31 +1029,7 @@ namespace BrowserChooser3.Forms
             }
         }
 
-        /// <summary>
-        /// レイアウトの調整
-        /// </summary>
-        private void AdjustLayout()
-        {
-            var treeSettings = Controls.OfType<TreeView>().FirstOrDefault();
-            var tabSettings = Controls.OfType<TabControl>().FirstOrDefault();
-            var saveButton = Controls.OfType<Button>().FirstOrDefault(b => b.Text == "Save");
-            var cancelButton = Controls.OfType<Button>().FirstOrDefault(b => b.Text == "Cancel");
-            var helpButton = Controls.OfType<Button>().FirstOrDefault(b => b.Text == "Help");
 
-            if (treeSettings != null)
-            {
-                treeSettings.Size = new Size(200, ClientSize.Height - 80);
-                // 左側のツリーと右側のグリッドの上部位置を合わせる
-                treeSettings.Location = new Point(treeSettings.Location.X, 12);
-            }
-
-            if (tabSettings != null)
-            {
-                // 左側のツリーと右側のグリッドの上部位置を合わせる
-                tabSettings.Location = new Point(220, 12);
-                tabSettings.Size = new Size(ClientSize.Width - 240, ClientSize.Height - 100);
-            }
-        }
 
         /// <summary>
         /// TreeViewの選択変更イベント

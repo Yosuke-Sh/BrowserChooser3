@@ -2801,6 +2801,11 @@
             透明化設定を適用
             </summary>
         </member>
+        <member name="M:BrowserChooser3.Forms.MainForm.ApplyCommonFormStyle">
+            <summary>
+            共通のフォームスタイル設定を適用
+            </summary>
+        </member>
         <member name="M:BrowserChooser3.Forms.MainForm.ApplyRoundedCorners(System.Int32)">
             <summary>
             角を丸くする設定を適用
@@ -3190,6 +3195,11 @@
             Displayパネルのボタンイベントハンドラー設定
             </summary>
         </member>
+        <member name="M:BrowserChooser3.Forms.OptionsForm.AdjustLayout">
+            <summary>
+            レイアウト調整メソッド（初期化時とリサイズ時に使用）
+            </summary>
+        </member>
         <member name="M:BrowserChooser3.Forms.OptionsForm.OptionsForm_Resize(System.Object,System.EventArgs)">
             <summary>
             フォームサイズ変更時の処理
@@ -3253,11 +3263,6 @@
         <member name="M:BrowserChooser3.Forms.OptionsForm.ResetCategoriesPanelToDefaults(System.Windows.Forms.TabPage)">
             <summary>
             カテゴリパネルの設定をデフォルト値にリセットし、UIに反映します
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.AdjustLayout">
-            <summary>
-            レイアウトの調整
             </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.OptionsForm.TreeSettings_AfterSelect(System.Object,System.Windows.Forms.TreeViewEventArgs)">

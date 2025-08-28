@@ -260,47 +260,17 @@ namespace BrowserChooser3.Forms
                     this.TransparencyKey = Color.FromArgb(_settings.TransparencyColor);
                     this.Opacity = _settings.Opacity;
                     
-                    // タイトルバー非表示設定
-                    if (_settings.HideTitleBar)
-                    {
-                        this.FormBorderStyle = FormBorderStyle.None;
-                    }
-                    else
-                    {
-                        // 最新のWindowsスタイルを使用（サイズ変更可能）
-                        this.FormBorderStyle = FormBorderStyle.Sizable;
-                        this.WindowState = FormWindowState.Normal;
-                        this.MaximizeBox = true;
-                        this.MinimizeBox = true;
-                        this.SizeGripStyle = SizeGripStyle.Show;
-                        
-                        // Windows 11風の最新スタイルを適用
-                        try
-                        {
-                            // DWM（Desktop Window Manager）を使用して最新のスタイルを適用
-                            if (Environment.OSVersion.Version.Major >= 10)
-                            {
-                                // Windows 10/11の最新スタイル
-                                this.StartPosition = FormStartPosition.CenterScreen;
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Logger.LogError("MainForm.ApplyTransparencySettings", "最新スタイル適用エラー", ex.Message);
-                        }
-                    }
-                    
                     // 背景色を透明化色に設定
                     this.BackColor = Color.FromArgb(_settings.TransparencyColor);
                     
                     // 角を丸くする設定
-                    if (_settings.RoundedCornersRadius > 0)
+                    if (_settings?.RoundedCornersRadius > 0)
                     {
                         ApplyRoundedCorners(_settings.RoundedCornersRadius);
                     }
                     
                     Logger.LogInfo("MainForm.ApplyTransparencySettings", 
-                        $"透明化設定を適用: Opacity={_settings.Opacity}, TransparencyKey={_settings.TransparencyColor}, HideTitleBar={_settings.HideTitleBar}, RoundedCornersRadius={_settings.RoundedCornersRadius}");
+                        $"透明化設定を適用: Opacity={_settings?.Opacity}, TransparencyKey={_settings?.TransparencyColor}, HideTitleBar={_settings?.HideTitleBar}, RoundedCornersRadius={_settings?.RoundedCornersRadius}");
                 }
                 else
                 {
@@ -308,37 +278,54 @@ namespace BrowserChooser3.Forms
                     this.SetStyle(ControlStyles.SupportsTransparentBackColor, false);
                     this.TransparencyKey = Color.Empty;
                     this.Opacity = 1.0;
+                    this.BackColor = _settings?.BackgroundColorValue ?? Color.FromArgb(185, 209, 234);
                     
+                    // リージョンをクリア（角を丸くする設定を無効化）
+                    this.Region = null;
+                    
+                    Logger.LogInfo("MainForm.ApplyTransparencySettings", "透明化を無効にしました");
+                }
+                
+                // 共通のフォームスタイル設定
+                ApplyCommonFormStyle();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("MainForm.ApplyTransparencySettings", "透明化設定エラー", ex.Message, ex.StackTrace ?? "");
+            }
+        }
+
+        /// <summary>
+        /// 共通のフォームスタイル設定を適用
+        /// </summary>
+        private void ApplyCommonFormStyle()
+        {
+            try
+            {
+                // タイトルバー非表示設定
+                if (_settings?.HideTitleBar == true)
+                {
+                    this.FormBorderStyle = FormBorderStyle.None;
+                }
+                else
+                {
                     // 最新のWindowsスタイルを使用（サイズ変更可能）
                     this.FormBorderStyle = FormBorderStyle.Sizable;
                     this.WindowState = FormWindowState.Normal;
                     this.MaximizeBox = true;
                     this.MinimizeBox = true;
                     this.SizeGripStyle = SizeGripStyle.Show;
-                    this.BackColor = _settings?.BackgroundColorValue ?? Color.FromArgb(185, 209, 234);
-                    
-                    // リージョンをクリア（角を丸くする設定を無効化）
-                    this.Region = null;
                     
                     // Windows 11風の最新スタイルを適用
-                    try
+                    if (Environment.OSVersion.Version.Major >= 10)
                     {
-                        if (Environment.OSVersion.Version.Major >= 10)
-                        {
-                            this.StartPosition = FormStartPosition.CenterScreen;
-                        }
+                        this.StartPosition = FormStartPosition.CenterScreen;
                     }
-                    catch (Exception ex)
-                    {
-                        Logger.LogError("MainForm.ApplyTransparencySettings", "最新スタイル適用エラー", ex.Message);
-                    }
-                    
-                    Logger.LogInfo("MainForm.ApplyTransparencySettings", "透明化を無効にしました");
                 }
             }
             catch (Exception ex)
             {
-                Logger.LogError("MainForm.ApplyTransparencySettings", "透明化設定エラー", ex.Message, ex.StackTrace ?? "");
+                Logger.LogError("MainForm.ApplyCommonFormStyle", "共通スタイル適用エラー", ex.Message);
             }
         }
 
