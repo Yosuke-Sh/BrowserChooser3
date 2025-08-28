@@ -17,11 +17,9 @@ namespace BrowserChooser3.Forms
         private List<Browser>? _browsers;
         private string _currentUrl = string.Empty;
         
-        /// <summary>
-        /// URL表示ラベル
-        /// </summary>
-        private Label? _urlLabel;
-        private TextBox? _urlTextBox;
+        // URL表示用のUI要素（現在は使用されていない）
+        // private Label? _urlLabel;
+        // private TextBox? _urlTextBox;
         
         private System.Windows.Forms.Timer? _countdownTimer;
         private int _currentDelay;
@@ -1018,35 +1016,37 @@ namespace BrowserChooser3.Forms
                     // URLが長すぎる場合は省略表示
                     var displayUrl = _currentUrl.Length > 100 ? _currentUrl.Substring(0, 97) + "..." : _currentUrl;
                     
+                    // URL表示機能は現在実装されていません
                     // URLラベルの更新
-                    if (_urlLabel != null)
-                    {
-                        _urlLabel.Text = displayUrl;
-                        _urlLabel.Visible = _settings?.ShowURL == true;
-                    }
+                    // if (_urlLabel != null)
+                    // {
+                    //     _urlLabel.Text = displayUrl;
+                    //     _urlLabel.Visible = _settings?.ShowURL == true;
+                    // }
                     
                     // URLテキストボックスの更新
-                    if (_urlTextBox != null)
-                    {
-                        _urlTextBox.Text = _currentUrl;
-                        _urlTextBox.Visible = _settings?.ShowURL == true;
-                    }
+                    // if (_urlTextBox != null)
+                    // {
+                    //     _urlTextBox.Text = _currentUrl;
+                    //     _urlTextBox.Visible = _settings?.ShowURL == true;
+                    // }
                 }
                 else
                 {
+                    // URL表示機能は現在実装されていません
                     // URLラベルの更新
-                    if (_urlLabel != null)
-                    {
-                        _urlLabel.Text = "";
-                        _urlLabel.Visible = false;
-                    }
+                    // if (_urlLabel != null)
+                    // {
+                    //     _urlLabel.Text = "";
+                    //     _urlLabel.Visible = false;
+                    // }
                     
                     // URLテキストボックスの更新
-                    if (_urlTextBox != null)
-                    {
-                        _urlTextBox.Text = "";
-                        _urlTextBox.Visible = false;
-                    }
+                    // if (_urlTextBox != null)
+                    // {
+                    //     _urlTextBox.Text = "";
+                    //     _urlTextBox.Visible = false;
+                    // }
                 }
             }
             catch (Exception ex)

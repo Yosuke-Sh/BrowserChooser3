@@ -2687,11 +2687,6 @@
             ブラウザ選択画面の表示、UI操作、ブラウザ起動を管理します
             </summary>
         </member>
-        <member name="F:BrowserChooser3.Forms.MainForm._urlLabel">
-            <summary>
-            URL表示ラベル
-            </summary>
-        </member>
         <member name="M:BrowserChooser3.Forms.MainForm.#ctor">
             <summary>
             MainFormクラスの新しいインスタンスを初期化します
