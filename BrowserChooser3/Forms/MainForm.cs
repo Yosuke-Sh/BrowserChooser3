@@ -230,7 +230,7 @@ namespace BrowserChooser3.Forms
             ApplyTransparencySettings();
             
             // 透明化が無効な場合の背景色設定
-            if (!_settings?.EnableTransparency == true)
+            if (_settings?.EnableTransparency != true)
             {
                 // 設定値をそのまま反映（Settings.BackgroundColorValue は常に不透明で正規化済み）
                 BackColor = _settings?.BackgroundColorValue ?? Color.FromArgb(185, 209, 234);
@@ -497,7 +497,7 @@ namespace BrowserChooser3.Forms
         private void StyleXP()
         {
             // 透明化が無効な場合はサイズ変更可能にする
-            if (!_settings?.EnableTransparency == true)
+            if (_settings?.EnableTransparency != true)
             {
                 FormBorderStyle = FormBorderStyle.Sizable;
                 MaximizeBox = true;
