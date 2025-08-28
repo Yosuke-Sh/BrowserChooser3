@@ -332,6 +332,7 @@ namespace BrowserChooser3.Classes
                     return Color.FromArgb(185, 209, 234); // デフォルトの青系色
                 }
                 
+                // BackgroundColorが有効な値の場合は、その値を正しく使用
                 var c = Color.FromArgb(BackgroundColor);
                 // 常に不透明（A=255）で返す
                 return c.A == 255 ? c : Color.FromArgb(255, c.R, c.G, c.B);
@@ -341,6 +342,7 @@ namespace BrowserChooser3.Classes
                 // 常に不透明（A=255）で保存
                 var c = value.A == 255 ? value : Color.FromArgb(255, value.R, value.G, value.B);
                 BackgroundColor = c.ToArgb();
+                Logger.LogInfo("Settings.BackgroundColorValue.set", $"背景色を設定しました: {value} -> BackgroundColor: {BackgroundColor}");
             }
         }
         
