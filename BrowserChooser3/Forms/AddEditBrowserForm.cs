@@ -253,36 +253,42 @@ namespace BrowserChooser3.Forms
                 }
             };
             
-            btnOK.Click += (s, e) =>
+            // フォームが閉じられる前の検証
+            this.FormClosing += (s, e) =>
             {
-                // データの検証
-                if (string.IsNullOrWhiteSpace(txtName.Text))
+                if (DialogResult == DialogResult.OK)
                 {
-                    MessageBox.Show("ブラウザ名を入力してください。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    txtName.Focus();
-                    return;
-                }
+                    // データの検証
+                    if (string.IsNullOrWhiteSpace(txtName.Text))
+                    {
+                        MessageBox.Show("ブラウザ名を入力してください。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        txtName.Focus();
+                        e.Cancel = true; // フォームを閉じない
+                        return;
+                    }
 
-                if (string.IsNullOrWhiteSpace(txtTarget.Text))
-                {
-                    MessageBox.Show("実行ファイルパスを入力してください。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    txtTarget.Focus();
-                    return;
-                }
+                    if (string.IsNullOrWhiteSpace(txtTarget.Text))
+                    {
+                        MessageBox.Show("実行ファイルパスを入力してください。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        txtTarget.Focus();
+                        e.Cancel = true; // フォームを閉じない
+                        return;
+                    }
 
-                // データの保存
-                _browser.Name = txtName.Text;
-                _browser.Target = txtTarget.Text;
-                _browser.Arguments = txtArguments.Text;
-                _browser.Category = txtCategory.Text;
-                
-                if (txtHotkey.Text.Length > 0)
-                {
-                    _browser.Hotkey = txtHotkey.Text[0];
-                }
-                else
-                {
-                    _browser.Hotkey = '\0';
+                    // データの保存
+                    _browser.Name = txtName.Text;
+                    _browser.Target = txtTarget.Text;
+                    _browser.Arguments = txtArguments.Text;
+                    _browser.Category = txtCategory.Text;
+                    
+                    if (txtHotkey.Text.Length > 0)
+                    {
+                        _browser.Hotkey = txtHotkey.Text[0];
+                    }
+                    else
+                    {
+                        _browser.Hotkey = '\0';
+                    }
                 }
             };
         }

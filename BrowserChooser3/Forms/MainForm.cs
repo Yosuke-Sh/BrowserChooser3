@@ -23,7 +23,6 @@ namespace BrowserChooser3.Forms
         private Label? _urlLabel;
         private TextBox? _urlTextBox;
         
-
         private System.Windows.Forms.Timer? _countdownTimer;
         private int _currentDelay;
         private Browser? _defaultBrowser;
@@ -227,7 +226,7 @@ namespace BrowserChooser3.Forms
             {
                 this.Paint += MainForm_Paint;
             }
-            ClientSize = new Size(600, 220);   // 初期サイズ
+            ClientSize = new Size(600, 300);   // 初期サイズ
             
             // サイズ変更イベントの設定
             Resize += MainForm_Resize;
@@ -298,6 +297,9 @@ namespace BrowserChooser3.Forms
                     Logger.LogInfo("MainForm.ApplyTransparencySettings", "透明化を無効にしました");
                 }
                 
+                // Windows 11スタイルの適用
+                ApplyWindows11Style();
+
                 // タイトルバー非表示設定の処理（透明化設定の後に適用）
                 if (_settings?.HideTitleBar == true)
                 {
@@ -311,9 +313,6 @@ namespace BrowserChooser3.Forms
                     MinimizeBox = true;
                     SizeGripStyle = SizeGripStyle.Show;
                 }
-                
-                // Windows 11スタイルの適用
-                ApplyWindows11Style();
             }
             catch (Exception ex)
             {

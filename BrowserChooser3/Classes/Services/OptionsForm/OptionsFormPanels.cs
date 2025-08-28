@@ -353,7 +353,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
 
             listView.Columns.Add("Protocol", 200);
             listView.Columns.Add("Browser", 300);
-            listView.Columns.Add("Default App", 200);
+            listView.Columns.Add("Active", 200);
 
             // ボタン群
             var addButton = new Button

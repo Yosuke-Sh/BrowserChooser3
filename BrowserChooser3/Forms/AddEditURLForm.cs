@@ -180,40 +180,46 @@ namespace BrowserChooser3.Forms
             });
 
             // イベントハンドラー
-            btnOK.Click += (s, e) =>
+            // フォームが閉じられる前の検証
+            this.FormClosing += (s, e) =>
             {
-                // データの検証
-                if (string.IsNullOrWhiteSpace(txtURL.Text))
+                if (DialogResult == DialogResult.OK)
                 {
-                    MessageBox.Show("URLを入力してください。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    txtURL.Focus();
-                    return;
-                }
+                    // データの検証
+                    if (string.IsNullOrWhiteSpace(txtURL.Text))
+                    {
+                        MessageBox.Show("URLを入力してください。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        txtURL.Focus();
+                        e.Cancel = true; // フォームを閉じない
+                        return;
+                    }
 
-                if (cmbBrowser.SelectedItem == null)
-                {
-                    MessageBox.Show("ブラウザを選択してください。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    cmbBrowser.Focus();
-                    return;
-                }
+                    if (cmbBrowser.SelectedItem == null)
+                    {
+                        MessageBox.Show("ブラウザを選択してください。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        cmbBrowser.Focus();
+                        e.Cancel = true; // フォームを閉じない
+                        return;
+                    }
 
-                // データの保存
-                _url.URLPattern = txtURL.Text;
-                
-                var selectedBrowserName = cmbBrowser.SelectedItem.ToString();
-                var selectedBrowser = _browsers.Values.FirstOrDefault(b => b.Name == selectedBrowserName);
-                if (selectedBrowser != null)
-                {
-                    _url.Guid = selectedBrowser.Guid;
-                }
-                
-                if (int.TryParse(txtDelay.Text, out var delay))
-                {
-                    _url.DelayTime = delay;
-                }
-                else
-                {
-                    _url.DelayTime = -1; // Default
+                    // データの保存
+                    _url.URLPattern = txtURL.Text;
+                    
+                    var selectedBrowserName = cmbBrowser.SelectedItem.ToString();
+                    var selectedBrowser = _browsers.Values.FirstOrDefault(b => b.Name == selectedBrowserName);
+                    if (selectedBrowser != null)
+                    {
+                        _url.Guid = selectedBrowser.Guid;
+                    }
+                    
+                    if (int.TryParse(txtDelay.Text, out var delay))
+                    {
+                        _url.DelayTime = delay;
+                    }
+                    else
+                    {
+                        _url.DelayTime = -1; // Default
+                    }
                 }
             };
         }

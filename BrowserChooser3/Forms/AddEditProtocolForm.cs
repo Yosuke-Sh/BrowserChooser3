@@ -158,32 +158,38 @@ namespace BrowserChooser3.Forms
             });
 
             // イベントハンドラー
-            btnOK.Click += (s, e) =>
+            // フォームが閉じられる前の検証
+            this.FormClosing += (s, e) =>
             {
-                // データの検証
-                if (string.IsNullOrWhiteSpace(txtName.Text))
+                if (DialogResult == DialogResult.OK)
                 {
-                    MessageBox.Show("プロトコル名を入力してください。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    txtName.Focus();
-                    return;
-                }
+                    // データの検証
+                    if (string.IsNullOrWhiteSpace(txtName.Text))
+                    {
+                        MessageBox.Show("プロトコル名を入力してください。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        txtName.Focus();
+                        e.Cancel = true; // フォームを閉じない
+                        return;
+                    }
 
-                if (cmbBrowser.SelectedItem == null)
-                {
-                    MessageBox.Show("ブラウザを選択してください。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    cmbBrowser.Focus();
-                    return;
-                }
+                    if (cmbBrowser.SelectedItem == null)
+                    {
+                        MessageBox.Show("ブラウザを選択してください。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        cmbBrowser.Focus();
+                        e.Cancel = true; // フォームを閉じない
+                        return;
+                    }
 
-                // データの保存
-                _protocol.Name = txtName.Text;
-                _protocol.IsActive = chkActive.Checked;
-                
-                var selectedBrowserName = cmbBrowser.SelectedItem.ToString();
-                var selectedBrowser = _browsers.Values.FirstOrDefault(b => b.Name == selectedBrowserName);
-                if (selectedBrowser != null)
-                {
-                    _protocol.BrowserGuid = selectedBrowser.Guid;
+                    // データの保存
+                    _protocol.Name = txtName.Text;
+                    _protocol.IsActive = chkActive.Checked;
+                    
+                    var selectedBrowserName = cmbBrowser.SelectedItem.ToString();
+                    var selectedBrowser = _browsers.Values.FirstOrDefault(b => b.Name == selectedBrowserName);
+                    if (selectedBrowser != null)
+                    {
+                        _protocol.BrowserGuid = selectedBrowser.Guid;
+                    }
                 }
             };
         }

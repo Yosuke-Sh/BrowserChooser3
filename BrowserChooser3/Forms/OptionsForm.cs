@@ -22,8 +22,6 @@ namespace BrowserChooser3.Forms
         private OptionsFormProtocolHandlers _protocolHandlers;
         private OptionsFormListHandlers _listHandlers;
         private OptionsFormDragDropHandlers _dragDropHandlers;
-        private OptionsFormCheckBoxHandlers _checkBoxHandlers;
-        private OptionsFormHelpHandlers _helpHandlers;
 
         // UIパネル作成クラス
         private OptionsFormPanels _panels;
@@ -56,8 +54,6 @@ namespace BrowserChooser3.Forms
             _protocolHandlers = new OptionsFormProtocolHandlers(this, _mProtocols, _mBrowser, SetModified);
             _listHandlers = new OptionsFormListHandlers(this);
             _dragDropHandlers = new OptionsFormDragDropHandlers(this, _settings, _mBrowser, _mProtocols, null!, SetModified, RebuildAutoURLs);
-            _checkBoxHandlers = new OptionsFormCheckBoxHandlers(this, _settings, SetModified);
-            _helpHandlers = new OptionsFormHelpHandlers(this);
 
             // UIパネル作成クラスの初期化
             _panels = new OptionsFormPanels();
