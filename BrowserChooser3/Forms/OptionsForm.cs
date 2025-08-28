@@ -25,9 +25,9 @@ namespace BrowserChooser3.Forms
         private OptionsFormListHandlers _listHandlers;
         private OptionsFormDragDropHandlers _dragDropHandlers;
         private OptionsFormCheckBoxHandlers _checkBoxHandlers;
-        private OptionsFormBackgroundHandlers _backgroundHandlers;
+        // private OptionsFormBackgroundHandlers _backgroundHandlers;
         private OptionsFormHelpHandlers _helpHandlers;
-        private OptionsFormAccessibilityHandlers _accessibilityHandlers;
+        // private OptionsFormAccessibilityHandlers _accessibilityHandlers;
 
         // UIパネル作成クラス
         private OptionsFormPanels _panels;
@@ -36,14 +36,9 @@ namespace BrowserChooser3.Forms
         private Dictionary<int, Browser> _mBrowser = new();
         private SortedDictionary<int, URL> _mURLs = new();
         private Dictionary<int, Protocol> _mProtocols = new();
-        // FileTypes機能は未実装のため削除
-        // private Dictionary<int, FileType> _mFileTypes = new();
-        private bool _mProtocolsAreDirty = false;
-        // private bool _mFileTypesAreDirty = false;
         private int _mLastBrowserID = 0;
         private int _mLastURLID = 0;
         private int _mLastProtocolID = 0;
-        // private int _mLastFileTypeID = 0;
 
         // ImageList（Browser Chooser 2互換）
         private ImageList? _imBrowserIcons => _panels?.GetBrowserIcons();
@@ -62,15 +57,12 @@ namespace BrowserChooser3.Forms
             // イベントハンドラークラスの初期化
             _formHandlers = new OptionsFormFormHandlers(this, LoadSettingsToControls, SaveSettings, () => _isModified);
             _categoryHandlers = new OptionsFormCategoryHandlers(this, (modified) => _isModified = modified, LoadCategories);
-            _browserHandlers = new OptionsFormBrowserHandlers(this, _settings, _mBrowser, _mProtocols, null, _imBrowserIcons, SetModified);
+            _browserHandlers = new OptionsFormBrowserHandlers(this, _settings, _mBrowser, _mProtocols, null!, _imBrowserIcons, SetModified);
             _protocolHandlers = new OptionsFormProtocolHandlers(this, _mProtocols, _mBrowser, SetModified);
-            // _fileTypeHandlers = new OptionsFormFileTypeHandlers(this, _mFileTypes, _mBrowser, SetModified);
             _listHandlers = new OptionsFormListHandlers(this);
-            _dragDropHandlers = new OptionsFormDragDropHandlers(this, _settings, _mBrowser, _mProtocols, null, SetModified, RebuildAutoURLs);
+            _dragDropHandlers = new OptionsFormDragDropHandlers(this, _settings, _mBrowser, _mProtocols, null!, SetModified, RebuildAutoURLs);
             _checkBoxHandlers = new OptionsFormCheckBoxHandlers(this, _settings, SetModified);
-            _backgroundHandlers = new OptionsFormBackgroundHandlers(this, _settings, SetModified);
             _helpHandlers = new OptionsFormHelpHandlers(this);
-            _accessibilityHandlers = new OptionsFormAccessibilityHandlers(this, _settings, SetModified);
 
             // UIパネル作成クラスの初期化
             _panels = new OptionsFormPanels();
@@ -115,9 +107,6 @@ namespace BrowserChooser3.Forms
 
                 var associationsNode = new TreeNode("Associations");
                 associationsNode.Nodes.Add(new TreeNode("Protocols") { Tag = "tabProtocols" });
-                // FileTypesとCategories機能は未実装のため削除
-                // associationsNode.Nodes.Add(new TreeNode("File Types") { Tag = "tabFileTypes" });
-                // associationsNode.Nodes.Add(new TreeNode("Categories") { Tag = "tabCategories" });
 
                 var settingsNode = new TreeNode("Settings");
                 settingsNode.Nodes.Add(new TreeNode("Display") { Tag = "tabDisplay" });
@@ -134,12 +123,10 @@ namespace BrowserChooser3.Forms
                 treeSettings.Nodes.Add(defaultBrowserNode);
 
                 // タブページの作成
-                var browsersTab = _panels.CreateBrowsersPanel(_settings, _mBrowser, _mProtocols, null, _mLastBrowserID, _imBrowserIcons, SetModified, RebuildAutoURLs);
+                var browsersTab = _panels.CreateBrowsersPanel(_settings, _mBrowser, _mProtocols, null!, _mLastBrowserID, _imBrowserIcons, SetModified, RebuildAutoURLs);
                 var autoUrlsTab = _panels.CreateAutoURLsPanel(_settings, _mURLs, _mBrowser, SetModified, RebuildAutoURLs);
                 var protocolsTab = _panels.CreateProtocolsPanel(_settings, _mProtocols, _mBrowser, SetModified);
-                // var fileTypesTab = _panels.CreateFileTypesPanel(_settings, _mFileTypes, _mBrowser, SetModified);
                 var defaultBrowserTab = _panels.CreateDefaultBrowserPanel(_settings, SetModified);
-                // var categoriesTab = _panels.CreateCategoriesPanel();
                 var displayTab = _panels.CreateDisplayPanel(_settings, SetModified);
                 var gridTab = _panels.CreateGridPanel(_settings, SetModified);
                 var privacyTab = _panels.CreatePrivacyPanel(_settings, SetModified);
@@ -149,9 +136,7 @@ namespace BrowserChooser3.Forms
                 tabSettings.TabPages.Add(browsersTab);
                 tabSettings.TabPages.Add(autoUrlsTab);
                 tabSettings.TabPages.Add(protocolsTab);
-                // tabSettings.TabPages.Add(fileTypesTab);
                 tabSettings.TabPages.Add(defaultBrowserTab);
-                // tabSettings.TabPages.Add(categoriesTab);
                 tabSettings.TabPages.Add(displayTab);
                 tabSettings.TabPages.Add(gridTab);
                 tabSettings.TabPages.Add(privacyTab);
@@ -367,10 +352,43 @@ namespace BrowserChooser3.Forms
                     var addButton = autoUrlsTab.Controls.Find("btnAdd", true).FirstOrDefault() as Button;
                     var editButton = autoUrlsTab.Controls.Find("btnEdit", true).FirstOrDefault() as Button;
                     var deleteButton = autoUrlsTab.Controls.Find("btnDelete", true).FirstOrDefault() as Button;
+                    var moveUpButton = autoUrlsTab.Controls.Find("btnMoveUp", true).FirstOrDefault() as Button;
+                    var moveDownButton = autoUrlsTab.Controls.Find("btnMoveDown", true).FirstOrDefault() as Button;
 
+                    var listView = autoUrlsTab.Controls.Find("lstURLs", true).FirstOrDefault() as ListView;
+                    
                     if (addButton != null) addButton.Click += AddAutoURL_Click;
                     if (editButton != null) editButton.Click += EditAutoURL_Click;
                     if (deleteButton != null) deleteButton.Click += DeleteAutoURL_Click;
+                    if (moveUpButton != null) moveUpButton.Click += MoveUpAutoURL_Click;
+                    if (moveDownButton != null) moveDownButton.Click += MoveDownAutoURL_Click;
+                    
+                    // ListViewの選択変更イベントを設定
+                    if (listView != null)
+                    {
+                        listView.SelectedIndexChanged += _listHandlers.LstURLs_SelectedIndexChanged;
+                        Logger.LogInfo("OptionsForm.SetupAutoURLsPanelButtons", "Auto URLs ListViewのSelectedIndexChangedイベントを設定しました");
+                        
+                        // デバッグ用：ListViewの名前とイベントハンドラーの確認
+                        Logger.LogInfo("OptionsForm.SetupAutoURLsPanelButtons", $"ListView名: {listView.Name}, イベントハンドラー数: {listView.GetType().GetEvents().Length}");
+
+                        // 選択変更の補助（環境によってSelectedIndexChangedが遅延する場合のフォロー）
+                        listView.ItemSelectionChanged += (s, e2) =>
+                        {
+                            try
+                            {
+                                _listHandlers.LstURLs_SelectedIndexChanged(listView, EventArgs.Empty);
+                            }
+                            catch (Exception ex2)
+                            {
+                                Logger.LogError("OptionsForm.SetupAutoURLsPanelButtons", "ItemSelectionChanged処理エラー", ex2.Message);
+                            }
+                        };
+                    }
+                    else
+                    {
+                        Logger.LogWarning("OptionsForm.SetupAutoURLsPanelButtons", "Auto URLs ListViewが見つかりませんでした");
+                    }
                 }
             }
             catch (Exception ex)
@@ -402,6 +420,10 @@ namespace BrowserChooser3.Forms
                         item.Tag = newIndex;
                         item.SubItems.Add(BrowserUtilities.GetBrowserByGUID(newURL.Guid, _mBrowser.Values.ToList())?.Name ?? "");
                         item.SubItems.Add(newURL.DelayTime < 0 ? "Default" : newURL.DelayTime.ToString());
+
+                        // 追加直後に選択してボタンを有効化
+                        item.Selected = true;
+                        _listHandlers.LstURLs_SelectedIndexChanged(listView, EventArgs.Empty);
                     }
                     
                     _isModified = true;
@@ -500,6 +522,96 @@ namespace BrowserChooser3.Forms
         }
 
         /// <summary>
+        /// Auto URL上移動ボタンのクリックイベント
+        /// </summary>
+        private void MoveUpAutoURL_Click(object? sender, EventArgs e)
+        {
+            try
+            {
+                Logger.LogInfo("OptionsForm.MoveUpAutoURL_Click", "Auto URL上移動開始");
+                var autoUrlsTab = tabSettings.TabPages["tabAutoURLs"];
+                var listView = autoUrlsTab?.Controls.Find("lstURLs", true).FirstOrDefault() as ListView;
+                if (listView?.SelectedItems.Count > 0)
+                {
+                    var selectedIndex = listView.SelectedIndices[0];
+                    if (selectedIndex > 0)
+                    {
+                        // ListViewアイテムの移動
+                        var item = listView.Items[selectedIndex];
+                        listView.Items.RemoveAt(selectedIndex);
+                        listView.Items.Insert(selectedIndex - 1, item);
+                        listView.Items[selectedIndex - 1].Selected = true;
+                        
+                        // データの移動
+                        var keys = _mURLs.Keys.ToList();
+                        if (selectedIndex < keys.Count)
+                        {
+                            var currentKey = keys[selectedIndex];
+                            var previousKey = keys[selectedIndex - 1];
+                            var temp = _mURLs[currentKey];
+                            _mURLs[currentKey] = _mURLs[previousKey];
+                            _mURLs[previousKey] = temp;
+                        }
+                        
+                        _isModified = true;
+                        Logger.LogInfo("OptionsForm.MoveUpAutoURL_Click", "Auto URL上移動完了");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("OptionsForm.MoveUpAutoURL_Click", "Auto URL上移動エラー", ex.Message);
+                MessageBox.Show($"Auto URL上移動に失敗しました: {ex.Message}", "エラー", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// Auto URL下移動ボタンのクリックイベント
+        /// </summary>
+        private void MoveDownAutoURL_Click(object? sender, EventArgs e)
+        {
+            try
+            {
+                Logger.LogInfo("OptionsForm.MoveDownAutoURL_Click", "Auto URL下移動開始");
+                var autoUrlsTab = tabSettings.TabPages["tabAutoURLs"];
+                var listView = autoUrlsTab?.Controls.Find("lstURLs", true).FirstOrDefault() as ListView;
+                if (listView?.SelectedItems.Count > 0)
+                {
+                    var selectedIndex = listView.SelectedIndices[0];
+                    if (selectedIndex < listView.Items.Count - 1)
+                    {
+                        // ListViewアイテムの移動
+                        var item = listView.Items[selectedIndex];
+                        listView.Items.RemoveAt(selectedIndex);
+                        listView.Items.Insert(selectedIndex + 1, item);
+                        listView.Items[selectedIndex + 1].Selected = true;
+                        
+                        // データの移動
+                        var keys = _mURLs.Keys.ToList();
+                        if (selectedIndex < keys.Count - 1)
+                        {
+                            var currentKey = keys[selectedIndex];
+                            var nextKey = keys[selectedIndex + 1];
+                            var temp = _mURLs[currentKey];
+                            _mURLs[currentKey] = _mURLs[nextKey];
+                            _mURLs[nextKey] = temp;
+                        }
+                        
+                        _isModified = true;
+                        Logger.LogInfo("OptionsForm.MoveDownAutoURL_Click", "Auto URL下移動完了");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("OptionsForm.MoveDownAutoURL_Click", "Auto URL下移動エラー", ex.Message);
+                MessageBox.Show($"Auto URL下移動に失敗しました: {ex.Message}", "エラー", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
         /// プロトコルパネルのボタンイベントハンドラー設定
         /// </summary>
         private void SetupProtocolsPanelButtons()
@@ -514,9 +626,21 @@ namespace BrowserChooser3.Forms
                     var deleteButton = protocolsTab.Controls.Find("btnDelete", true).FirstOrDefault() as Button;
                     var listView = protocolsTab.Controls.Find("lstProtocols", true).FirstOrDefault() as ListView;
 
-                    if (addButton != null) addButton.Click += _protocolHandlers.AddProtocol_Click;
-                    if (editButton != null) editButton.Click += _protocolHandlers.EditProtocol_Click;
-                    if (deleteButton != null) deleteButton.Click += _protocolHandlers.DeleteProtocol_Click;
+                    if (addButton != null) 
+                    {
+                        addButton.Click += _protocolHandlers.AddProtocol_Click;
+                        Logger.LogInfo("OptionsForm.SetupProtocolsPanelButtons", "Addボタンのイベントを設定しました");
+                    }
+                    if (editButton != null) 
+                    {
+                        editButton.Click += _protocolHandlers.EditProtocol_Click;
+                        Logger.LogInfo("OptionsForm.SetupProtocolsPanelButtons", "Editボタンのイベントを設定しました");
+                    }
+                    if (deleteButton != null) 
+                    {
+                        deleteButton.Click += _protocolHandlers.DeleteProtocol_Click;
+                        Logger.LogInfo("OptionsForm.SetupProtocolsPanelButtons", "Deleteボタンのイベントを設定しました");
+                    }
                     
                     // ListViewの選択変更イベントを設定
                     if (listView != null)
@@ -536,43 +660,7 @@ namespace BrowserChooser3.Forms
             }
         }
 
-        /// <summary>
-        /// ファイルタイプパネルのボタンイベントハンドラー設定
-        /// </summary>
-        // FileTypes機能は未実装のため削除
-        // private void SetupFileTypesPanelButtons()
-        // {
-        //     try
-        //     {
-        //         var fileTypesTab = tabSettings.TabPages["tabFileTypes"];
-        //         if (fileTypesTab != null)
-        //         {
-        //         var addButton = fileTypesTab.Controls.Find("btnAdd", true).FirstOrDefault() as Button;
-        //         var editButton = fileTypesTab.Controls.Find("btnEdit", true).FirstOrDefault() as Button;
-        //         var deleteButton = fileTypesTab.Controls.Find("btnDelete", true).FirstOrDefault() as Button;
-        //         var listView = fileTypesTab.Controls.Find("lstFileTypes", true).FirstOrDefault() as ListView;
-        // 
-        //         if (addButton != null) addButton.Click += _fileTypeHandlers.AddFileType_Click;
-        //         if (editButton != null) editButton.Click += _fileTypeHandlers.EditFileType_Click;
-        //         if (deleteButton != null) deleteButton.Click += _fileTypeHandlers.DeleteFileType_Click;
-        //         
-        //         // ListViewの選択変更イベントを設定
-        //         if (listView != null)
-        //         {
-        //         listView.SelectedIndexChanged += (sender, e) =>
-        //         {
-        //         var hasSelection = listView.SelectedItems.Count > 0;
-        //         if (editButton != null) editButton.Enabled = hasSelection;
-        //         if (deleteButton != null) deleteButton.Enabled = hasSelection;
-        //         };
-        //         }
-        //         }
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         Logger.LogError("OptionsForm.SetupFileTypesPanelButtons", "ファイルタイプパネルボタン設定エラー", ex.Message);
-        //     }
-        // }
+
 
         /// <summary>
         /// Displayパネルのボタンイベントハンドラー設定
@@ -586,24 +674,7 @@ namespace BrowserChooser3.Forms
                 {
                     Logger.LogInfo("OptionsForm.SetupDisplayPanelButtons", "Displayタブが見つかりました");
                     
-                    var accessibilityButton = displayTab.Controls.Find("btnAccessibility", true).FirstOrDefault() as Button;
-                    var backgroundColorButton = displayTab.Controls.Find("btnBackgroundColor", true).FirstOrDefault() as Button;
-
-                    Logger.LogInfo("OptionsForm.SetupDisplayPanelButtons", 
-                        $"アクセシビリティボタン: {(accessibilityButton != null ? "見つかりました" : "見つかりませんでした")}");
-                    Logger.LogInfo("OptionsForm.SetupDisplayPanelButtons", 
-                        $"背景色ボタン: {(backgroundColorButton != null ? "見つかりました" : "見つかりませんでした")}");
-
-                    if (accessibilityButton != null) 
-                    {
-                        accessibilityButton.Click += _accessibilityHandlers.AccessibilityButton_Click;
-                        Logger.LogInfo("OptionsForm.SetupDisplayPanelButtons", "アクセシビリティボタンのイベントを設定しました");
-                    }
-                    if (backgroundColorButton != null) 
-                    {
-                        backgroundColorButton.Click += _backgroundHandlers.BackgroundColorButton_Click;
-                        Logger.LogInfo("OptionsForm.SetupDisplayPanelButtons", "背景色ボタンのイベントを設定しました");
-                    }
+                    
                 }
                 else
                 {
@@ -739,12 +810,7 @@ namespace BrowserChooser3.Forms
                 case "tabProtocols":
                     ResetProtocolsPanelToDefaults(currentTab);
                     break;
-                // case "tabFileTypes":
-                //     ResetFileTypesPanelToDefaults(currentTab);
-                //     break;
-                // case "tabCategories":
-                //     ResetCategoriesPanelToDefaults(currentTab);
-                //     break;
+
                 default:
                     Logger.LogInfo("OptionsForm.ResetCurrentPanelToDefaults", $"未対応のタブ: {currentTab.Name}");
                     break;
@@ -1017,36 +1083,7 @@ namespace BrowserChooser3.Forms
             }
         }
 
-        // FileTypesとCategories機能は未実装のため削除
-        // /// <summary>
-        // /// ファイルタイプパネルの設定をデフォルト値にリセットし、UIに反映します
-        // /// </summary>
-        // private void ResetFileTypesPanelToDefaults(TabPage tabPage)
-        // {
-        //     // ファイルタイプリストをクリア
-        //     _settings.FileTypes.Clear();
-        //     _mFileTypes.Clear();
-        // 
-        //     // UIに反映
-        //     var listView = tabPage.Controls.Find("lstFileTypes", true).FirstOrDefault() as ListView;
-        //     if (listView != null)
-        //     {
-        //         listView.Items.Clear();
-        //     }
-        // }
-        // 
-        // /// <summary>
-        // /// カテゴリパネルの設定をデフォルト値にリセットし、UIに反映します
-        // /// </summary>
-        // private void ResetCategoriesPanelToDefaults(TabPage tabPage)
-        // {
-        //     // カテゴリリストをクリア
-        //     var listView = tabPage.Controls.Find("lstCategories", true).FirstOrDefault() as ListView;
-        //     if (listView != null)
-        //     {
-        //         listView.Items.Clear();
-        //     }
-        // }
+
 
 
 
@@ -1102,23 +1139,7 @@ namespace BrowserChooser3.Forms
 
             try
             {
-                // プロトコル設定の読み込み
-                _mProtocols.Clear();
-                foreach (var protocol in _settings.Protocols)
-                {
-                    _mProtocols.Add(_mProtocols.Count, protocol.Clone());
-                }
-                _mLastProtocolID = _mProtocols.Count - 1;
-
-                // ファイルタイプ設定の読み込み（未実装のため削除）
-                // _mFileTypes.Clear();
-                // foreach (var fileType in _settings.FileTypes)
-                // {
-                //     _mFileTypes.Add(_mFileTypes.Count, fileType.Clone());
-                // }
-                // _mLastFileTypeID = _mFileTypes.Count - 1;
-
-                // ブラウザ設定の読み込み
+                // ブラウザ設定の読み込み（プロトコルより先に読み込む）
                 _mBrowser.Clear();
                 var defaultBrowserGuid = _settings.DefaultBrowserGuid;
                 var listView = Controls.Find("lstBrowsers", true).FirstOrDefault() as ListView;
@@ -1157,6 +1178,29 @@ namespace BrowserChooser3.Forms
                     }
                 }
                 _mLastBrowserID = _mBrowser.Count - 1;
+
+                // プロトコル設定の読み込み
+                _mProtocols.Clear();
+                var protocolListView = Controls.Find("lstProtocols", true).FirstOrDefault() as ListView;
+                if (protocolListView != null) protocolListView.Items.Clear();
+
+                foreach (var protocol in _settings.Protocols)
+                {
+                    _mProtocols.Add(_mProtocols.Count, protocol.Clone());
+                }
+                _mLastProtocolID = _mProtocols.Count - 1;
+
+                // プロトコルListViewにアイテムを追加
+                if (protocolListView != null)
+                {
+                    foreach (var protocol in _mProtocols)
+                    {
+                        var item = protocolListView.Items.Add(protocol.Value.Name);
+                        item.Tag = protocol.Key;
+                        item.SubItems.Add(_mBrowser.Values.FirstOrDefault(b => b.Guid == protocol.Value.BrowserGuid)?.Name ?? "");
+                        item.SubItems.Add("Default");
+                    }
+                }
 
                 // URL設定の読み込み
                 _mURLs.Clear();
@@ -1254,6 +1298,14 @@ namespace BrowserChooser3.Forms
                 var nudWidth = Controls.Find("nudWidth", true).FirstOrDefault() as NumericUpDown;
                 if (nudWidth != null) nudWidth.Value = _settings.Width;
 
+                // 背景色の表示用PictureBoxを設定値で初期化（保存時との不整合防止）
+                var pbBackgroundColorLoad = Controls.Find("pbBackgroundColor", true).FirstOrDefault() as PictureBox;
+                if (pbBackgroundColorLoad != null)
+                {
+                    pbBackgroundColorLoad.BackColor = _settings.BackgroundColorValue;
+                    Logger.LogInfo("OptionsForm.LoadSettingsToControls", $"BackgroundColor loaded: {_settings.BackgroundColorValue} (to control: {pbBackgroundColorLoad.BackColor})");
+                }
+
                 var nudDelayBeforeAutoload = Controls.Find("nudDelayBeforeAutoload", true).FirstOrDefault() as NumericUpDown;
                 if (nudDelayBeforeAutoload != null) nudDelayBeforeAutoload.Value = _settings.DefaultDelay;
 
@@ -1298,8 +1350,9 @@ namespace BrowserChooser3.Forms
                     Logger.LogInfo("OptionsForm.LoadSettingsToControls", $"IconGapHeight loaded: {_settings.IconGapHeight} (to control: {nudIconGapHeight.Value})");
                 }
 
-                var pbBackgroundColor = Controls.Find("pbBackgroundColor", true).FirstOrDefault() as Panel;
-                if (pbBackgroundColor != null) pbBackgroundColor.BackColor = Color.FromArgb(_settings.BackgroundColor);
+                // 背景色はPictureBoxから読み書きする（Panel扱いは廃止）
+                var pbBackgroundColor = Controls.Find("pbBackgroundColor", true).FirstOrDefault() as PictureBox;
+                if (pbBackgroundColor != null) pbBackgroundColor.BackColor = _settings.BackgroundColorValue;
 
                 var nudIconScale = Controls.Find("nudIconScale", true).FirstOrDefault() as NumericUpDown;
                 if (nudIconScale != null) 
@@ -1312,6 +1365,8 @@ namespace BrowserChooser3.Forms
 
                 var chkExtractDLLs = Controls.Find("chkExtractDLLs", true).FirstOrDefault() as CheckBox;
                 if (chkExtractDLLs != null) chkExtractDLLs.Checked = _settings.ExtractDLLs;
+
+
 
                 // グリッド設定
                 var nudGridWidth = Controls.Find("nudGridWidth", true).FirstOrDefault() as NumericUpDown;
@@ -1592,8 +1647,7 @@ namespace BrowserChooser3.Forms
                     Logger.LogInfo("OptionsForm.SaveSettings", $"IconGapHeight saved: {_settings.IconGapHeight} (from control: {nudIconGapHeight.Value})");
                 }
 
-                var pbBackgroundColor = Controls.Find("pbBackgroundColor", true).FirstOrDefault() as Panel;
-                if (pbBackgroundColor != null) _settings.BackgroundColor = pbBackgroundColor.BackColor.ToArgb();
+                // Panel経由の保存は廃止。DisplayタブのPictureBoxから保存する
 
                 var nudIconScale = Controls.Find("nudIconScale", true).FirstOrDefault() as NumericUpDown;
                 if (nudIconScale != null) 
@@ -1626,7 +1680,25 @@ namespace BrowserChooser3.Forms
                 // プライバシー設定
 
                 var cmbLogLevel = Controls.Find("cmbLogLevel", true).FirstOrDefault() as ComboBox;
-                if (cmbLogLevel != null) _settings.LogLevel = cmbLogLevel.SelectedIndex;
+                if (cmbLogLevel != null)
+                {
+                    // ComboBox.Index → Settings.LogLevel(int) へのマッピング
+                    int MapIndexToLogLevel(int idx)
+                    {
+                        // ComboBox: Trace(0), Debug(1), Info(2), Warning(3), Error(4)
+                        return idx switch
+                        {
+                            0 => 5, // Trace
+                            1 => 4, // Debug
+                            2 => 3, // Info
+                            3 => 2, // Warning
+                            4 => 1, // Error
+                            _ => 3
+                        };
+                    }
+                    _settings.LogLevel = MapIndexToLogLevel(cmbLogLevel.SelectedIndex);
+                    Logger.InitializeLogLevel(_settings.LogLevel);
+                }
 
                 var chkKeepHistory = Controls.Find("chkKeepHistory", true).FirstOrDefault() as CheckBox;
                 if (chkKeepHistory != null) _settings.KeepHistory = chkKeepHistory.Checked;
@@ -1695,8 +1767,61 @@ namespace BrowserChooser3.Forms
                 if (pbFocusBoxColor != null) _settings.FocusBoxColor = pbFocusBoxColor.BackColor.ToArgb();
 
                 // 背景色設定
-                var pbBackgroundColorSave = Controls.Find("pbBackgroundColor", true).FirstOrDefault() as PictureBox;
-                if (pbBackgroundColorSave != null) _settings.BackgroundColorValue = pbBackgroundColorSave.BackColor;
+                Logger.LogInfo("OptionsForm.SaveSettings", "背景色保存処理開始");
+                var displayTab = tabSettings.TabPages["tabDisplay"];
+                var pbBackgroundColorSave = displayTab?.Controls.Find("pbBackgroundColor", true).FirstOrDefault() as PictureBox;
+                Logger.LogInfo("OptionsForm.SaveSettings", $"pbBackgroundColor検索結果: {(pbBackgroundColorSave != null ? "見つかりました" : "見つかりませんでした")}");
+                
+                if (pbBackgroundColorSave != null) 
+                {
+                    Logger.LogInfo("OptionsForm.SaveSettings", $"pbBackgroundColor.BackColor: {pbBackgroundColorSave.BackColor}");
+                    _settings.BackgroundColorValue = pbBackgroundColorSave.BackColor;
+                    Logger.LogInfo("OptionsForm.SaveSettings", "背景色を保存しました", pbBackgroundColorSave.BackColor.ToString());
+                    Logger.LogInfo("OptionsForm.SaveSettings", "PictureBoxのBackColor", pbBackgroundColorSave.BackColor.ToString());
+
+                    // 透明化が無効の場合、保存直後にメイン画面へ即時反映
+                    try
+                    {
+                        var mainForm = Application.OpenForms.OfType<MainForm>().FirstOrDefault();
+                        if (mainForm != null)
+                        {
+                            var transparencyEnabled = _settings.EnableTransparency;
+                            Logger.LogInfo("OptionsForm.SaveSettings", $"即時反映: EnableTransparency={transparencyEnabled}");
+                            if (!transparencyEnabled)
+                            {
+                                mainForm.BackColor = _settings.BackgroundColorValue;
+                                Logger.LogInfo("OptionsForm.SaveSettings", "メイン画面の背景色を即時更新しました", _settings.BackgroundColorValue.ToString());
+                            }
+                            else
+                            {
+                                Logger.LogInfo("OptionsForm.SaveSettings", "透明化有効のため即時の背景色反映はスキップされます");
+                            }
+                        }
+                        else
+                        {
+                            Logger.LogWarning("OptionsForm.SaveSettings", "MainFormが見つからないため即時反映をスキップ");
+                        }
+                    }
+                    catch (Exception ex2)
+                    {
+                        Logger.LogError("OptionsForm.SaveSettings", "メイン画面即時反映時エラー", ex2.Message);
+                    }
+                }
+                else
+                {
+                    Logger.LogWarning("OptionsForm.SaveSettings", "pbBackgroundColorが見つかりませんでした");
+                    
+                    // デバッグ用：Displayタブ内のすべてのコントロールを検索
+                    if (displayTab != null)
+                    {
+                        var allControls = displayTab.Controls.Find("pbBackgroundColor", true);
+                        Logger.LogInfo("OptionsForm.SaveSettings", $"pbBackgroundColor検索結果数: {allControls.Length}");
+                        foreach (var control in allControls)
+                        {
+                            Logger.LogInfo("OptionsForm.SaveSettings", $"見つかったコントロール: {control.Name}, 型: {control.GetType().Name}");
+                        }
+                    }
+                }
 
                 // 透明化設定
                 var chkEnableTransparency = Controls.Find("chkEnableTransparency", true).FirstOrDefault() as CheckBox;
@@ -1750,6 +1875,14 @@ namespace BrowserChooser3.Forms
 
                 var chkAllowStayOpenSave = Controls.Find("chkAllowStayOpen", true).FirstOrDefault() as CheckBox;
                 if (chkAllowStayOpenSave != null) _settings.AllowStayOpen = chkAllowStayOpenSave.Checked;
+
+                // Enable Logging設定
+                var chkEnableLoggingSave = Controls.Find("chkEnableLogging", true).FirstOrDefault() as CheckBox;
+                if (chkEnableLoggingSave != null) 
+                {
+                    _settings.EnableLogging = chkEnableLoggingSave.Checked;
+                    Logger.LogInfo("OptionsForm.SaveSettings", "Enable Logging設定を保存しました", _settings.EnableLogging.ToString());
+                }
 
                 _settings.DoSave();
                 _isModified = false;
@@ -1832,7 +1965,7 @@ namespace BrowserChooser3.Forms
                                     Category = "Default"
                                 };
 
-                                if (addEditForm.AddBrowser(_mBrowser, _mProtocols, null, false,
+                                if (addEditForm.AddBrowser(_mBrowser, _mProtocols, null!, false,
                                     new Point(_settings.GridWidth, _settings.GridHeight), newBrowser))
                                 {
                                     var browser = addEditForm.GetData();
