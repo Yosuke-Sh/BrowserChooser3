@@ -234,7 +234,10 @@ namespace BrowserChooser3.Forms
             {
                 // 設定値をそのまま反映（Settings.BackgroundColorValue は常に不透明で正規化済み）
                 BackColor = _settings?.BackgroundColorValue ?? Color.FromArgb(185, 209, 234);
+                Logger.LogInfo("MainForm.ConfigureForm", $"Applied BackColor: {BackColor}");
                 StyleXP(); // 透明化が無効の場合のスタイル設定
+                // 子コントロールは既定色に保ち、フォーム背景色の影響を受けにくくする
+                ApplyDefaultBackColorToChildControls();
             }
             
             Logger.LogInfo("MainForm.ConfigureForm", "End");
@@ -509,6 +512,27 @@ namespace BrowserChooser3.Forms
                 chkAutoClose.BackColor = Color.Transparent;
             if (chkAutoOpen != null)
                 chkAutoOpen.BackColor = Color.Transparent;
+        }
+
+        /// <summary>
+        /// 子コントロールの背景色を既定色に戻す（フォームのBackColor変更の影響を抑制）
+        /// </summary>
+        private void ApplyDefaultBackColorToChildControls()
+        {
+            foreach (Control control in Controls)
+            {
+                switch (control)
+                {
+                    case Button:
+                    case Label:
+                    case TextBox:
+                    case CheckBox:
+                    case ListView:
+                    case Panel:
+                        control.BackColor = Color.Transparent;
+                        break;
+                }
+            }
         }
 
 
