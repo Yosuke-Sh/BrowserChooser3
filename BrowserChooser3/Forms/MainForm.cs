@@ -16,6 +16,8 @@ namespace BrowserChooser3.Forms
         private Settings? _settings;
         private List<Browser>? _browsers;
         private string _currentUrl = string.Empty;
+        
+
         private System.Windows.Forms.Timer? _countdownTimer;
         private int _currentDelay;
         private Browser? _defaultBrowser;
@@ -199,29 +201,10 @@ namespace BrowserChooser3.Forms
             
             // フォームの基本設定（動的サイズ変更対応）
             Text = _settings?.DefaultMessage ?? "Choose a Browser";
-            FormBorderStyle = FormBorderStyle.Sizable;  // サイズ変更可能に変更
-            MaximizeBox = true;   // 最大化ボタンを有効
-            MinimizeBox = true;   // 最小化ボタンを有効
             ShowIcon = false;
-            SizeGripStyle = SizeGripStyle.Show;  // サイズグリップを表示
-            StartPosition = FormStartPosition.CenterScreen;
             TopMost = true;
             CancelButton = btnCancel;
             KeyPreview = true;
-            
-            // Windows 11風の最新スタイルを適用
-            try
-            {
-                if (Environment.OSVersion.Version.Major >= 10)
-                {
-                    // Windows 10/11の最新スタイル
-                    this.WindowState = FormWindowState.Normal;
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("MainForm.ConfigureForm", "最新スタイル適用エラー", ex.Message);
-            }
             
             // フォントの設定（現代的で日本語・英語両対応）
             Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0);
@@ -233,7 +216,7 @@ namespace BrowserChooser3.Forms
             // サイズ変更イベントの設定
             Resize += MainForm_Resize;
             
-            // 透明化設定の適用
+            // 透明化設定の適用（Windows11スタイルも含む）
             ApplyTransparencySettings();
             
             // 透明化が無効な場合の背景色設定
@@ -253,6 +236,9 @@ namespace BrowserChooser3.Forms
         {
             try
             {
+                // フォームの基本スタイル設定（最小化・最大化ボタンを含む）
+                StartPosition = FormStartPosition.CenterScreen;
+                
                 if (_settings?.EnableTransparency == true)
                 {
                     // 透明化が有効な場合
@@ -283,11 +269,28 @@ namespace BrowserChooser3.Forms
                     // リージョンをクリア（角を丸くする設定を無効化）
                     this.Region = null;
                     
+                    // 透明化解除後の描画問題を解決するため、フォームを強制再描画
+                    this.Refresh();
+                    
                     Logger.LogInfo("MainForm.ApplyTransparencySettings", "透明化を無効にしました");
                 }
                 
-                // 共通のフォームスタイル設定
-                ApplyCommonFormStyle();
+                // タイトルバー非表示設定の処理（透明化設定の後に適用）
+                if (_settings?.HideTitleBar == true)
+                {
+                    FormBorderStyle = FormBorderStyle.None;
+                }
+                else
+                {
+                    // タイトルバーが表示される場合は最小化・最大化ボタンを確実に有効化
+                    FormBorderStyle = FormBorderStyle.Sizable;
+                    MaximizeBox = true;
+                    MinimizeBox = true;
+                    SizeGripStyle = SizeGripStyle.Show;
+                }
+                
+                // Windows 11スタイルの適用
+                ApplyWindows11Style();
             }
             catch (Exception ex)
             {
@@ -296,36 +299,36 @@ namespace BrowserChooser3.Forms
         }
 
         /// <summary>
-        /// 共通のフォームスタイル設定を適用
+        /// Windows 11スタイルを適用
         /// </summary>
-        private void ApplyCommonFormStyle()
+        private void ApplyWindows11Style()
         {
             try
             {
-                // タイトルバー非表示設定
-                if (_settings?.HideTitleBar == true)
+                // Windows 11風の最新スタイルを適用
+                if (Environment.OSVersion.Version.Major >= 10)
                 {
-                    this.FormBorderStyle = FormBorderStyle.None;
-                }
-                else
-                {
-                    // 最新のWindowsスタイルを使用（サイズ変更可能）
-                    this.FormBorderStyle = FormBorderStyle.Sizable;
-                    this.WindowState = FormWindowState.Normal;
-                    this.MaximizeBox = true;
-                    this.MinimizeBox = true;
-                    this.SizeGripStyle = SizeGripStyle.Show;
-                    
-                    // Windows 11風の最新スタイルを適用
-                    if (Environment.OSVersion.Version.Major >= 10)
+                    // Windows 11の最新スタイルを強制適用
+                    try
                     {
-                        this.StartPosition = FormStartPosition.CenterScreen;
+                        if (Environment.OSVersion.Version.Build >= 22000) // Windows 11
+                        {
+                            // Windows 11の最新スタイルを適用
+                            this.WindowState = FormWindowState.Normal;
+                            this.FormBorderStyle = FormBorderStyle.Sizable;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError("MainForm.ApplyWindows11Style", "Windows 11スタイル適用エラー", ex.Message);
                     }
                 }
+                
+                Logger.LogInfo("MainForm.ApplyWindows11Style", "Windows 11スタイル設定を適用しました");
             }
             catch (Exception ex)
             {
-                Logger.LogError("MainForm.ApplyCommonFormStyle", "共通スタイル適用エラー", ex.Message);
+                Logger.LogError("MainForm.ApplyWindows11Style", "Windows 11スタイル適用エラー", ex.Message);
             }
         }
 
@@ -376,6 +379,9 @@ namespace BrowserChooser3.Forms
         {
             try
             {
+                // リサイズ中の描画を一時的に無効化（パフォーマンス向上）
+                this.SuspendLayout();
+                
                 // 透明化が有効で角を丸くする設定がある場合、リージョンを更新
                 if (_settings?.EnableTransparency == true && _settings.RoundedCornersRadius > 0)
                 {
@@ -388,15 +394,18 @@ namespace BrowserChooser3.Forms
                 // 互換性UIコントロールの位置調整
                 AdjustCompatibilityUILayout();
                 
-                // フォームの再描画を強制
-                this.Invalidate();
-                this.Update();
+                // リサイズ処理を再開
+                this.ResumeLayout(false);
+                
+                // フォームの再描画を強制（透明化解除後の描画問題を解決）
+                this.Refresh();
                 
                 Logger.LogTrace("MainForm.MainForm_Resize", "フォームサイズ変更完了", ClientSize.Width, ClientSize.Height);
             }
             catch (Exception ex)
             {
                 Logger.LogError("MainForm.MainForm_Resize", "サイズ変更エラー", ex.Message, ex.StackTrace ?? "");
+                this.ResumeLayout(false);
             }
         }
 
@@ -493,7 +502,15 @@ namespace BrowserChooser3.Forms
         /// </summary>
         private void StyleXP()
         {
-            FormBorderStyle = FormBorderStyle.FixedDialog;
+            // 透明化が無効な場合はサイズ変更可能にする
+            if (!_settings?.EnableTransparency == true)
+            {
+                FormBorderStyle = FormBorderStyle.Sizable;
+                MaximizeBox = true;
+                MinimizeBox = true;
+                SizeGripStyle = SizeGripStyle.Show;
+            }
+            
             if (chkAutoClose != null)
                 chkAutoClose.BackColor = Color.Transparent;
             if (chkAutoOpen != null)
@@ -800,11 +817,14 @@ namespace BrowserChooser3.Forms
                     lbl.Dispose();
                 }
                 
-                // フォームを再設定
+                // リフレッシュ中の描画を一時的に無効化（パフォーマンス向上）
+                this.SuspendLayout();
+                
+                // フォームを再設定（Windows11スタイルも含む）
                 ConfigureForm();
                 
-                // 基本コントロールを再作成
-                CreateBasicControls();
+                // ツールチップの初期化
+                InitializeToolTips();
                 
                 // ブラウザボタンを再作成
                 CreateBrowserButtons();
@@ -812,8 +832,29 @@ namespace BrowserChooser3.Forms
                 // カウントダウンラベルを再作成
                 CreateCountdownLabel();
                 
+                // ボタンのツールチップ設定
+                SetupButtonToolTips();
+                
+                // Browser Chooser 2互換のUI要素の位置調整
+                AdjustCompatibilityUILayout();
+                
+                // アイコンの読み込み
+                LoadIcons();
+                
                 // AutoCloseとAutoOpenの再初期化
                 InitializeAutoCloseAndAutoOpen();
+                
+                // 初期テキストの設定
+                UpdateAutoOpenTextWithSpaceKey();
+                
+                // URL短縮解除の設定
+                SetupURLUnshortening();
+                
+                // リフレッシュ処理を再開
+                this.ResumeLayout(false);
+                
+                // フォームを強制再描画（透明化解除後の描画問題を解決）
+                this.Refresh();
                 
                 Logger.LogInfo("MainForm.RefreshForm", "End");
             }
@@ -934,7 +975,7 @@ namespace BrowserChooser3.Forms
                     btnOptions.Location = new Point(ClientSize.Width - 35, 15);
                     btnOptions.ImageAlign = ContentAlignment.MiddleCenter;
                     btnOptions.Size = new Size(28, 28);
-                    btnOptions.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+                    btnOptions.Anchor = AnchorStyles.Top | AnchorStyles.Right;
                 }
                 
                 if (btnCopyToClipboard != null)
@@ -942,7 +983,7 @@ namespace BrowserChooser3.Forms
                     btnCopyToClipboard.Location = new Point(ClientSize.Width - 35, 50);
                     btnCopyToClipboard.ImageAlign = ContentAlignment.MiddleCenter;
                     btnCopyToClipboard.Size = new Size(28, 28);
-                    btnCopyToClipboard.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+                    btnCopyToClipboard.Anchor = AnchorStyles.Top | AnchorStyles.Right;
                 }
 
                 if (btnCopyToClipboardAndClose != null)
@@ -950,7 +991,7 @@ namespace BrowserChooser3.Forms
                     btnCopyToClipboardAndClose.Location = new Point(ClientSize.Width - 35, 85);
                     btnCopyToClipboardAndClose.ImageAlign = ContentAlignment.MiddleCenter;
                     btnCopyToClipboardAndClose.Size = new Size(28, 28);
-                    btnCopyToClipboardAndClose.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+                    btnCopyToClipboardAndClose.Anchor = AnchorStyles.Top | AnchorStyles.Right;
                 }
                 if (btnCancel != null)
                 {
@@ -958,7 +999,7 @@ namespace BrowserChooser3.Forms
                     btnCancel.Location = new Point(ClientSize.Width - 35, ClientSize.Height - 120);
                     btnCancel.ImageAlign = ContentAlignment.MiddleCenter;
                     btnCancel.Size = new Size(28, 28);
-                    btnCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+                    btnCancel.Anchor = AnchorStyles.Top | AnchorStyles.Right;
                 }
 
                 if (chkAutoClose != null)
@@ -1188,6 +1229,8 @@ namespace BrowserChooser3.Forms
             // 既存のInitializeApplication()の内容をここに移動
             InitializeApplication();
         }
+        
+
 
         /// <summary>
         /// 情報ボタンのクリックイベント
@@ -1255,6 +1298,8 @@ namespace BrowserChooser3.Forms
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+        
+
 
         /// <summary>
         /// 自動クローズチェックボックスの変更イベント
@@ -1750,7 +1795,7 @@ namespace BrowserChooser3.Forms
                         Text = "Cancel",
                         Size = new Size(80, 25),
                         Location = new Point(ClientSize.Width - 90, ClientSize.Height - 30),
-                        Anchor = AnchorStyles.Bottom | AnchorStyles.Right
+                        Anchor = AnchorStyles.Top | AnchorStyles.Right
                     };
                     btnCancel.Click += (s, e) => Close();
                     Controls.Add(btnCancel);

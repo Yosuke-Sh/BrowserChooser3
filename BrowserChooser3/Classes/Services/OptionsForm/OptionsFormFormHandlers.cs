@@ -41,6 +41,10 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             try
             {
                 _saveSettings();
+                
+                // 透明化設定の変更を検出して情報メッセージを表示
+                CheckTransparencySettingChange();
+                
                 _form.DialogResult = DialogResult.OK;
                 _form.Close();
             }
@@ -49,6 +53,70 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 Logger.LogError("OptionsFormFormHandlers.SaveButton_Click", "保存エラー", ex.Message);
                 MessageBox.Show($"設定の保存に失敗しました: {ex.Message}", "エラー", 
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        
+        /// <summary>
+        /// 透明化設定の変更を検出し、必要に応じて情報メッセージを表示
+        /// </summary>
+        private void CheckTransparencySettingChange()
+        {
+            try
+            {
+                // 現在の透明化設定を取得
+                var currentTransparencyEnabled = GetCurrentTransparencyEnabled();
+                
+                // 透明化が有効から無効に変更された場合
+                if (currentTransparencyEnabled == false)
+                {
+                    Logger.LogInfo("OptionsFormFormHandlers.CheckTransparencySettingChange", 
+                        "透明化設定が無効に変更されました。情報メッセージを表示します。");
+                    
+                    // 情報メッセージを表示
+                    MessageBox.Show(
+                        "透明化の解除を正常に反映するためには再起動が必要です",
+                        "情報",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("OptionsFormFormHandlers.CheckTransparencySettingChange", 
+                    "透明化設定変更検出エラー", ex.Message);
+            }
+        }
+        
+        /// <summary>
+        /// 現在の透明化設定を取得
+        /// </summary>
+        /// <returns>透明化が有効かどうか</returns>
+        private bool GetCurrentTransparencyEnabled()
+        {
+            try
+            {
+                // Displayパネルから透明化設定を取得
+                var displayPanel = _form.tabSettings.TabPages.Cast<TabPage>()
+                    .FirstOrDefault(tab => tab.Name == "tabDisplay");
+                
+                if (displayPanel != null)
+                {
+                    var transparencyCheckBox = displayPanel.Controls.Find("chkEnableTransparency", true)
+                        .FirstOrDefault() as CheckBox;
+                    
+                    if (transparencyCheckBox != null)
+                    {
+                        return transparencyCheckBox.Checked;
+                    }
+                }
+                
+                // フォールバック：設定オブジェクトから取得
+                return _form.GetSettings().EnableTransparency;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("OptionsFormFormHandlers.GetCurrentTransparencyEnabled", "透明化設定取得エラー", ex.Message);
+                return _form.GetSettings().EnableTransparency;
             }
         }
 

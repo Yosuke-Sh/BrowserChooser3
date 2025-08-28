@@ -914,6 +914,17 @@
             保存ボタンのクリックイベント
             </summary>
         </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormFormHandlers.CheckTransparencySettingChange">
+            <summary>
+            透明化設定の変更を検出し、必要に応じて情報メッセージを表示
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormFormHandlers.GetCurrentTransparencyEnabled">
+            <summary>
+            現在の透明化設定を取得
+            </summary>
+            <returns>透明化が有効かどうか</returns>
+        </member>
         <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormFormHandlers.HelpButton_Click(System.Object,System.EventArgs)">
             <summary>
             ヘルプボタンのクリックイベント
@@ -2801,9 +2812,9 @@
             透明化設定を適用
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Forms.MainForm.ApplyCommonFormStyle">
+        <member name="M:BrowserChooser3.Forms.MainForm.ApplyWindows11Style">
             <summary>
-            共通のフォームスタイル設定を適用
+            Windows 11スタイルを適用
             </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.MainForm.ApplyRoundedCorners(System.Int32)">
@@ -3128,6 +3139,12 @@
             OptionsFormクラスの新しいインスタンスを初期化します
             </summary>
             <param name="settings">設定オブジェクト</param>
+        </member>
+        <member name="M:BrowserChooser3.Forms.OptionsForm.GetSettings">
+            <summary>
+            設定オブジェクトを取得
+            </summary>
+            <returns>設定オブジェクト</returns>
         </member>
         <member name="M:BrowserChooser3.Forms.OptionsForm.InitializeForm">
             <summary>

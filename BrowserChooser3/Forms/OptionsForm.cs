@@ -13,6 +13,8 @@ namespace BrowserChooser3.Forms
     {
         private Settings _settings;
         private bool _isModified = false;
+        
+
 
         // イベントハンドラークラス
         private OptionsFormFormHandlers _formHandlers;
@@ -79,6 +81,17 @@ namespace BrowserChooser3.Forms
             Shown += _formHandlers.OptionsForm_Shown;
         }
 
+
+        
+        /// <summary>
+        /// 設定オブジェクトを取得
+        /// </summary>
+        /// <returns>設定オブジェクト</returns>
+        public Settings GetSettings()
+        {
+            return _settings;
+        }
+        
         /// <summary>
         /// フォームの初期化（Browser Chooser 2互換）
         /// </summary>
