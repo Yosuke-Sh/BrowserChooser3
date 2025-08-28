@@ -326,14 +326,18 @@ namespace BrowserChooser3.Classes
         { 
             get
             {
-                // BackgroundColorが無効値（-1）の場合はデフォルト色を返す
-                if (BackgroundColor == -1 || BackgroundColor == Color.Transparent.ToArgb())
+                Logger.LogInfo("Settings.BackgroundColorValue.get", $"BackgroundColor: {BackgroundColor}");
+                
+                // BackgroundColorが-1（Color.White）の場合は白を返す
+                if (BackgroundColor == -1)
                 {
-                    return Color.FromArgb(185, 209, 234); // デフォルトの青系色
+                    Logger.LogInfo("Settings.BackgroundColorValue.get", "BackgroundColorが-1なので白を返します");
+                    return Color.White;
                 }
                 
                 // BackgroundColorが有効な値の場合は、その値を正しく使用
                 var c = Color.FromArgb(BackgroundColor);
+                Logger.LogInfo("Settings.BackgroundColorValue.get", $"BackgroundColorから色を取得: {c}");
                 // 常に不透明（A=255）で返す
                 return c.A == 255 ? c : Color.FromArgb(255, c.R, c.G, c.B);
             }
