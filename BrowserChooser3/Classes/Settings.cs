@@ -111,22 +111,17 @@ namespace BrowserChooser3.Classes
             /// <summary>デフォルトブラウザGUID</summary>
             DefaultBrowserGuid,
             
-            /// <summary>自動更新</summary>
-            AutomaticUpdates,
-            
-            /// <summary>起動時にデフォルトをチェック</summary>
-            CheckDefaultOnLaunch,
-            
-            /// <summary>高度な画面</summary>
-            AdvancedScreens,
-            
             /// <summary>セパレータ</summary>
             Separator,
             
             /// <summary>フォーカス表示</summary>
             ShowFocus,
             
-
+            /// <summary>URL表示</summary>
+            ShowURL,
+            
+            /// <summary>短縮URL展開</summary>
+            RevealShortURL,
             
             /// <summary>フォーカスボックス線幅</summary>
             FocusBoxLineWidth,
@@ -154,12 +149,6 @@ namespace BrowserChooser3.Classes
             
             /// <summary>開いたまま許可</summary>
             AllowStayOpen,
-            
-            /// <summary>正規化</summary>
-            Canonicalize,
-            
-            /// <summary>正規化追加テキスト</summary>
-            CanonicalizeAppendedText,
             
             /// <summary>ログ有効化</summary>
             EnableLogging,
@@ -204,11 +193,10 @@ namespace BrowserChooser3.Classes
             { DefaultField.DefaultMessage, "Choose a Browser" },
             { DefaultField.DefaultDelay, 5 },
             { DefaultField.DefaultBrowserGuid, Guid.Empty },
-            { DefaultField.AutomaticUpdates, true },
-            { DefaultField.CheckDefaultOnLaunch, false },
-            { DefaultField.AdvancedScreens, false },
             { DefaultField.Separator, " - " },
-            { DefaultField.ShowFocus, true },
+            { DefaultField.ShowFocus, false },
+            { DefaultField.ShowURL, true },
+            { DefaultField.RevealShortURL, false },
 
             { DefaultField.FocusBoxLineWidth, 1 },
             { DefaultField.FocusBoxColor, Color.Transparent.ToArgb() },
@@ -219,16 +207,14 @@ namespace BrowserChooser3.Classes
             { DefaultField.OffsetX, 0 },
             { DefaultField.OffsetY, 0 },
             { DefaultField.AllowStayOpen, false },
-            { DefaultField.Canonicalize, false },
-            { DefaultField.CanonicalizeAppendedText, string.Empty },
-            { DefaultField.EnableLogging, false },
+            { DefaultField.EnableLogging, true },
             { DefaultField.ExtractDLLs, false },
             { DefaultField.LogLevel, 3 },
-            { DefaultField.EnableTransparency, true },
+            { DefaultField.EnableTransparency, false },
             { DefaultField.TransparencyColor, Color.Magenta.ToArgb() },
-            { DefaultField.Opacity, 0.9 },
-            { DefaultField.HideTitleBar, true },
-            { DefaultField.RoundedCornersRadius, 0 }
+            { DefaultField.Opacity, 0.8 },
+            { DefaultField.HideTitleBar, false },
+            { DefaultField.RoundedCornersRadius, 20 }
         };
 
         /// <summary>設定ファイル名</summary>
@@ -243,14 +229,8 @@ namespace BrowserChooser3.Classes
         /// <summary>URL表示</summary>
         public bool ShowURL { get; set; } = true;
         
-        /// <summary>URL表示（Browser Chooser 2互換）</summary>
-        public bool ShowURLs { get; set; } = true;
-        
         /// <summary>短縮URL展開</summary>
         public bool RevealShortURL { get; set; } = false;
-        
-        /// <summary>短縮URL展開（Browser Chooser 2互換）</summary>
-        public bool RevealShortURLs { get; set; } = false;
         
         /// <summary>ファイルバージョン</summary>
         public int FileVersion { get; set; } = CURRENT_FILE_VERSION;
@@ -278,16 +258,16 @@ namespace BrowserChooser3.Classes
         public int GridHeight { get; set; } = 1;
         
         /// <summary>アイコン幅</summary>
-        public int IconWidth { get; set; } = 90;
+        public int IconWidth { get; set; } = 100;
         
         /// <summary>アイコン高さ</summary>
-        public int IconHeight { get; set; } = 100;
+        public int IconHeight { get; set; } = 110;
         
         /// <summary>アイコン間隔幅</summary>
-        public int IconGapWidth { get; set; } = 0;
+        public int IconGapWidth { get; set; } = 20;
         
         /// <summary>アイコン間隔高さ</summary>
-        public int IconGapHeight { get; set; } = 0;
+        public int IconGapHeight { get; set; } = 20;
         
         /// <summary>アイコンスケール</summary>
         public double IconScale { get; set; } = 1.0;
@@ -304,20 +284,11 @@ namespace BrowserChooser3.Classes
         /// <summary>デフォルトブラウザGUID</summary>
         public Guid DefaultBrowserGuid { get; set; } = Guid.Empty;
         
-        /// <summary>自動更新</summary>
-        public bool AutomaticUpdates { get; set; } = true;
-        
-        /// <summary>起動時にデフォルトをチェック</summary>
-        public bool CheckDefaultOnLaunch { get; set; } = false;
-        
-        /// <summary>高度な画面</summary>
-        public bool AdvancedScreens { get; set; } = false;
-        
         /// <summary>セパレータ</summary>
         public string Separator { get; set; } = " - ";
         
         /// <summary>フォーカス表示</summary>
-        public bool ShowFocus { get; set; } = true;
+        public bool ShowFocus { get; set; } = false;
         
 
         
@@ -368,14 +339,8 @@ namespace BrowserChooser3.Classes
         /// <summary>開いたまま許可</summary>
         public bool AllowStayOpen { get; set; } = false;
         
-        /// <summary>正規化</summary>
-        public bool Canonicalize { get; set; } = false;
-        
-        /// <summary>正規化追加テキスト</summary>
-        public string CanonicalizeAppendedText { get; set; } = string.Empty;
-        
         /// <summary>ログ有効化</summary>
-        public bool EnableLogging { get; set; } = false;
+        public bool EnableLogging { get; set; } = true;
         
         /// <summary>DLL抽出</summary>
         public bool ExtractDLLs { get; set; } = false;
@@ -404,8 +369,7 @@ namespace BrowserChooser3.Classes
         /// <summary>データ収集許可</summary>
         public bool AllowDataCollection { get; set; } = false;
 
-        /// <summary>自動起動</summary>
-        public bool AutoStart { get; set; } = false;
+
 
         /// <summary>最小化で起動</summary>
         public bool StartMinimized { get; set; } = false;
@@ -420,19 +384,19 @@ namespace BrowserChooser3.Classes
         public string StartupMessage { get; set; } = "BrowserChooser3 Started";
 
         /// <summary>透明化有効</summary>
-        public bool EnableTransparency { get; set; } = true;
+        public bool EnableTransparency { get; set; } = false;
 
         /// <summary>透明化色</summary>
         public int TransparencyColor { get; set; } = Color.Magenta.ToArgb();
 
         /// <summary>透明度（0.01-1.0）</summary>
-        public double Opacity { get; set; } = 0.9;
+        public double Opacity { get; set; } = 0.8;
 
         /// <summary>タイトルバー非表示</summary>
-        public bool HideTitleBar { get; set; } = true;
+        public bool HideTitleBar { get; set; } = false;
 
         /// <summary>角を丸くする半径（0で無効、1-50で有効）</summary>
-        public int RoundedCornersRadius { get; set; } = 0;
+        public int RoundedCornersRadius { get; set; } = 20;
 
 
 

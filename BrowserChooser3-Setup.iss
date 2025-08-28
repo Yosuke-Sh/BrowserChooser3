@@ -25,6 +25,9 @@ Name: "japanese"; MessagesFile: "compiler:Languages\Japanese.isl"
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 10.0; Check: not IsAdminInstallMode
+Name: "pintotaskbar"; Description: "タスクバーにピン留めする"; GroupDescription: "追加オプション"; Flags: unchecked
+Name: "addtostartmenu"; Description: "スタートメニューに追加する"; GroupDescription: "追加オプション"; Flags: unchecked
+Name: "setasdefaultbrowser"; Description: "規定のブラウザとして登録する"; GroupDescription: "追加オプション"; Flags: unchecked
 
 [Files]
 Source: "BrowserChooser3\bin\Release\net8.0-windows\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
@@ -86,9 +89,53 @@ begin
 end;
 
 procedure CurStepChanged(CurStep: TSetupStep);
+var
+  ResultCode: Integer;
 begin
   if CurStep = ssPostInstall then
   begin
-    // インストール完了後の処理
+    // タスクバーへのピン留め
+    if WizardIsTaskSelected('pintotaskbar') then
+    begin
+      try
+        Exec('powershell.exe', '-Command "& { $shell = New-Object -ComObject Shell.Application; $folder = $shell.Namespace(''shell:AppsFolder''); $item = $folder.ParseName(''BrowserChooser3.exe''); if ($item) { $item.InvokeVerb(''pintotaskbar'') } }"', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+      except
+        // エラーが発生した場合は無視
+      end;
+    end;
+    
+    // スタートメニューへの追加
+    if WizardIsTaskSelected('addtostartmenu') then
+    begin
+      try
+        // スタートメニューにショートカットを作成
+        CreateDir(ExpandConstant('{userstartmenu}\Browser Chooser 3'));
+        CreateShellLink(ExpandConstant('{userstartmenu}\Browser Chooser 3\Browser Chooser 3.lnk'), 
+          'Browser Chooser 3', 
+          ExpandConstant('{app}\BrowserChooser3.exe'), 
+          '', 
+          ExpandConstant('{app}'), 
+          '', 
+          0, 
+          SW_SHOWNORMAL);
+      except
+        // エラーが発生した場合は無視
+      end;
+    end;
+    
+    // 規定のブラウザとして登録
+    if WizardIsTaskSelected('setasdefaultbrowser') then
+    begin
+      try
+        // HTTPとHTTPSのプロトコルハンドラーを規定に設定
+        Exec('reg.exe', 'add "HKCU\Software\Microsoft\Windows\Shell\Associations\UrlAssociations\http\UserChoice" /v "Progid" /t REG_SZ /d "BrowserChooser3" /f', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+        Exec('reg.exe', 'add "HKCU\Software\Microsoft\Windows\Shell\Associations\UrlAssociations\https\UserChoice" /v "Progid" /t REG_SZ /d "BrowserChooser3" /f', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+        
+        // ブラウザ選択ダイアログを表示
+        Exec('rundll32.exe', 'shell32.dll,OpenAs_RunDLL', '', SW_SHOW, ewWaitUntilTerminated, ResultCode);
+      except
+        // エラーが発生した場合は無視
+      end;
+    end;
   end;
 end;

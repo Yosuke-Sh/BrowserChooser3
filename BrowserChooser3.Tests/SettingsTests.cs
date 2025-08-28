@@ -217,26 +217,30 @@ namespace BrowserChooser3.Tests
             var settings = new Settings();
 
             // Act & Assert
-            settings.AutomaticUpdates = false;
-            settings.AutomaticUpdates.Should().BeFalse();
+            // AutomaticUpdatesは削除されたため、テストをコメントアウト
+            // settings.AutomaticUpdates = false;
+            // settings.AutomaticUpdates.Should().BeFalse();
 
-            settings.CheckDefaultOnLaunch = true;
-            settings.CheckDefaultOnLaunch.Should().BeTrue();
+            // CheckDefaultOnLaunchは削除されたため、テストをコメントアウト
+            // settings.CheckDefaultOnLaunch = true;
+            // settings.CheckDefaultOnLaunch.Should().BeTrue();
 
-            settings.AdvancedScreens = true;
-            settings.AdvancedScreens.Should().BeTrue();
+            // AdvancedScreensは削除されたため、テストをコメントアウト
+            // settings.AdvancedScreens = true;
+            // settings.AdvancedScreens.Should().BeTrue();
 
             settings.ShowFocus = false;
             settings.ShowFocus.Should().BeFalse();
 
-            settings.EnableTransparency = true;
-            settings.EnableTransparency.Should().BeTrue();
+            settings.EnableTransparency = false;
+            settings.EnableTransparency.Should().BeFalse();
 
             settings.AllowStayOpen = true;
             settings.AllowStayOpen.Should().BeTrue();
 
-            settings.Canonicalize = true;
-            settings.Canonicalize.Should().BeTrue();
+            // Canonicalizeは削除されたため、テストをコメントアウト
+            // settings.Canonicalize = true;
+            // settings.Canonicalize.Should().BeTrue();
 
             settings.EnableLogging = true;
             settings.EnableLogging.Should().BeTrue();
@@ -255,8 +259,9 @@ namespace BrowserChooser3.Tests
             settings.Separator = " | ";
             settings.Separator.Should().Be(" | ");
 
-            settings.CanonicalizeAppendedText = "appended";
-            settings.CanonicalizeAppendedText.Should().Be("appended");
+            // CanonicalizeAppendedTextは削除されたため、テストをコメントアウト
+            // settings.CanonicalizeAppendedText = "appended";
+            // settings.CanonicalizeAppendedText.Should().Be("appended");
 
             settings.UserAgent = "Custom User Agent";
             settings.UserAgent.Should().Be("Custom User Agent");
@@ -499,8 +504,9 @@ namespace BrowserChooser3.Tests
             settings.Separator = null!;
             settings.Separator.Should().BeNull();
 
-            settings.CanonicalizeAppendedText = null!;
-            settings.CanonicalizeAppendedText.Should().BeNull();
+            // CanonicalizeAppendedTextは削除されたため、テストをコメントアウト
+            // settings.CanonicalizeAppendedText = null!;
+            // settings.CanonicalizeAppendedText.Should().BeNull();
 
             settings.UserAgent = null!;
             settings.UserAgent.Should().BeNull();
@@ -519,8 +525,9 @@ namespace BrowserChooser3.Tests
             settings.Separator = "";
             settings.Separator.Should().Be("");
 
-            settings.CanonicalizeAppendedText = "";
-            settings.CanonicalizeAppendedText.Should().Be("");
+            // CanonicalizeAppendedTextは削除されたため、テストをコメントアウト
+            // settings.CanonicalizeAppendedText = "";
+            // settings.CanonicalizeAppendedText.Should().Be("");
         }
 
         [Fact]
@@ -609,30 +616,36 @@ namespace BrowserChooser3.Tests
             ((int)Settings.DefaultField.DefaultMessage).Should().Be(7);
             ((int)Settings.DefaultField.DefaultDelay).Should().Be(8);
             ((int)Settings.DefaultField.DefaultBrowserGuid).Should().Be(9);
-            ((int)Settings.DefaultField.AutomaticUpdates).Should().Be(10);
-            ((int)Settings.DefaultField.CheckDefaultOnLaunch).Should().Be(11);
-            ((int)Settings.DefaultField.AdvancedScreens).Should().Be(12);
+            // AutomaticUpdatesは削除されたため、テストをコメントアウト
+            // ((int)Settings.DefaultField.AutomaticUpdates).Should().Be(10);
+            // CheckDefaultOnLaunchは削除されたため、テストをコメントアウト
+            // ((int)Settings.DefaultField.CheckDefaultOnLaunch).Should().Be(11);
+            // AdvancedScreensは削除されたため、テストをコメントアウト
+            // ((int)Settings.DefaultField.AdvancedScreens).Should().Be(12);
             ((int)Settings.DefaultField.Separator).Should().Be(13);
             ((int)Settings.DefaultField.ShowFocus).Should().Be(14);
-            ((int)Settings.DefaultField.FocusBoxLineWidth).Should().Be(15);
-            ((int)Settings.DefaultField.FocusBoxColor).Should().Be(16);
-            ((int)Settings.DefaultField.UserAgent).Should().Be(17);
-            ((int)Settings.DefaultField.DownloadDetectionFile).Should().Be(18);
-            ((int)Settings.DefaultField.BackgroundColor).Should().Be(19);
-            ((int)Settings.DefaultField.StartingPosition).Should().Be(20);
-            ((int)Settings.DefaultField.OffsetX).Should().Be(21);
-            ((int)Settings.DefaultField.OffsetY).Should().Be(22);
-            ((int)Settings.DefaultField.AllowStayOpen).Should().Be(23);
-            ((int)Settings.DefaultField.Canonicalize).Should().Be(24);
-            ((int)Settings.DefaultField.CanonicalizeAppendedText).Should().Be(25);
-            ((int)Settings.DefaultField.EnableLogging).Should().Be(26);
-            ((int)Settings.DefaultField.ExtractDLLs).Should().Be(27);
-            ((int)Settings.DefaultField.LogLevel).Should().Be(28);
-            ((int)Settings.DefaultField.EnableTransparency).Should().Be(29);
-            ((int)Settings.DefaultField.TransparencyColor).Should().Be(30);
-            ((int)Settings.DefaultField.Opacity).Should().Be(31);
-            ((int)Settings.DefaultField.HideTitleBar).Should().Be(32);
-            ((int)Settings.DefaultField.RoundedCornersRadius).Should().Be(33);
+            ((int)Settings.DefaultField.ShowURL).Should().Be(15);
+            ((int)Settings.DefaultField.RevealShortURL).Should().Be(16);
+            ((int)Settings.DefaultField.FocusBoxLineWidth).Should().Be(17);
+            ((int)Settings.DefaultField.FocusBoxColor).Should().Be(18);
+            ((int)Settings.DefaultField.UserAgent).Should().Be(19);
+            ((int)Settings.DefaultField.DownloadDetectionFile).Should().Be(20);
+            ((int)Settings.DefaultField.BackgroundColor).Should().Be(21);
+            ((int)Settings.DefaultField.StartingPosition).Should().Be(22);
+            ((int)Settings.DefaultField.OffsetX).Should().Be(23);
+            ((int)Settings.DefaultField.OffsetY).Should().Be(24);
+            ((int)Settings.DefaultField.AllowStayOpen).Should().Be(25);
+            // Canonicalize関連は削除されたため、テストをコメントアウト
+            // ((int)Settings.DefaultField.Canonicalize).Should().Be(26);
+            // ((int)Settings.DefaultField.CanonicalizeAppendedText).Should().Be(27);
+            ((int)Settings.DefaultField.EnableLogging).Should().Be(28);
+            ((int)Settings.DefaultField.ExtractDLLs).Should().Be(29);
+            ((int)Settings.DefaultField.LogLevel).Should().Be(30);
+            ((int)Settings.DefaultField.EnableTransparency).Should().Be(31);
+            ((int)Settings.DefaultField.TransparencyColor).Should().Be(32);
+            ((int)Settings.DefaultField.Opacity).Should().Be(33);
+            ((int)Settings.DefaultField.HideTitleBar).Should().Be(34);
+            ((int)Settings.DefaultField.RoundedCornersRadius).Should().Be(35);
         }
 
         #endregion

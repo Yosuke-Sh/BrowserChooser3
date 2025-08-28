@@ -1471,20 +1471,17 @@
         <member name="F:BrowserChooser3.Classes.Settings.DefaultField.DefaultBrowserGuid">
             <summary>デフォルトブラウザGUID</summary>
         </member>
-        <member name="F:BrowserChooser3.Classes.Settings.DefaultField.AutomaticUpdates">
-            <summary>自動更新</summary>
-        </member>
-        <member name="F:BrowserChooser3.Classes.Settings.DefaultField.CheckDefaultOnLaunch">
-            <summary>起動時にデフォルトをチェック</summary>
-        </member>
-        <member name="F:BrowserChooser3.Classes.Settings.DefaultField.AdvancedScreens">
-            <summary>高度な画面</summary>
-        </member>
         <member name="F:BrowserChooser3.Classes.Settings.DefaultField.Separator">
             <summary>セパレータ</summary>
         </member>
         <member name="F:BrowserChooser3.Classes.Settings.DefaultField.ShowFocus">
             <summary>フォーカス表示</summary>
+        </member>
+        <member name="F:BrowserChooser3.Classes.Settings.DefaultField.ShowURL">
+            <summary>URL表示</summary>
+        </member>
+        <member name="F:BrowserChooser3.Classes.Settings.DefaultField.RevealShortURL">
+            <summary>短縮URL展開</summary>
         </member>
         <member name="F:BrowserChooser3.Classes.Settings.DefaultField.FocusBoxLineWidth">
             <summary>フォーカスボックス線幅</summary>
@@ -1512,12 +1509,6 @@
         </member>
         <member name="F:BrowserChooser3.Classes.Settings.DefaultField.AllowStayOpen">
             <summary>開いたまま許可</summary>
-        </member>
-        <member name="F:BrowserChooser3.Classes.Settings.DefaultField.Canonicalize">
-            <summary>正規化</summary>
-        </member>
-        <member name="F:BrowserChooser3.Classes.Settings.DefaultField.CanonicalizeAppendedText">
-            <summary>正規化追加テキスト</summary>
         </member>
         <member name="F:BrowserChooser3.Classes.Settings.DefaultField.EnableLogging">
             <summary>ログ有効化</summary>
@@ -1561,14 +1552,8 @@
         <member name="P:BrowserChooser3.Classes.Settings.ShowURL">
             <summary>URL表示</summary>
         </member>
-        <member name="P:BrowserChooser3.Classes.Settings.ShowURLs">
-            <summary>URL表示（Browser Chooser 2互換）</summary>
-        </member>
         <member name="P:BrowserChooser3.Classes.Settings.RevealShortURL">
             <summary>短縮URL展開</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Settings.RevealShortURLs">
-            <summary>短縮URL展開（Browser Chooser 2互換）</summary>
         </member>
         <member name="P:BrowserChooser3.Classes.Settings.FileVersion">
             <summary>ファイルバージョン</summary>
@@ -1621,15 +1606,6 @@
         <member name="P:BrowserChooser3.Classes.Settings.DefaultBrowserGuid">
             <summary>デフォルトブラウザGUID</summary>
         </member>
-        <member name="P:BrowserChooser3.Classes.Settings.AutomaticUpdates">
-            <summary>自動更新</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Settings.CheckDefaultOnLaunch">
-            <summary>起動時にデフォルトをチェック</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Settings.AdvancedScreens">
-            <summary>高度な画面</summary>
-        </member>
         <member name="P:BrowserChooser3.Classes.Settings.Separator">
             <summary>セパレータ</summary>
         </member>
@@ -1679,12 +1655,6 @@
         <member name="P:BrowserChooser3.Classes.Settings.AllowStayOpen">
             <summary>開いたまま許可</summary>
         </member>
-        <member name="P:BrowserChooser3.Classes.Settings.Canonicalize">
-            <summary>正規化</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Settings.CanonicalizeAppendedText">
-            <summary>正規化追加テキスト</summary>
-        </member>
         <member name="P:BrowserChooser3.Classes.Settings.EnableLogging">
             <summary>ログ有効化</summary>
         </member>
@@ -1714,9 +1684,6 @@
         </member>
         <member name="P:BrowserChooser3.Classes.Settings.AllowDataCollection">
             <summary>データ収集許可</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Settings.AutoStart">
-            <summary>自動起動</summary>
         </member>
         <member name="P:BrowserChooser3.Classes.Settings.StartMinimized">
             <summary>最小化で起動</summary>
@@ -3230,57 +3197,62 @@
         </member>
         <member name="M:BrowserChooser3.Forms.OptionsForm.ResetToDefaults_Click(System.Object,System.EventArgs)">
             <summary>
-            設定をデフォルト値にリセットします
+            現在表示されているパネルの設定をデフォルト値にリセットします
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.ResetBrowsersPanel">
+        <member name="M:BrowserChooser3.Forms.OptionsForm.ResetCurrentPanelToDefaults(System.Windows.Forms.TabPage)">
             <summary>
-            ブラウザパネルをリセット
+            現在表示されているパネルの設定をデフォルト値にリセットします
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.ResetAutoURLsPanel">
+        <member name="M:BrowserChooser3.Forms.OptionsForm.ResetDisplayPanelToDefaults(System.Windows.Forms.TabPage)">
             <summary>
-            Auto URLsパネルをリセット
+            表示パネルの設定をデフォルト値にリセットし、UIに反映します
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.ResetProtocolsPanel">
+        <member name="M:BrowserChooser3.Forms.OptionsForm.ResetGridPanelToDefaults(System.Windows.Forms.TabPage)">
             <summary>
-            プロトコルパネルをリセット
+            グリッドパネルの設定をデフォルト値にリセットし、UIに反映します
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.ResetFileTypesPanel">
+        <member name="M:BrowserChooser3.Forms.OptionsForm.ResetPrivacyPanelToDefaults(System.Windows.Forms.TabPage)">
             <summary>
-            ファイルタイプパネルをリセット
+            プライバシーパネルの設定をデフォルト値にリセットし、UIに反映します
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.ResetCategoriesPanel">
+        <member name="M:BrowserChooser3.Forms.OptionsForm.ResetStartupPanelToDefaults(System.Windows.Forms.TabPage)">
             <summary>
-            カテゴリパネルをリセット
+            スタートアップパネルの設定をデフォルト値にリセットし、UIに反映します
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.ResetDisplayPanel">
+        <member name="M:BrowserChooser3.Forms.OptionsForm.ResetOthersPanelToDefaults(System.Windows.Forms.TabPage)">
             <summary>
-            表示パネルをリセット
+            その他パネルの設定をデフォルト値にリセットし、UIに反映します
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.ResetGridPanel">
+        <member name="M:BrowserChooser3.Forms.OptionsForm.ResetBrowsersPanelToDefaults(System.Windows.Forms.TabPage)">
             <summary>
-            グリッドパネルをリセット
+            ブラウザパネルの設定をデフォルト値にリセットし、UIに反映します
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.ResetPrivacyPanel">
+        <member name="M:BrowserChooser3.Forms.OptionsForm.ResetAutoURLsPanelToDefaults(System.Windows.Forms.TabPage)">
             <summary>
-            プライバシーパネルをリセット
+            Auto URLsパネルの設定をデフォルト値にリセットし、UIに反映します
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.ResetStartupPanel">
+        <member name="M:BrowserChooser3.Forms.OptionsForm.ResetProtocolsPanelToDefaults(System.Windows.Forms.TabPage)">
             <summary>
-            スタートアップパネルをリセット
+            プロトコルパネルの設定をデフォルト値にリセットし、UIに反映します
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.ResetOthersPanel">
+        <member name="M:BrowserChooser3.Forms.OptionsForm.ResetFileTypesPanelToDefaults(System.Windows.Forms.TabPage)">
             <summary>
-            その他パネルをリセット
+            ファイルタイプパネルの設定をデフォルト値にリセットし、UIに反映します
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.OptionsForm.ResetCategoriesPanelToDefaults(System.Windows.Forms.TabPage)">
+            <summary>
+            カテゴリパネルの設定をデフォルト値にリセットし、UIに反映します
             </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.OptionsForm.AdjustLayout">

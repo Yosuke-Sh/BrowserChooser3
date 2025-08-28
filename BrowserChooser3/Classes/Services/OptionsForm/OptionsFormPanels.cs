@@ -1571,26 +1571,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 Padding = new Padding(10)
             };
 
-            // 自動起動設定
-            var chkAutoStart = new CheckBox
-            {
-                Name = "chkAutoStart",
-                Text = "Start with Windows",
-                Location = new Point(6, 6),
-                Size = new Size(200, 25),
-                Checked = settings.AutoStart,
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            };
-            chkAutoStart.CheckedChanged += (s, e) => setModified(true);
 
-            var lblAutoStartDesc = new Label
-            {
-                Text = "Windows起動時に自動的にBrowser Chooserを起動します",
-                Location = new Point(210, 9),
-                Size = new Size(400, 20),
-                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
-                ForeColor = Color.Gray
-            };
 
             // 最小化で起動設定
             var chkStartMinimized = new CheckBox
@@ -1634,26 +1615,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 ForeColor = Color.Gray
             };
 
-            // 起動時のチェック設定
-            var chkCheckDefaultOnStartup = new CheckBox
-            {
-                Name = "chkCheckDefaultOnStartup",
-                Text = "Check Default Browser on Startup",
-                Location = new Point(6, 105),
-                Size = new Size(300, 25),
-                Checked = settings.CheckDefaultOnLaunch,
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            };
-            chkCheckDefaultOnStartup.CheckedChanged += (s, e) => setModified(true);
 
-            var lblCheckDefaultDesc = new Label
-            {
-                Text = "起動時にデフォルトブラウザの変更をチェックします",
-                Location = new Point(310, 108),
-                Size = new Size(400, 20),
-                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
-                ForeColor = Color.Gray
-            };
 
             // 起動遅延設定
             var lblStartupDelay = new Label
@@ -1714,14 +1676,10 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             };
 
             // コントロールの追加
-            panel.Controls.Add(chkAutoStart);
-            panel.Controls.Add(lblAutoStartDesc);
             panel.Controls.Add(chkStartMinimized);
             panel.Controls.Add(lblStartMinimizedDesc);
             panel.Controls.Add(chkStartInTray);
             panel.Controls.Add(lblStartInTrayDesc);
-            panel.Controls.Add(chkCheckDefaultOnStartup);
-            panel.Controls.Add(lblCheckDefaultDesc);
             panel.Controls.Add(lblStartupDelay);
             panel.Controls.Add(nudStartupDelay);
             panel.Controls.Add(lblStartupDelayDesc);
@@ -1786,49 +1744,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             };
             currentY += 34;
 
-            // 自動更新設定
-            var chkAutoCheckUpdate = new CheckBox
-            {
-                Name = "chkAutoCheckUpdate",
-                Text = "Check for Updates Automatically",
-                Location = new Point(6, currentY),
-                Size = new Size(300, 25),
-                Checked = settings.AutomaticUpdates,
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            };
-            chkAutoCheckUpdate.CheckedChanged += (s, e) => setModified(true);
 
-            var lblAutoCheckUpdateDesc = new Label
-            {
-                Text = "起動時に自動的にアップデートをチェックします",
-                Location = new Point(310, currentY + 3),
-                Size = new Size(400, 20),
-                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
-                ForeColor = Color.Gray
-            };
-            currentY += 34;
-
-            // 詳細画面設定
-            var chkAdvanced = new CheckBox
-            {
-                Name = "chkAdvanced",
-                Text = "Show Advanced Options",
-                Location = new Point(6, currentY),
-                Size = new Size(250, 25),
-                Checked = settings.AdvancedScreens,
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            };
-            chkAdvanced.CheckedChanged += (s, e) => setModified(true);
-
-            var lblAdvancedDesc = new Label
-            {
-                Text = "上級者向けの詳細設定オプションを表示します",
-                Location = new Point(260, currentY + 3),
-                Size = new Size(400, 20),
-                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
-                ForeColor = Color.Gray
-            };
-            currentY += 34;
 
             // 開いたまま許可設定
             var chkAllowStayOpen = new CheckBox
@@ -1952,56 +1868,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             };
             currentY += 34;
 
-            // 正規化設定
-            var chkCanonicalize = new CheckBox
-            {
-                Name = "chkCanonicalize",
-                Text = "Canonicalize URLs",
-                Location = new Point(6, currentY),
-                Size = new Size(200, 25),
-                Checked = settings.Canonicalize,
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            };
-            chkCanonicalize.CheckedChanged += (s, e) => setModified(true);
 
-            var lblCanonicalizeDesc = new Label
-            {
-                Text = "URLを正規化して標準形式に変換します",
-                Location = new Point(210, currentY + 3),
-                Size = new Size(400, 20),
-                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
-                ForeColor = Color.Gray
-            };
-            currentY += 34;
-
-            // 正規化追加テキスト設定
-            var lblCanonicalizeText = new Label
-            {
-                Text = "Canonicalize Text:",
-                Location = new Point(6, currentY),
-                Size = new Size(150, 23),
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            };
-
-            var txtCanonicalizeText = new TextBox
-            {
-                Name = "txtCanonicalizeText",
-                Location = new Point(160, currentY - 3),
-                Size = new Size(200, 23),
-                Text = settings.CanonicalizeAppendedText,
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            };
-            txtCanonicalizeText.TextChanged += (s, e) => setModified(true);
-
-            var lblCanonicalizeTextDesc = new Label
-            {
-                Text = "正規化時に追加するテキストを設定します",
-                Location = new Point(370, currentY + 3),
-                Size = new Size(400, 20),
-                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
-                ForeColor = Color.Gray
-            };
-            currentY += 40;
 
             // === System Settings ===
             var lblSystemTitle = new Label
@@ -2036,27 +1903,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             };
             currentY += 34;
 
-            // ログ有効化設定
-            var chkEnableLogging = new CheckBox
-            {
-                Name = "chkEnableLogging",
-                Text = "Enable Logging",
-                Location = new Point(6, currentY),
-                Size = new Size(180, 25),
-                Checked = settings.EnableLogging,
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            };
-            chkEnableLogging.CheckedChanged += (s, e) => setModified(true);
 
-            var lblEnableLoggingDesc = new Label
-            {
-                Text = "アプリケーションの動作ログを記録します",
-                Location = new Point(190, currentY + 3),
-                Size = new Size(400, 20),
-                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
-                ForeColor = Color.Gray
-            };
-            currentY += 34;
 
             // DLL抽出設定
             var chkExtractDLLs = new CheckBox
@@ -2139,35 +1986,12 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             };
             currentY += 34;
 
-            // 自動起動設定
-            var chkAutoStart = new CheckBox
-            {
-                Name = "chkAutoStart",
-                Text = "Auto Start",
-                Location = new Point(6, currentY),
-                Size = new Size(120, 25),
-                Checked = settings.AutoStart,
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            };
-            chkAutoStart.CheckedChanged += (s, e) => setModified(true);
 
-            var lblAutoStartDesc = new Label
-            {
-                Text = "Windows起動時に自動的にアプリケーションを起動します",
-                Location = new Point(130, currentY + 3),
-                Size = new Size(400, 20),
-                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
-                ForeColor = Color.Gray
-            };
 
             // コントロールの追加
             panel.Controls.Add(lblGeneralTitle);
             panel.Controls.Add(chkPortableMode);
             panel.Controls.Add(lblPortableModeDesc);
-            panel.Controls.Add(chkAutoCheckUpdate);
-            panel.Controls.Add(lblAutoCheckUpdateDesc);
-            panel.Controls.Add(chkAdvanced);
-            panel.Controls.Add(lblAdvancedDesc);
             panel.Controls.Add(chkAllowStayOpen);
             panel.Controls.Add(lblAllowStayOpenDesc);
             
@@ -2181,17 +2005,10 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             panel.Controls.Add(lblUserAgent);
             panel.Controls.Add(txtUserAgent);
             panel.Controls.Add(lblUserAgentDesc);
-            panel.Controls.Add(chkCanonicalize);
-            panel.Controls.Add(lblCanonicalizeDesc);
-            panel.Controls.Add(lblCanonicalizeText);
-            panel.Controls.Add(txtCanonicalizeText);
-            panel.Controls.Add(lblCanonicalizeTextDesc);
             
             panel.Controls.Add(lblSystemTitle);
             panel.Controls.Add(chkDownloadDetectionFile);
             panel.Controls.Add(lblDownloadDetectionFileDesc);
-            panel.Controls.Add(chkEnableLogging);
-            panel.Controls.Add(lblEnableLoggingDesc);
             panel.Controls.Add(chkExtractDLLs);
             panel.Controls.Add(lblExtractDLLsDesc);
             panel.Controls.Add(lblOptionsShortcut);
@@ -2200,8 +2017,6 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             panel.Controls.Add(lblDefaultMessage);
             panel.Controls.Add(txtDefaultMessage);
             panel.Controls.Add(lblDefaultMessageDesc);
-            panel.Controls.Add(chkAutoStart);
-            panel.Controls.Add(lblAutoStartDesc);
 
             tabPage.Controls.Add(panel);
             return tabPage;
