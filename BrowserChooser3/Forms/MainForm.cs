@@ -234,7 +234,8 @@ namespace BrowserChooser3.Forms
             // 透明化が無効な場合の背景色設定
             if (!_settings?.EnableTransparency == true)
             {
-                BackColor = Color.FromArgb(185, 209, 234);
+                // 設定値をそのまま反映（Settings.BackgroundColorValue は常に不透明で正規化済み）
+                BackColor = _settings?.BackgroundColorValue ?? Color.FromArgb(185, 209, 234);
                 StyleXP(); // 透明化が無効の場合のスタイル設定
             }
             
@@ -276,7 +277,10 @@ namespace BrowserChooser3.Forms
                     this.SetStyle(ControlStyles.SupportsTransparentBackColor, false);
                     this.TransparencyKey = Color.Empty;
                     this.Opacity = 1.0;
-                    this.BackColor = _settings?.BackgroundColorValue ?? Color.FromArgb(185, 209, 234);
+                    // 念のため不透明化してから適用
+                    var bg = _settings?.BackgroundColorValue ?? Color.FromArgb(185, 209, 234);
+                    if (bg.A != 255) bg = Color.FromArgb(255, bg.R, bg.G, bg.B);
+                    this.BackColor = bg;
                     
                     // リージョンをクリア（角を丸くする設定を無効化）
                     this.Region = null;
@@ -484,27 +488,7 @@ namespace BrowserChooser3.Forms
         /// <param name="e">描画イベント引数</param>
         protected override void OnPaint(PaintEventArgs e)
         {
-            if (!_hasAero)
-            {
-                // Aero効果が無効の場合: グラデーション背景を描画
-                using var brush = new LinearGradientBrush(
-                    DisplayRectangle,
-                    Color.FromArgb(185, 209, 234),
-                    Color.FromArgb(132, 151, 173),
-                    LinearGradientMode.Vertical);
-                e.Graphics.FillRectangle(brush, DisplayRectangle);
-            }
-            else if (_hasAero && _settings?.BackgroundColor != Color.Transparent.ToArgb())
-            {
-                // カスタム背景色を使用
-                using var brush = new LinearGradientBrush(
-                    DisplayRectangle,
-                    Color.FromArgb(185, 209, 234),
-                    Color.FromArgb(_settings?.BackgroundColor ?? Color.White.ToArgb()),
-                    LinearGradientMode.Vertical);
-                e.Graphics.FillRectangle(brush, DisplayRectangle);
-            }
-
+            // 標準の背景描画に任せる（BackColorをそのまま反映させる）
             base.OnPaint(e);
         }
 
@@ -1059,8 +1043,7 @@ namespace BrowserChooser3.Forms
                 }
                 if (btnCancel != null)
                 {
-                    // btnCancelを他のボタンの下に配置（固定位置を解除）
-                    btnCancel.Location = new Point(ClientSize.Width - 35, ClientSize.Height - 120);
+                    btnCancel.Location = new Point(ClientSize.Width - 35, 113); // btnCopyToClipboardAndCloseの下
                     btnCancel.ImageAlign = ContentAlignment.MiddleCenter;
                     btnCancel.Size = new Size(28, 28);
                     btnCancel.Anchor = AnchorStyles.Top | AnchorStyles.Right;
@@ -1852,7 +1835,7 @@ namespace BrowserChooser3.Forms
                         Text = "Cancel",
                         Size = new Size(80, 25),
                         Location = new Point(ClientSize.Width - 90, ClientSize.Height - 30),
-                        Anchor = AnchorStyles.Top | AnchorStyles.Right
+                        Anchor = AnchorStyles.Bottom | AnchorStyles.Right
                     };
                     btnCancel.Click += (s, e) => Close();
                     Controls.Add(btnCancel);
