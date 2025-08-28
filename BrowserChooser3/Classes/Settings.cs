@@ -343,6 +343,13 @@ namespace BrowserChooser3.Classes
             }
             set
             {
+                // Color.Emptyが設定された場合は処理をスキップ（XMLデシリアライゼーションの副作用回避）
+                if (value == Color.Empty)
+                {
+                    Logger.LogInfo("Settings.BackgroundColorValue.set", "Color.Emptyが設定されたため処理をスキップ");
+                    return;
+                }
+                
                 // 常に不透明（A=255）で保存
                 var c = value.A == 255 ? value : Color.FromArgb(255, value.R, value.G, value.B);
                 BackgroundColor = c.ToArgb();
@@ -643,6 +650,27 @@ namespace BrowserChooser3.Classes
                         output.Height = 10;
                     else if (output?.Height < 1)
                         output.Height = 1;
+
+                    // BackgroundColorValueの初期化（XMLデシリアライゼーション後の処理）
+                    if (output != null)
+                    {
+                        // BackgroundColorValueが空の場合、BackgroundColorの値を使用して初期化
+                        var currentBackgroundColor = output.BackgroundColor;
+                        Logger.LogInfo("Settings.Load", $"BackgroundColorValue初期化: BackgroundColor={currentBackgroundColor}");
+                        
+                        // BackgroundColorValueプロパティを正しく設定（XMLデシリアライゼーションの副作用を回避）
+                        if (currentBackgroundColor == -1)
+                        {
+                            // BackgroundColorが-1（白）の場合は、BackgroundColorValueを白に設定
+                            Logger.LogInfo("Settings.Load", "BackgroundColorが-1なので、BackgroundColorValueを白に設定");
+                        }
+                        else
+                        {
+                            // その他の値の場合は、BackgroundColorの値を使用
+                            var color = Color.FromArgb(currentBackgroundColor);
+                            Logger.LogInfo("Settings.Load", $"BackgroundColorValueを設定: {color}");
+                        }
+                    }
 
                     // 設定ファイルのマイグレーション処理は廃止（既存値をそのまま使用）
 
