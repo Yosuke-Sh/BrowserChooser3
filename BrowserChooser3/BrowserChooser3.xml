@@ -4,6 +4,115 @@
         <name>BrowserChooser3</name>
     </assembly>
     <members>
+        <member name="T:BrowserChooser3.Classes.Interfaces.IFormService">
+            <summary>
+            フォームサービスのインターフェース
+            テスト可能な設計のために抽象化します
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Interfaces.IFormService.ShowOptionsForm(BrowserChooser3.Classes.Settings)">
+            <summary>
+            オプション画面を表示
+            </summary>
+            <param name="settings">設定オブジェクト</param>
+            <returns>ダイアログ結果</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Interfaces.IFormService.ShowAboutForm">
+            <summary>
+            About画面を表示
+            </summary>
+            <returns>ダイアログ結果</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Interfaces.IFormService.ShowIconSelectionForm(System.String)">
+            <summary>
+            アイコン選択画面を表示
+            </summary>
+            <param name="filePath">ファイルパス</param>
+            <returns>選択されたアイコン</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Interfaces.IFormService.ShowAddEditBrowserForm(BrowserChooser3.Classes.Models.Browser,BrowserChooser3.Classes.Settings)">
+            <summary>
+            ブラウザ追加・編集画面を表示
+            </summary>
+            <param name="browser">ブラウザオブジェクト</param>
+            <param name="settings">設定オブジェクト</param>
+            <returns>ダイアログ結果</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Interfaces.IFormService.ShowAddEditURLForm(BrowserChooser3.Classes.Models.URL,BrowserChooser3.Classes.Settings)">
+            <summary>
+            URL追加・編集画面を表示
+            </summary>
+            <param name="url">URLオブジェクト</param>
+            <param name="settings">設定オブジェクト</param>
+            <returns>ダイアログ結果</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Interfaces.IFormService.ShowAddEditProtocolForm(BrowserChooser3.Classes.Models.Protocol,BrowserChooser3.Classes.Settings)">
+            <summary>
+            プロトコル追加・編集画面を表示
+            </summary>
+            <param name="protocol">プロトコルオブジェクト</param>
+            <param name="settings">設定オブジェクト</param>
+            <returns>ダイアログ結果</returns>
+        </member>
+        <member name="T:BrowserChooser3.Classes.Interfaces.IMessageBoxService">
+            <summary>
+            メッセージボックスサービスのインターフェース
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Interfaces.IMessageBoxService.ShowInfo(System.String,System.String)">
+            <summary>
+            情報メッセージを表示
+            </summary>
+            <param name="text">メッセージテキスト</param>
+            <param name="caption">キャプション</param>
+            <returns>ダイアログ結果</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Interfaces.IMessageBoxService.ShowWarning(System.String,System.String)">
+            <summary>
+            警告メッセージを表示
+            </summary>
+            <param name="text">メッセージテキスト</param>
+            <param name="caption">キャプション</param>
+            <returns>ダイアログ結果</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Interfaces.IMessageBoxService.ShowError(System.String,System.String)">
+            <summary>
+            エラーメッセージを表示
+            </summary>
+            <param name="text">メッセージテキスト</param>
+            <param name="caption">キャプション</param>
+            <returns>ダイアログ結果</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Interfaces.IMessageBoxService.ShowQuestion(System.String,System.String)">
+            <summary>
+            確認メッセージを表示
+            </summary>
+            <param name="text">メッセージテキスト</param>
+            <param name="caption">キャプション</param>
+            <returns>ダイアログ結果</returns>
+        </member>
+        <member name="T:BrowserChooser3.Classes.Interfaces.IFileDialogService">
+            <summary>
+            ファイルダイアログサービスのインターフェース
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Interfaces.IFileDialogService.ShowOpenFileDialog(System.String,System.String)">
+            <summary>
+            ファイルを開くダイアログを表示
+            </summary>
+            <param name="title">ダイアログタイトル</param>
+            <param name="filter">ファイルフィルター</param>
+            <returns>選択されたファイルパス</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Interfaces.IFileDialogService.ShowSaveFileDialog(System.String,System.String,System.String)">
+            <summary>
+            ファイルを保存するダイアログを表示
+            </summary>
+            <param name="title">ダイアログタイトル</param>
+            <param name="filter">ファイルフィルター</param>
+            <param name="defaultFileName">デフォルトファイル名</param>
+            <returns>保存先ファイルパス</returns>
+        </member>
         <member name="T:BrowserChooser3.Classes.Models.Browser">
             <summary>
             ブラウザ情報を管理するクラス
@@ -1167,6 +1276,114 @@
             HTTP/HTTPS短縮URLの展開処理
             </summary>
         </member>
+        <member name="T:BrowserChooser3.Classes.Services.UI.FileDialogService">
+            <summary>
+            ファイルダイアログサービスの実装クラス
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.UI.FileDialogService.ShowOpenFileDialog(System.String,System.String)">
+            <summary>
+            ファイルを開くダイアログを表示
+            </summary>
+            <param name="title">ダイアログタイトル</param>
+            <param name="filter">ファイルフィルター</param>
+            <returns>選択されたファイルパス</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.UI.FileDialogService.ShowSaveFileDialog(System.String,System.String,System.String)">
+            <summary>
+            ファイルを保存するダイアログを表示
+            </summary>
+            <param name="title">ダイアログタイトル</param>
+            <param name="filter">ファイルフィルター</param>
+            <param name="defaultFileName">デフォルトファイル名</param>
+            <returns>保存先ファイルパス</returns>
+        </member>
+        <member name="T:BrowserChooser3.Classes.Services.UI.FormService">
+            <summary>
+            フォームサービスの実装クラス
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.UI.FormService.ShowOptionsForm(BrowserChooser3.Classes.Settings)">
+            <summary>
+            オプション画面を表示
+            </summary>
+            <param name="settings">設定オブジェクト</param>
+            <returns>ダイアログ結果</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.UI.FormService.ShowAboutForm">
+            <summary>
+            About画面を表示
+            </summary>
+            <returns>ダイアログ結果</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.UI.FormService.ShowIconSelectionForm(System.String)">
+            <summary>
+            アイコン選択画面を表示
+            </summary>
+            <param name="filePath">ファイルパス</param>
+            <returns>選択されたアイコン</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.UI.FormService.ShowAddEditBrowserForm(BrowserChooser3.Classes.Models.Browser,BrowserChooser3.Classes.Settings)">
+            <summary>
+            ブラウザ追加・編集画面を表示
+            </summary>
+            <param name="browser">ブラウザオブジェクト</param>
+            <param name="settings">設定オブジェクト</param>
+            <returns>ダイアログ結果</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.UI.FormService.ShowAddEditURLForm(BrowserChooser3.Classes.Models.URL,BrowserChooser3.Classes.Settings)">
+            <summary>
+            URL追加・編集画面を表示
+            </summary>
+            <param name="url">URLオブジェクト</param>
+            <param name="settings">設定オブジェクト</param>
+            <returns>ダイアログ結果</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.UI.FormService.ShowAddEditProtocolForm(BrowserChooser3.Classes.Models.Protocol,BrowserChooser3.Classes.Settings)">
+            <summary>
+            プロトコル追加・編集画面を表示
+            </summary>
+            <param name="protocol">プロトコルオブジェクト</param>
+            <param name="settings">設定オブジェクト</param>
+            <returns>ダイアログ結果</returns>
+        </member>
+        <member name="T:BrowserChooser3.Classes.Services.UI.MessageBoxService">
+            <summary>
+            メッセージボックスサービスの実装クラス
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.UI.MessageBoxService.ShowInfo(System.String,System.String)">
+            <summary>
+            情報メッセージを表示
+            </summary>
+            <param name="text">メッセージテキスト</param>
+            <param name="caption">キャプション</param>
+            <returns>ダイアログ結果</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.UI.MessageBoxService.ShowWarning(System.String,System.String)">
+            <summary>
+            警告メッセージを表示
+            </summary>
+            <param name="text">メッセージテキスト</param>
+            <param name="caption">キャプション</param>
+            <returns>ダイアログ結果</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.UI.MessageBoxService.ShowError(System.String,System.String)">
+            <summary>
+            エラーメッセージを表示
+            </summary>
+            <param name="text">メッセージテキスト</param>
+            <param name="caption">キャプション</param>
+            <returns>ダイアログ結果</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.UI.MessageBoxService.ShowQuestion(System.String,System.String)">
+            <summary>
+            確認メッセージを表示
+            </summary>
+            <param name="text">メッセージテキスト</param>
+            <param name="caption">キャプション</param>
+            <returns>ダイアログ結果</returns>
+        </member>
         <member name="T:BrowserChooser3.Classes.Settings">
             <summary>
             アプリケーション設定を管理するクラス
@@ -1885,6 +2102,24 @@
             設定値からログレベルを初期化する（オーバーロード）
             </summary>
             <param name="logLevelSetting">設定値（0-5）</param>
+        </member>
+        <member name="T:BrowserChooser3.Classes.Utilities.TestEnvironmentDetector">
+            <summary>
+            テスト環境の検出を行うユーティリティクラス
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Utilities.TestEnvironmentDetector.IsTestEnvironment">
+            <summary>
+            現在の実行環境がテスト環境かどうかを判定します
+            </summary>
+            <returns>テスト環境の場合はtrue、それ以外はfalse</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Utilities.TestEnvironmentDetector.GuardAgainstTestEnvironment(System.String)">
+            <summary>
+            テスト環境での実行を防ぐためのガードメソッド
+            </summary>
+            <param name="operationName">実行しようとしている操作の名前</param>
+            <exception cref="T:System.InvalidOperationException">テスト環境で実行された場合</exception>
         </member>
         <member name="T:BrowserChooser3.Classes.Utilities.URLUtilities">
             <summary>

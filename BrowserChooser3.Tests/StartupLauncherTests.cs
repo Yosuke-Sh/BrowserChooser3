@@ -413,7 +413,7 @@ namespace BrowserChooser3.Tests
             StartupLauncher.SetURL(testUrl!, false, updateDelegate);
 
             // Assert
-            StartupLauncher.URL.Should().Be(testUrl);
+            StartupLauncher.URL.Should().Be(string.Empty, "nullの場合は空文字列に変換されるため");
         }
 
         [Fact]

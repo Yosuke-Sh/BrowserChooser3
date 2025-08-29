@@ -71,7 +71,7 @@ namespace BrowserChooser3.Classes.Services.SystemServices
             Logger.LogDebug("StartupLauncher.SetURL", "SetURL開始", $"URL: {url}, 長さ: {url?.Length ?? 0}, Unshorten: {unShorten}");
             
             _delegate = updateDelegate;
-            _url = url;
+            _url = url ?? string.Empty;
             Logger.LogDebug("StartupLauncher.SetURL", "URL設定完了", $"設定されたURL: {_url}");
 
             if (unShorten && !string.IsNullOrEmpty(_url))
@@ -112,7 +112,7 @@ namespace BrowserChooser3.Classes.Services.SystemServices
             _delay = delay;
             _browser = browser;
             _delegate = updateDelegate;
-            _url = url;
+            _url = url ?? string.Empty;
 
             if (unShorten && !string.IsNullOrEmpty(_url))
             {
@@ -305,7 +305,7 @@ namespace BrowserChooser3.Classes.Services.SystemServices
                 }
                 
                 // コマンドライン引数の解析
-                var commandLineArgs = CommandLineProcessor.ParseArguments(args);
+                var commandLineArgs = CommandLineProcessor.ParseArguments(args ?? Array.Empty<string>());
                 Logger.LogDebug("StartupLauncher.Initialize", "CommandLineProcessor.ParseArguments完了", $"URL: {commandLineArgs.URL}, 長さ: {commandLineArgs.URL?.Length ?? 0}");
                 
                 // 環境変数からのオプション読み込み
