@@ -1688,9 +1688,23 @@ namespace BrowserChooser3.Forms
                             Logger.LogInfo("OptionsForm.SaveSettings", $"即時反映: EnableTransparency={transparencyEnabled}");
                             if (!transparencyEnabled)
                             {
+                                Logger.LogDebug("OptionsForm.SaveSettings", "背景色変更開始", $"現在の背景色: {mainForm.BackColor}, 新しい背景色: {_settings.BackgroundColorValue}");
+                                
+                                // 変更前のブラウザボタン数を記録
+                                var browserButtonsBefore = mainForm.Controls.OfType<Button>().Where(b => b.Tag is Browser).ToList();
+                                Logger.LogDebug("OptionsForm.SaveSettings", "変更前のブラウザボタン数", browserButtonsBefore.Count);
+                                
                                 mainForm.BackColor = _settings.BackgroundColorValue;
+                                Logger.LogDebug("OptionsForm.SaveSettings", "背景色を設定しました", mainForm.BackColor.ToString());
+                                
                                 // 背景色変更時にブラウザボタンを再描画
                                 mainForm.Invalidate();
+                                Logger.LogDebug("OptionsForm.SaveSettings", "Invalidate()を呼び出しました");
+                                
+                                // 変更後のブラウザボタン数を記録
+                                var browserButtonsAfter = mainForm.Controls.OfType<Button>().Where(b => b.Tag is Browser).ToList();
+                                Logger.LogDebug("OptionsForm.SaveSettings", "変更後のブラウザボタン数", browserButtonsAfter.Count);
+                                
                                 Logger.LogInfo("OptionsForm.SaveSettings", "メイン画面の背景色を即時更新しました", _settings.BackgroundColorValue.ToString());
                             }
                             else

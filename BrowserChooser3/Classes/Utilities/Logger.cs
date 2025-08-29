@@ -37,7 +37,7 @@ namespace BrowserChooser3.Classes.Utilities
         /// <summary>
         /// 現在のログレベル（デフォルトはInfo）
         /// </summary>
-        public static LogLevel CurrentLogLevel { get; set; } = LogLevel.Info;
+        public static LogLevel CurrentLogLevel { get; set; } = LogLevel.Debug; // デバッグ用にDebugレベルに設定
 
         /// <summary>
         /// テスト環境かどうかを判定する

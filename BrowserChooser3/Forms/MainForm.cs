@@ -321,9 +321,20 @@ namespace BrowserChooser3.Forms
             // 透明化が無効な場合の背景色設定
             if (_settings?.EnableTransparency != true)
             {
+                Logger.LogDebug("MainForm.ConfigureForm", "背景色設定開始", $"現在の背景色: {BackColor}");
+                
+                // 変更前のブラウザボタン数を記録
+                var browserButtonsBefore = Controls.OfType<Button>().Where(b => b.Tag is Browser).ToList();
+                Logger.LogDebug("MainForm.ConfigureForm", "変更前のブラウザボタン数", browserButtonsBefore.Count);
+                
                 // 設定値をそのまま反映（Settings.BackgroundColorValue は常に不透明で正規化済み）
                 BackColor = _settings?.BackgroundColorValue ?? Color.FromArgb(185, 209, 234);
                 Logger.LogDebug("MainForm.ConfigureForm", $"Applied BackColor: {BackColor}");
+                
+                // 変更後のブラウザボタン数を記録
+                var browserButtonsAfter = Controls.OfType<Button>().Where(b => b.Tag is Browser).ToList();
+                Logger.LogDebug("MainForm.ConfigureForm", "変更後のブラウザボタン数", browserButtonsAfter.Count);
+                
                 StyleXP(); // 透明化が無効の場合のスタイル設定
                 // 子コントロールは既定色に保ち、フォーム背景色の影響を受けにくくする
                 ApplyDefaultBackColorToChildControls();

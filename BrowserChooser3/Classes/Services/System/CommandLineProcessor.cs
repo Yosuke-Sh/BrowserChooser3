@@ -144,13 +144,16 @@ namespace BrowserChooser3.Classes.Services.SystemServices
                             {
                                 // 長いURLの場合の処理
                                 var url = args[i];
+                                Logger.LogDebug("CommandLineProcessor.ParseArguments", "URL処理開始", $"元のURL長: {url.Length}");
                                 
                                 // URLの長さ制限チェック（Windowsのコマンドライン制限を考慮）
                                 if (url.Length > 8191) // Windowsのコマンドライン制限
                                 {
                                     Logger.LogWarning("CommandLineProcessor.ParseArguments", "URLが長すぎます", url.Length);
                                     // 長すぎる場合は切り詰めるか、エラーとして扱う
+                                    var originalUrl = url;
                                     url = url.Substring(0, 8191);
+                                    Logger.LogDebug("CommandLineProcessor.ParseArguments", "URLを切り詰めました", $"元の長さ: {originalUrl.Length}, 新しい長さ: {url.Length}");
                                 }
                                 
                                 // URLエンコーディングの問題を修正
@@ -159,7 +162,9 @@ namespace BrowserChooser3.Classes.Services.SystemServices
                                     // 必要に応じてURLデコード
                                     if (url.Contains("%"))
                                     {
+                                        var originalUrl = url;
                                         url = Uri.UnescapeDataString(url);
+                                        Logger.LogDebug("CommandLineProcessor.ParseArguments", "URLデコード完了", $"元のURL: {originalUrl}, デコード後: {url}");
                                     }
                                 }
                                 catch (Exception ex)
@@ -169,6 +174,7 @@ namespace BrowserChooser3.Classes.Services.SystemServices
                                 }
                                 
                                 result.URL = url; // 処理済みのURLを設定
+                                Logger.LogDebug("CommandLineProcessor.ParseArguments", "URL処理完了", $"最終URL長: {url.Length}");
                             }
                             break;
                     }
