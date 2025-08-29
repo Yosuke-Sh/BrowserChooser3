@@ -2486,11 +2486,6 @@
             URL短縮解除の設定
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Forms.MainForm.InitializeAutoCloseAndAutoOpen">
-            <summary>
-            AutoCloseとAutoOpenの初期化（Browser Chooser 2互換）
-            </summary>
-        </member>
         <member name="M:BrowserChooser3.Forms.MainForm.ConfigureForm">
             <summary>
             フォームの設定
@@ -2666,11 +2661,6 @@
             カウントダウン表示の更新
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Forms.MainForm.UpdateAutoOpenText">
-            <summary>
-            自動開くテキストの更新（Browser Chooser 2互換）
-            </summary>
-        </member>
         <member name="M:BrowserChooser3.Forms.MainForm.btnInfo_Click(System.Object,System.EventArgs)">
             <summary>
             情報ボタンのクリックイベント
@@ -2699,11 +2689,6 @@
         <member name="M:BrowserChooser3.Forms.MainForm.chkAutoClose_CheckedChanged(System.Object,System.EventArgs)">
             <summary>
             自動クローズチェックボックスの変更イベント
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.MainForm.chkAutoOpen_CheckedChanged(System.Object,System.EventArgs)">
-            <summary>
-            自動オープンチェックボックスの変更イベント
             </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.MainForm.tmrDelay_Tick(System.Object,System.EventArgs)">
@@ -2766,11 +2751,6 @@
             自動閉じるチェックボックスの変更イベント
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Forms.MainForm.ChkAutoOpen_CheckedChanged(System.Object,System.EventArgs)">
-            <summary>
-            自動開くチェックボックスの変更イベント（Browser Chooser 2互換）
-            </summary>
-        </member>
         <member name="M:BrowserChooser3.Forms.MainForm.TmrDelay_Tick(System.Object,System.EventArgs)">
             <summary>
             遅延タイマーのティックイベント（Browser Chooser 2互換）
@@ -2808,17 +2788,6 @@
             <param name="sender">イベント送信者</param>
             <param name="e">キーイベント引数</param>
             <returns>処理された場合はtrue</returns>
-        </member>
-        <member name="M:BrowserChooser3.Forms.MainForm.HandleSpaceKey(System.Windows.Forms.KeyEventArgs)">
-            <summary>
-            スペースキーによるタイマー一時停止/再開の処理
-            </summary>
-            <param name="e">キーイベント引数</param>
-        </member>
-        <member name="M:BrowserChooser3.Forms.MainForm.UpdateAutoOpenTextWithSpaceKey">
-            <summary>
-            自動オープンテキストを更新します（スペースキー対応版）
-            </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.MainForm.OnFormClosing(System.Windows.Forms.FormClosingEventArgs)">
             <summary>

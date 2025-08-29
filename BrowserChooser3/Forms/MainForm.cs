@@ -107,11 +107,7 @@ namespace BrowserChooser3.Forms
                 // フォームLoadイベントの設定
                 Load += MainForm_Load;
                 
-                // AutoCloseとAutoOpenの初期化
-                InitializeAutoCloseAndAutoOpen();
-                
-                // 初期テキストの設定
-                UpdateAutoOpenTextWithSpaceKey();
+
                 
                 // URL短縮解除の設定
                 SetupURLUnshortening();
@@ -288,61 +284,7 @@ namespace BrowserChooser3.Forms
 
 
 
-        /// <summary>
-        /// AutoCloseとAutoOpenの初期化（Browser Chooser 2互換）
-        /// </summary>
-        private void InitializeAutoCloseAndAutoOpen()
-        {
-            Logger.LogDebug("MainForm.InitializeAutoCloseAndAutoOpen", "Start");
-            
-            try
-            {
-                // AutoCloseの初期化
-                if (chkAutoClose != null)
-                {
-                    chkAutoClose.Checked = true; // デフォルトでチェック
-                    chkAutoClose.Text = "Auto Close";
-                }
-                
-                // AutoOpenの初期化
-                if (chkAutoOpen != null)
-                {
-                    // chkAutoOpenを常に表示（デフォルトブラウザの有無に関係なく）
-                    chkAutoOpen.Visible = true;
-                    
-                    if (_defaultBrowser != null && (_settings?.DefaultDelay ?? 0) > 0)
-                    {
-                        // デフォルトブラウザがある場合
-                        chkAutoOpen.Checked = true; // デフォルトでチェック
-                        _currentDelay = _settings?.DefaultDelay ?? 5;
-                        
-                        // タイマーを開始
-                        if (tmrDelay != null)
-                        {
-                            tmrDelay.Enabled = true;
-                        }
-                        
-                        UpdateAutoOpenText();
-                    }
-                    else
-                    {
-                        // デフォルトブラウザがない場合でも表示
-                        chkAutoOpen.Checked = false;
-                        chkAutoOpen.Text = "Auto Open (No default browser set)";
-                        if (tmrDelay != null)
-                        {
-                            tmrDelay.Enabled = false;
-                        }
-                    }
-                }
-                
-                Logger.LogDebug("MainForm.InitializeAutoCloseAndAutoOpen", "End");
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("MainForm.InitializeAutoCloseAndAutoOpen", "初期化エラー", ex.Message, ex.StackTrace ?? "");
-            }
-        }
+
 
         /// <summary>
         /// フォームの設定
@@ -715,8 +657,7 @@ namespace BrowserChooser3.Forms
             
             if (chkAutoClose != null)
                 chkAutoClose.BackColor = Color.Transparent;
-            if (chkAutoOpen != null)
-                chkAutoOpen.BackColor = Color.Transparent;
+
         }
 
         /// <summary>
@@ -1064,11 +1005,8 @@ namespace BrowserChooser3.Forms
                 // アイコンの読み込み
                 LoadIcons();
                 
-                // AutoCloseとAutoOpenの再初期化
-                InitializeAutoCloseAndAutoOpen();
-                
-                // 初期テキストの設定
-                UpdateAutoOpenTextWithSpaceKey();
+
+
                 
                 // URL短縮解除の設定
                 SetupURLUnshortening();
@@ -1279,11 +1217,7 @@ namespace BrowserChooser3.Forms
                     chkAutoClose.Size = new Size(400, 24);
                 }
 
-                if (chkAutoOpen != null)
-                {
-                    chkAutoOpen.Location = new Point(20, ClientSize.Height - 50);
-                    chkAutoOpen.Size = new Size(450, 24);
-                }
+
 
                 // 遅延タイマーの設定
                 if (tmrDelay != null)
@@ -1402,8 +1336,8 @@ namespace BrowserChooser3.Forms
             if (chkAutoClose != null)
                 _toolTip.SetToolTip(chkAutoClose, "ブラウザ起動後にアプリケーションを自動で閉じます");
 
-            if (chkAutoOpen != null)
-                _toolTip.SetToolTip(chkAutoOpen, "デフォルトブラウザで自動的にURLを開きます");
+
+
         }
 
         /// <summary>
@@ -1502,18 +1436,7 @@ namespace BrowserChooser3.Forms
             }
         }
 
-        /// <summary>
-        /// 自動開くテキストの更新（Browser Chooser 2互換）
-        /// </summary>
-        private void UpdateAutoOpenText()
-        {
-            if (chkAutoOpen != null && _defaultBrowser != null)
-            {
-                var pauseText = tmrDelay?.Enabled == false ? "un" : "";
-                var browserName = _defaultBrowser.Name ?? "default browser";
-                chkAutoOpen.Text = $"Open {browserName} in {_currentDelay} seconds. [Space: {pauseText}pause timer]";
-            }
-        }
+
 
 
         
@@ -1597,14 +1520,7 @@ namespace BrowserChooser3.Forms
             // 設定を保存する処理を追加
         }
 
-        /// <summary>
-        /// 自動オープンチェックボックスの変更イベント
-        /// </summary>
-        private void chkAutoOpen_CheckedChanged(object? sender, EventArgs e)
-        {
-            Logger.LogInfo("MainForm.chkAutoOpen_CheckedChanged", "自動オープン設定変更", chkAutoOpen.Checked);
-            // 設定を保存する処理を追加
-        }
+
 
         /// <summary>
         /// 遅延タイマーの処理
@@ -1650,15 +1566,7 @@ namespace BrowserChooser3.Forms
                 return;
             }
             
-            // スペースキーでカウントダウンを一時停止/再開
-            if (e.KeyCode == Keys.Space && tmrDelay != null)
-            {
-                e.Handled = true;
-                e.SuppressKeyPress = true;
-                _isPaused = !_isPaused;
-                UpdateAutoOpenText();
-                return;
-            }
+
             
             // 数字キー（0-9）でホットキー処理
             if (e.KeyCode >= Keys.D0 && e.KeyCode <= Keys.D9)
@@ -1855,19 +1763,7 @@ namespace BrowserChooser3.Forms
             // 設定に反映する処理を追加
         }
 
-        /// <summary>
-        /// 自動開くチェックボックスの変更イベント（Browser Chooser 2互換）
-        /// </summary>
-        private void ChkAutoOpen_CheckedChanged(object? sender, EventArgs e)
-        {
-            Logger.LogInfo("MainForm.ChkAutoOpen_CheckedChanged", $"自動開く: {chkAutoOpen?.Checked}");
-            
-            if (tmrDelay != null)
-            {
-                tmrDelay.Enabled = chkAutoOpen?.Checked ?? false;
-                UpdateAutoOpenText();
-            }
-        }
+
 
         /// <summary>
         /// 遅延タイマーのティックイベント（Browser Chooser 2互換）
@@ -1884,24 +1780,11 @@ namespace BrowserChooser3.Forms
 
             if (_currentDelay > 0)
             {
-                var text = $"Open {_defaultBrowser?.Name} in {_currentDelay} seconds. [Space: {(tmrDelay?.Enabled == false ? "un" : "")}pause timer]";
-                
-                if (chkAutoOpen != null)
-                {
-                    chkAutoOpen.Text = text;
-                    chkAutoOpen.Invalidate();
-                }
+                // カウントダウン表示のみ
             }
             else
             {
                 tmrDelay!.Enabled = false;
-                
-                var text = $"Automatically opening {_defaultBrowser?.Name}.";
-                if (chkAutoOpen != null)
-                {
-                    chkAutoOpen.Text = text;
-                    chkAutoOpen.Invalidate();
-                }
 
                 if (_defaultBrowser != null)
                 {
@@ -2012,42 +1895,9 @@ namespace BrowserChooser3.Forms
             return false;
         }
 
-        /// <summary>
-        /// スペースキーによるタイマー一時停止/再開の処理
-        /// </summary>
-        /// <param name="e">キーイベント引数</param>
-        private void HandleSpaceKey(KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Space && tmrDelay != null && _defaultBrowser != null)
-            {
-                if (tmrDelay.Enabled)
-                {
-                    _isPaused = true;
-                    tmrDelay.Stop();
-                }
-                else
-                {
-                    _isPaused = false;
-                    tmrDelay.Start();
-                }
 
-                UpdateAutoOpenText();
-                e.SuppressKeyPress = true;
-                e.Handled = true;
-            }
-        }
 
-        /// <summary>
-        /// 自動オープンテキストを更新します（スペースキー対応版）
-        /// </summary>
-        private void UpdateAutoOpenTextWithSpaceKey()
-        {
-            if (chkAutoOpen != null && _defaultBrowser != null)
-            {
-                var pauseStatus = tmrDelay?.Enabled == false ? "un" : "";
-                chkAutoOpen.Text = $"Open {_defaultBrowser.Name} in {_currentDelay} seconds. [Space: {pauseStatus}pause timer]";
-            }
-        }
+
 
         /// <summary>
         /// フォームを閉じる際の処理
