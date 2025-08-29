@@ -674,20 +674,40 @@ namespace BrowserChooser3.Forms
         /// </summary>
         private void ApplyDefaultBackColorToChildControls()
         {
+            Logger.LogDebug("MainForm.ApplyDefaultBackColorToChildControls", "子コントロール背景色設定開始");
+            
             foreach (Control control in Controls)
             {
-                switch (control)
+                try
                 {
-                    case Button:
-                    case Label:
-                    case TextBox:
-                    case CheckBox:
-                    case ListView:
-                    case Panel:
-                        control.BackColor = Color.Transparent;
-                        break;
+                    switch (control)
+                    {
+                        case Button:
+                        case Label:
+                        case TextBox:
+                        case CheckBox:
+                        case ListView:
+                        case Panel:
+                            // 透明色を設定（エラーが発生した場合はスキップ）
+                            try
+                            {
+                                control.BackColor = Color.Transparent;
+                                Logger.LogDebug("MainForm.ApplyDefaultBackColorToChildControls", $"コントロール背景色を透明に設定", control.Name);
+                            }
+                            catch (InvalidOperationException)
+                            {
+                                Logger.LogDebug("MainForm.ApplyDefaultBackColorToChildControls", $"コントロールは透明色をサポートしません", control.Name, control.GetType().Name);
+                            }
+                            break;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogWarning("MainForm.ApplyDefaultBackColorToChildControls", $"コントロール背景色設定エラー", control.Name, ex.Message);
                 }
             }
+            
+            Logger.LogDebug("MainForm.ApplyDefaultBackColorToChildControls", "子コントロール背景色設定完了");
         }
 
 
@@ -994,13 +1014,17 @@ namespace BrowserChooser3.Forms
                 this.SuspendLayout();
                 
                 // フォームを再設定（Windows11スタイルも含む）
+                Logger.LogDebug("MainForm.RefreshForm", "ConfigureForm呼び出し前");
                 ConfigureForm();
+                Logger.LogDebug("MainForm.RefreshForm", "ConfigureForm呼び出し完了");
                 
                 // ツールチップの初期化
                 InitializeToolTips();
                 
                 // ブラウザボタンを再作成
+                Logger.LogDebug("MainForm.RefreshForm", "CreateBrowserButtons呼び出し前");
                 CreateBrowserButtons();
+                Logger.LogDebug("MainForm.RefreshForm", "CreateBrowserButtons呼び出し完了");
                 
                 // カウントダウンラベルを再作成
                 CreateCountdownLabel();
