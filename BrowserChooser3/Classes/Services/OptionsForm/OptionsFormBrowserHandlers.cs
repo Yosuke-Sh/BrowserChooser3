@@ -52,7 +52,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
         /// </summary>
         public void AddBrowser_Click(object? sender, EventArgs e)
         {
-            Logger.LogInfo("OptionsFormBrowserHandlers.AddBrowser_Click", "ブラウザ追加ボタンがクリックされました");
+            Logger.LogDebug("OptionsFormBrowserHandlers.AddBrowser_Click", "ブラウザ追加ボタンがクリックされました");
             try
             {
                 var addEditForm = new AddEditBrowserForm();
@@ -270,7 +270,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
         /// </summary>
         public void DetectBrowsers_Click(object? sender, EventArgs e)
         {
-            Logger.LogInfo("OptionsFormBrowserHandlers.DetectBrowsers_Click", "ブラウザ検出を開始");
+            Logger.LogDebug("OptionsFormBrowserHandlers.DetectBrowsers_Click", "ブラウザ検出を開始");
             try
             {
                 // Webブラウザのみを検出するかどうかを確認
@@ -289,7 +289,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 
                 // ブラウザ検出を実行
                 var detectedBrowsers = DetectedBrowsers.DoBrowserDetection(webBrowsersOnly);
-                Logger.LogInfo("OptionsFormBrowserHandlers.DetectBrowsers_Click", $"検出されたブラウザ数: {detectedBrowsers.Count}", webBrowsersOnly);
+                Logger.LogDebug("OptionsFormBrowserHandlers.DetectBrowsers_Click", $"検出されたブラウザ数: {detectedBrowsers.Count}", webBrowsersOnly);
                 
                 var missingBrowsers = new List<Browser>();
 
@@ -312,7 +312,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                     }
                 }
 
-                Logger.LogInfo("OptionsFormBrowserHandlers.DetectBrowsers_Click", $"不足しているブラウザ数: {missingBrowsers.Count}");
+                Logger.LogDebug("OptionsFormBrowserHandlers.DetectBrowsers_Click", $"不足しているブラウザ数: {missingBrowsers.Count}");
 
                 if (missingBrowsers.Count > 0)
                 {
@@ -327,7 +327,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                         // 正しいListViewを取得（タブページ内から検索）
                         var browsersTab = _form.tabSettings.TabPages["tabBrowsers"];
                         var listView = browsersTab?.Controls.Find("lstBrowsers", true).FirstOrDefault() as ListView;
-                        Logger.LogInfo("OptionsFormBrowserHandlers.DetectBrowsers_Click", $"ListView: {(listView != null ? "見つかりました" : "見つかりませんでした")}");
+                        Logger.LogDebug("OptionsFormBrowserHandlers.DetectBrowsers_Click", $"ListView: {(listView != null ? "見つかりました" : "見つかりませんでした")}");
                         
                                                  if (listView != null)
                          {

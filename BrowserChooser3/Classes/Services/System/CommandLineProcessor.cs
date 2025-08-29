@@ -64,11 +64,11 @@ namespace BrowserChooser3.Classes.Services.SystemServices
             // nullチェック
             if (args == null)
             {
-                Logger.LogInfo("CommandLineProcessor.ParseArguments", "コマンドライン引数がnull");
+                Logger.LogDebug("CommandLineProcessor.ParseArguments", "コマンドライン引数がnull");
                 return new CommandLineArgs();
             }
 
-            Logger.LogInfo("CommandLineProcessor.ParseArguments", "コマンドライン引数解析開始", string.Join(" ", args));
+            Logger.LogDebug("CommandLineProcessor.ParseArguments", "コマンドライン引数解析開始", string.Join(" ", args));
 
             var result = new CommandLineArgs();
 
@@ -148,7 +148,7 @@ namespace BrowserChooser3.Classes.Services.SystemServices
                     }
                 }
 
-                Logger.LogInfo("CommandLineProcessor.ParseArguments", "コマンドライン引数解析完了", 
+                Logger.LogDebug("CommandLineProcessor.ParseArguments", "コマンドライン引数解析完了", 
                     $"URL: {result.URL}, Delay: {result.Delay}, Browser: {result.BrowserGuid}");
             }
             catch (Exception ex)
@@ -268,7 +268,7 @@ namespace BrowserChooser3.Classes.Services.SystemServices
                     args.IgnoreSettings = true;
                 }
 
-                Logger.LogInfo("CommandLineProcessor.LoadFromEnvironment", "環境変数からオプションを読み込み完了");
+                Logger.LogDebug("CommandLineProcessor.LoadFromEnvironment", "環境変数からオプションを読み込み完了");
             }
             catch (Exception ex)
             {

@@ -20,7 +20,7 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
         /// <returns>検出されたブラウザのリスト</returns>
         public static List<Browser> DetectBrowsers()
         {
-            Logger.LogInfo("BrowserDetector.DetectBrowsers", "Start");
+            Logger.LogDebug("BrowserDetector.DetectBrowsers", "Start");
             DetectedBrowsers.Clear();
 
             try
@@ -46,7 +46,7 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
                 // Vivaldi
                 DetectVivaldi();
                 
-                Logger.LogInfo("BrowserDetector.DetectBrowsers", "End", DetectedBrowsers.Count);
+                Logger.LogDebug("BrowserDetector.DetectBrowsers", "End", DetectedBrowsers.Count);
             }
             catch (Exception ex)
             {
@@ -85,7 +85,7 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
                     {
                         DetectedBrowsers.Add(browser);
                     }
-                    Logger.LogInfo("BrowserDetector.DetectChrome", "Chrome検出", chromePath);
+                    Logger.LogDebug("BrowserDetector.DetectChrome", "Chrome検出", chromePath);
                     break;
                 }
             }
@@ -120,7 +120,7 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
                 {
                     DetectedBrowsers.Add(browser);
                 }
-                Logger.LogInfo("BrowserDetector.DetectFirefox", "Firefox検出", firefoxPath);
+                Logger.LogDebug("BrowserDetector.DetectFirefox", "Firefox検出", firefoxPath);
                     break;
                 }
             }
@@ -148,7 +148,7 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
                 {
                     DetectedBrowsers.Add(browser);
                 }
-                Logger.LogInfo("BrowserDetector.DetectEdge", "Edge検出", edgePath);
+                Logger.LogDebug("BrowserDetector.DetectEdge", "Edge検出", edgePath);
             }
         }
 
@@ -175,7 +175,7 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
                 {
                     DetectedBrowsers.Add(browser);
                 }
-                Logger.LogInfo("BrowserDetector.DetectOpera", "Opera検出", operaPath);
+                Logger.LogDebug("BrowserDetector.DetectOpera", "Opera検出", operaPath);
             }
         }
 
@@ -200,7 +200,7 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
                 {
                     DetectedBrowsers.Add(browser);
                 }
-                Logger.LogInfo("BrowserDetector.DetectSafari", "Safari検出", safariPath);
+                Logger.LogDebug("BrowserDetector.DetectSafari", "Safari検出", safariPath);
             }
         }
 
@@ -225,7 +225,7 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
                 {
                     DetectedBrowsers.Add(browser);
                 }
-                Logger.LogInfo("BrowserDetector.DetectBrave", "Brave検出", bravePath);
+                Logger.LogDebug("BrowserDetector.DetectBrave", "Brave検出", bravePath);
             }
         }
 
@@ -251,7 +251,7 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
                 {
                     DetectedBrowsers.Add(browser);
                 }
-                Logger.LogInfo("BrowserDetector.DetectVivaldi", "Vivaldi検出", expandedPath);
+                Logger.LogDebug("BrowserDetector.DetectVivaldi", "Vivaldi検出", expandedPath);
             }
         }
 
@@ -281,7 +281,7 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
                     DetectedBrowsers.Add(browser);
                 }
                 
-                Logger.LogInfo("BrowserDetector.AddCustomBrowser", "カスタムブラウザ追加", name, path);
+                Logger.LogDebug("BrowserDetector.AddCustomBrowser", "カスタムブラウザ追加", name, path);
             }
         }
     }

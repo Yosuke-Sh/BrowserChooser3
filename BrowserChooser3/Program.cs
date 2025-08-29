@@ -16,13 +16,13 @@ namespace BrowserChooser3
         {
             // アプリケーション起動時のログ初期化
             Logger.CurrentLogLevel = Logger.LogLevel.Trace;
-            Logger.LogInfo("Program.Main", "アプリケーション開始");
+            Logger.LogDebug("Program.Main", "アプリケーション開始");
 
             try
             {
                 // ログレベルを初期化
                 Logger.InitializeLogLevel();
-                Logger.LogInfo("Program.Main", "ログレベル初期化完了");
+                Logger.LogDebug("Program.Main", "ログレベル初期化完了");
 
                 // コマンドライン引数の処理
                 var args = Environment.GetCommandLineArgs();
@@ -39,12 +39,12 @@ namespace BrowserChooser3
 
                 // Windows Forms アプリケーションの設定
                 ApplicationConfiguration.Initialize();
-                Logger.LogInfo("Program.Main", "ApplicationConfiguration初期化完了");
+                Logger.LogDebug("Program.Main", "ApplicationConfiguration初期化完了");
 
                 // メインフォームの作成と実行
-                Logger.LogInfo("Program.Main", "メインフォーム作成開始");
+                Logger.LogDebug("Program.Main", "メインフォーム作成開始");
                 var mainForm = new MainForm();
-                Logger.LogInfo("Program.Main", "メインフォーム作成完了");
+                Logger.LogDebug("Program.Main", "メインフォーム作成完了");
 
                 // コマンドライン引数からURLを取得（従来の処理）
                 string url = string.Empty;
@@ -64,9 +64,9 @@ namespace BrowserChooser3
                     }
                 }
 
-                Logger.LogInfo("Program.Main", "Application.Run開始");
+                Logger.LogDebug("Program.Main", "Application.Run開始");
                 Application.Run(mainForm);
-                Logger.LogInfo("Program.Main", "Application.Run終了");
+                Logger.LogDebug("Program.Main", "Application.Run終了");
             }
             catch (Exception ex)
             {
@@ -75,7 +75,7 @@ namespace BrowserChooser3
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
-            Logger.LogInfo("Program.Main", "アプリケーション終了");
+            Logger.LogDebug("Program.Main", "アプリケーション終了");
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace BrowserChooser3
         /// <param name="args">コマンドライン引数</param>
         private static void ProcessCommandLineArgs(string[] args)
         {
-            Logger.LogInfo("Program.ProcessCommandLineArgs", "Start", $"引数数={args.Length}");
+            Logger.LogDebug("Program.ProcessCommandLineArgs", "Start", $"引数数={args.Length}");
 
             foreach (var arg in args)
             {
@@ -109,7 +109,7 @@ namespace BrowserChooser3
                 }
             }
 
-            Logger.LogInfo("Program.ProcessCommandLineArgs", "End");
+            Logger.LogDebug("Program.ProcessCommandLineArgs", "End");
         }
     }
 }

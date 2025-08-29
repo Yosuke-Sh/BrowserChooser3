@@ -831,8 +831,8 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 if (colorDialog.ShowDialog() == DialogResult.OK)
                 {
                     pbBackgroundColor.BackColor = colorDialog.Color;
-                    Logger.LogInfo("OptionsFormPanels.CreateDisplayPanel", "背景色を変更しました", colorDialog.Color.ToString());
-                    Logger.LogInfo("OptionsFormPanels.CreateDisplayPanel", "PictureBoxのBackColorを設定しました", pbBackgroundColor.BackColor.ToString());
+                    Logger.LogDebug("OptionsFormPanels.CreateDisplayPanel", "背景色を変更しました", colorDialog.Color.ToString());
+                    Logger.LogDebug("OptionsFormPanels.CreateDisplayPanel", "PictureBoxのBackColorを設定しました", pbBackgroundColor.BackColor.ToString());
                     // 即時に設定オブジェクトへも反映（保存前の不整合を防止）
                     settings.BackgroundColorValue = colorDialog.Color;
                     
@@ -840,7 +840,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                     if (Application.OpenForms.OfType<MainForm>().FirstOrDefault() is MainForm mainForm)
                     {
                         mainForm.BackColor = colorDialog.Color;
-                        Logger.LogInfo("OptionsFormPanels.CreateDisplayPanel", "メイン画面の背景色を更新しました", colorDialog.Color.ToString());
+                        Logger.LogDebug("OptionsFormPanels.CreateDisplayPanel", "メイン画面の背景色を更新しました", colorDialog.Color.ToString());
                     }
                     
                     setModified(true);

@@ -55,7 +55,7 @@ namespace BrowserChooser3.Forms
         /// </summary>
         private void InitializeApplication()
         {
-            Logger.LogInfo("MainForm.InitializeApplication", "Start");
+            Logger.LogDebug("MainForm.InitializeApplication", "Start");
             
             try
             {
@@ -123,9 +123,9 @@ namespace BrowserChooser3.Forms
                 }
                 
                 // フォームの初期化完了を通知
-                Logger.LogInfo("MainForm.InitializeApplication", "フォーム初期化完了");
+                Logger.LogDebug("MainForm.InitializeApplication", "フォーム初期化完了");
                 
-                Logger.LogInfo("MainForm.InitializeApplication", "End");
+                Logger.LogDebug("MainForm.InitializeApplication", "End");
             }
             catch (Exception ex)
             {
@@ -140,7 +140,7 @@ namespace BrowserChooser3.Forms
         /// </summary>
         private void ApplyStartupSettings()
         {
-            Logger.LogInfo("MainForm.ApplyStartupSettings", "Start");
+            Logger.LogDebug("MainForm.ApplyStartupSettings", "Start");
             
             try
             {
@@ -149,7 +149,7 @@ namespace BrowserChooser3.Forms
                 // 起動遅延の処理
                 if (_settings.StartupDelay > 0)
                 {
-                    Logger.LogInfo("MainForm.ApplyStartupSettings", $"起動遅延を適用: {_settings.StartupDelay}秒");
+                    Logger.LogDebug("MainForm.ApplyStartupSettings", $"起動遅延を適用: {_settings.StartupDelay}秒");
                     var startupTimer = new System.Windows.Forms.Timer
                     {
                         Interval = _settings.StartupDelay * 1000,
@@ -170,19 +170,19 @@ namespace BrowserChooser3.Forms
                 // 最小化で起動の処理
                 if (_settings.StartMinimized)
                 {
-                    Logger.LogInfo("MainForm.ApplyStartupSettings", "最小化で起動を適用");
+                    Logger.LogDebug("MainForm.ApplyStartupSettings", "最小化で起動を適用");
                     WindowState = FormWindowState.Minimized;
                 }
 
                 // システムトレイで起動の処理
                 if (_settings.StartInTray)
                 {
-                    Logger.LogInfo("MainForm.ApplyStartupSettings", "システムトレイで起動を適用");
+                    Logger.LogDebug("MainForm.ApplyStartupSettings", "システムトレイで起動を適用");
                     InitializeSystemTray();
                     MinimizeToTray();
                 }
 
-                Logger.LogInfo("MainForm.ApplyStartupSettings", "End");
+                Logger.LogDebug("MainForm.ApplyStartupSettings", "End");
             }
             catch (Exception ex)
             {
@@ -231,7 +231,7 @@ namespace BrowserChooser3.Forms
                 Hide();
                 ShowInTaskbar = false;
                 
-                Logger.LogInfo("MainForm.MinimizeToTray", "システムトレイに最小化");
+                Logger.LogDebug("MainForm.MinimizeToTray", "システムトレイに最小化");
             }
         }
 
@@ -255,7 +255,7 @@ namespace BrowserChooser3.Forms
                 WindowState = FormWindowState.Normal;
                 Activate();
                 
-                Logger.LogInfo("MainForm.ShowFromTray", "システムトレイから復元");
+                Logger.LogDebug("MainForm.ShowFromTray", "システムトレイから復元");
             }
         }
 
@@ -293,7 +293,7 @@ namespace BrowserChooser3.Forms
         /// </summary>
         private void InitializeAutoCloseAndAutoOpen()
         {
-            Logger.LogInfo("MainForm.InitializeAutoCloseAndAutoOpen", "Start");
+            Logger.LogDebug("MainForm.InitializeAutoCloseAndAutoOpen", "Start");
             
             try
             {
@@ -336,7 +336,7 @@ namespace BrowserChooser3.Forms
                     }
                 }
                 
-                Logger.LogInfo("MainForm.InitializeAutoCloseAndAutoOpen", "End");
+                Logger.LogDebug("MainForm.InitializeAutoCloseAndAutoOpen", "End");
             }
             catch (Exception ex)
             {
@@ -349,7 +349,7 @@ namespace BrowserChooser3.Forms
         /// </summary>
         private void ConfigureForm()
         {
-            Logger.LogInfo("MainForm.ConfigureForm", "Start");
+            Logger.LogDebug("MainForm.ConfigureForm", "Start");
             
             // フォームの基本設定（動的サイズ変更対応）
             Text = _settings?.DefaultMessage ?? "Choose a Browser";
@@ -382,13 +382,13 @@ namespace BrowserChooser3.Forms
             {
                 // 設定値をそのまま反映（Settings.BackgroundColorValue は常に不透明で正規化済み）
                 BackColor = _settings?.BackgroundColorValue ?? Color.FromArgb(185, 209, 234);
-                Logger.LogInfo("MainForm.ConfigureForm", $"Applied BackColor: {BackColor}");
+                Logger.LogDebug("MainForm.ConfigureForm", $"Applied BackColor: {BackColor}");
                 StyleXP(); // 透明化が無効の場合のスタイル設定
                 // 子コントロールは既定色に保ち、フォーム背景色の影響を受けにくくする
                 ApplyDefaultBackColorToChildControls();
             }
             
-            Logger.LogInfo("MainForm.ConfigureForm", "End");
+            Logger.LogDebug("MainForm.ConfigureForm", "End");
         }
 
         /// <summary>
@@ -417,7 +417,7 @@ namespace BrowserChooser3.Forms
                         ApplyRoundedCorners(_settings.RoundedCornersRadius);
                     }
                     
-                    Logger.LogInfo("MainForm.ApplyTransparencySettings", 
+                    Logger.LogDebug("MainForm.ApplyTransparencySettings", 
                         $"透明化設定を適用: Opacity={_settings?.Opacity}, TransparencyKey={_settings?.TransparencyColor}, HideTitleBar={_settings?.HideTitleBar}, RoundedCornersRadius={_settings?.RoundedCornersRadius}");
                 }
                 else
@@ -437,7 +437,7 @@ namespace BrowserChooser3.Forms
                     // 透明化解除後の描画問題を解決するため、フォームを強制再描画
                     this.Refresh();
                     
-                    Logger.LogInfo("MainForm.ApplyTransparencySettings", "透明化を無効にしました");
+                    Logger.LogDebug("MainForm.ApplyTransparencySettings", "透明化を無効にしました");
                 }
                 
                 // Windows 11スタイルの適用
@@ -489,7 +489,7 @@ namespace BrowserChooser3.Forms
                     }
                 }
                 
-                Logger.LogInfo("MainForm.ApplyWindows11Style", "Windows 11スタイル設定を適用しました");
+                Logger.LogDebug("MainForm.ApplyWindows11Style", "Windows 11スタイル設定を適用しました");
             }
             catch (Exception ex)
             {
@@ -509,7 +509,7 @@ namespace BrowserChooser3.Forms
                 var region = CreateRoundedRectangleRegion(0, 0, this.Width, this.Height, radius);
                 this.Region = region;
                 
-                Logger.LogInfo("MainForm.ApplyRoundedCorners", $"角を丸くする設定を適用しました（半径: {radius}）");
+                Logger.LogDebug("MainForm.ApplyRoundedCorners", $"角を丸くする設定を適用しました（半径: {radius}）");
             }
             catch (Exception ex)
             {
@@ -570,16 +570,16 @@ namespace BrowserChooser3.Forms
         {
             try
             {
-                Logger.LogInfo("MainForm.MainForm_Load", "フォームLoad開始");
+                Logger.LogDebug("MainForm.MainForm_Load", "フォームLoad開始");
                 
                 // 初期URLが設定されている場合は更新
                 if (!string.IsNullOrEmpty(_initialUrl))
                 {
                     UpdateURL(_initialUrl);
-                    Logger.LogInfo("MainForm.MainForm_Load", "初期URL更新完了", _initialUrl);
+                    Logger.LogDebug("MainForm.MainForm_Load", "初期URL更新完了", _initialUrl);
                 }
                 
-                Logger.LogInfo("MainForm.MainForm_Load", "フォームLoad完了");
+                Logger.LogDebug("MainForm.MainForm_Load", "フォームLoad完了");
             }
             catch (Exception ex)
             {
@@ -643,7 +643,7 @@ namespace BrowserChooser3.Forms
             var gapWidth = _settings.IconGapWidth;
             var gapHeight = _settings.IconGapHeight;
             
-            Logger.LogInfo("MainForm.RecalculateButtonLayout", $"Layout settings - Width: {buttonWidth}, Height: {buttonHeight}, GapWidth: {gapWidth}, GapHeight: {gapHeight}");
+            Logger.LogDebug("MainForm.RecalculateButtonLayout", $"Layout settings - Width: {buttonWidth}, Height: {buttonHeight}, GapWidth: {gapWidth}, GapHeight: {gapHeight}");
             
             // フォーム幅に基づいて列数を計算（btnInfoのスペースを確保）
             var availableWidth = ClientSize.Width - 120; // 左右マージン（右端ボタンとbtnInfo用のスペース確保）
@@ -747,15 +747,15 @@ namespace BrowserChooser3.Forms
         /// </summary>
         private void CreateBrowserButtons()
         {
-            Logger.LogInfo("MainForm.CreateBrowserButtons", "Start", $"ブラウザ数: {_browsers?.Count ?? 0}");
-            Logger.LogInfo("MainForm.CreateBrowserButtons", "既存のボタン数", Controls.OfType<Button>().Where(b => b.Tag is Browser).Count().ToString());
+            Logger.LogDebug("MainForm.CreateBrowserButtons", "Start", $"ブラウザ数: {_browsers?.Count ?? 0}");
+            Logger.LogDebug("MainForm.CreateBrowserButtons", "既存のボタン数", Controls.OfType<Button>().Where(b => b.Tag is Browser).Count().ToString());
             
             var buttonWidth = _settings?.IconWidth ?? 90;
             var buttonHeight = _settings?.IconHeight ?? 100;
             var gapWidth = _settings?.IconGapWidth ?? 0;
             var gapHeight = _settings?.IconGapHeight ?? 0;
             
-            Logger.LogInfo("MainForm.CreateBrowserButtons", $"Icon settings - Width: {buttonWidth}, Height: {buttonHeight}, GapWidth: {gapWidth}, GapHeight: {gapHeight}, Scale: {_settings?.IconScale ?? 1.0}");
+            Logger.LogDebug("MainForm.CreateBrowserButtons", $"Icon settings - Width: {buttonWidth}, Height: {buttonHeight}, GapWidth: {gapWidth}, GapHeight: {gapHeight}, Scale: {_settings?.IconScale ?? 1.0}");
             
             if (_browsers == null) return;
             
@@ -801,7 +801,7 @@ namespace BrowserChooser3.Forms
                 // ブラウザアイコンの設定
                 try
                 {
-                    Logger.LogInfo("MainForm.CreateBrowserButtons", "アイコン取得開始", browser.Name, browser.Target);
+                    Logger.LogDebug("MainForm.CreateBrowserButtons", "アイコン取得開始", browser.Name, browser.Target);
                     
                     var browserIcon = ImageUtilities.GetImage(browser, true);
                     if (browserIcon != null)
@@ -812,13 +812,13 @@ namespace BrowserChooser3.Forms
                         var iconSize = (int)(baseIconSize * iconScale);
                         var resizedIcon = new Bitmap(browserIcon, new Size(iconSize, iconSize));
                         
-                        Logger.LogInfo("MainForm.CreateBrowserButtons", $"Icon size calculation - Base: {baseIconSize}, Scale: {iconScale}, Final: {iconSize}");
+                        Logger.LogDebug("MainForm.CreateBrowserButtons", $"Icon size calculation - Base: {baseIconSize}, Scale: {iconScale}, Final: {iconSize}");
                         
                         button.Image = resizedIcon;
                         button.ImageAlign = ContentAlignment.MiddleCenter;
                         button.TextImageRelation = TextImageRelation.Overlay;
                         
-                        Logger.LogInfo("MainForm.CreateBrowserButtons", "アイコン設定成功", browser.Name, iconSize, browser.Target);
+                        Logger.LogDebug("MainForm.CreateBrowserButtons", "アイコン設定成功", browser.Name, iconSize, browser.Target);
                     }
                     else
                     {
@@ -861,7 +861,7 @@ namespace BrowserChooser3.Forms
             // レイアウトを再計算
             RecalculateButtonLayout();
             
-            Logger.LogInfo("MainForm.CreateBrowserButtons", "End");
+            Logger.LogDebug("MainForm.CreateBrowserButtons", "End");
         }
 
         /// <summary>
@@ -974,7 +974,7 @@ namespace BrowserChooser3.Forms
         /// </summary>
         private void OpenOptionsForm()
         {
-            Logger.LogInfo("MainForm.OpenOptionsForm", "Start");
+            Logger.LogDebug("MainForm.OpenOptionsForm", "Start");
             
             try
             {
@@ -987,7 +987,7 @@ namespace BrowserChooser3.Forms
                     RefreshForm();
                 }
                 
-                Logger.LogInfo("MainForm.OpenOptionsForm", "End", result);
+                Logger.LogDebug("MainForm.OpenOptionsForm", "End", result);
             }
             catch (Exception ex)
             {
@@ -1002,7 +1002,7 @@ namespace BrowserChooser3.Forms
         /// </summary>
         private void RefreshForm()
         {
-            Logger.LogInfo("MainForm.RefreshForm", "Start");
+            Logger.LogDebug("MainForm.RefreshForm", "Start");
             
             try
             {
@@ -1014,7 +1014,7 @@ namespace BrowserChooser3.Forms
                     Settings.Current = _settings;
                     _browsers = _settings?.Browsers ?? new List<Browser>();
                     
-                    Logger.LogInfo("MainForm.RefreshForm", "設定再読み込み完了", _browsers?.Count ?? 0);
+                    Logger.LogDebug("MainForm.RefreshForm", "設定再読み込み完了", _browsers?.Count ?? 0);
                 }
                 else
                 {
@@ -1079,7 +1079,7 @@ namespace BrowserChooser3.Forms
                 // フォームを強制再描画（透明化解除後の描画問題を解決）
                 this.Refresh();
                 
-                Logger.LogInfo("MainForm.RefreshForm", "End");
+                Logger.LogDebug("MainForm.RefreshForm", "End");
             }
             catch (Exception ex)
             {
@@ -1123,7 +1123,7 @@ namespace BrowserChooser3.Forms
         /// </summary>
         private void LaunchBrowser(Browser browser, string url)
         {
-            Logger.LogInfo("MainForm.LaunchBrowser", "Start", browser.Name, url);
+            Logger.LogDebug("MainForm.LaunchBrowser", "Start", browser.Name, url);
             
             var startInfo = new System.Diagnostics.ProcessStartInfo
             {
@@ -1134,7 +1134,7 @@ namespace BrowserChooser3.Forms
             
             System.Diagnostics.Process.Start(startInfo);
             
-            Logger.LogInfo("MainForm.LaunchBrowser", "End", browser.Name);
+            Logger.LogDebug("MainForm.LaunchBrowser", "End", browser.Name);
         }
 
         /// <summary>
@@ -1143,7 +1143,7 @@ namespace BrowserChooser3.Forms
         public void SetInitialURL(string url)
         {
             _initialUrl = url;
-            Logger.LogInfo("MainForm.SetInitialURL", "初期URL設定", url);
+            Logger.LogDebug("MainForm.SetInitialURL", "初期URL設定", url);
         }
 
         /// <summary>
@@ -1158,7 +1158,7 @@ namespace BrowserChooser3.Forms
                 return;
             }
 
-            Logger.LogInfo("MainForm.UpdateURL", "URL更新", url);
+            Logger.LogDebug("MainForm.UpdateURL", "URL更新", url);
             _currentUrl = url;
             UpdateURLLabel();
             // StartupLauncherを使用してURLを処理
@@ -1183,7 +1183,7 @@ namespace BrowserChooser3.Forms
             }
             
             _currentUrl = url;
-            Logger.LogInfo("MainForm.OnURLUpdated", "URL更新完了", url);
+            Logger.LogDebug("MainForm.OnURLUpdated", "URL更新完了", url);
             
             // URL表示ラベルを更新
             UpdateURLLabel();
@@ -1196,7 +1196,7 @@ namespace BrowserChooser3.Forms
         {
             try
             {
-                Logger.LogInfo("MainForm.UpdateURLLabel", "URL表示更新開始", $"URL: {_currentUrl}, ShowURL: {_settings?.ShowURL}");
+                Logger.LogDebug("MainForm.UpdateURLLabel", "URL表示更新開始", $"URL: {_currentUrl}, ShowURL: {_settings?.ShowURL}");
                 
                 if (_urlDisplayTextBox != null)
                 {
@@ -1206,13 +1206,13 @@ namespace BrowserChooser3.Forms
                         var displayUrl = _currentUrl.Length > 100 ? _currentUrl.Substring(0, 97) + "..." : _currentUrl;
                         _urlDisplayTextBox.Text = displayUrl;
                         _urlDisplayTextBox.Visible = _settings?.ShowURL == true;
-                        Logger.LogInfo("MainForm.UpdateURLLabel", "URL表示設定完了", $"DisplayURL: {displayUrl}, Visible: {_urlDisplayTextBox.Visible}");
+                        Logger.LogDebug("MainForm.UpdateURLLabel", "URL表示設定完了", $"DisplayURL: {displayUrl}, Visible: {_urlDisplayTextBox.Visible}");
                     }
                     else
                     {
                         _urlDisplayTextBox.Text = "";
                         _urlDisplayTextBox.Visible = false;
-                        Logger.LogInfo("MainForm.UpdateURLLabel", "URL表示を非表示に設定");
+                        Logger.LogDebug("MainForm.UpdateURLLabel", "URL表示を非表示に設定");
                     }
                 }
                 else
@@ -1231,7 +1231,7 @@ namespace BrowserChooser3.Forms
         /// </summary>
         private void AdjustCompatibilityUILayout()
         {
-            Logger.LogInfo("MainForm.AdjustCompatibilityUILayout", "Start");
+            Logger.LogDebug("MainForm.AdjustCompatibilityUILayout", "Start");
             
             try
             {
@@ -1295,7 +1295,7 @@ namespace BrowserChooser3.Forms
                 // コンテキストメニュー
                 CreateContextMenu();
 
-                Logger.LogInfo("MainForm.AdjustCompatibilityUILayout", "End");
+                Logger.LogDebug("MainForm.AdjustCompatibilityUILayout", "End");
             }
             catch (Exception ex)
             {
@@ -1336,7 +1336,7 @@ namespace BrowserChooser3.Forms
                     btnCopyToClipboardAndClose.Image = ImageUtilities.ResizeImage(pasteAndCloseIcon, 28, 28);
                 }
                 
-                Logger.LogInfo("MainForm.LoadIcons", "アイコン読み込み完了");
+                Logger.LogDebug("MainForm.LoadIcons", "アイコン読み込み完了");
             }
             catch (Exception ex)
             {
@@ -1469,7 +1469,7 @@ namespace BrowserChooser3.Forms
             UpdateCountdownDisplay();
             _countdownLabel!.Visible = true;
             
-            Logger.LogInfo("MainForm.StartCountdown", "カウントダウン開始", _currentDelay);
+            Logger.LogDebug("MainForm.StartCountdown", "カウントダウン開始", _currentDelay);
         }
 
         /// <summary>
@@ -2104,7 +2104,7 @@ namespace BrowserChooser3.Forms
                 _notifyIcon.ContextMenuStrip = contextMenu;
                 _notifyIcon.DoubleClick += (sender, e) => ShowFromTray();
 
-                Logger.LogInfo("MainForm.InitializeSystemTray", "システムトレイ初期化完了");
+                Logger.LogDebug("MainForm.InitializeSystemTray", "システムトレイ初期化完了");
             }
             catch (Exception ex)
             {

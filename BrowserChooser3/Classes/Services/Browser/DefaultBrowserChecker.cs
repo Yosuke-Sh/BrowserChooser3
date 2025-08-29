@@ -40,7 +40,7 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
         /// <returns>デフォルトブラウザ情報</returns>
         public static DefaultBrowserInfo GetDefaultBrowser()
         {
-            Logger.LogInfo("DefaultBrowserChecker.GetDefaultBrowser", "デフォルトブラウザ検出開始");
+            Logger.LogDebug("DefaultBrowserChecker.GetDefaultBrowser", "デフォルトブラウザ検出開始");
 
             try
             {
@@ -48,7 +48,7 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
                 var httpBrowser = GetBrowserFromProtocol("http");
                 if (httpBrowser != null)
                 {
-                    Logger.LogInfo("DefaultBrowserChecker.GetDefaultBrowser", "HTTPプロトコルから検出", httpBrowser.Name);
+                    Logger.LogDebug("DefaultBrowserChecker.GetDefaultBrowser", "HTTPプロトコルから検出", httpBrowser.Name);
                     return httpBrowser;
                 }
 
@@ -56,7 +56,7 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
                 var httpsBrowser = GetBrowserFromProtocol("https");
                 if (httpsBrowser != null)
                 {
-                    Logger.LogInfo("DefaultBrowserChecker.GetDefaultBrowser", "HTTPSプロトコルから検出", httpsBrowser.Name);
+                    Logger.LogDebug("DefaultBrowserChecker.GetDefaultBrowser", "HTTPSプロトコルから検出", httpsBrowser.Name);
                     return httpsBrowser;
                 }
 
@@ -64,7 +64,7 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
                 var registryBrowser = GetBrowserFromRegistry();
                 if (registryBrowser != null)
                 {
-                    Logger.LogInfo("DefaultBrowserChecker.GetDefaultBrowser", "レジストリから検出", registryBrowser.Name);
+                    Logger.LogDebug("DefaultBrowserChecker.GetDefaultBrowser", "レジストリから検出", registryBrowser.Name);
                     return registryBrowser;
                 }
 
@@ -261,7 +261,7 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
         /// <returns>成功した場合はtrue</returns>
         public static bool ShowDefaultAppsSettings()
         {
-            Logger.LogInfo("DefaultBrowserChecker.ShowDefaultAppsSettings", "Windows 11デフォルトアプリ設定画面表示開始");
+            Logger.LogDebug("DefaultBrowserChecker.ShowDefaultAppsSettings", "Windows 11デフォルトアプリ設定画面表示開始");
 
             try
             {
@@ -274,7 +274,7 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
                         UseShellExecute = true
                     });
                     
-                    Logger.LogInfo("DefaultBrowserChecker.ShowDefaultAppsSettings", "Windows 11デフォルトアプリ設定画面表示完了");
+                    Logger.LogDebug("DefaultBrowserChecker.ShowDefaultAppsSettings", "Windows 11デフォルトアプリ設定画面表示完了");
                     return result != null;
                 }
                 else
@@ -287,7 +287,7 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
                         UseShellExecute = true
                     });
                     
-                    Logger.LogInfo("DefaultBrowserChecker.ShowDefaultAppsSettings", "Windows 10以前デフォルトアプリ設定画面表示完了");
+                    Logger.LogDebug("DefaultBrowserChecker.ShowDefaultAppsSettings", "Windows 10以前デフォルトアプリ設定画面表示完了");
                     return result != null;
                 }
             }
@@ -304,7 +304,7 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
         /// <returns>成功した場合はtrue</returns>
         public static bool ShowHttpProtocolSettings()
         {
-            Logger.LogInfo("DefaultBrowserChecker.ShowHttpProtocolSettings", "HTTP/HTTPSプロトコル設定画面表示開始");
+            Logger.LogDebug("DefaultBrowserChecker.ShowHttpProtocolSettings", "HTTP/HTTPSプロトコル設定画面表示開始");
 
             try
             {
@@ -317,7 +317,7 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
                         UseShellExecute = true
                     });
                     
-                    Logger.LogInfo("DefaultBrowserChecker.ShowHttpProtocolSettings", "Windows 11 HTTP/HTTPSプロトコル設定画面表示完了");
+                    Logger.LogDebug("DefaultBrowserChecker.ShowHttpProtocolSettings", "Windows 11 HTTP/HTTPSプロトコル設定画面表示完了");
                     return result != null;
                 }
                 else
@@ -330,7 +330,7 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
                         UseShellExecute = true
                     });
                     
-                    Logger.LogInfo("DefaultBrowserChecker.ShowHttpProtocolSettings", "Windows 10以前 HTTP/HTTPSプロトコル設定画面表示完了");
+                    Logger.LogDebug("DefaultBrowserChecker.ShowHttpProtocolSettings", "Windows 10以前 HTTP/HTTPSプロトコル設定画面表示完了");
                     return result != null;
                 }
             }
@@ -349,7 +349,7 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
         /// <returns>成功した場合はtrue</returns>
         public static bool SetDefaultBrowser(string browserPath, string protocol = "http")
         {
-            Logger.LogInfo("DefaultBrowserChecker.SetDefaultBrowser", "デフォルトブラウザ設定開始", browserPath);
+            Logger.LogDebug("DefaultBrowserChecker.SetDefaultBrowser", "デフォルトブラウザ設定開始", browserPath);
 
             try
             {
@@ -411,7 +411,7 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
                 if (key != null)
                 {
                     key.SetValue("", command);
-                    Logger.LogInfo("DefaultBrowserChecker.SetDefaultBrowserLegacy", "従来のデフォルトブラウザ設定完了", protocol);
+                    Logger.LogDebug("DefaultBrowserChecker.SetDefaultBrowserLegacy", "従来のデフォルトブラウザ設定完了", protocol);
                     return true;
                 }
 
@@ -467,13 +467,13 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
         /// <returns>成功した場合はtrue</returns>
         public static bool ResetDefaultBrowser(string protocol = "http")
         {
-            Logger.LogInfo("DefaultBrowserChecker.ResetDefaultBrowser", "デフォルトブラウザリセット開始", protocol);
+            Logger.LogDebug("DefaultBrowserChecker.ResetDefaultBrowser", "デフォルトブラウザリセット開始", protocol);
 
             try
             {
                 var keyPath = $"{protocol}\\shell\\open\\command";
                 Registry.ClassesRoot.DeleteSubKey(keyPath, false);
-                Logger.LogInfo("DefaultBrowserChecker.ResetDefaultBrowser", "デフォルトブラウザリセット完了", protocol);
+                Logger.LogDebug("DefaultBrowserChecker.ResetDefaultBrowser", "デフォルトブラウザリセット完了", protocol);
                 return true;
             }
             catch (Exception ex)
