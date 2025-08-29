@@ -977,7 +977,123 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
                 ForeColor = Color.Gray
             };
-            currentY += displayItemSpacing;
+
+
+            // コントロールの追加
+            panel.Controls.Add(lblVisualTitle);
+            // panel.Controls.Add(accessibilityButton);
+            // panel.Controls.Add(lblAccessibilityDesc);
+            // panel.Controls.Add(backgroundColorButton);
+            panel.Controls.Add(lblBackgroundColorDesc);
+            panel.Controls.Add(pbBackgroundColor);
+            panel.Controls.Add(chkEnableTransparency);
+            panel.Controls.Add(lblEnableTransparencyDesc);
+            panel.Controls.Add(lblTransparencyColor);
+            panel.Controls.Add(pbTransparencyColor);
+            panel.Controls.Add(lblTransparencyColorDesc);
+            panel.Controls.Add(lblOpacity);
+            panel.Controls.Add(nudOpacity);
+            panel.Controls.Add(lblOpacityDesc);
+            panel.Controls.Add(chkHideTitleBar);
+            panel.Controls.Add(lblHideTitleBarDesc);
+            panel.Controls.Add(lblRoundedCorners);
+            panel.Controls.Add(nudRoundedCorners);
+            panel.Controls.Add(lblRoundedCornersDesc);
+            panel.Controls.Add(chkEnableBackgroundGradient);
+            panel.Controls.Add(lblEnableBackgroundGradientDesc);
+            
+            panel.Controls.Add(lblEffectsTitle);
+            panel.Controls.Add(chkUseAccessibleRendering);
+            panel.Controls.Add(lblUseAccessibleRenderingDesc);
+
+            // === URL Display Settings ===
+            currentY += displayItemSpacing + 10;
+
+            var lblURLTitle = new Label
+            {
+                Text = "URL Display Settings",
+                Location = new Point(6, currentY),
+                Size = new Size(200, 25),
+                Font = new Font("Segoe UI", 10.0f, FontStyle.Bold, GraphicsUnit.Point, 0),
+                ForeColor = Color.DarkBlue
+            };
+            currentY += 34;
+
+            // ShowURL設定
+            var chkShowURLs = new CheckBox
+            {
+                Name = "chkShowURLs",
+                Text = "Show URLs in User Interface",
+                TextAlign = ContentAlignment.MiddleLeft,
+                Location = new Point(6, currentY),
+                Size = new Size(240, 25),
+                Checked = settings.ShowURL,
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+            chkShowURLs.CheckedChanged += (s, e) => setModified(true);
+
+            var lblShowURLsDesc = new Label
+            {
+                Text = "メイン画面でURLを表示します",
+                Location = new Point(250, currentY + 3),
+                Size = new Size(400, 23),
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                ForeColor = Color.Gray
+            };
+            currentY += 35;
+
+            // RevealShortURL設定
+            var chkRevealShortURLs = new CheckBox
+            {
+                Name = "chkRevealShortURLs",
+                Text = "Reveal Shortened URLs",
+                TextAlign = ContentAlignment.MiddleLeft,
+                Location = new Point(6, currentY),
+                Size = new Size(240, 25),
+                Checked = settings.RevealShortURL,
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+            chkRevealShortURLs.CheckedChanged += (s, e) => setModified(true);
+
+            var lblRevealShortURLsDesc = new Label
+            {
+                Text = "短縮URLを展開して表示します",
+                Location = new Point(250, currentY + 3),
+                Size = new Size(400, 23),
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                ForeColor = Color.Gray
+            };
+
+            // 新しいコントロールを追加
+            panel.Controls.Add(lblURLTitle);
+            panel.Controls.Add(chkShowURLs);
+            panel.Controls.Add(lblShowURLsDesc);
+            panel.Controls.Add(chkRevealShortURLs);
+            panel.Controls.Add(lblRevealShortURLsDesc);
+
+            tabPage.Controls.Add(panel);
+            return tabPage;
+        }
+
+        /// <summary>
+        /// フォーカスパネルの作成
+        /// </summary>
+        /// <param name="settings">設定オブジェクト</param>
+        /// <param name="setModified">変更フラグ設定アクション</param>
+        /// <returns>作成されたTabPage</returns>
+        public TabPage CreateFocusPanel(Settings settings, Action<bool> setModified)
+        {
+            var tabPage = new TabPage("Focus");
+            tabPage.Name = "tabFocus";
+            
+            var panel = new Panel
+            {
+                Dock = DockStyle.Fill,
+                Padding = new Padding(10),
+                AutoScroll = true
+            };
+
+            int currentY = 6;
 
             // === Focus Settings ===
             // レイアウト変数の定義
@@ -1151,32 +1267,6 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             };
 
             // コントロールの追加
-            panel.Controls.Add(lblVisualTitle);
-            // panel.Controls.Add(accessibilityButton);
-            // panel.Controls.Add(lblAccessibilityDesc);
-            // panel.Controls.Add(backgroundColorButton);
-            panel.Controls.Add(lblBackgroundColorDesc);
-            panel.Controls.Add(pbBackgroundColor);
-            panel.Controls.Add(chkEnableTransparency);
-            panel.Controls.Add(lblEnableTransparencyDesc);
-            panel.Controls.Add(lblTransparencyColor);
-            panel.Controls.Add(pbTransparencyColor);
-            panel.Controls.Add(lblTransparencyColorDesc);
-            panel.Controls.Add(lblOpacity);
-            panel.Controls.Add(nudOpacity);
-            panel.Controls.Add(lblOpacityDesc);
-            panel.Controls.Add(chkHideTitleBar);
-            panel.Controls.Add(lblHideTitleBarDesc);
-            panel.Controls.Add(lblRoundedCorners);
-            panel.Controls.Add(nudRoundedCorners);
-            panel.Controls.Add(lblRoundedCornersDesc);
-            panel.Controls.Add(chkEnableBackgroundGradient);
-            panel.Controls.Add(lblEnableBackgroundGradientDesc);
-            
-            panel.Controls.Add(lblEffectsTitle);
-            panel.Controls.Add(chkUseAccessibleRendering);
-            panel.Controls.Add(lblUseAccessibleRenderingDesc);
-            
             panel.Controls.Add(lblFocusTitle);
             panel.Controls.Add(chkShowFocus);
             panel.Controls.Add(lblShowFocusDesc);
@@ -1191,71 +1281,6 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             panel.Controls.Add(lblFocusBoxColor);
             panel.Controls.Add(pbFocusBoxColor);
             panel.Controls.Add(lblFocusBoxColorDesc);
-
-            // === URL Display Settings ===
-            currentY += focusItemSpacing + 10;
-
-            var lblURLTitle = new Label
-            {
-                Text = "URL Display Settings",
-                Location = new Point(6, currentY),
-                Size = new Size(200, 25),
-                Font = new Font("Segoe UI", 10.0f, FontStyle.Bold, GraphicsUnit.Point, 0),
-                ForeColor = Color.DarkBlue
-            };
-            currentY += 34;
-
-            // ShowURL設定
-            var chkShowURLs = new CheckBox
-            {
-                Name = "chkShowURLs",
-                Text = "Show URLs in User Interface",
-                TextAlign = ContentAlignment.MiddleLeft,
-                Location = new Point(6, currentY),
-                Size = new Size(240, 25),
-                Checked = settings.ShowURL,
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            };
-            chkShowURLs.CheckedChanged += (s, e) => setModified(true);
-
-            var lblShowURLsDesc = new Label
-            {
-                Text = "メイン画面でURLを表示します",
-                Location = new Point(250, currentY + 3),
-                Size = new Size(400, 23),
-                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
-                ForeColor = Color.Gray
-            };
-            currentY += 35;
-
-            // RevealShortURL設定
-            var chkRevealShortURLs = new CheckBox
-            {
-                Name = "chkRevealShortURLs",
-                Text = "Reveal Shortened URLs",
-                TextAlign = ContentAlignment.MiddleLeft,
-                Location = new Point(6, currentY),
-                Size = new Size(240, 25),
-                Checked = settings.RevealShortURL,
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            };
-            chkRevealShortURLs.CheckedChanged += (s, e) => setModified(true);
-
-            var lblRevealShortURLsDesc = new Label
-            {
-                Text = "短縮URLを展開して表示します",
-                Location = new Point(250, currentY + 3),
-                Size = new Size(400, 23),
-                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
-                ForeColor = Color.Gray
-            };
-
-            // 新しいコントロールを追加
-            panel.Controls.Add(lblURLTitle);
-            panel.Controls.Add(chkShowURLs);
-            panel.Controls.Add(lblShowURLsDesc);
-            panel.Controls.Add(chkRevealShortURLs);
-            panel.Controls.Add(lblRevealShortURLsDesc);
 
             tabPage.Controls.Add(panel);
             return tabPage;

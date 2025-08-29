@@ -101,6 +101,7 @@ namespace BrowserChooser3.Forms
 
                 var settingsNode = new TreeNode("Settings");
                 settingsNode.Nodes.Add(new TreeNode("Display") { Tag = "tabDisplay" });
+                settingsNode.Nodes.Add(new TreeNode("Focus") { Tag = "tabFocus" });
                 settingsNode.Nodes.Add(new TreeNode("Grid") { Tag = "tabGrid" });
                 settingsNode.Nodes.Add(new TreeNode("Privacy") { Tag = "tabPrivacy" });
                 settingsNode.Nodes.Add(new TreeNode("Startup") { Tag = "tabStartup" });
@@ -119,6 +120,7 @@ namespace BrowserChooser3.Forms
                 var protocolsTab = _panels.CreateProtocolsPanel(_settings, _mProtocols, _mBrowser, SetModified);
                 var defaultBrowserTab = _panels.CreateDefaultBrowserPanel(_settings, SetModified);
                 var displayTab = _panels.CreateDisplayPanel(_settings, SetModified);
+                var focusTab = _panels.CreateFocusPanel(_settings, SetModified);
                 var gridTab = _panels.CreateGridPanel(_settings, SetModified);
                 var privacyTab = _panels.CreatePrivacyPanel(_settings, SetModified);
                 var startupTab = _panels.CreateStartupPanel(_settings, SetModified);
@@ -129,6 +131,7 @@ namespace BrowserChooser3.Forms
                 tabSettings.TabPages.Add(protocolsTab);
                 tabSettings.TabPages.Add(defaultBrowserTab);
                 tabSettings.TabPages.Add(displayTab);
+                tabSettings.TabPages.Add(focusTab);
                 tabSettings.TabPages.Add(gridTab);
                 tabSettings.TabPages.Add(privacyTab);
                 tabSettings.TabPages.Add(startupTab);
