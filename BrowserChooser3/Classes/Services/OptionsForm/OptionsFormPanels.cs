@@ -2104,51 +2104,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             };
             currentY += 34;
 
-            // ダウンロード検出ファイル設定
-            var chkDownloadDetectionFile = new CheckBox
-            {
-                Name = "chkDownloadDetectionFile",
-                Text = "Download Detection File",
-                Location = new Point(6, currentY),
-                Size = new Size(250, 25),
-                Checked = settings.DownloadDetectionFile,
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            };
-            chkDownloadDetectionFile.CheckedChanged += (s, e) => setModified(true);
 
-            var lblDownloadDetectionFileDesc = new Label
-            {
-                Text = "ダウンロード検出用のファイルを生成します",
-                Location = new Point(260, currentY + 3),
-                Size = new Size(400, 20),
-                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
-                ForeColor = Color.Gray
-            };
-            currentY += 34;
-
-
-
-            // DLL抽出設定
-            var chkExtractDLLs = new CheckBox
-            {
-                Name = "chkExtractDLLs",
-                Text = "Extract DLLs",
-                Location = new Point(6, currentY),
-                Size = new Size(150, 25),
-                Checked = settings.ExtractDLLs,
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            };
-            chkExtractDLLs.CheckedChanged += (s, e) => setModified(true);
-
-            var lblExtractDLLsDesc = new Label
-            {
-                Text = "必要なDLLファイルを自動的に抽出します",
-                Location = new Point(160, currentY + 3),
-                Size = new Size(400, 20),
-                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
-                ForeColor = Color.Gray
-            };
-            currentY += 34;
 
             // オプションショートカット設定
             var lblOptionsShortcut = new Label
@@ -2228,10 +2184,6 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             panel.Controls.Add(lblUserAgentDesc);
             
             panel.Controls.Add(lblSystemTitle);
-            panel.Controls.Add(chkDownloadDetectionFile);
-            panel.Controls.Add(lblDownloadDetectionFileDesc);
-            panel.Controls.Add(chkExtractDLLs);
-            panel.Controls.Add(lblExtractDLLsDesc);
             panel.Controls.Add(lblOptionsShortcut);
             panel.Controls.Add(txtOptionsShortcut);
             panel.Controls.Add(lblOptionsShortcutDesc);

@@ -956,9 +956,7 @@ namespace BrowserChooser3.Forms
             _settings.Separator = (string)_settings.Defaults[Settings.DefaultField.Separator];
             _settings.DefaultDelay = (int)_settings.Defaults[Settings.DefaultField.DefaultDelay];
             _settings.AllowStayOpen = (bool)_settings.Defaults[Settings.DefaultField.AllowStayOpen];
-            _settings.ExtractDLLs = (bool)_settings.Defaults[Settings.DefaultField.ExtractDLLs];
             _settings.UserAgent = (string)_settings.Defaults[Settings.DefaultField.UserAgent];
-            _settings.DownloadDetectionFile = (bool)_settings.Defaults[Settings.DefaultField.DownloadDetectionFile];
             _settings.BackgroundColor = (int)_settings.Defaults[Settings.DefaultField.BackgroundColor];
             _settings.StartingPosition = (int)_settings.Defaults[Settings.DefaultField.StartingPosition];
             _settings.OffsetX = (int)_settings.Defaults[Settings.DefaultField.OffsetX];
@@ -977,14 +975,8 @@ namespace BrowserChooser3.Forms
             var chkAllowStayOpen = tabPage.Controls.Find("chkAllowStayOpen", true).FirstOrDefault() as CheckBox;
             if (chkAllowStayOpen != null) chkAllowStayOpen.Checked = _settings.AllowStayOpen;
 
-            var chkExtractDLLs = tabPage.Controls.Find("chkExtractDLLs", true).FirstOrDefault() as CheckBox;
-            if (chkExtractDLLs != null) chkExtractDLLs.Checked = _settings.ExtractDLLs;
-
             var txtUserAgent = tabPage.Controls.Find("txtUserAgent", true).FirstOrDefault() as TextBox;
             if (txtUserAgent != null) txtUserAgent.Text = _settings.UserAgent;
-
-            var chkDownloadDetectionFile = tabPage.Controls.Find("chkDownloadDetectionFile", true).FirstOrDefault() as CheckBox;
-            if (chkDownloadDetectionFile != null) chkDownloadDetectionFile.Checked = _settings.DownloadDetectionFile;
 
 
 
@@ -1263,8 +1255,7 @@ namespace BrowserChooser3.Forms
                 var txtUserAgent = Controls.Find("txtUserAgent", true).FirstOrDefault() as TextBox;
                 if (txtUserAgent != null) txtUserAgent.Text = _settings.UserAgent;
 
-                var chkDownloadDetectionFile = Controls.Find("chkDownloadDetectionFile", true).FirstOrDefault() as CheckBox;
-                if (chkDownloadDetectionFile != null) chkDownloadDetectionFile.Checked = _settings.DownloadDetectionFile;
+
 
                 var nudIconSizeWidth = Controls.Find("nudIconSizeWidth", true).FirstOrDefault() as NumericUpDown;
                 if (nudIconSizeWidth != null) 
@@ -1307,8 +1298,7 @@ namespace BrowserChooser3.Forms
 
 
 
-                var chkExtractDLLs = Controls.Find("chkExtractDLLs", true).FirstOrDefault() as CheckBox;
-                if (chkExtractDLLs != null) chkExtractDLLs.Checked = _settings.ExtractDLLs;
+
 
 
 
@@ -1427,13 +1417,7 @@ namespace BrowserChooser3.Forms
                 if (txtDefaultMessage != null) txtDefaultMessage.Text = _settings.DefaultMessage;
 
                 // その他の設定項目の読み込み
-                var chkDownloadDetectionFileLoad = Controls.Find("chkDownloadDetectionFile", true).FirstOrDefault() as CheckBox;
-                if (chkDownloadDetectionFileLoad != null) chkDownloadDetectionFileLoad.Checked = _settings.DownloadDetectionFile;
 
-
-
-                var chkExtractDLLsLoad = Controls.Find("chkExtractDLLs", true).FirstOrDefault() as CheckBox;
-                if (chkExtractDLLsLoad != null) chkExtractDLLsLoad.Checked = _settings.ExtractDLLs;
 
 
 
@@ -1553,8 +1537,7 @@ namespace BrowserChooser3.Forms
                 var txtUserAgent = Controls.Find("txtUserAgent", true).FirstOrDefault() as TextBox;
                 if (txtUserAgent != null) _settings.UserAgent = txtUserAgent.Text;
 
-                            var chkDownloadDetectionFile = Controls.Find("chkDownloadDetectionFile", true).FirstOrDefault() as CheckBox;
-            if (chkDownloadDetectionFile != null) _settings.DownloadDetectionFile = chkDownloadDetectionFile.Checked;
+
 
                 var nudIconSizeWidth = Controls.Find("nudIconSizeWidth", true).FirstOrDefault() as NumericUpDown;
                 if (nudIconSizeWidth != null) 
@@ -1595,8 +1578,7 @@ namespace BrowserChooser3.Forms
 
 
 
-                            var chkExtractDLLs = Controls.Find("chkExtractDLLs", true).FirstOrDefault() as CheckBox;
-            if (chkExtractDLLs != null) _settings.ExtractDLLs = chkExtractDLLs.Checked;
+
 
                 // グリッド設定
                 var nudGridWidth = Controls.Find("nudGridWidth", true).FirstOrDefault() as NumericUpDown;
@@ -1789,13 +1771,7 @@ namespace BrowserChooser3.Forms
                 if (txtDefaultMessage != null) _settings.DefaultMessage = txtDefaultMessage.Text;
 
                 // その他の設定項目の保存
-                var chkDownloadDetectionFileSave = Controls.Find("chkDownloadDetectionFile", true).FirstOrDefault() as CheckBox;
-                if (chkDownloadDetectionFileSave != null) _settings.DownloadDetectionFile = chkDownloadDetectionFileSave.Checked;
 
-
-
-                var chkExtractDLLsSave = Controls.Find("chkExtractDLLs", true).FirstOrDefault() as CheckBox;
-                if (chkExtractDLLsSave != null) _settings.ExtractDLLs = chkExtractDLLsSave.Checked;
 
 
 

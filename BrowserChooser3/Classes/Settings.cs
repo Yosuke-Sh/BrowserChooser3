@@ -133,8 +133,7 @@ namespace BrowserChooser3.Classes
             /// <summary>ユーザーエージェント</summary>
             UserAgent,
             
-            /// <summary>ダウンロード検出ファイル</summary>
-            DownloadDetectionFile,
+
             
             /// <summary>背景色</summary>
             BackgroundColor,
@@ -154,8 +153,7 @@ namespace BrowserChooser3.Classes
             /// <summary>ログ有効化</summary>
             EnableLogging,
             
-            /// <summary>DLL抽出</summary>
-            ExtractDLLs,
+
             
             /// <summary>ログレベル</summary>
             LogLevel,
@@ -205,14 +203,14 @@ namespace BrowserChooser3.Classes
             { DefaultField.FocusBoxLineWidth, 1 },
             { DefaultField.FocusBoxColor, Color.White.ToArgb() },
             { DefaultField.UserAgent, "Mozilla/5.0" },
-            { DefaultField.DownloadDetectionFile, true },
+
             { DefaultField.BackgroundColor, Color.White.ToArgb() },
             { DefaultField.StartingPosition, AvailableStartingPositions.CenterScreen },
             { DefaultField.OffsetX, 0 },
             { DefaultField.OffsetY, 0 },
             { DefaultField.AllowStayOpen, false },
             { DefaultField.EnableLogging, true },
-            { DefaultField.ExtractDLLs, false },
+
             { DefaultField.LogLevel, 2 },
             { DefaultField.EnableTransparency, false },
             { DefaultField.TransparencyColor, Color.FromArgb(255, 255, 0, 255).ToArgb() },
@@ -349,8 +347,7 @@ namespace BrowserChooser3.Classes
         /// <summary>ユーザーエージェント</summary>
         public string UserAgent { get; set; } = "Mozilla/5.0";
         
-        /// <summary>ダウンロード検出ファイル</summary>
-        public bool DownloadDetectionFile { get; set; } = true;
+
         
         /// <summary>背景色</summary>
         public int BackgroundColor { get; set; } = Color.White.ToArgb();
@@ -406,8 +403,7 @@ namespace BrowserChooser3.Classes
         /// <summary>ログ有効化</summary>
         public bool EnableLogging { get; set; } = true;
         
-        /// <summary>DLL抽出</summary>
-        public bool ExtractDLLs { get; set; } = false;
+
         
         /// <summary>ログレベル</summary>
         public int LogLevel { get; set; } = 2;
@@ -661,10 +657,7 @@ namespace BrowserChooser3.Classes
                         LogDebugs = TriState.True;
                     }
 
-                    if (output.ExtractDLLs)
-                    {
-                        DoExtractDLLs = true;
-                    }
+
 
                     // ログレベルを初期化（ログが有効な場合のみ）
                     if (output?.EnableLogging == true)

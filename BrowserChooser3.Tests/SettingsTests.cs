@@ -245,8 +245,7 @@ namespace BrowserChooser3.Tests
             settings.EnableLogging = true;
             settings.EnableLogging.Should().BeTrue();
 
-            settings.ExtractDLLs = true;
-            settings.ExtractDLLs.Should().BeTrue();
+
         }
 
         [Fact]
@@ -629,7 +628,7 @@ namespace BrowserChooser3.Tests
             ((int)Settings.DefaultField.FocusBoxLineWidth).Should().Be(14);
             ((int)Settings.DefaultField.FocusBoxColor).Should().Be(15);
             ((int)Settings.DefaultField.UserAgent).Should().Be(16);
-            ((int)Settings.DefaultField.DownloadDetectionFile).Should().Be(17);
+
             ((int)Settings.DefaultField.BackgroundColor).Should().Be(18);
             ((int)Settings.DefaultField.StartingPosition).Should().Be(19);
             ((int)Settings.DefaultField.OffsetX).Should().Be(20);
@@ -639,7 +638,7 @@ namespace BrowserChooser3.Tests
             // ((int)Settings.DefaultField.Canonicalize).Should().Be(26);
             // ((int)Settings.DefaultField.CanonicalizeAppendedText).Should().Be(27);
             ((int)Settings.DefaultField.EnableLogging).Should().Be(23);
-            ((int)Settings.DefaultField.ExtractDLLs).Should().Be(24);
+
             ((int)Settings.DefaultField.LogLevel).Should().Be(25);
             ((int)Settings.DefaultField.EnableTransparency).Should().Be(26);
             ((int)Settings.DefaultField.TransparencyColor).Should().Be(27);

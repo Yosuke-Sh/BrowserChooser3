@@ -1354,9 +1354,6 @@
         <member name="F:BrowserChooser3.Classes.Settings.DefaultField.UserAgent">
             <summary>ユーザーエージェント</summary>
         </member>
-        <member name="F:BrowserChooser3.Classes.Settings.DefaultField.DownloadDetectionFile">
-            <summary>ダウンロード検出ファイル</summary>
-        </member>
         <member name="F:BrowserChooser3.Classes.Settings.DefaultField.BackgroundColor">
             <summary>背景色</summary>
         </member>
@@ -1374,9 +1371,6 @@
         </member>
         <member name="F:BrowserChooser3.Classes.Settings.DefaultField.EnableLogging">
             <summary>ログ有効化</summary>
-        </member>
-        <member name="F:BrowserChooser3.Classes.Settings.DefaultField.ExtractDLLs">
-            <summary>DLL抽出</summary>
         </member>
         <member name="F:BrowserChooser3.Classes.Settings.DefaultField.LogLevel">
             <summary>ログレベル</summary>
@@ -1501,9 +1495,6 @@
         <member name="P:BrowserChooser3.Classes.Settings.UserAgent">
             <summary>ユーザーエージェント</summary>
         </member>
-        <member name="P:BrowserChooser3.Classes.Settings.DownloadDetectionFile">
-            <summary>ダウンロード検出ファイル</summary>
-        </member>
         <member name="P:BrowserChooser3.Classes.Settings.BackgroundColor">
             <summary>背景色</summary>
         </member>
@@ -1524,9 +1515,6 @@
         </member>
         <member name="P:BrowserChooser3.Classes.Settings.EnableLogging">
             <summary>ログ有効化</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Settings.ExtractDLLs">
-            <summary>DLL抽出</summary>
         </member>
         <member name="P:BrowserChooser3.Classes.Settings.LogLevel">
             <summary>ログレベル</summary>
