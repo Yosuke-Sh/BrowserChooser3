@@ -189,99 +189,7 @@ namespace BrowserChooser3.Tests
         }
         #endregion
 
-        #region FileTypeテスト
 
-        [Fact]
-        public void FileType_Constructor_ShouldInitializeCorrectly()
-        {
-            // Act
-            var fileType = new FileType();
-
-            // Assert
-            fileType.Should().NotBeNull();
-            fileType.Guid.Should().NotBe(Guid.Empty);
-            fileType.Name.Should().BeEmpty();
-            fileType.Extension.Should().BeEmpty();
-            fileType.BrowserGuid.Should().Be(Guid.Empty);
-            fileType.IsActive.Should().BeTrue();
-            fileType.SupportingBrowsers.Should().NotBeNull();
-            fileType.SupportingBrowsers.Should().BeEmpty();
-        }
-
-        [Fact]
-        public void FileType_Properties_ShouldBeSettable()
-        {
-            // Arrange
-            var fileType = new FileType();
-            var guid = Guid.NewGuid();
-            var name = "Test File Type";
-            var extension = ".test";
-            var browserGuid = Guid.NewGuid();
-            var isActive = false;
-
-            // Act
-            fileType.Guid = guid;
-            fileType.Name = name;
-            fileType.Extension = extension;
-            fileType.BrowserGuid = browserGuid;
-            fileType.IsActive = isActive;
-
-            // Assert
-            fileType.Guid.Should().Be(guid);
-            fileType.Name.Should().Be(name);
-            fileType.Extension.Should().Be(extension);
-            fileType.BrowserGuid.Should().Be(browserGuid);
-            fileType.IsActive.Should().Be(isActive);
-        }
-
-        [Fact]
-        public void FileType_ConstructorWithParameters_ShouldInitializeCorrectly()
-        {
-            // Arrange
-            var name = "Test File Type";
-            var extension = ".test";
-            var supportingBrowsers = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() };
-            var categories = new List<string> { "Test Category" };
-
-            // Act
-            var fileType = new FileType(name, extension, supportingBrowsers, categories);
-
-            // Assert
-            fileType.Should().NotBeNull();
-            fileType.Name.Should().Be(name);
-            fileType.Extension.Should().Be(extension);
-            fileType.SupportingBrowsers.Should().BeEquivalentTo(supportingBrowsers);
-            fileType.DefaultCategories.Should().BeEquivalentTo(categories);
-            fileType.Category.Should().Be("Test Category");
-            fileType.Active.Should().BeTrue();
-        }
-
-        [Fact]
-        public void FileType_Clone_ShouldCreateCopy()
-        {
-            // Arrange
-            var original = new FileType
-            {
-                Name = "Original File Type",
-                Extension = ".original",
-                BrowserGuid = Guid.NewGuid(),
-                IsActive = true,
-                SupportingBrowsers = new List<Guid> { Guid.NewGuid() }
-            };
-
-            // Act
-            var clone = original.Clone();
-
-            // Assert
-            clone.Should().NotBeSameAs(original);
-            clone.Guid.Should().Be(original.Guid);
-            clone.Name.Should().Be(original.Name);
-            clone.Extension.Should().Be(original.Extension);
-            clone.BrowserGuid.Should().Be(original.BrowserGuid);
-            clone.IsActive.Should().Be(original.IsActive);
-            clone.SupportingBrowsers.Should().BeEquivalentTo(original.SupportingBrowsers);
-        }
-        #endregion
 
         #region URLテスト
 
@@ -514,12 +422,10 @@ namespace BrowserChooser3.Tests
             // Arrange
             var browser = new Browser { Name = "Test Browser", Guid = Guid.NewGuid() };
             var protocol = new Protocol { Name = "Test Protocol", BrowserGuid = browser.Guid };
-            var fileType = new FileType { Name = "Test File Type", BrowserGuid = browser.Guid };
             var url = new URL { Name = "Test URL", BrowserGuid = browser.Guid };
 
             // Act & Assert
             protocol.BrowserGuid.Should().Be(browser.Guid);
-            fileType.BrowserGuid.Should().Be(browser.Guid);
             url.BrowserGuid.Should().Be(browser.Guid);
         }
         #endregion

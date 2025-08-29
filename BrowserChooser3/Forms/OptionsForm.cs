@@ -50,10 +50,10 @@ namespace BrowserChooser3.Forms
 
             // イベントハンドラークラスの初期化
             _formHandlers = new OptionsFormFormHandlers(this, LoadSettingsToControls, SaveSettings, () => _isModified);
-            _browserHandlers = new OptionsFormBrowserHandlers(this, _settings, _mBrowser, _mProtocols, null!, _imBrowserIcons, SetModified);
+            _browserHandlers = new OptionsFormBrowserHandlers(this, _settings, _mBrowser, _mProtocols, _imBrowserIcons, SetModified);
             _protocolHandlers = new OptionsFormProtocolHandlers(this, _mProtocols, _mBrowser, SetModified);
             _listHandlers = new OptionsFormListHandlers(this);
-            _dragDropHandlers = new OptionsFormDragDropHandlers(this, _settings, _mBrowser, _mProtocols, null!, SetModified, RebuildAutoURLs);
+            _dragDropHandlers = new OptionsFormDragDropHandlers(this, _settings, _mBrowser, _mProtocols, SetModified, RebuildAutoURLs);
 
             // UIパネル作成クラスの初期化
             _panels = new OptionsFormPanels();
@@ -114,7 +114,7 @@ namespace BrowserChooser3.Forms
                 treeSettings.Nodes.Add(defaultBrowserNode);
 
                 // タブページの作成
-                var browsersTab = _panels.CreateBrowsersPanel(_settings, _mBrowser, _mProtocols, null!, _mLastBrowserID, _imBrowserIcons, SetModified, RebuildAutoURLs);
+                var browsersTab = _panels.CreateBrowsersPanel(_settings, _mBrowser, _mProtocols, _mLastBrowserID, _imBrowserIcons, SetModified, RebuildAutoURLs);
                 var autoUrlsTab = _panels.CreateAutoURLsPanel(_settings, _mURLs, _mBrowser, SetModified, RebuildAutoURLs);
                 var protocolsTab = _panels.CreateProtocolsPanel(_settings, _mProtocols, _mBrowser, SetModified);
                 var defaultBrowserTab = _panels.CreateDefaultBrowserPanel(_settings, SetModified);
@@ -150,9 +150,6 @@ namespace BrowserChooser3.Forms
                     // ドラッグ&ドロップ機能の設定
                     SetupURLDragDrop();
                     SetupBrowserDragDrop();
-                    
-                    // カテゴリパネルの設定
-                    SetupCategoriesPanel();
                 }
                 else
                 {
@@ -201,30 +198,7 @@ namespace BrowserChooser3.Forms
             }
         }
 
-        /// <summary>
-        /// カテゴリパネルの設定
-        /// </summary>
-        private void SetupCategoriesPanel()
-        {
-            try
-            {
-                // カテゴリパネルをタブページに追加
-                var categoriesTab = tabSettings.TabPages["tabCategories"];
-                if (categoriesTab != null && categoryPanel != null)
-                {
-                    categoryPanel.Dock = DockStyle.Fill;
-                    categoriesTab.Controls.Add(categoryPanel);
-                    categoryPanel.Visible = true;
-                    
-                    // カテゴリリストの初期化
-                    LoadCategories();
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("OptionsForm.SetupCategoriesPanel", "カテゴリパネル設定エラー", ex.Message);
-            }
-        }
+
 
         /// <summary>
         /// パネルボタンイベントハンドラーの設定
@@ -1099,25 +1073,7 @@ namespace BrowserChooser3.Forms
         /// </summary>
         private void TabSettings_SelectedIndexChanged(object? sender, EventArgs e)
         {
-            // カテゴリタブが選択された場合、categoryPanelを表示
-            if (tabSettings.SelectedTab?.Name == "tabCategories")
-            {
-                var categoryPanel = Controls.Find("categoryPanel", true).FirstOrDefault() as Panel;
-                if (categoryPanel != null)
-                {
-                    categoryPanel.Visible = true;
-                    categoryPanel.BringToFront();
-                }
-            }
-            else
-            {
-                // 他のタブが選択された場合、categoryPanelを非表示
-                var categoryPanel = Controls.Find("categoryPanel", true).FirstOrDefault() as Panel;
-                if (categoryPanel != null)
-                {
-                    categoryPanel.Visible = false;
-                }
-            }
+            // タブ選択変更時の処理（必要に応じて追加）
         }
 
         /// <summary>
@@ -1957,7 +1913,7 @@ namespace BrowserChooser3.Forms
                                     Category = "Default"
                                 };
 
-                                if (addEditForm.AddBrowser(_mBrowser, _mProtocols, null!, false,
+                                if (addEditForm.AddBrowser(_mBrowser, _mProtocols, false,
                                     new Point(_settings.GridWidth, _settings.GridHeight), newBrowser))
                                 {
                                     var browser = addEditForm.GetData();
@@ -2035,65 +1991,7 @@ namespace BrowserChooser3.Forms
             }
         }
 
-        /// <summary>
-        /// カテゴリデータを読み込みます
-        /// </summary>
-        private void LoadCategories()
-        {
-            try
-            {
-                categoryListView.Items.Clear();
 
-                // ブラウザからカテゴリを収集
-                var categories = _mBrowser.Values
-                    .Select(b => b.Category)
-                    .Where(c => !string.IsNullOrEmpty(c))
-                    .Distinct()
-                    .ToList();
-
-                // URLからカテゴリを収集
-                categories.AddRange(_mURLs.Values
-                    .Select(u => u.Category)
-                    .Where(c => !string.IsNullOrEmpty(c))
-                    .Distinct());
-
-                // プロトコルからカテゴリを収集
-                categories.AddRange(_mProtocols.Values
-                    .Select(p => p.Category)
-                    .Where(c => !string.IsNullOrEmpty(c))
-                    .Distinct());
-
-
-                // 重複を除去してソート
-                categories = categories.Distinct().OrderBy(c => c).ToList();
-
-                foreach (var category in categories)
-                {
-                    var item = categoryListView.Items.Add(category);
-                    var count = GetCategoryItemCount(category);
-                    item.SubItems.Add(count.ToString());
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("OptionsForm.LoadCategories", "カテゴリ読み込みエラー", ex.Message);
-            }
-        }
-
-        /// <summary>
-        /// カテゴリ内のアイテム数を取得します
-        /// </summary>
-        /// <param name="category">カテゴリ名</param>
-        /// <returns>アイテム数</returns>
-        private int GetCategoryItemCount(string category)
-        {
-            var count = 0;
-            count += _mBrowser.Values.Count(b => b.Category == category);
-            count += _mURLs.Values.Count(u => u.Category == category);
-            count += _mProtocols.Values.Count(p => p.Category == category);
-            // count += _mFileTypes.Values.Count(f => f.Category == category);
-            return count;
-        }
 
         /// <summary>
         /// ブラウザドラッグ&amp;ドロップ機能の設定

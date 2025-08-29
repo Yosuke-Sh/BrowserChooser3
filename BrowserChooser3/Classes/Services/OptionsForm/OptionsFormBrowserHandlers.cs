@@ -15,7 +15,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
         private readonly Settings _settings;
         private readonly Dictionary<int, Browser> _mBrowser;
         private readonly Dictionary<int, Protocol> _mProtocols;
-        private readonly Dictionary<int, FileType> _mFileTypes;
+
         private readonly ImageList? _imBrowserIcons;
         private readonly Action<bool> _setModified;
 
@@ -26,7 +26,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
         /// <param name="settings">設定オブジェクト</param>
         /// <param name="mBrowser">ブラウザ辞書</param>
         /// <param name="mProtocols">プロトコル辞書</param>
-        /// <param name="mFileTypes">ファイルタイプ辞書</param>
+
         /// <param name="imBrowserIcons">ブラウザアイコンリスト</param>
         /// <param name="setModified">変更フラグ設定アクション</param>
         public OptionsFormBrowserHandlers(
@@ -34,7 +34,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             Settings settings,
             Dictionary<int, Browser> mBrowser,
             Dictionary<int, Protocol> mProtocols,
-            Dictionary<int, FileType> mFileTypes,
+
             ImageList? imBrowserIcons,
             Action<bool> setModified)
         {
@@ -42,7 +42,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             _settings = settings;
             _mBrowser = mBrowser;
             _mProtocols = mProtocols;
-            _mFileTypes = mFileTypes;
+
             _imBrowserIcons = imBrowserIcons;
             _setModified = setModified;
         }
@@ -56,7 +56,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             try
             {
                 var addEditForm = new AddEditBrowserForm();
-                if (addEditForm.AddBrowser(_mBrowser, _mProtocols, _mFileTypes, false, 
+                if (addEditForm.AddBrowser(_mBrowser, _mProtocols, false, 
                     new Point(_settings.GridWidth, _settings.GridHeight)))
                 {
                     var newBrowser = addEditForm.GetData();
@@ -120,7 +120,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                     if (selectedIndex == -1 || !_mBrowser.ContainsKey(selectedIndex)) return;
                     
                     var addEditForm = new AddEditBrowserForm();
-                    if (addEditForm.EditBrowser(_mBrowser[selectedIndex], _mBrowser, _mProtocols, _mFileTypes, false))
+                    if (addEditForm.EditBrowser(_mBrowser[selectedIndex], _mBrowser, _mProtocols, false))
                     {
                         var updatedBrowser = addEditForm.GetData();
                         _mBrowser[selectedIndex] = updatedBrowser;
@@ -217,7 +217,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                     
                     var templateBrowser = _mBrowser[selectedIndex];
                     var addEditForm = new AddEditBrowserForm();
-                    if (addEditForm.AddBrowser(_mBrowser, _mProtocols, _mFileTypes, false, 
+                                                        if (addEditForm.AddBrowser(_mBrowser, _mProtocols, false, 
                         new Point(_settings.GridWidth, _settings.GridHeight), templateBrowser))
                     {
                         var clonedBrowser = addEditForm.GetData();
@@ -388,14 +388,11 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
         }
 
         /// <summary>
-        /// ブラウザのプロトコルを取得（FileTypesは未実装のため削除）
+        /// ブラウザのプロトコルを取得
         /// </summary>
         public string GetBrowserProtocolsAndFileTypes(Browser browser)
         {
             var protocols = _mProtocols.Values.Where(p => p.BrowserGuid == browser.Guid).Select(p => p.Name);
-            // var fileTypes = _mFileTypes.Values.Where(f => f.BrowserGuid == browser.Guid).Select(f => f.Name);
-            
-            // var allItems = protocols.Concat(fileTypes);
             return string.Join(", ", protocols);
         }
     }

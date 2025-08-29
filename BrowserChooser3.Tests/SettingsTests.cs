@@ -145,8 +145,8 @@ namespace BrowserChooser3.Tests
             settings.Protocols.Should().HaveCount(1);
             settings.Protocols[0].Name.Should().Be("Test");
 
-            // Act & Assert - ファイルタイプ関連
-            var testFileType = new FileType("Test", "test", new List<Guid>(), new List<string>());
+            // Act & Assert - ファイルタイプ関連（削除されたためコメントアウト）
+            // var testFileType = new FileType("Test", "test", new List<Guid>(), new List<string>());
             // settings.FileTypes.Add(testFileType);
             // settings.FileTypes.Should().HaveCount(1);
             // settings.FileTypes[0].Name.Should().Be("Test");

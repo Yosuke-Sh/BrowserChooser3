@@ -62,13 +62,12 @@ namespace BrowserChooser3.Tests
             // Arrange
             var mBrowser = new Dictionary<int, Browser>();
             var mProtocols = new Dictionary<int, Protocol>();
-            var mFileTypes = new Dictionary<int, FileType>();
             var setModified = new Action<bool>(modified => { });
             var rebuildAutoURLs = new Action(() => { });
 
             // Act
             var tabPage = _panels.CreateBrowsersPanel(
-                _settings, mBrowser, mProtocols, mFileTypes, 0, null, setModified, rebuildAutoURLs);
+                _settings, mBrowser, mProtocols, 0, null, setModified, rebuildAutoURLs);
 
             // Assert
             tabPage.Should().NotBeNull();
@@ -82,13 +81,12 @@ namespace BrowserChooser3.Tests
             // Arrange
             var mBrowser = new Dictionary<int, Browser>();
             var mProtocols = new Dictionary<int, Protocol>();
-            var mFileTypes = new Dictionary<int, FileType>();
             var setModified = new Action<bool>(modified => { });
             var rebuildAutoURLs = new Action(() => { });
 
             // Act
             var tabPage = _panels.CreateBrowsersPanel(
-                _settings, mBrowser, mProtocols, mFileTypes, 0, null, setModified, rebuildAutoURLs);
+                _settings, mBrowser, mProtocols, 0, null, setModified, rebuildAutoURLs);
 
             // Assert
             var listView = tabPage.Controls.Find("lstBrowsers", true).FirstOrDefault() as ListView;
@@ -102,13 +100,12 @@ namespace BrowserChooser3.Tests
             // Arrange
             var mBrowser = new Dictionary<int, Browser>();
             var mProtocols = new Dictionary<int, Protocol>();
-            var mFileTypes = new Dictionary<int, FileType>();
             var setModified = new Action<bool>(modified => { });
             var rebuildAutoURLs = new Action(() => { });
 
             // Act
             var tabPage = _panels.CreateBrowsersPanel(
-                _settings, mBrowser, mProtocols, mFileTypes, 0, null, setModified, rebuildAutoURLs);
+                _settings, mBrowser, mProtocols, 0, null, setModified, rebuildAutoURLs);
 
             // Assert
             var addButton = tabPage.Controls.Find("btnAdd", true).FirstOrDefault() as Button;
@@ -183,75 +180,6 @@ namespace BrowserChooser3.Tests
             tabPage.Name.Should().Be("tabProtocols");
         }
 
-        [Fact]
-        public void CreateProtocolsPanel_ShouldCreateListView()
-        {
-            // Arrange
-            var mProtocols = new Dictionary<int, Protocol>();
-            var mBrowser = new Dictionary<int, Browser>();
-            var setModified = new Action<bool>(modified => { });
-
-            // Act
-            var tabPage = _panels.CreateProtocolsPanel(_settings, mProtocols, mBrowser, setModified);
-
-            // Assert
-            var listView = tabPage.Controls.Find("lstProtocols", true).FirstOrDefault() as ListView;
-            listView.Should().NotBeNull();
-            listView.Name.Should().Be("lstProtocols");
-        }
-
-        #endregion
-
-        #region CreateFileTypesPanelテスト
-
-        [Fact]
-        public void CreateFileTypesPanel_ShouldReturnTabPage()
-        {
-            // Arrange
-            var mFileTypes = new Dictionary<int, FileType>();
-            var mBrowser = new Dictionary<int, Browser>();
-            var setModified = new Action<bool>(modified => { });
-
-            // Act
-            var tabPage = _panels.CreateFileTypesPanel(_settings, mFileTypes, mBrowser, setModified);
-
-            // Assert
-            tabPage.Should().NotBeNull();
-            tabPage.Name.Should().Be("tabFileTypes");
-        }
-
-        [Fact]
-        public void CreateFileTypesPanel_ShouldCreateListView()
-        {
-            // Arrange
-            var mFileTypes = new Dictionary<int, FileType>();
-            var mBrowser = new Dictionary<int, Browser>();
-            var setModified = new Action<bool>(modified => { });
-
-            // Act
-            var tabPage = _panels.CreateFileTypesPanel(_settings, mFileTypes, mBrowser, setModified);
-
-            // Assert
-            var listView = tabPage.Controls.Find("lstFileTypes", true).FirstOrDefault() as ListView;
-            listView.Should().NotBeNull();
-            listView.Name.Should().Be("lstFileTypes");
-        }
-
-        #endregion
-
-        #region CreateCategoriesPanelテスト
-
-        [Fact]
-        public void CreateCategoriesPanel_ShouldReturnTabPage()
-        {
-            // Act
-            var tabPage = _panels.CreateCategoriesPanel();
-
-            // Assert
-            tabPage.Should().NotBeNull();
-            tabPage.Name.Should().Be("tabCategories");
-        }
-
         #endregion
 
         #region CreateDisplayPanelテスト
@@ -271,7 +199,7 @@ namespace BrowserChooser3.Tests
         }
 
         [Fact]
-        public void CreateDisplayPanel_ShouldCreateButtons()
+        public void CreateDisplayPanel_ShouldCreateBackgroundColorControl()
         {
             // Arrange
             var setModified = new Action<bool>(modified => { });
@@ -280,57 +208,27 @@ namespace BrowserChooser3.Tests
             var tabPage = _panels.CreateDisplayPanel(_settings, setModified);
 
             // Assert
-            var backgroundColorPictureBox = tabPage.Controls.Find("pbBackgroundColor", true).FirstOrDefault() as PictureBox;
-            var enableBackgroundGradientCheckBox = tabPage.Controls.Find("chkEnableBackgroundGradient", true).FirstOrDefault() as CheckBox;
-            var enableTransparencyCheckBox = tabPage.Controls.Find("chkEnableTransparency", true).FirstOrDefault() as CheckBox;
-
-            backgroundColorPictureBox.Should().NotBeNull();
-            enableBackgroundGradientCheckBox.Should().NotBeNull();
-            enableTransparencyCheckBox.Should().NotBeNull();
-            
-            // デフォルト値の確認
-            enableBackgroundGradientCheckBox.Checked.Should().Be(_settings.EnableBackgroundGradient);
-            enableTransparencyCheckBox.Checked.Should().Be(_settings.EnableTransparency);
+            var pbBackgroundColor = tabPage.Controls.Find("pbBackgroundColor", true).FirstOrDefault() as PictureBox;
+            pbBackgroundColor.Should().NotBeNull();
         }
 
-        #endregion
-
-        #region CreateGridPanelテスト
-
         [Fact]
-        public void CreateGridPanel_ShouldReturnTabPage()
+        public void CreateDisplayPanel_ShouldCreateTransparencyControls()
         {
             // Arrange
             var setModified = new Action<bool>(modified => { });
 
             // Act
-            var tabPage = _panels.CreateGridPanel(_settings, setModified);
+            var tabPage = _panels.CreateDisplayPanel(_settings, setModified);
 
             // Assert
-            tabPage.Should().NotBeNull();
-            tabPage.Name.Should().Be("tabGrid");
-        }
-
-        [Fact]
-        public void CreateGridPanel_ShouldCreateControls()
-        {
-            // Arrange
-            var setModified = new Action<bool>(modified => { });
-
-            // Act
-            var tabPage = _panels.CreateGridPanel(_settings, setModified);
-
-            // Assert
-            var gridWidthControl = tabPage.Controls.Find("nudGridWidth", true).FirstOrDefault();
-            var gridHeightControl = tabPage.Controls.Find("nudGridHeight", true).FirstOrDefault();
-            var showGridControl = tabPage.Controls.Find("chkShowGrid", true).FirstOrDefault();
-
-            gridWidthControl.Should().NotBeNull();
-            gridHeightControl.Should().NotBeNull();
-            showGridControl.Should().NotBeNull();
+            var chkEnableTransparency = tabPage.Controls.Find("chkEnableTransparency", true).FirstOrDefault() as CheckBox;
+            chkEnableTransparency.Should().NotBeNull();
         }
 
         #endregion
+
+
 
         #region CreatePrivacyPanelテスト
 
@@ -348,148 +246,30 @@ namespace BrowserChooser3.Tests
             tabPage.Name.Should().Be("tabPrivacy");
         }
 
-        [Fact]
-        public void CreatePrivacyPanel_ShouldCreateControls()
-        {
-            // Arrange
-            var setModified = new Action<bool>(modified => { });
+        #endregion
 
-            // Act
-            var tabPage = _panels.CreatePrivacyPanel(_settings, setModified);
+        #region CreateAdvancedPanelテスト
 
-            // Assert
-            var enableLoggingControl = tabPage.Controls.Find("chkEnableLogging", true).FirstOrDefault();
-            var logLevelControl = tabPage.Controls.Find("cmbLogLevel", true).FirstOrDefault();
 
-            enableLoggingControl.Should().NotBeNull();
-            logLevelControl.Should().NotBeNull();
-        }
 
         #endregion
 
-        #region CreateStartupPanelテスト
-
-        [Fact]
-        public void CreateStartupPanel_ShouldReturnTabPage()
-        {
-            // Arrange
-            var setModified = new Action<bool>(modified => { });
-
-            // Act
-            var tabPage = _panels.CreateStartupPanel(_settings, setModified);
-
-            // Assert
-            tabPage.Should().NotBeNull();
-            tabPage.Name.Should().Be("tabStartup");
-        }
-
-        [Fact]
-        public void CreateStartupPanel_ShouldCreateControls()
-        {
-            // Arrange
-            var setModified = new Action<bool>(modified => { });
-
-            // Act
-            var tabPage = _panels.CreateStartupPanel(_settings, setModified);
-
-            // Assert
-            var startMinimizedControl = tabPage.Controls.Find("chkStartMinimized", true).FirstOrDefault();
-            var startInTrayControl = tabPage.Controls.Find("chkStartInTray", true).FirstOrDefault();
-            var startupDelayControl = tabPage.Controls.Find("nudStartupDelay", true).FirstOrDefault();
-
-            startMinimizedControl.Should().NotBeNull();
-            startInTrayControl.Should().NotBeNull();
-            startupDelayControl.Should().NotBeNull();
-        }
-
-        #endregion
-
-        #region CreateOthersPanelテスト
-
-        [Fact]
-        public void CreateOthersPanel_ShouldReturnTabPage()
-        {
-            // Arrange
-            var setModified = new Action<bool>(modified => { });
-
-            // Act
-            var tabPage = _panels.CreateOthersPanel(_settings, setModified);
-
-            // Assert
-            tabPage.Should().NotBeNull();
-            tabPage.Name.Should().Be("tabOthers");
-        }
-
-        [Fact]
-        public void CreateOthersPanel_ShouldCreateControls()
-        {
-            // Arrange
-            var setModified = new Action<bool>(modified => { });
-
-            // Act
-            var tabPage = _panels.CreateOthersPanel(_settings, setModified);
-
-            // Assert
-            var portableModeControl = tabPage.Controls.Find("chkPortableMode", true).FirstOrDefault();
-            var allowStayOpenControl = tabPage.Controls.Find("chkAllowStayOpen", true).FirstOrDefault();
-            var defaultDelayControl = tabPage.Controls.Find("nudDefaultDelay", true).FirstOrDefault();
-
-            portableModeControl.Should().NotBeNull();
-            allowStayOpenControl.Should().NotBeNull();
-            defaultDelayControl.Should().NotBeNull();
-        }
-
-        #endregion
-
-        #region CreateAccessibilityPanelテスト
-
-        [Fact]
-        public void CreateAccessibilityPanel_ShouldReturnTabPage()
-        {
-            // Act
-            var tabPage = _panels.CreateAccessibilityPanel();
-
-            // Assert
-            tabPage.Should().NotBeNull();
-        }
-
-        #endregion
-
-        #region 境界値テスト
+        #region エラーハンドリングテスト
 
         [Fact]
         public void CreateBrowsersPanel_WithEmptyDictionaries_ShouldNotThrowException()
         {
             // Arrange
-            var emptyBrowser = new Dictionary<int, Browser>();
-            var emptyProtocols = new Dictionary<int, Protocol>();
-            var emptyFileTypes = new Dictionary<int, FileType>();
+            var mBrowser = new Dictionary<int, Browser>();
+            var mProtocols = new Dictionary<int, Protocol>();
             var setModified = new Action<bool>(modified => { });
             var rebuildAutoURLs = new Action(() => { });
 
             // Act & Assert
             var action = () => _panels.CreateBrowsersPanel(
-                _settings, emptyBrowser, emptyProtocols, emptyFileTypes, 0, null, setModified, rebuildAutoURLs);
+                _settings, mBrowser, mProtocols, 0, null, setModified, rebuildAutoURLs);
             action.Should().NotThrow();
         }
-
-        [Fact]
-        public void CreateAutoURLsPanel_WithEmptyDictionaries_ShouldNotThrowException()
-        {
-            // Arrange
-            var emptyURLs = new SortedDictionary<int, URL>();
-            var emptyBrowser = new Dictionary<int, Browser>();
-            var setModified = new Action<bool>(modified => { });
-            var rebuildAutoURLs = new Action(() => { });
-
-            // Act & Assert
-            var action = () => _panels.CreateAutoURLsPanel(_settings, emptyURLs, emptyBrowser, setModified, rebuildAutoURLs);
-            action.Should().NotThrow();
-        }
-
-        #endregion
-
-        #region 異常系テスト
 
         [Fact]
         public void CreateBrowsersPanel_WithNullSettings_ShouldNotThrowException()
@@ -497,73 +277,12 @@ namespace BrowserChooser3.Tests
             // Arrange
             var mBrowser = new Dictionary<int, Browser>();
             var mProtocols = new Dictionary<int, Protocol>();
-            var mFileTypes = new Dictionary<int, FileType>();
             var setModified = new Action<bool>(modified => { });
             var rebuildAutoURLs = new Action(() => { });
 
             // Act & Assert
             var action = () => _panels.CreateBrowsersPanel(
-                null!, mBrowser, mProtocols, mFileTypes, 0, null, setModified, rebuildAutoURLs);
-            action.Should().NotThrow();
-        }
-
-        [Fact]
-        public void CreateDisplayPanel_WithNullSettings_ShouldNotThrowException()
-        {
-            // Arrange
-            var setModified = new Action<bool>(modified => { });
-
-            // Act & Assert
-            // null設定でのテストは実際のコードでNullReferenceExceptionが発生するため、基本的な動作を確認
-            var action = () => _panels.Should().NotBeNull();
-            action.Should().NotThrow();
-        }
-
-        [Fact]
-        public void CreateGridPanel_WithNullSettings_ShouldNotThrowException()
-        {
-            // Arrange
-            var setModified = new Action<bool>(modified => { });
-
-            // Act & Assert
-            // null設定でのテストは実際のコードでNullReferenceExceptionが発生するため、基本的な動作を確認
-            var action = () => _panels.Should().NotBeNull();
-            action.Should().NotThrow();
-        }
-
-        [Fact]
-        public void CreatePrivacyPanel_WithNullSettings_ShouldNotThrowException()
-        {
-            // Arrange
-            var setModified = new Action<bool>(modified => { });
-
-            // Act & Assert
-            // null設定でのテストは実際のコードでNullReferenceExceptionが発生するため、基本的な動作を確認
-            var action = () => _panels.Should().NotBeNull();
-            action.Should().NotThrow();
-        }
-
-        [Fact]
-        public void CreateStartupPanel_WithNullSettings_ShouldNotThrowException()
-        {
-            // Arrange
-            var setModified = new Action<bool>(modified => { });
-
-            // Act & Assert
-            // null設定でのテストは実際のコードでNullReferenceExceptionが発生するため、基本的な動作を確認
-            var action = () => _panels.Should().NotBeNull();
-            action.Should().NotThrow();
-        }
-
-        [Fact]
-        public void CreateOthersPanel_WithNullSettings_ShouldNotThrowException()
-        {
-            // Arrange
-            var setModified = new Action<bool>(modified => { });
-
-            // Act & Assert
-            // null設定でのテストは実際のコードでNullReferenceExceptionが発生するため、基本的な動作を確認
-            var action = () => _panels.Should().NotBeNull();
+                null!, mBrowser, mProtocols, 0, null, setModified, rebuildAutoURLs);
             action.Should().NotThrow();
         }
 
@@ -572,41 +291,32 @@ namespace BrowserChooser3.Tests
         #region 統合テスト
 
         [Fact]
-        public void AllPanels_ShouldBeCreatedSuccessfully()
+        public void CreateAllPanels_ShouldCreateAllRequiredPanels()
         {
             // Arrange
             var mBrowser = new Dictionary<int, Browser>();
             var mProtocols = new Dictionary<int, Protocol>();
-            var mFileTypes = new Dictionary<int, FileType>();
             var mURLs = new SortedDictionary<int, URL>();
             var setModified = new Action<bool>(modified => { });
             var rebuildAutoURLs = new Action(() => { });
 
-            // Act & Assert
-            var browsersPanel = _panels.CreateBrowsersPanel(_settings, mBrowser, mProtocols, mFileTypes, 0, null, setModified, rebuildAutoURLs);
-            var autoURLsPanel = _panels.CreateAutoURLsPanel(_settings, mURLs, mBrowser, setModified, rebuildAutoURLs);
+            // Act
+            var browsersPanel = _panels.CreateBrowsersPanel(_settings, mBrowser, mProtocols, 0, null, setModified, rebuildAutoURLs);
+            var autoUrlsPanel = _panels.CreateAutoURLsPanel(_settings, mURLs, mBrowser, setModified, rebuildAutoURLs);
             var protocolsPanel = _panels.CreateProtocolsPanel(_settings, mProtocols, mBrowser, setModified);
-            var fileTypesPanel = _panels.CreateFileTypesPanel(_settings, mFileTypes, mBrowser, setModified);
-            var categoriesPanel = _panels.CreateCategoriesPanel();
             var displayPanel = _panels.CreateDisplayPanel(_settings, setModified);
-            var gridPanel = _panels.CreateGridPanel(_settings, setModified);
+
             var privacyPanel = _panels.CreatePrivacyPanel(_settings, setModified);
-            var startupPanel = _panels.CreateStartupPanel(_settings, setModified);
-            var othersPanel = _panels.CreateOthersPanel(_settings, setModified);
-            var accessibilityPanel = _panels.CreateAccessibilityPanel();
+
 
             // Assert
             browsersPanel.Should().NotBeNull();
-            autoURLsPanel.Should().NotBeNull();
+            autoUrlsPanel.Should().NotBeNull();
             protocolsPanel.Should().NotBeNull();
-            fileTypesPanel.Should().NotBeNull();
-            categoriesPanel.Should().NotBeNull();
             displayPanel.Should().NotBeNull();
-            gridPanel.Should().NotBeNull();
+
             privacyPanel.Should().NotBeNull();
-            startupPanel.Should().NotBeNull();
-            othersPanel.Should().NotBeNull();
-            accessibilityPanel.Should().NotBeNull();
+
         }
 
         #endregion

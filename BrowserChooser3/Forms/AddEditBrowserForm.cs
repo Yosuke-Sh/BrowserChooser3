@@ -13,7 +13,7 @@ namespace BrowserChooser3.Forms
         private Browser _browser = null!;
         private Dictionary<int, Browser> _browsers = null!;
         private Dictionary<int, Protocol> _protocols = null!;
-        private Dictionary<int, FileType> _fileTypes = null!;
+
         private bool _isAdvanced;
         private Point _gridSize;
         private bool _isEditMode;
@@ -32,11 +32,10 @@ namespace BrowserChooser3.Forms
         /// ブラウザ追加モードでダイアログを表示
         /// </summary>
         public bool AddBrowser(Dictionary<int, Browser> browsers, Dictionary<int, Protocol> protocols, 
-            Dictionary<int, FileType> fileTypes, bool isAdvanced, Point gridSize, Browser? templateBrowser = null)
+            bool isAdvanced, Point gridSize, Browser? templateBrowser = null)
         {
             _browsers = browsers;
             _protocols = protocols;
-            _fileTypes = fileTypes;
             _isAdvanced = isAdvanced;
             _gridSize = gridSize;
             _isEditMode = false;
@@ -68,12 +67,11 @@ namespace BrowserChooser3.Forms
         /// ブラウザ編集モードでダイアログを表示
         /// </summary>
         public bool EditBrowser(Browser browser, Dictionary<int, Browser> browsers, 
-            Dictionary<int, Protocol> protocols, Dictionary<int, FileType> fileTypes, bool isAdvanced)
+            Dictionary<int, Protocol> protocols, bool isAdvanced)
         {
             _browser = browser;
             _browsers = browsers;
             _protocols = protocols;
-            _fileTypes = fileTypes;
             _isAdvanced = isAdvanced;
             _isEditMode = true;
 
@@ -151,13 +149,7 @@ namespace BrowserChooser3.Forms
             return _protocols;
         }
 
-        /// <summary>
-        /// ファイルタイプデータを取得
-        /// </summary>
-        public Dictionary<int, FileType> GetFileTypes()
-        {
-            return _fileTypes;
-        }
+
 
         /// <summary>
         /// フォームの初期化
@@ -249,6 +241,23 @@ namespace BrowserChooser3.Forms
                     {
                         // バージョン情報が取得できない場合はファイル名を使用
                         txtName.Text = Path.GetFileNameWithoutExtension(openFileDialog.FileName);
+                    }
+                    
+                    // アイコン選択ダイアログを表示
+                    try
+                    {
+                        using var iconSelectionForm = new IconSelectionForm(openFileDialog.FileName);
+                        if (iconSelectionForm.ShowDialog() == DialogResult.OK && iconSelectionForm.SelectedIcon != null)
+                        {
+                            // 選択されたアイコンをブラウザに設定
+                            _browser.ImagePath = openFileDialog.FileName;
+                            _browser.IconIndex = 0; // デフォルトアイコンインデックス
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        // アイコン選択に失敗した場合は無視（デフォルトアイコンを使用）
+                        Logger.LogWarning("AddEditBrowserForm.btnBrowse_Click", "アイコン選択に失敗しました", ex.Message);
                     }
                 }
             };

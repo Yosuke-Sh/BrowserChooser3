@@ -97,7 +97,6 @@ namespace BrowserChooser3.Tests
 
             var browsers = new Dictionary<int, Browser>();
             var protocols = new Dictionary<int, Protocol>();
-            var fileTypes = new Dictionary<int, FileType>();
             var gridSize = new Point(3, 3);
 
             // Act & Assert - テスト環境ではフォームを表示せず、メソッドの動作のみをテスト
@@ -125,7 +124,6 @@ namespace BrowserChooser3.Tests
             var browser = new Browser { Name = "Test Browser" };
             var browsers = new Dictionary<int, Browser>();
             var protocols = new Dictionary<int, Protocol>();
-            var fileTypes = new Dictionary<int, FileType>();
 
             // Act & Assert - テスト環境ではフォームを表示せず、メソッドの動作のみをテスト
             ExceptionHandler.ExecuteIgnoringSTAErrors(() =>
@@ -255,95 +253,7 @@ namespace BrowserChooser3.Tests
         }
         #endregion
 
-        #region AddEditCategoryFormテスト
 
-        [Fact]
-        public void AddEditCategoryForm_Constructor_ShouldInitializeCorrectly()
-        {
-            // Act
-            var form = new AddEditCategoryForm();
-
-            // Assert
-            form.Should().NotBeNull();
-            form.IsDisposed.Should().BeFalse();
-
-            // Cleanup
-            form.Dispose();
-        }
-
-        [Fact]
-        public void AddEditCategoryForm_AddCategory_ShouldNotThrowException()
-        {
-            // Arrange
-            var form = new AddEditCategoryForm();
-
-            // Act & Assert - テスト環境ではフォームを表示せず、コンストラクタの動作のみをテスト
-            form.Should().NotBeNull();
-            form.IsDisposed.Should().BeFalse();
-
-            // Cleanup
-            form.Dispose();
-        }
-
-        [Fact]
-        public void AddEditCategoryForm_EditCategory_ShouldNotThrowException()
-        {
-            // Arrange
-            var form = new AddEditCategoryForm();
-
-            // Act & Assert - テスト環境ではフォームを表示せず、コンストラクタの動作のみをテスト
-            form.Should().NotBeNull();
-            form.IsDisposed.Should().BeFalse();
-
-            // Cleanup
-            form.Dispose();
-        }
-        #endregion
-
-        #region AddEditFileTypeFormテスト
-
-        [Fact]
-        public void AddEditFileTypeForm_Constructor_ShouldInitializeCorrectly()
-        {
-            // Act
-            var form = new AddEditFileTypeForm();
-
-            // Assert
-            form.Should().NotBeNull();
-            form.IsDisposed.Should().BeFalse();
-
-            // Cleanup
-            form.Dispose();
-        }
-
-        [Fact]
-        public void AddEditFileTypeForm_AddFileType_ShouldNotThrowException()
-        {
-            // Arrange
-            var form = new AddEditFileTypeForm();
-
-            // Act & Assert - テスト環境ではフォームを表示せず、コンストラクタの動作のみをテスト
-            form.Should().NotBeNull();
-            form.IsDisposed.Should().BeFalse();
-
-            // Cleanup
-            form.Dispose();
-        }
-
-        [Fact]
-        public void AddEditFileTypeForm_EditFileType_ShouldNotThrowException()
-        {
-            // Arrange
-            var form = new AddEditFileTypeForm();
-
-            // Act & Assert - テスト環境ではフォームを表示せず、コンストラクタの動作のみをテスト
-            form.Should().NotBeNull();
-            form.IsDisposed.Should().BeFalse();
-
-            // Cleanup
-            form.Dispose();
-        }
-        #endregion
 
         #region IconSelectionFormテスト
 
@@ -450,22 +360,17 @@ namespace BrowserChooser3.Tests
             var browser = new Browser { Name = "Test Browser" };
             var url = new URL { Name = "Test URL", URLPattern = "https://example.com" };
             var protocol = new Protocol { Name = "Test Protocol", Header = "test://" };
-            var fileType = new FileType { Name = "Test File Type", Extension = ".test" };
 
             // Act & Assert
             using var browserForm = new AddEditBrowserForm();
             using var urlForm = new AddEditURLForm();
             using var protocolForm = new AddEditProtocolForm();
-            using var fileTypeForm = new AddEditFileTypeForm();
-            using var categoryForm = new AddEditCategoryForm();
             using var iconForm = new IconSelectionForm("C:\\Windows\\System32\\shell32.dll");
             using var aboutForm = new AboutForm();
 
             browserForm.Should().NotBeNull();
             urlForm.Should().NotBeNull();
             protocolForm.Should().NotBeNull();
-            fileTypeForm.Should().NotBeNull();
-            categoryForm.Should().NotBeNull();
             iconForm.Should().NotBeNull();
             aboutForm.Should().NotBeNull();
         }

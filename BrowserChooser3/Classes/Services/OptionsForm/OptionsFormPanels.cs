@@ -71,7 +71,6 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             Settings settings,
             Dictionary<int, Browser> mBrowser,
             Dictionary<int, Protocol> mProtocols,
-            Dictionary<int, FileType> mFileTypes,
             int mLastBrowserID,
             ImageList? imBrowserIcons,
             Action<bool> setModified,
@@ -677,105 +676,9 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             return browserPaths.TryGetValue(browserName, out var path) ? path : "";
         }
 
-        /// <summary>
-        /// ファイルタイプパネルの作成
-        /// </summary>
-        /// <param name="settings">設定オブジェクト</param>
-        /// <param name="mFileTypes">ファイルタイプ辞書</param>
-        /// <param name="mBrowser">ブラウザ辞書</param>
-        /// <param name="setModified">変更フラグ設定アクション</param>
-        /// <returns>作成されたTabPage</returns>
-        public TabPage CreateFileTypesPanel(
-            Settings settings,
-            Dictionary<int, FileType> mFileTypes,
-            Dictionary<int, Browser> mBrowser,
-            Action<bool> setModified)
-        {
-            var tabPage = new TabPage("File Types");
-            tabPage.Name = "tabFileTypes";
-            
-            var panel = new Panel
-            {
-                Dock = DockStyle.Fill,
-                Padding = new Padding(10)
-            };
 
-            // ファイルタイプリストビュー
-            var listView = new ListView
-            {
-                Name = "lstFileTypes",
-                View = View.Details,
-                FullRowSelect = true,
-                GridLines = true,
-                Location = new Point(97, 6),
-                Size = new Size(630, 420),
-                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom,
-                AllowDrop = !IsTestEnvironment(), // テスト環境ではDragDropを無効化
-                MultiSelect = false,
-                HideSelection = false,
-                UseCompatibleStateImageBehavior = false,
-                Font = new Font("Segoe UI", 9.5f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            };
 
-            listView.Columns.Add("File Type", 200);
-            listView.Columns.Add("Browser", 300);
-            listView.Columns.Add("Default App", 200);
 
-            // ボタン群
-            var addButton = new Button
-            {
-                Name = "btnAdd",
-                Text = "Add",
-                Location = new Point(6, 6),
-                Size = new Size(85, 40),
-                Font = new Font("Segoe UI", 9.5f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            };
-            var editButton = new Button
-            {
-                Name = "btnEdit",
-                Text = "Edit",
-                Location = new Point(6, 52),
-                Size = new Size(85, 40),
-                Font = new Font("Segoe UI", 9.5f, FontStyle.Regular, GraphicsUnit.Point, 0),
-                Enabled = false
-            };
-
-            var deleteButton = new Button
-            {
-                Name = "btnDelete",
-                Text = "Delete",
-                Location = new Point(6, 98),
-                Size = new Size(85, 40),
-                Font = new Font("Segoe UI", 9.5f, FontStyle.Regular, GraphicsUnit.Point, 0),
-                Enabled = false
-            };
-
-            // コントロールの追加
-            panel.Controls.Add(listView);
-            panel.Controls.Add(addButton);
-            panel.Controls.Add(editButton);
-            panel.Controls.Add(deleteButton);
-
-            tabPage.Controls.Add(panel);
-            return tabPage;
-        }
-
-        /// <summary>
-        /// カテゴリパネルの作成
-        /// </summary>
-        /// <returns>作成されたTabPage</returns>
-        public TabPage CreateCategoriesPanel()
-        {
-            var tabPage = new TabPage("Categories");
-            tabPage.Name = "tabCategories";
-            
-            // デザイナーで定義されたcategoryPanelを使用
-            // このパネルはOptionsForm.Designer.csで定義されており、
-            // カテゴリ管理に必要なすべてのコントロールが含まれている
-            // このパネルは後でOptionsForm.csで表示/非表示を制御する
-            
-            return tabPage;
-        }
 
         /// <summary>
         /// 表示パネルの作成
