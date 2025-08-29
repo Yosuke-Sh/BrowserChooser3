@@ -31,7 +31,6 @@ namespace BrowserChooser3.Forms
 
         private string _currentText = string.Empty;
 
-        // Browser Chooser 2互換のUI要素（デザイナーファイルで定義済み）
         private ContextMenuStrip? _cmOptions;
         
         // ツールチップ
@@ -91,8 +90,8 @@ namespace BrowserChooser3.Forms
                 // ボタンのツールチップ設定
                 SetupButtonToolTips();
                 
-                // Browser Chooser 2互換のUI要素の位置調整
-                AdjustCompatibilityUILayout();
+                // UI要素の位置調整
+                AdjustUILayout();
                 
                 // アイコンの読み込み
                 LoadIcons();
@@ -999,8 +998,8 @@ namespace BrowserChooser3.Forms
                 // ボタンのツールチップ設定
                 SetupButtonToolTips();
                 
-                // Browser Chooser 2互換のUI要素の位置調整
-                AdjustCompatibilityUILayout();
+                // UI要素の位置調整
+                AdjustUILayout();
                 
                 // アイコンの読み込み
                 LoadIcons();
@@ -1026,7 +1025,7 @@ namespace BrowserChooser3.Forms
         }
 
         /// <summary>
-        /// ブラウザボタンのクリックイベント（Browser Chooser 2互換）
+        /// ブラウザボタンのクリックイベント
         /// </summary>
         private void BrowserButton_Click(object? sender, EventArgs e)
         {
@@ -1165,9 +1164,9 @@ namespace BrowserChooser3.Forms
         }
 
         /// <summary>
-        /// Browser Chooser 2互換のUI要素の位置調整
+        /// UI要素の位置調整
         /// </summary>
-        private void AdjustCompatibilityUILayout()
+        private void AdjustUILayout()
         {
             Logger.LogDebug("MainForm.AdjustCompatibilityUILayout", "Start");
             
@@ -1542,7 +1541,7 @@ namespace BrowserChooser3.Forms
 
 
         /// <summary>
-        /// キーボードイベントの処理（Browser Chooser 2互換）
+        /// キーボードイベントの処理
         /// </summary>
         private void MainForm_KeyDown(object? sender, KeyEventArgs e)
         {
@@ -1589,7 +1588,7 @@ namespace BrowserChooser3.Forms
         }
 
         /// <summary>
-        /// 矢印キーによるフォーカス移動（Browser Chooser 2互換）
+        /// 矢印キーによるフォーカス移動
         /// </summary>
         private void HandleArrowKeyUp(Keys keyData)
         {
@@ -1650,7 +1649,7 @@ namespace BrowserChooser3.Forms
         }
 
         /// <summary>
-        /// ループ減算（Browser Chooser 2互換）
+        /// ループ減算
         /// </summary>
         private int MinusLoop(int start, int max)
         {
@@ -1660,7 +1659,7 @@ namespace BrowserChooser3.Forms
         }
 
         /// <summary>
-        /// ループ加算（Browser Chooser 2互換）
+        /// ループ加算
         /// </summary>
         private int AddLoop(int start, int max)
         {
@@ -1766,7 +1765,7 @@ namespace BrowserChooser3.Forms
 
 
         /// <summary>
-        /// 遅延タイマーのティックイベント（Browser Chooser 2互換）
+        /// 遅延タイマーのティックイベント
         /// </summary>
         private void TmrDelay_Tick(object? sender, EventArgs e)
         {

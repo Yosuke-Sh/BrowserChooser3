@@ -175,19 +175,7 @@ namespace BrowserChooser3.Tests
             settings.IconScale.Should().Be(1.5);
         }
 
-        [Fact]
-        public void Properties_GridRelated_ShouldBeSettableAndGettable()
-        {
-            // Arrange
-            var settings = new Settings();
 
-            // Act & Assert
-            settings.GridWidth = 6;
-            settings.GridWidth.Should().Be(6);
-
-            settings.GridHeight = 4;
-            settings.GridHeight.Should().Be(4);
-        }
 
         [Fact]
         public void Properties_OptionsRelated_ShouldBeSettableAndGettable()

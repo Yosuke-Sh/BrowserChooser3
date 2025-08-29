@@ -35,11 +35,7 @@ namespace BrowserChooser3.Classes.Models
         /// <summary>Y座標</summary>
         public int Y { get; set; } = 0;
         
-        /// <summary>X座標（Browser Chooser 2互換）</summary>
-        public int PosX { get; set; } = 0;
-        
-        /// <summary>Y座標（Browser Chooser 2互換）</summary>
-        public int PosY { get; set; } = 0;
+
         
         /// <summary>表示フラグ</summary>
         public bool Visible { get; set; } = true;
@@ -68,11 +64,10 @@ namespace BrowserChooser3.Classes.Models
         /// <summary>デフォルトブラウザフラグ</summary>
         public bool IsDefault { get; set; } = false;
         
-        /// <summary>カスタム画像パス（Browser Chooser 2互換）</summary>
-        public string CustomImagePath { get; set; } = string.Empty;
+
         
         /// <summary>
-        /// ブラウザのクローンを作成（Browser Chooser 2互換）
+        /// ブラウザのクローンを作成
         /// </summary>
         public Browser Clone()
         {
@@ -87,8 +82,6 @@ namespace BrowserChooser3.Classes.Models
                 Scale = this.Scale,
                 X = this.X,
                 Y = this.Y,
-                PosX = this.PosX,
-                PosY = this.PosY,
                 Visible = this.Visible,
                 IsActive = this.IsActive,
                 IsEdge = this.IsEdge,

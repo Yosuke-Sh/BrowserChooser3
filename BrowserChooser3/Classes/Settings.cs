@@ -15,16 +15,7 @@ namespace BrowserChooser3.Classes
     {
         /// <summary>
         /// 現在の設定ファイルバージョン
-        /// 将来のアップグレード検出に使用されます
-        /// 
-        /// バージョン履歴:
-        /// - Version 2: プロトコルとファイルタイプを追加（自動追加）
-        /// - Version 3: プロトコルとファイルタイプを再構築、アクセシビリティ設定を追加
-        /// - Version 4: アクセシビリティ設定を再構築、v3を模倣
-        /// - Version 5: レジストリチェック用（キャンセル時はバージョンを更新しない）
-        /// - Version 6: 透明化設定を追加（EnableTransparency, TransparencyColor, Opacity, HideTitleBar, RoundedCorners）
         /// </summary>
-        // バージョン管理は廃止
         public const int CURRENT_FILE_VERSION = 1;
 
         /// <summary>
@@ -284,11 +275,7 @@ namespace BrowserChooser3.Classes
         /// <summary>高さ</summary>
         public int Height { get; set; } = 1;
         
-        /// <summary>グリッド幅（Browser Chooser 2互換）</summary>
-        public int GridWidth { get; set; } = 5;
-        
-        /// <summary>グリッド高さ（Browser Chooser 2互換）</summary>
-        public int GridHeight { get; set; } = 1;
+
         
         /// <summary>アイコン幅</summary>
         public int IconWidth { get; set; } = 100;
@@ -352,41 +339,7 @@ namespace BrowserChooser3.Classes
         /// <summary>背景色</summary>
         public int BackgroundColor { get; set; } = Color.White.ToArgb();
         
-        /// <summary>背景色（Color型、Browser Chooser 2互換）</summary>
-        public Color BackgroundColorValue 
-        { 
-            get
-            {
-                Logger.LogDebug("Settings.BackgroundColorValue.get", $"BackgroundColor: {BackgroundColor}");
-                
-                // BackgroundColorが-1（Color.White）の場合は白を返す
-                if (BackgroundColor == -1)
-                {
-                    Logger.LogDebug("Settings.BackgroundColorValue.get", "BackgroundColorが-1なので白を返します");
-                    return Color.White;
-                }
-                
-                // BackgroundColorが有効な値の場合は、その値を正しく使用
-                var c = Color.FromArgb(BackgroundColor);
-                Logger.LogDebug("Settings.BackgroundColorValue.get", $"BackgroundColorから色を取得: {c}");
-                // 常に不透明（A=255）で返す
-                return c.A == 255 ? c : Color.FromArgb(255, c.R, c.G, c.B);
-            }
-            set
-            {
-                // Color.Emptyが設定された場合は処理をスキップ（XMLデシリアライゼーションの副作用回避）
-                if (value == Color.Empty)
-                {
-                    Logger.LogDebug("Settings.BackgroundColorValue.set", "Color.Emptyが設定されたため処理をスキップ");
-                    return;
-                }
-                
-                // 常に不透明（A=255）で保存
-                var c = value.A == 255 ? value : Color.FromArgb(255, value.R, value.G, value.B);
-                BackgroundColor = c.ToArgb();
-                Logger.LogDebug("Settings.BackgroundColorValue.set", $"背景色を設定しました: {value} -> BackgroundColor: {BackgroundColor}");
-            }
-        }
+
         
         /// <summary>開始位置</summary>
         public int StartingPosition { get; set; } = (int)AvailableStartingPositions.CenterScreen;
@@ -697,8 +650,6 @@ namespace BrowserChooser3.Classes
                         }
                     }
 
-                    // 設定ファイルのマイグレーション処理は廃止（既存値をそのまま使用）
-
                     Logger.LogDebug("Settings.Load", "設定ファイル読み込み成功", path, output?.Browsers?.Count ?? 0);
                     return output!;
                 }
@@ -707,10 +658,7 @@ namespace BrowserChooser3.Classes
                     Logger.LogError("Settings.Load", "Exception: Failed to load settings file. Default settings used.", path, ex.Message, ex.StackTrace ?? "");
                 }
             }
-            else
-            {
-                // レガシー設定ファイルのインポート機能は削除されました
-            }
+
 
             Logger.LogDebug("Settings.Load", "設定ファイルが存在しないためデフォルト設定を使用", path);
             var defaultSettings = new Settings(false);
@@ -718,7 +666,7 @@ namespace BrowserChooser3.Classes
             return defaultSettings;
         }
 
-        // 旧マイグレーション関連コードは削除（不要化）
+
 
         /// <summary>
         /// デフォルトプロトコルを作成します
@@ -727,15 +675,14 @@ namespace BrowserChooser3.Classes
         private static void CreateDefaultProtocols(Settings settings)
         {
             var browserGuids = settings.Browsers.Select(b => b.Guid).ToList();
-            var defaultCategories = new List<string> { "Default" };
 
             settings.Protocols.AddRange(new[]
             {
-                new Protocol("HTTP", "http", browserGuids, defaultCategories),
-                new Protocol("Secure HTTP", "https", browserGuids, defaultCategories),
-                new Protocol("FTP", "ftp", browserGuids, defaultCategories),
-                new Protocol("Secure FTP", "ftps", browserGuids, defaultCategories),
-                new Protocol("URL Shortcut", "url", browserGuids, defaultCategories)
+                new Protocol { Name = "HTTP", Header = "http", SupportingBrowsers = new List<Guid>(browserGuids) },
+                new Protocol { Name = "Secure HTTP", Header = "https", SupportingBrowsers = new List<Guid>(browserGuids) },
+                new Protocol { Name = "FTP", Header = "ftp", SupportingBrowsers = new List<Guid>(browserGuids) },
+                new Protocol { Name = "Secure FTP", Header = "ftps", SupportingBrowsers = new List<Guid>(browserGuids) },
+                new Protocol { Name = "URL Shortcut", Header = "url", SupportingBrowsers = new List<Guid>(browserGuids) }
             });
         }
 

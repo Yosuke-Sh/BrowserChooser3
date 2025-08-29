@@ -26,7 +26,7 @@ namespace BrowserChooser3.Forms
         // UIパネル作成クラス
         private OptionsFormPanels _panels;
 
-        // 内部データ管理（Browser Chooser 2互換）
+        // 内部データ管理
         private Dictionary<int, Browser> _mBrowser = new();
         private SortedDictionary<int, URL> _mURLs = new();
         private Dictionary<int, Protocol> _mProtocols = new();
@@ -34,10 +34,10 @@ namespace BrowserChooser3.Forms
         private int _mLastURLID = 0;
         private int _mLastProtocolID = 0;
 
-        // ImageList（Browser Chooser 2互換）
+        // ImageList
         private ImageList? _imBrowserIcons => _panels?.GetBrowserIcons();
 
-        // フォーカス設定（Browser Chooser 2互換）
+        // フォーカス設定
         private FocusSettings _mFocusSettings = new();
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace BrowserChooser3.Forms
         }
         
         /// <summary>
-        /// フォームの初期化（Browser Chooser 2互換）
+        /// フォームの初期化
         /// </summary>
         private void InitializeForm()
         {
@@ -860,8 +860,7 @@ namespace BrowserChooser3.Forms
             _settings.ShowGrid = false; // デフォルト値
             _settings.GridColor = Color.Gray.ToArgb(); // デフォルト値
             _settings.GridLineWidth = 1; // デフォルト値
-            _settings.GridWidth = 5; // デフォルト値（Browser Chooser 2互換）
-            _settings.GridHeight = 1; // デフォルト値（Browser Chooser 2互換）
+            
 
             // UIに反映
             var nudIconSizeWidth = tabPage.Controls.Find("nudIconSizeWidth", true).FirstOrDefault() as NumericUpDown;
@@ -888,7 +887,7 @@ namespace BrowserChooser3.Forms
             var nudGridLineWidth = tabPage.Controls.Find("nudGridLineWidth", true).FirstOrDefault() as NumericUpDown;
             if (nudGridLineWidth != null) nudGridLineWidth.Value = _settings.GridLineWidth;
 
-            // Grid SizeのWidth、Height（Browser Chooser 2互換）
+                            // Grid SizeのWidth、Height
             var nudGridWidth = tabPage.Controls.Find("nudGridWidth", true).FirstOrDefault() as NumericUpDown;
             if (nudGridWidth != null) nudGridWidth.Value = _settings.GridWidth;
 
@@ -1068,7 +1067,7 @@ namespace BrowserChooser3.Forms
         }
 
         /// <summary>
-        /// 設定値の読み込み（Browser Chooser 2互換）
+        /// 設定値の読み込み
         /// </summary>
         private void LoadSettings()
         {
@@ -1213,7 +1212,7 @@ namespace BrowserChooser3.Forms
         }
 
         /// <summary>
-        /// 設定値をコントロールに設定（Browser Chooser 2互換）
+        /// 設定値をコントロールに設定
         /// </summary>
         private void LoadSettingsToControls()
         {
@@ -1445,7 +1444,7 @@ namespace BrowserChooser3.Forms
         }
 
         /// <summary>
-        /// 設定値の保存（Browser Chooser 2互換）
+        /// 設定値の保存
         /// </summary>
         private void SaveSettings()
         {
@@ -1493,20 +1492,6 @@ namespace BrowserChooser3.Forms
                 {
                     _settings.Protocols.Add(protocol.Value.Clone());
                 }
-
-                // ファイルタイプ設定の保存（未実装のため削除）
-                // _settings.FileTypes = new List<FileType>();
-                // foreach (var fileType in _mFileTypes)
-                // {
-                //     _settings.FileTypes.Add(fileType.Value.Clone());
-                // }
-
-                // プロトコル・ファイルタイプが変更された場合の確認
-                // if (_mFileTypesAreDirty || _mProtocolsAreDirty)
-                // {
-                //     var result = MessageBox.Show("You have changed the accepted Protocols or Filetypes.",
-                //         "Protocols/Filetypes Updated", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                // }
 
                 // 各コントロールから設定値を取得して保存
                 // 基本設定
@@ -1808,19 +1793,12 @@ namespace BrowserChooser3.Forms
             }
         }
 
-        /// <summary>
-        /// Auto URLsのドラッグ&amp;ドロップ機能を設定（Browser Chooser 2互換）
-        /// 現在は未実装（Browser Chooser 2でも実装されていない）
-        /// </summary>
-        private void SetupAutoURLsDragDrop(ListView listView)
-        {
-            // Browser Chooser 2では実装されていないため、空の実装のままとする
-        }
+
 
 
 
         /// <summary>
-        /// ブラウザリストへのファイルドロップ機能を設定（Browser Chooser 2互換）
+        /// ブラウザリストへのファイルドロップ機能を設定
         /// </summary>
         /// <param name="listView">対象のListView</param>
         private void SetupBrowsersDragDrop(ListView listView)

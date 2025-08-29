@@ -160,8 +160,7 @@ namespace BrowserChooser3.Classes.Utilities
                     return;
                 }
 
-                // SHDocVwを使用したIE制御（将来的に実装）
-                // 現在は一般的な起動処理を使用
+                // 一般的な起動処理を使用
                 if (DoLaunch(browser, url ?? "", terminate))
                 {
                     if (terminate)
