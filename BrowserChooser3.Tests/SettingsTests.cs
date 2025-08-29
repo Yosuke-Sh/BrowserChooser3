@@ -373,16 +373,36 @@ namespace BrowserChooser3.Tests
             originalSettings.ShowURL = false;
             originalSettings.Width = 6;
             originalSettings.Height = 4;
-            originalSettings.DoSave();
+            
+            try
+            {
+                originalSettings.DoSave();
 
-            // Act
-            var loadedSettings = Settings.Load(Application.StartupPath);
+                // Act
+                var loadedSettings = Settings.Load(Application.StartupPath);
 
-            // Assert
-            loadedSettings.Should().NotBeNull();
-            // テスト環境では実際のファイル読み込みが行われない可能性があるため、
-            // デフォルト設定が返されることを確認
-            loadedSettings.FileVersion.Should().Be(Settings.CURRENT_FILE_VERSION);
+                // Assert
+                loadedSettings.Should().NotBeNull();
+                // テスト環境では実際のファイル読み込みが行われない可能性があるため、
+                // デフォルト設定が返されることを確認
+                loadedSettings.FileVersion.Should().Be(Settings.CURRENT_FILE_VERSION);
+            }
+            finally
+            {
+                // テスト用ファイルをクリーンアップ
+                try
+                {
+                    var configPath = Path.Combine(Application.StartupPath, "BrowserChooser3Config.xml");
+                    if (File.Exists(configPath))
+                    {
+                        File.Delete(configPath);
+                    }
+                }
+                catch
+                {
+                    // クリーンアップに失敗してもテストは続行
+                }
+            }
         }
 
         [Fact]

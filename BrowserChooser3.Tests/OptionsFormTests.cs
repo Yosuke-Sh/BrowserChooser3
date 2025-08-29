@@ -492,7 +492,7 @@ namespace BrowserChooser3.Tests
                 mainForm.Invalidate(); // 再描画を強制
                 
                 // 背景色が正しく設定されていることを確認
-                mainForm.BackColor.Should().Be(newColor);
+                mainForm.BackColor.ToArgb().Should().Be(newColor.ToArgb());
             }
         }
 
@@ -517,8 +517,8 @@ namespace BrowserChooser3.Tests
                 mainForm.Invalidate(); // 再描画を強制
                 
                 // 背景色が変更されていることを確認
-                mainForm.BackColor.Should().Be(newColor);
-                mainForm.BackColor.Should().NotBe(originalBackColor);
+                mainForm.BackColor.ToArgb().Should().Be(newColor.ToArgb());
+                mainForm.BackColor.ToArgb().Should().NotBe(originalBackColor.ToArgb());
             }
         }
     }

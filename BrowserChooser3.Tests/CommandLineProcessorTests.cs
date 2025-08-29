@@ -55,6 +55,52 @@ namespace BrowserChooser3.Tests
         }
 
         [Fact]
+        public void ParseArguments_WithLongURL_ShouldTruncateURL()
+        {
+            // Arrange
+            var longUrl = "https://example.com/" + new string('a', 9000); // 9000文字の長いURL
+            var args = new[] { longUrl };
+
+            // Act
+            var result = CommandLineProcessor.ParseArguments(args);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.URL.Should().NotBeNull();
+            result.URL!.Length.Should().BeLessThanOrEqualTo(8191); // Windowsのコマンドライン制限
+        }
+
+        [Fact]
+        public void ParseArguments_WithEncodedURL_ShouldDecodeURL()
+        {
+            // Arrange
+            var encodedUrl = "https://example.com/search?q=test%20space&param=value%3D123";
+            var args = new[] { encodedUrl };
+
+            // Act
+            var result = CommandLineProcessor.ParseArguments(args);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.URL.Should().Be("https://example.com/search?q=test space&param=value=123");
+        }
+
+        [Fact]
+        public void ParseArguments_WithInvalidEncodedURL_ShouldKeepOriginalURL()
+        {
+            // Arrange
+            var invalidEncodedUrl = "https://example.com/search?q=test%2"; // 不完全なエンコーディング
+            var args = new[] { invalidEncodedUrl };
+
+            // Act
+            var result = CommandLineProcessor.ParseArguments(args);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.URL.Should().Be(invalidEncodedUrl); // 元のURLが保持される
+        }
+
+        [Fact]
         public void ParseArguments_WithHelpOption_ShouldSetShowHelp()
         {
             // Arrange

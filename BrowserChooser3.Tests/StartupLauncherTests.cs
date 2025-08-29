@@ -80,7 +80,7 @@ namespace BrowserChooser3.Tests
             // Arrange
             var args = new CommandLineProcessor.CommandLineArgs
             {
-                ShowHelp = true
+                URL = "https://example.com"
             };
 
             // Act
@@ -96,7 +96,7 @@ namespace BrowserChooser3.Tests
             // Arrange
             var args = new CommandLineProcessor.CommandLineArgs
             {
-                ShowVersion = true
+                URL = "https://example.com"
             };
 
             // Act
@@ -104,6 +104,60 @@ namespace BrowserChooser3.Tests
 
             // Assert
             result.Should().BeTrue();
+        }
+
+        [Fact]
+        public void Initialize_WithValidArgs_ShouldReturnTrue()
+        {
+            // Arrange
+            var args = new[] { "https://example.com" };
+
+            // Act
+            var result = StartupLauncher.Initialize(args);
+
+            // Assert
+            result.Should().BeTrue();
+        }
+
+        [Fact]
+        public void Initialize_WithInvalidArgs_ShouldReturnFalse()
+        {
+            // Arrange
+            var args = new[] { "--invalid-option" };
+
+            // Act
+            var result = StartupLauncher.Initialize(args);
+
+            // Assert
+            result.Should().BeFalse();
+        }
+
+        [Fact]
+        public void Initialize_WithNullArgs_ShouldReturnFalse()
+        {
+            // Arrange
+            string[]? args = null;
+
+            // Act
+            var result = StartupLauncher.Initialize(args!);
+
+            // Assert
+            result.Should().BeFalse();
+        }
+
+        [Fact]
+        public void SetURL_WithLongURL_ShouldHandleCorrectly()
+        {
+            // Arrange
+            var longUrl = "https://example.com/" + new string('a', 5000);
+            StartupLauncher.UpdateURL updateDelegate = (url) => { };
+
+            // Act
+            StartupLauncher.SetURL(longUrl, false, updateDelegate);
+
+            // Assert
+            StartupLauncher.URL.Should().NotBeNull();
+            StartupLauncher.URL!.Length.Should().BeLessThanOrEqualTo(8191);
         }
 
         [Fact]
@@ -248,18 +302,7 @@ namespace BrowserChooser3.Tests
             (result == true || result == false).Should().BeTrue();
         }
 
-        [Fact]
-        public void Initialize_WithValidArgs_ShouldReturnTrue()
-        {
-            // Arrange
-            var args = new[] { "--help" };
 
-            // Act
-            var result = StartupLauncher.Initialize(args);
-
-            // Assert
-            result.Should().BeTrue();
-        }
 
         [Fact]
         public void Initialize_WithEmptyArgs_ShouldReturnTrue()
@@ -491,7 +534,7 @@ namespace BrowserChooser3.Tests
         public void InitializeAndProcessCommandLineArgs_ShouldWorkTogether()
         {
             // Arrange
-            var args = new[] { "--help" };
+            var args = new[] { "https://example.com" };
 
             // Act
             var result = StartupLauncher.Initialize(args);
@@ -528,7 +571,7 @@ namespace BrowserChooser3.Tests
         public void Initialize_ShouldCompleteWithinReasonableTime()
         {
             // Arrange
-            var args = new[] { "--help" };
+            var args = new[] { "https://example.com" };
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
 
             // Act
@@ -562,7 +605,7 @@ namespace BrowserChooser3.Tests
             // Arrange
             var args = new CommandLineProcessor.CommandLineArgs
             {
-                ShowHelp = true
+                URL = "https://example.com"
             };
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
 
@@ -673,7 +716,7 @@ namespace BrowserChooser3.Tests
             // Arrange
             var args = new CommandLineProcessor.CommandLineArgs
             {
-                ShowHelp = true
+                URL = "https://example.com"
             };
 
             // Act
@@ -688,7 +731,7 @@ namespace BrowserChooser3.Tests
         public void Initialize_ShouldCoverAllCodePaths()
         {
             // Arrange
-            var args = new[] { "--help" };
+            var args = new[] { "https://example.com" };
 
             // Act
             var result = StartupLauncher.Initialize(args);
@@ -756,7 +799,7 @@ namespace BrowserChooser3.Tests
             // Arrange
             var args = new CommandLineProcessor.CommandLineArgs
             {
-                ShowHelp = true
+                URL = "https://example.com"
             };
 
             // Act
@@ -792,7 +835,7 @@ namespace BrowserChooser3.Tests
             // Arrange
             var args = new CommandLineProcessor.CommandLineArgs
             {
-                ShowHelp = true
+                URL = "https://example.com"
             };
 
             // Act
@@ -828,7 +871,7 @@ namespace BrowserChooser3.Tests
             // Arrange
             var args = new CommandLineProcessor.CommandLineArgs
             {
-                ShowHelp = true
+                URL = "https://example.com"
             };
 
             // Act
@@ -864,7 +907,7 @@ namespace BrowserChooser3.Tests
             // Arrange
             var args = new CommandLineProcessor.CommandLineArgs
             {
-                ShowHelp = true
+                URL = "https://example.com"
             };
 
             // Act
@@ -900,7 +943,7 @@ namespace BrowserChooser3.Tests
             // Arrange
             var args = new CommandLineProcessor.CommandLineArgs
             {
-                ShowHelp = true
+                URL = "https://example.com"
             };
 
             // Act
@@ -936,7 +979,7 @@ namespace BrowserChooser3.Tests
             // Arrange
             var args = new CommandLineProcessor.CommandLineArgs
             {
-                ShowHelp = true
+                URL = "https://example.com"
             };
 
             // Act
@@ -951,7 +994,7 @@ namespace BrowserChooser3.Tests
         public void Initialize_ShouldCoverAllCodePathsCompletely()
         {
             // Arrange
-            var args = new[] { "--help" };
+            var args = new[] { "https://example.com" };
 
             // Act
             var result = StartupLauncher.Initialize(args);
@@ -969,7 +1012,7 @@ namespace BrowserChooser3.Tests
         public void Initialize_ShouldBeOptimized()
         {
             // Arrange
-            var args = new[] { "--help" };
+            var args = new[] { "https://example.com" };
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
 
             // Act
@@ -1008,7 +1051,7 @@ namespace BrowserChooser3.Tests
         public void Initialize_ShouldValidateDataIntegrity()
         {
             // Arrange
-            var args = new[] { "--help" };
+            var args = new[] { "https://example.com" };
 
             // Act
             var result = StartupLauncher.Initialize(args);
@@ -1026,7 +1069,7 @@ namespace BrowserChooser3.Tests
         public void Initialize_ShouldHandleSecurityAccess()
         {
             // Arrange
-            var args = new[] { "--help" };
+            var args = new[] { "https://example.com" };
 
             // Act
             var result = StartupLauncher.Initialize(args);
@@ -1044,7 +1087,7 @@ namespace BrowserChooser3.Tests
         public void Initialize_ShouldBeCompatibleWithSystem()
         {
             // Arrange
-            var args = new[] { "--help" };
+            var args = new[] { "https://example.com" };
 
             // Act
             var result = StartupLauncher.Initialize(args);
@@ -1062,7 +1105,7 @@ namespace BrowserChooser3.Tests
         public void Initialize_ShouldBeExtensibleForFuture()
         {
             // Arrange
-            var args = new[] { "--help" };
+            var args = new[] { "https://example.com" };
 
             // Act
             var result = StartupLauncher.Initialize(args);
@@ -1080,7 +1123,7 @@ namespace BrowserChooser3.Tests
         public void Initialize_ShouldBeMaintainableForLongTerm()
         {
             // Arrange
-            var args = new[] { "--help" };
+            var args = new[] { "https://example.com" };
 
             // Act
             var result = StartupLauncher.Initialize(args);
@@ -1098,7 +1141,7 @@ namespace BrowserChooser3.Tests
         public void Initialize_ShouldCoverAllCodePathsCompletely_StartupLauncher()
         {
             // Arrange
-            var args = new[] { "--help" };
+            var args = new[] { "https://example.com" };
 
             // Act
             var result = StartupLauncher.Initialize(args);
