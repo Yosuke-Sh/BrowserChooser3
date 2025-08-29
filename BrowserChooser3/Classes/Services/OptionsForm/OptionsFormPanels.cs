@@ -408,48 +408,59 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var panel = new Panel
             {
                 Dock = DockStyle.Fill,
-                Padding = new Padding(10)
+                Padding = new Padding(10),
+                AutoScroll = true
             };
 
-            // 現在のデフォルトブラウザ情報を取得
-            var defaultBrowserInfo = DefaultBrowserChecker.GetDefaultBrowser();
-            
+            int currentY = 10;
+
             // タイトルラベル
             var titleLabel = new Label
             {
                 Text = "Windows Default Browser Settings",
                 Font = new Font("Segoe UI", 12, FontStyle.Bold),
-                Location = new Point(10, 10),
+                Location = new Point(10, currentY),
                 AutoSize = true
             };
             panel.Controls.Add(titleLabel);
+            currentY += 40;
 
-            // 現在のデフォルトブラウザ情報表示
-            var currentBrowserLabel = new Label
+            // 説明文
+            var descriptionLabel = new Label
             {
-                Text = "Current Default Browser:",
-                Font = new Font("Segoe UI", 9, FontStyle.Bold),
-                Location = new Point(10, 50),
-                AutoSize = true
-            };
-            panel.Controls.Add(currentBrowserLabel);
-
-            var currentBrowserInfoLabel = new Label
-            {
-                Text = $"{defaultBrowserInfo.Name} ({defaultBrowserInfo.Path})",
+                Text = "Windows 11では、デフォルトブラウザの設定はWindowsの設定画面から行う必要があります。\n" +
+                       "以下の手順でデフォルトブラウザを設定してください：",
                 Font = new Font("Segoe UI", 9),
-                Location = new Point(10, 70),
-                Size = new Size(400, 40),
+                Location = new Point(10, currentY),
+                Size = new Size(500, 50),
                 AutoSize = false
             };
-            panel.Controls.Add(currentBrowserInfoLabel);
+            panel.Controls.Add(descriptionLabel);
+            currentY += 60;
 
-            // Windows 11デフォルトアプリ設定画面を表示するボタン
+            // 設定手順
+            var stepsLabel = new Label
+            {
+                Text = "設定手順：\n" +
+                       "1. Windowsキー + I を押して設定を開く\n" +
+                       "2. 「アプリ」をクリック\n" +
+                       "3. 「デフォルトアプリ」をクリック\n" +
+                       "4. 「Webブラウザー」をクリック\n" +
+                       "5. 希望するブラウザを選択",
+                Font = new Font("Segoe UI", 9),
+                Location = new Point(10, currentY),
+                Size = new Size(500, 100),
+                AutoSize = false
+            };
+            panel.Controls.Add(stepsLabel);
+            currentY += 120;
+
+            // Windowsのアプリ設定画面を起動するボタン
             var openSettingsButton = new Button
             {
                 Name = "btnOpenDefaultAppsSettings",
-                Text = "Open Windows Default Apps Settings",
-                Location = new Point(10, 120),
+                Text = "Windowsの設定画面を開く",
+                Location = new Point(10, currentY),
                 Size = new Size(250, 35),
                 Font = new Font("Segoe UI", 9, FontStyle.Bold)
             };
@@ -461,219 +472,58 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                     if (success)
                     {
                         MessageBox.Show(
-                            "Windows Default Apps Settings has been opened.\n\n" +
-                            "Please set your preferred browser as the default for HTTP and HTTPS protocols.",
-                            "Settings Opened",
+                            "Windowsの設定画面が開きました。\n\n" +
+                            "「アプリ」→「デフォルトアプリ」→「Webブラウザー」の順で進んでください。",
+                            "設定画面を開きました",
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Information);
                     }
                     else
                     {
                         MessageBox.Show(
-                            "Failed to open Windows Default Apps Settings.\n\n" +
-                            "Please open it manually from Windows Settings > Apps > Default apps.",
-                            "Error",
+                            "Windowsの設定画面を開けませんでした。\n\n" +
+                            "手動でWindowsキー + I を押して設定を開き、\n" +
+                            "「アプリ」→「デフォルトアプリ」→「Webブラウザー」に進んでください。",
+                            "エラー",
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Warning);
                     }
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError("OptionsFormPanels.CreateDefaultBrowserPanel", "デフォルトアプリ設定画面表示エラー", ex.Message);
+                    Logger.LogError("OptionsFormPanels.CreateDefaultBrowserPanel", "Windows設定画面表示エラー", ex.Message);
                     MessageBox.Show(
-                        $"Error opening settings: {ex.Message}",
-                        "Error",
+                        $"設定画面を開く際にエラーが発生しました: {ex.Message}",
+                        "エラー",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Error);
                 }
             };
             panel.Controls.Add(openSettingsButton);
-
-            // HTTP/HTTPSプロトコル設定画面を表示するボタン
-            var openProtocolSettingsButton = new Button
-            {
-                Name = "btnOpenProtocolSettings",
-                Text = "Open HTTP/HTTPS Protocol Settings",
-                Location = new Point(280, 120),
-                Size = new Size(250, 35),
-                Font = new Font("Segoe UI", 9, FontStyle.Bold)
-            };
-            openProtocolSettingsButton.Click += (sender, e) =>
-            {
-                try
-                {
-                    var success = DefaultBrowserChecker.ShowHttpProtocolSettings();
-                    if (success)
-                    {
-                        MessageBox.Show(
-                            "HTTP/HTTPS Protocol Settings has been opened.\n\n" +
-                            "Please set your preferred browser as the default for HTTP and HTTPS protocols.",
-                            "Settings Opened",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Information);
-                    }
-                    else
-                    {
-                        MessageBox.Show(
-                            "Failed to open HTTP/HTTPS Protocol Settings.\n\n" +
-                            "Please open it manually from Windows Settings > Apps > Default apps > Web browser.",
-                            "Error",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Warning);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError("OptionsFormPanels.CreateDefaultBrowserPanel", "HTTP/HTTPSプロトコル設定画面表示エラー", ex.Message);
-                    MessageBox.Show(
-                        $"Error opening protocol settings: {ex.Message}",
-                        "Error",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
-                }
-            };
-            panel.Controls.Add(openProtocolSettingsButton);
-
-            // 更新ボタン
-            var refreshButton = new Button
-            {
-                Name = "btnRefreshDefaultBrowser",
-                Text = "Refresh Default Browser Info",
-                Location = new Point(10, 170),
-                Size = new Size(180, 30)
-            };
-            refreshButton.Click += (sender, e) =>
-            {
-                try
-                {
-                    var newDefaultBrowser = DefaultBrowserChecker.GetDefaultBrowser();
-                    currentBrowserInfoLabel.Text = $"{newDefaultBrowser.Name} ({newDefaultBrowser.Path})";
-                    
-                    MessageBox.Show(
-                        "Default browser information has been refreshed.",
-                        "Refreshed",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError("OptionsFormPanels.CreateDefaultBrowserPanel", "デフォルトブラウザ情報更新エラー", ex.Message);
-                    MessageBox.Show(
-                        $"Error refreshing default browser info: {ex.Message}",
-                        "Error",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
-                }
-            };
-            panel.Controls.Add(refreshButton);
+            currentY += 50;
 
             // 注意事項
             var noteLabel = new Label
             {
-                Text = "Note: On Windows 11, default browser settings are managed through Windows Settings.\n" +
-                       "Use the buttons above to open the appropriate settings pages.\n" +
-                       "You may need administrator privileges to change default browser settings.",
+                Text = "注意：\n" +
+                       "• デフォルトブラウザの変更には管理者権限が必要な場合があります\n" +
+                       "• 一部のブラウザは自動的にデフォルト設定を要求する場合があります\n" +
+                       "• 設定変更後は、ブラウザを再起動することをお勧めします",
                 Font = new Font("Segoe UI", 8),
                 ForeColor = Color.Gray,
-                Location = new Point(10, 220),
-                Size = new Size(500, 60),
+                Location = new Point(10, currentY),
+                Size = new Size(500, 80),
                 AutoSize = false
             };
             panel.Controls.Add(noteLabel);
 
-            // 現在のデフォルトブラウザの詳細情報
-            var detailsLabel = new Label
-            {
-                Text = "Detection Method:",
-                Font = new Font("Segoe UI", 9, FontStyle.Bold),
-                Location = new Point(10, 300),
-                AutoSize = true
-            };
-            panel.Controls.Add(detailsLabel);
-
-            var detailsInfoLabel = new Label
-            {
-                Text = defaultBrowserInfo.DetectionMethod,
-                Font = new Font("Segoe UI", 8),
-                Location = new Point(10, 320),
-                Size = new Size(500, 20),
-                AutoSize = false
-            };
-            panel.Controls.Add(detailsInfoLabel);
-
             tabPage.Controls.Add(panel);
             return tabPage;
         }
+
+
         
-        /// <summary>
-        /// インストールされているブラウザのリストを取得
-        /// </summary>
-        /// <returns>ブラウザ名のリスト</returns>
-        private List<string> GetInstalledBrowsers()
-        {
-            var browsers = new List<string>();
-            
-            try
-            {
-                // 主要ブラウザの一般的なインストール場所をチェック
-                var browserPaths = new Dictionary<string, string>
-                {
-                    { "Google Chrome", @"C:\Program Files\Google\Chrome\Application\chrome.exe" },
-                    { "Google Chrome (x86)", @"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" },
-                    { "Microsoft Edge", @"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" },
-                    { "Firefox", @"C:\Program Files\Mozilla Firefox\firefox.exe" },
-                    { "Firefox (x86)", @"C:\Program Files (x86)\Mozilla Firefox\firefox.exe" },
-                    { "Internet Explorer", @"C:\Program Files\Internet Explorer\iexplore.exe" },
-                    { "Internet Explorer (x86)", @"C:\Program Files (x86)\Internet Explorer\iexplore.exe" },
-                    { "Opera", @"C:\Program Files\Opera\launcher.exe" },
-                    { "Opera (x86)", @"C:\Program Files (x86)\Opera\launcher.exe" },
-                    { "Brave", @"C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe" },
-                    { "Brave (x86)", @"C:\Program Files (x86)\BraveSoftware\Brave-Browser\Application\brave.exe" }
-                };
 
-                foreach (var browser in browserPaths)
-                {
-                    if (File.Exists(browser.Value))
-                    {
-                        browsers.Add(browser.Key);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("OptionsFormPanels.GetInstalledBrowsers", "ブラウザ検出エラー", ex.Message);
-            }
-
-            return browsers;
-        }
-        
-        /// <summary>
-        /// ブラウザ名からパスを取得
-        /// </summary>
-        /// <param name="browserName">ブラウザ名</param>
-        /// <returns>ブラウザのパス</returns>
-        private string GetBrowserPath(string? browserName)
-        {
-            if (string.IsNullOrEmpty(browserName))
-                return "";
-                
-            var browserPaths = new Dictionary<string, string>
-            {
-                { "Google Chrome", @"C:\Program Files\Google\Chrome\Application\chrome.exe" },
-                { "Google Chrome (x86)", @"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" },
-                { "Microsoft Edge", @"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" },
-                { "Firefox", @"C:\Program Files\Mozilla Firefox\firefox.exe" },
-                { "Firefox (x86)", @"C:\Program Files (x86)\Mozilla Firefox\firefox.exe" },
-                { "Internet Explorer", @"C:\Program Files\Internet Explorer\iexplore.exe" },
-                { "Internet Explorer (x86)", @"C:\Program Files (x86)\Internet Explorer\iexplore.exe" },
-                { "Opera", @"C:\Program Files\Opera\launcher.exe" },
-                { "Opera (x86)", @"C:\Program Files (x86)\Opera\launcher.exe" },
-                { "Brave", @"C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe" },
-                { "Brave (x86)", @"C:\Program Files (x86)\BraveSoftware\Brave-Browser\Application\brave.exe" }
-            };
-
-            return browserPaths.TryGetValue(browserName, out var path) ? path : "";
-        }
 
 
 

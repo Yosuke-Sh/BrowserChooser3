@@ -895,19 +895,6 @@
             <param name="setModified">変更フラグ設定アクション</param>
             <returns>作成されたTabPage</returns>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormPanels.GetInstalledBrowsers">
-            <summary>
-            インストールされているブラウザのリストを取得
-            </summary>
-            <returns>ブラウザ名のリスト</returns>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormPanels.GetBrowserPath(System.String)">
-            <summary>
-            ブラウザ名からパスを取得
-            </summary>
-            <param name="browserName">ブラウザ名</param>
-            <returns>ブラウザのパス</returns>
-        </member>
         <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormPanels.CreateDisplayPanel(BrowserChooser3.Classes.Settings,System.Action{System.Boolean})">
             <summary>
             表示パネルの作成
