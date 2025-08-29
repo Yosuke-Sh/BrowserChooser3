@@ -744,6 +744,12 @@
             ヘルプページを開く
             </summary>
         </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormHelpHandlers.IsTestEnvironment">
+            <summary>
+            テスト環境かどうかを判定する
+            </summary>
+            <returns>テスト環境の場合はtrue</returns>
+        </member>
         <member name="T:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormListHandlers">
             <summary>
             OptionsFormのリスト選択変更イベントハンドラーを管理するクラス

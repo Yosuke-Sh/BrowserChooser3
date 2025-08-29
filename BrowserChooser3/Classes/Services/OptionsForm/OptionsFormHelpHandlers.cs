@@ -1,6 +1,7 @@
 using BrowserChooser3.Classes.Models;
 using BrowserChooser3.Classes.Utilities;
 using BrowserChooser3.Forms;
+using System.Linq;
 
 namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
 {
@@ -27,10 +28,16 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
         {
             try
             {
-                // Browser Chooser 2のヘルプページを開く
+                // テスト環境では実際のプロセスを起動しない
+                if (IsTestEnvironment())
+                {
+                    return;
+                }
+
+                // Browser Chooser 3のヘルプページを開く
                 System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
                 {
-                    FileName = "https://bitbucket.org/gmyx/browserchooser2/wiki/Home",
+                    FileName = "https://github.com/Yosuke-Sh/BrowserChooser3",
                     UseShellExecute = true
                 });
             }
@@ -39,6 +46,20 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 MessageBox.Show($"Help page cannot be reached!\n\n{ex.Message}", "Error", 
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        /// <summary>
+        /// テスト環境かどうかを判定する
+        /// </summary>
+        /// <returns>テスト環境の場合はtrue</returns>
+        private static bool IsTestEnvironment()
+        {
+            // テストアセンブリが読み込まれているかチェック
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            return assemblies.Any(assembly => 
+                assembly.FullName?.Contains("xunit") == true || 
+                assembly.FullName?.Contains("BrowserChooser3.Tests") == true ||
+                assembly.FullName?.Contains("Microsoft.VisualStudio.TestPlatform") == true);
         }
     }
 }
