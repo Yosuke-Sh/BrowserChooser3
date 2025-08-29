@@ -393,7 +393,7 @@ namespace BrowserChooser3.Tests
         }
 
         [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void DetectDirty_ShouldBeThreadSafe()
+        public async Task DetectDirty_ShouldBeThreadSafe()
         {
             // Arrange
             var mockForm = new Mock<OptionsForm>();
@@ -410,14 +410,14 @@ namespace BrowserChooser3.Tests
             {
                 tasks.Add(Task.Run(() => handlers.DetectDirty(sender, e)));
             }
-            Task.WaitAll(tasks.ToArray());
+            await Task.WhenAll(tasks.ToArray());
 
             // Assert
             setModifiedCallCount.Should().Be(10);
         }
 
         [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void ChkCanonicalize_CheckedChanged_ShouldBeThreadSafe()
+        public async Task ChkCanonicalize_CheckedChanged_ShouldBeThreadSafe()
         {
             // Arrange
             var mockForm = new Mock<OptionsForm>();
@@ -440,7 +440,7 @@ namespace BrowserChooser3.Tests
             {
                 tasks.Add(Task.Run(() => handlers.ChkCanonicalize_CheckedChanged(checkBox, e)));
             }
-            Task.WaitAll(tasks.ToArray());
+            await Task.WhenAll(tasks.ToArray());
 
             // Assert
             setModifiedCallCount.Should().Be(5);
@@ -448,7 +448,7 @@ namespace BrowserChooser3.Tests
         }
 
         [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void ChkLog_CheckedChanged_ShouldBeThreadSafe()
+        public async Task ChkLog_CheckedChanged_ShouldBeThreadSafe()
         {
             // Arrange
             var mockForm = new Mock<OptionsForm>();
@@ -466,7 +466,7 @@ namespace BrowserChooser3.Tests
             {
                 tasks.Add(Task.Run(() => handlers.ChkLog_CheckedChanged(checkBox, e)));
             }
-            Task.WaitAll(tasks.ToArray());
+            await Task.WhenAll(tasks.ToArray());
 
             // Assert
             setModifiedCallCount.Should().Be(5);
