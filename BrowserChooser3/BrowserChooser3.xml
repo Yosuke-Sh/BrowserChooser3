@@ -1540,18 +1540,6 @@
         <member name="P:BrowserChooser3.Classes.Settings.GridLineWidth">
             <summary>グリッド線幅</summary>
         </member>
-        <member name="P:BrowserChooser3.Classes.Settings.KeepHistory">
-            <summary>履歴保持</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Settings.HistoryDays">
-            <summary>履歴保持日数</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Settings.PrivacyMode">
-            <summary>プライバシーモード</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Settings.AllowDataCollection">
-            <summary>データ収集許可</summary>
-        </member>
         <member name="P:BrowserChooser3.Classes.Settings.StartMinimized">
             <summary>最小化で起動</summary>
         </member>

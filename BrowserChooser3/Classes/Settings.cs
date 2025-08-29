@@ -421,17 +421,7 @@ namespace BrowserChooser3.Classes
         /// <summary>グリッド線幅</summary>
         public int GridLineWidth { get; set; } = 1;
 
-        /// <summary>履歴保持</summary>
-        public bool KeepHistory { get; set; } = true;
 
-        /// <summary>履歴保持日数</summary>
-        public int HistoryDays { get; set; } = 30;
-
-        /// <summary>プライバシーモード</summary>
-        public bool PrivacyMode { get; set; } = false;
-
-        /// <summary>データ収集許可</summary>
-        public bool AllowDataCollection { get; set; } = false;
 
 
 

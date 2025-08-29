@@ -1730,118 +1730,14 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 ForeColor = Color.Gray
             };
 
-            // 履歴保持設定
-            var chkKeepHistory = new CheckBox
-            {
-                Name = "chkKeepHistory",
-                Text = "Keep Browser History",
-                Location = new Point(6, 69),
-                Size = new Size(250, 25),
-                Checked = settings.KeepHistory,
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            };
-            chkKeepHistory.CheckedChanged += (s, e) => setModified(true);
 
-            // Keep History説明文
-            var lblKeepHistoryDesc = new Label
-            {
-                Text = "ブラウザの使用履歴を保持します",
-                Location = new Point(270, 72),
-                Size = new Size(400, 20),
-                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
-                ForeColor = Color.Gray
-            };
-
-            // 履歴保持日数
-            var lblHistoryDays = new Label
-            {
-                Text = "History Days:",
-                Location = new Point(6, 102),
-                Size = new Size(150, 23),
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            };
-
-            var nudHistoryDays = new NumericUpDown
-            {
-                Name = "nudHistoryDays",
-                Location = new Point(160, 99),
-                Size = new Size(80, 23),
-                Minimum = 1,
-                Maximum = 365,
-                Value = settings.HistoryDays,
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            };
-            nudHistoryDays.ValueChanged += (s, e) => setModified(true);
-
-            // History Days説明文
-            var lblHistoryDaysDesc = new Label
-            {
-                Text = "履歴を保持する日数を設定します（1-365日）",
-                Location = new Point(270, 102),
-                Size = new Size(400, 20),
-                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
-                ForeColor = Color.Gray
-            };
-
-            // プライバシーモード設定
-            var chkPrivacyMode = new CheckBox
-            {
-                Name = "chkPrivacyMode",
-                Text = "Privacy Mode (Clear on Exit)",
-                Location = new Point(6, 132),
-                Size = new Size(260, 25),
-                Checked = settings.PrivacyMode,
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            };
-            chkPrivacyMode.CheckedChanged += (s, e) => setModified(true);
-
-            // Privacy Mode説明文
-            var lblPrivacyModeDesc = new Label
-            {
-                Text = "アプリケーション終了時に履歴とログをクリアします",
-                Location = new Point(270, 135),
-                Size = new Size(400, 20),
-                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
-                ForeColor = Color.Gray
-            };
-
-            // データ収集設定
-            var chkAllowDataCollection = new CheckBox
-            {
-                Name = "chkAllowDataCollection",
-                Text = "Allow Data Collection",
-                Location = new Point(6, 165),
-                Size = new Size(260, 25),
-                Checked = settings.AllowDataCollection,
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            };
-            chkAllowDataCollection.CheckedChanged += (s, e) => setModified(true);
-
-            // Allow Data Collection説明文
-            var lblAllowDataCollectionDesc = new Label
-            {
-                Text = "アプリケーションの改善のための匿名データ収集を許可します",
-                Location = new Point(270, 168),
-                Size = new Size(400, 20),
-                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
-                ForeColor = Color.Gray
-            };
 
             // コントロールの追加
             panel.Controls.Add(chkEnableLogging);
             panel.Controls.Add(lblLogLevel);
             panel.Controls.Add(cmbLogLevel);
-            panel.Controls.Add(chkKeepHistory);
-            panel.Controls.Add(lblHistoryDays);
-            panel.Controls.Add(nudHistoryDays);
-            panel.Controls.Add(chkPrivacyMode);
-            panel.Controls.Add(chkAllowDataCollection);
             panel.Controls.Add(lblEnableLoggingDesc);
             panel.Controls.Add(lblLogLevelDesc);
-            panel.Controls.Add(lblKeepHistoryDesc);
-            panel.Controls.Add(lblHistoryDaysDesc);
-            panel.Controls.Add(lblPrivacyModeDesc);
-            panel.Controls.Add(lblAllowDataCollectionDesc);
 
             tabPage.Controls.Add(panel);
             return tabPage;

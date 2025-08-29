@@ -904,9 +904,8 @@ namespace BrowserChooser3.Forms
             // 設定をデフォルト値に更新
             _settings.EnableLogging = (bool)_settings.Defaults[Settings.DefaultField.EnableLogging];
             _settings.LogLevel = (int)_settings.Defaults[Settings.DefaultField.LogLevel];
-            _settings.HistoryDays = 30; // デフォルト値
-            _settings.PrivacyMode = false; // デフォルト値
-            _settings.AllowDataCollection = false; // デフォルト値
+            
+            
 
             // UIに反映
             var chkEnableLogging = tabPage.Controls.Find("chkEnableLogging", true).FirstOrDefault() as CheckBox;
@@ -915,14 +914,9 @@ namespace BrowserChooser3.Forms
             var cmbLogLevel = tabPage.Controls.Find("cmbLogLevel", true).FirstOrDefault() as ComboBox;
             if (cmbLogLevel != null) cmbLogLevel.SelectedIndex = Math.Min(_settings.LogLevel, cmbLogLevel.Items.Count - 1);
 
-            var nudHistoryDays = tabPage.Controls.Find("nudHistoryDays", true).FirstOrDefault() as NumericUpDown;
-            if (nudHistoryDays != null) nudHistoryDays.Value = _settings.HistoryDays;
+            
 
-            var chkPrivacyMode = tabPage.Controls.Find("chkPrivacyMode", true).FirstOrDefault() as CheckBox;
-            if (chkPrivacyMode != null) chkPrivacyMode.Checked = _settings.PrivacyMode;
-
-            var chkAllowDataCollection = tabPage.Controls.Find("chkAllowDataCollection", true).FirstOrDefault() as CheckBox;
-            if (chkAllowDataCollection != null) chkAllowDataCollection.Checked = _settings.AllowDataCollection;
+            
         }
 
         /// <summary>
@@ -1336,17 +1330,9 @@ namespace BrowserChooser3.Forms
                 var cmbLogLevel = Controls.Find("cmbLogLevel", true).FirstOrDefault() as ComboBox;
                 if (cmbLogLevel != null) cmbLogLevel.SelectedIndex = Math.Min(_settings.LogLevel, cmbLogLevel.Items.Count - 1);
 
-                var chkKeepHistory = Controls.Find("chkKeepHistory", true).FirstOrDefault() as CheckBox;
-                if (chkKeepHistory != null) chkKeepHistory.Checked = _settings.KeepHistory;
 
-                var nudHistoryDays = Controls.Find("nudHistoryDays", true).FirstOrDefault() as NumericUpDown;
-                if (nudHistoryDays != null) nudHistoryDays.Value = _settings.HistoryDays;
 
-                var chkPrivacyMode = Controls.Find("chkPrivacyMode", true).FirstOrDefault() as CheckBox;
-                if (chkPrivacyMode != null) chkPrivacyMode.Checked = _settings.PrivacyMode;
 
-                var chkAllowDataCollection = Controls.Find("chkAllowDataCollection", true).FirstOrDefault() as CheckBox;
-                if (chkAllowDataCollection != null) chkAllowDataCollection.Checked = _settings.AllowDataCollection;
 
                 // スタートアップ設定
                 var chkStartMinimized = Controls.Find("chkStartMinimized", true).FirstOrDefault() as CheckBox;
@@ -1645,17 +1631,9 @@ namespace BrowserChooser3.Forms
                     Logger.InitializeLogLevel(_settings.LogLevel);
                 }
 
-                var chkKeepHistory = Controls.Find("chkKeepHistory", true).FirstOrDefault() as CheckBox;
-                if (chkKeepHistory != null) _settings.KeepHistory = chkKeepHistory.Checked;
 
-                var nudHistoryDays = Controls.Find("nudHistoryDays", true).FirstOrDefault() as NumericUpDown;
-                if (nudHistoryDays != null) _settings.HistoryDays = (int)nudHistoryDays.Value;
 
-                var chkPrivacyMode = Controls.Find("chkPrivacyMode", true).FirstOrDefault() as CheckBox;
-                if (chkPrivacyMode != null) _settings.PrivacyMode = chkPrivacyMode.Checked;
 
-                var chkAllowDataCollection = Controls.Find("chkAllowDataCollection", true).FirstOrDefault() as CheckBox;
-                if (chkAllowDataCollection != null) _settings.AllowDataCollection = chkAllowDataCollection.Checked;
 
                 // スタートアップ設定
                 var chkStartMinimized = Controls.Find("chkStartMinimized", true).FirstOrDefault() as CheckBox;
