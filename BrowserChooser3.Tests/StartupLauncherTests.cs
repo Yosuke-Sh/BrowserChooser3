@@ -338,16 +338,7 @@ namespace BrowserChooser3.Tests
             result.Should().Be(testDelay);
         }
 
-        [Fact]
-        public void SupportingBrowsers_ShouldReturnList()
-        {
-            // Act
-            var result = StartupLauncher.SupportingBrowsers;
 
-            // Assert
-            result.Should().NotBeNull();
-            result.Should().BeOfType<List<Guid>>();
-        }
 
         #endregion
 

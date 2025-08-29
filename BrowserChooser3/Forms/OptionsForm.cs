@@ -382,7 +382,7 @@ namespace BrowserChooser3.Forms
                         var item = listView.Items.Add(newURL.URLPattern);
                         item.Tag = newIndex;
                         item.SubItems.Add(BrowserUtilities.GetBrowserByGUID(newURL.Guid, _mBrowser.Values.ToList())?.Name ?? "");
-                        item.SubItems.Add(newURL.DelayTime < 0 ? "Default" : newURL.DelayTime.ToString());
+                        item.SubItems.Add(newURL.Delay < 0 ? "Default" : newURL.Delay.ToString());
 
                         // 追加直後に選択してボタンを有効化
                         item.Selected = true;
@@ -424,7 +424,7 @@ namespace BrowserChooser3.Forms
                             var selectedItem = listView.SelectedItems[0];
                             selectedItem.Text = updatedURL.URLPattern;
                             selectedItem.SubItems[1].Text = BrowserUtilities.GetBrowserByGUID(updatedURL.Guid, _mBrowser.Values.ToList())?.Name ?? "";
-                            selectedItem.SubItems[2].Text = updatedURL.DelayTime < 0 ? "Default" : updatedURL.DelayTime.ToString();
+                            selectedItem.SubItems[2].Text = updatedURL.Delay < 0 ? "Default" : updatedURL.Delay.ToString();
                             
                             _isModified = true;
                         }
@@ -1097,8 +1097,8 @@ namespace BrowserChooser3.Forms
                         var item = listView.Items.Add(clonedBrowser.Name);
                         item.Tag = _mBrowser.Count - 1;
                         item.SubItems.Add(clonedBrowser.Target); // Target column
-                        item.SubItems.Add(clonedBrowser.PosY.ToString());
-                        item.SubItems.Add(clonedBrowser.PosX.ToString());
+                                        item.SubItems.Add(clonedBrowser.Y.ToString());
+                item.SubItems.Add(clonedBrowser.X.ToString());
                         item.SubItems.Add(clonedBrowser.Hotkey.ToString());
                         item.SubItems.Add(clonedBrowser.Arguments); // Arguments column
                     }
@@ -1150,7 +1150,7 @@ namespace BrowserChooser3.Forms
                     // ListViewにアイテムを追加
                     if (urlListView != null)
                     {
-                        var item = urlListView.Items.Add(url.URLValue);
+                        var item = urlListView.Items.Add(url.URLPattern);
                         item.Tag = _mURLs.Count - 1;
 
                         // ブラウザ名
@@ -1165,14 +1165,14 @@ namespace BrowserChooser3.Forms
                         }
 
                         // 遅延時間
-                        if (url.DelayTime < 0)
-                        {
-                            item.SubItems.Add("Default");
-                        }
-                        else
-                        {
-                            item.SubItems.Add(url.DelayTime.ToString());
-                        }
+                                        if (url.Delay < 0)
+                {
+                    item.SubItems.Add("Default");
+                }
+                else
+                {
+                    item.SubItems.Add(url.Delay.ToString());
+                }
                     }
                 }
                 _mLastURLID = _mURLs.Count - 1;
@@ -1848,8 +1848,8 @@ namespace BrowserChooser3.Forms
                                     Name = Path.GetFileNameWithoutExtension(filePath),
                                     Target = filePath,
                                     Arguments = "",
-                                    PosX = 1,
-                                    PosY = 1,
+                                                    X = 1,
+                Y = 1,
                                     Hotkey = '\0',
                                     Category = "Default"
                                 };
@@ -1865,8 +1865,8 @@ namespace BrowserChooser3.Forms
                                     item.Tag = _mLastBrowserID + 1;
                                     item.SubItems.Add(browser.Target);
                                     item.SubItems.Add(browser.Arguments);
-                                    item.SubItems.Add(browser.PosY.ToString());
-                                    item.SubItems.Add(browser.PosX.ToString());
+                                                    item.SubItems.Add(browser.Y.ToString());
+                item.SubItems.Add(browser.X.ToString());
                                     item.SubItems.Add(browser.Hotkey.ToString());
 
 

@@ -91,7 +91,7 @@ namespace BrowserChooser3.Forms
                 SetupButtonToolTips();
                 
                 // UI要素の位置調整
-                AdjustUILayout();
+                AdjustCompatibilityUILayout();
                 
                 // アイコンの読み込み
                 LoadIcons();
@@ -488,12 +488,11 @@ namespace BrowserChooser3.Forms
                 try
                 {
                     var rect = new Rectangle(0, 0, this.Width, this.Height);
-                    using var brush = new LinearGradientBrush(rect, _settings.BackgroundColorValue, 
-                        Color.FromArgb(255, 
-                            Math.Max(0, _settings.BackgroundColorValue.R - 50),
-                            Math.Max(0, _settings.BackgroundColorValue.G - 50),
-                            Math.Max(0, _settings.BackgroundColorValue.B - 50)), 
-                        LinearGradientMode.Vertical);
+                    var darkerColor = Color.FromArgb(255, 
+                        Math.Max(0, _settings.BackgroundColorValue.R - 50),
+                        Math.Max(0, _settings.BackgroundColorValue.G - 50),
+                        Math.Max(0, _settings.BackgroundColorValue.B - 50));
+                    using var brush = new LinearGradientBrush(rect, _settings.BackgroundColorValue, darkerColor, LinearGradientMode.Vertical);
                     
                     e.Graphics.FillRectangle(brush, rect);
                 }
@@ -999,7 +998,7 @@ namespace BrowserChooser3.Forms
                 SetupButtonToolTips();
                 
                 // UI要素の位置調整
-                AdjustUILayout();
+                AdjustCompatibilityUILayout();
                 
                 // アイコンの読み込み
                 LoadIcons();
@@ -1166,7 +1165,7 @@ namespace BrowserChooser3.Forms
         /// <summary>
         /// UI要素の位置調整
         /// </summary>
-        private void AdjustUILayout()
+        private void AdjustCompatibilityUILayout()
         {
             Logger.LogDebug("MainForm.AdjustCompatibilityUILayout", "Start");
             

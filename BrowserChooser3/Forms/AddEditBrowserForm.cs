@@ -52,8 +52,8 @@ namespace BrowserChooser3.Forms
                     Name = "",
                     Target = "",
                     Arguments = "",
-                    PosX = 1,
-                    PosY = 1,
+                                    X = 1,
+                Y = 1,
                     Hotkey = '\0',
 
                 };
@@ -103,8 +103,8 @@ namespace BrowserChooser3.Forms
             if (txtTarget != null) txtTarget.Text = _browser.Target ?? "";
             if (txtArguments != null) txtArguments.Text = _browser.Arguments ?? "";
             if (txtHotkey != null) txtHotkey.Text = _browser.Hotkey != '\0' ? _browser.Hotkey.ToString() : "";
-            if (nudRow != null) nudRow.Value = _browser.PosY;
-            if (nudCol != null) nudCol.Value = _browser.PosX;
+            if (nudRow != null) nudRow.Value = _browser.Y;
+            if (nudCol != null) nudCol.Value = _browser.X;
         }
 
         /// <summary>
@@ -122,8 +122,8 @@ namespace BrowserChooser3.Forms
             if (txtName != null) _browser.Name = txtName.Text;
             if (txtTarget != null) _browser.Target = txtTarget.Text;
             if (txtArguments != null) _browser.Arguments = txtArguments.Text;
-            if (nudRow != null) _browser.PosY = (int)nudRow.Value;
-            if (nudCol != null) _browser.PosX = (int)nudCol.Value;
+            if (nudRow != null) _browser.Y = (int)nudRow.Value;
+            if (nudCol != null) _browser.X = (int)nudCol.Value;
             
             if (txtHotkey != null && txtHotkey.Text.Length > 0)
             {

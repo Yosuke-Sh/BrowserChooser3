@@ -32,7 +32,7 @@ namespace BrowserChooser3.Tests
         public void OptionsFormCheckBoxHandlers_Constructor_ShouldInitializeCorrectly()
         {
             // Arrange & Act
-            using var form = new OptionsForm();
+            using var form = new OptionsForm(_testSettings);
             var setModifiedCalled = false;
             Action<bool> setModified = (modified) => setModifiedCalled = modified;
 
@@ -46,7 +46,7 @@ namespace BrowserChooser3.Tests
         public void OptionsFormCheckBoxHandlers_DetectDirty_ShouldCallSetModified()
         {
             // Arrange
-            using var form = new OptionsForm();
+            using var form = new OptionsForm(_testSettings);
             var setModifiedCalled = false;
             Action<bool> setModified = (modified) => setModifiedCalled = modified;
 
@@ -63,7 +63,7 @@ namespace BrowserChooser3.Tests
         public void OptionsFormCheckBoxHandlers_ChkCanonicalize_CheckedChanged_ShouldEnableTextBox()
         {
             // Arrange
-            using var form = new OptionsForm();
+            using var form = new OptionsForm(_testSettings);
             var setModifiedCalled = false;
             Action<bool> setModified = (modified) => setModifiedCalled = modified;
 
@@ -81,7 +81,7 @@ namespace BrowserChooser3.Tests
         public void OptionsFormCheckBoxHandlers_ChkLog_CheckedChanged_ShouldUpdateSettings()
         {
             // Arrange
-            using var form = new OptionsForm();
+            using var form = new OptionsForm(_testSettings);
             var setModifiedCalled = false;
             Action<bool> setModified = (modified) => setModifiedCalled = modified;
 
@@ -100,7 +100,7 @@ namespace BrowserChooser3.Tests
         public void OptionsFormHelpHandlers_Constructor_ShouldInitializeCorrectly()
         {
             // Arrange & Act
-            using var form = new OptionsForm();
+            using var form = new OptionsForm(_testSettings);
             var handlers = new OptionsFormHelpHandlers(form);
 
             // Assert
@@ -111,7 +111,7 @@ namespace BrowserChooser3.Tests
         public void OptionsFormHelpHandlers_OpenHelp_ShouldNotThrowException()
         {
             // Arrange
-            using var form = new OptionsForm();
+            using var form = new OptionsForm(_testSettings);
             var handlers = new OptionsFormHelpHandlers(form);
 
             // Act & Assert
@@ -123,7 +123,7 @@ namespace BrowserChooser3.Tests
         public void OptionsFormFormHandlers_Constructor_ShouldInitializeCorrectly()
         {
             // Arrange & Act
-            using var form = new OptionsForm();
+            using var form = new OptionsForm(_testSettings);
             Action loadSettings = () => { };
             Action saveSettings = () => { };
             Func<bool> getIsModified = () => false;
@@ -137,7 +137,7 @@ namespace BrowserChooser3.Tests
         public void OptionsFormFormHandlers_HelpButton_Click_ShouldNotThrowException()
         {
             // Arrange
-            using var form = new OptionsForm();
+            using var form = new OptionsForm(_testSettings);
             Action loadSettings = () => { };
             Action saveSettings = () => { };
             Func<bool> getIsModified = () => false;
@@ -152,7 +152,7 @@ namespace BrowserChooser3.Tests
         public void OptionsFormFormHandlers_OptionsForm_FormClosing_ShouldNotThrowException()
         {
             // Arrange
-            using var form = new OptionsForm();
+            using var form = new OptionsForm(_testSettings);
             Action loadSettings = () => { };
             Action saveSettings = () => { };
             Func<bool> getIsModified = () => false;
@@ -170,8 +170,11 @@ namespace BrowserChooser3.Tests
         public void OptionsFormBrowserHandlers_Constructor_ShouldInitializeCorrectly()
         {
             // Arrange & Act
-            using var form = new OptionsForm();
-            var handlers = new OptionsFormBrowserHandlers(form);
+            using var form = new OptionsForm(_testSettings);
+            var browsers = new Dictionary<int, Browser>();
+            var protocols = new Dictionary<int, Protocol>();
+            Action<bool> setModified = (modified) => { };
+            var handlers = new OptionsFormBrowserHandlers(form, _testSettings, browsers, protocols, null, setModified);
 
             // Assert
             handlers.Should().NotBeNull();
@@ -181,8 +184,11 @@ namespace BrowserChooser3.Tests
         public void OptionsFormProtocolHandlers_Constructor_ShouldInitializeCorrectly()
         {
             // Arrange & Act
-            using var form = new OptionsForm();
-            var handlers = new OptionsFormProtocolHandlers(form);
+            using var form = new OptionsForm(_testSettings);
+            var protocols = new Dictionary<int, Protocol>();
+            var browsers = new Dictionary<int, Browser>();
+            Action<bool> setModified = (modified) => { };
+            var handlers = new OptionsFormProtocolHandlers(form, protocols, browsers, setModified);
 
             // Assert
             handlers.Should().NotBeNull();
@@ -192,7 +198,7 @@ namespace BrowserChooser3.Tests
         public void OptionsFormListHandlers_Constructor_ShouldInitializeCorrectly()
         {
             // Arrange & Act
-            using var form = new OptionsForm();
+            using var form = new OptionsForm(_testSettings);
             var handlers = new OptionsFormListHandlers(form);
 
             // Assert
@@ -203,8 +209,12 @@ namespace BrowserChooser3.Tests
         public void OptionsFormDragDropHandlers_Constructor_ShouldInitializeCorrectly()
         {
             // Arrange & Act
-            using var form = new OptionsForm();
-            var handlers = new OptionsFormDragDropHandlers(form);
+            using var form = new OptionsForm(_testSettings);
+            var browsers = new Dictionary<int, Browser>();
+            var protocols = new Dictionary<int, Protocol>();
+            Action<bool> setModified = (modified) => { };
+            Action refreshForm = () => { };
+            var handlers = new OptionsFormDragDropHandlers(form, _testSettings, browsers, protocols, setModified, refreshForm);
 
             // Assert
             handlers.Should().NotBeNull();

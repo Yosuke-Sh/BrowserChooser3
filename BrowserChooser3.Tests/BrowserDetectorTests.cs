@@ -339,15 +339,15 @@ namespace BrowserChooser3.Tests
                 browser.IsIE.Should().BeFalse(); // デフォルト値
                 browser.IEBehaviour.Should().BeFalse(); // デフォルト値
                 browser.Scale.Should().Be(1.0); // デフォルト値
-                browser.PosX.Should().Be(0); // デフォルト値
-                browser.PosY.Should().Be(0); // デフォルト値
+                            browser.X.Should().Be(0); // デフォルト値
+            browser.Y.Should().Be(0); // デフォルト値
                 browser.X.Should().Be(0); // デフォルト値
                 browser.Y.Should().Be(0); // デフォルト値
                 browser.IconIndex.Should().Be(0); // デフォルト値
                 browser.Hotkey.Should().Be('\0'); // デフォルト値
                 browser.Standard.Should().Be(""); // デフォルト値
                 browser.ImagePath.Should().Be(""); // デフォルト値
-                browser.CustomImagePath.Should().Be(""); // デフォルト値
+    
                 browser.Guid.Should().NotBe(Guid.Empty); // 自動生成される
             }
             finally

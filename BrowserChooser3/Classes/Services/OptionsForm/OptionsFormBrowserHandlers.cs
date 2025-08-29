@@ -62,9 +62,9 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                     var newBrowser = addEditForm.GetData();
                     
                     // rowとcolを自動設定（重複を避ける）
-                    var maxRow = _mBrowser.Values.Max(b => b.PosY);
-                    newBrowser.PosY = maxRow + 1;
-                    newBrowser.PosX = 0;
+                                var maxRow = _mBrowser.Values.Max(b => b.Y);
+            newBrowser.Y = maxRow + 1;
+            newBrowser.X = 0;
                     
                     var newIndex = _mBrowser.Count + 1;
                     _mBrowser.Add(newIndex, newBrowser);
@@ -77,8 +77,8 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                         var item = listView.Items.Add(newBrowser.Name);
                         item.Tag = newIndex;
                         item.SubItems.Add(newBrowser.Target); // Target column
-                        item.SubItems.Add(newBrowser.PosY.ToString());
-                        item.SubItems.Add(newBrowser.PosX.ToString());
+                                        item.SubItems.Add(newBrowser.Y.ToString());
+                item.SubItems.Add(newBrowser.X.ToString());
                         item.SubItems.Add(newBrowser.Hotkey.ToString());
                         item.SubItems.Add(newBrowser.Arguments); // Arguments column
                         
@@ -129,8 +129,8 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                         var selectedItem = listView.SelectedItems[0];
                         selectedItem.Text = updatedBrowser.Name;
                         selectedItem.SubItems[1].Text = updatedBrowser.Target; // Target column
-                        selectedItem.SubItems[2].Text = updatedBrowser.PosY.ToString();
-                        selectedItem.SubItems[3].Text = updatedBrowser.PosX.ToString();
+                                        selectedItem.SubItems[2].Text = updatedBrowser.Y.ToString();
+                selectedItem.SubItems[3].Text = updatedBrowser.X.ToString();
                         selectedItem.SubItems[4].Text = updatedBrowser.Hotkey.ToString();
                         selectedItem.SubItems[5].Text = updatedBrowser.Arguments; // Arguments column
                         
@@ -232,8 +232,8 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                             var item = listView.Items.Add(clonedBrowser.Name);
                             item.Tag = _mBrowser.Count;
                             item.SubItems.Add(""); // Default column
-                            item.SubItems.Add(clonedBrowser.PosY.ToString());
-                            item.SubItems.Add(clonedBrowser.PosX.ToString());
+                                            item.SubItems.Add(clonedBrowser.Y.ToString());
+                item.SubItems.Add(clonedBrowser.X.ToString());
                             item.SubItems.Add(clonedBrowser.Hotkey.ToString());
                             item.SubItems.Add(clonedBrowser.Arguments);
                         }
@@ -335,8 +335,8 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                              foreach (var browser in missingBrowsers)
                              {
                                  // rowとcolを自動設定（重複を避ける）
-                                 browser.PosY = rowIndex;
-                                 browser.PosX = 0;
+                                                 browser.Y = rowIndex;
+                browser.X = 0;
                                  rowIndex++;
                                  
                                  var newIndex = _mBrowser.Count + 1;
@@ -345,8 +345,8 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                                  var item = listView.Items.Add(browser.Name);
                                  item.Tag = newIndex;
                                  item.SubItems.Add(browser.Target); // Target column
-                                 item.SubItems.Add(browser.PosY.ToString());
-                                 item.SubItems.Add(browser.PosX.ToString());
+                                                 item.SubItems.Add(browser.Y.ToString());
+                item.SubItems.Add(browser.X.ToString());
                                  item.SubItems.Add(browser.Hotkey.ToString());
                                  item.SubItems.Add(browser.Arguments); // Arguments column
                                  

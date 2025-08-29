@@ -28,8 +28,8 @@ namespace BrowserChooser3.Classes.Utilities
         {
             try
             {
-                string filePath = useCustomPath && !string.IsNullOrEmpty(browser.CustomImagePath) 
-                    ? browser.CustomImagePath 
+                            string filePath = useCustomPath && !string.IsNullOrEmpty(browser.ImagePath)
+                ? browser.ImagePath 
                     : browser.Target;
 
                 Logger.LogInfo("ImageUtilities.GetImage", "アイコン取得開始", browser.Name, filePath, useCustomPath);

@@ -134,13 +134,17 @@ namespace BrowserChooser3.Tests
             settings.Browsers[0].Name.Should().Be("Test Browser");
 
             // Act & Assert - URL関連
-            var testUrl = new URL { URLValue = "https://example.com" };
+            var testUrl = new URL { URLPattern = "https://example.com" };
             settings.URLs.Add(testUrl);
             settings.URLs.Should().HaveCount(1);
-            settings.URLs[0].URLValue.Should().Be("https://example.com");
+            settings.URLs[0].URLPattern.Should().Be("https://example.com");
 
             // Act & Assert - プロトコル関連
-            var testProtocol = new Protocol("Test", "test", new List<Guid>(), new List<string>());
+            var testProtocol = new Protocol
+            {
+                Name = "Test",
+                Header = "test"
+            };
             settings.Protocols.Add(testProtocol);
             settings.Protocols.Should().HaveCount(1);
             settings.Protocols[0].Name.Should().Be("Test");
@@ -617,22 +621,23 @@ namespace BrowserChooser3.Tests
             ((int)Settings.DefaultField.FocusBoxColor).Should().Be(15);
             ((int)Settings.DefaultField.UserAgent).Should().Be(16);
 
-            ((int)Settings.DefaultField.BackgroundColor).Should().Be(18);
-            ((int)Settings.DefaultField.StartingPosition).Should().Be(19);
-            ((int)Settings.DefaultField.OffsetX).Should().Be(20);
-            ((int)Settings.DefaultField.OffsetY).Should().Be(21);
-            ((int)Settings.DefaultField.AllowStayOpen).Should().Be(22);
+            ((int)Settings.DefaultField.BackgroundColor).Should().Be(17);
+            ((int)Settings.DefaultField.StartingPosition).Should().Be(18);
+            ((int)Settings.DefaultField.OffsetX).Should().Be(19);
+            ((int)Settings.DefaultField.OffsetY).Should().Be(20);
+            ((int)Settings.DefaultField.AllowStayOpen).Should().Be(21);
             // Canonicalize関連は削除されたため、テストをコメントアウト
             // ((int)Settings.DefaultField.Canonicalize).Should().Be(26);
             // ((int)Settings.DefaultField.CanonicalizeAppendedText).Should().Be(27);
-            ((int)Settings.DefaultField.EnableLogging).Should().Be(23);
+            ((int)Settings.DefaultField.EnableLogging).Should().Be(22);
 
-            ((int)Settings.DefaultField.LogLevel).Should().Be(25);
-            ((int)Settings.DefaultField.EnableTransparency).Should().Be(26);
-            ((int)Settings.DefaultField.TransparencyColor).Should().Be(27);
-            ((int)Settings.DefaultField.Opacity).Should().Be(28);
-            ((int)Settings.DefaultField.HideTitleBar).Should().Be(29);
-            ((int)Settings.DefaultField.RoundedCornersRadius).Should().Be(30);
+            ((int)Settings.DefaultField.LogLevel).Should().Be(23);
+            ((int)Settings.DefaultField.EnableTransparency).Should().Be(24);
+            ((int)Settings.DefaultField.TransparencyColor).Should().Be(25);
+            ((int)Settings.DefaultField.Opacity).Should().Be(26);
+            ((int)Settings.DefaultField.HideTitleBar).Should().Be(27);
+            ((int)Settings.DefaultField.RoundedCornersRadius).Should().Be(28);
+            ((int)Settings.DefaultField.EnableBackgroundGradient).Should().Be(29);
         }
 
         #endregion

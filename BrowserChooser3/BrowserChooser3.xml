@@ -36,12 +36,6 @@
         <member name="P:BrowserChooser3.Classes.Models.Browser.Y">
             <summary>Y座標</summary>
         </member>
-        <member name="P:BrowserChooser3.Classes.Models.Browser.PosX">
-            <summary>X座標（Browser Chooser 2互換）</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Models.Browser.PosY">
-            <summary>Y座標（Browser Chooser 2互換）</summary>
-        </member>
         <member name="P:BrowserChooser3.Classes.Models.Browser.Visible">
             <summary>表示フラグ</summary>
         </member>
@@ -69,12 +63,9 @@
         <member name="P:BrowserChooser3.Classes.Models.Browser.IsDefault">
             <summary>デフォルトブラウザフラグ</summary>
         </member>
-        <member name="P:BrowserChooser3.Classes.Models.Browser.CustomImagePath">
-            <summary>カスタム画像パス（Browser Chooser 2互換）</summary>
-        </member>
         <member name="M:BrowserChooser3.Classes.Models.Browser.Clone">
             <summary>
-            ブラウザのクローンを作成（Browser Chooser 2互換）
+            ブラウザのクローンを作成
             </summary>
         </member>
         <member name="T:BrowserChooser3.Classes.Models.BrowserDefinition">
@@ -202,32 +193,14 @@
         <member name="P:BrowserChooser3.Classes.Models.Protocol.SupportingBrowsers">
             <summary>対応ブラウザのGUIDリスト</summary>
         </member>
-        <member name="P:BrowserChooser3.Classes.Models.Protocol.DefaultCategories">
-            <summary>デフォルトカテゴリ（Browser Chooser 2互換）</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Models.Protocol.Category">
-            <summary>カテゴリ（Browser Chooser 2互換）</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Models.Protocol.Active">
-            <summary>アクティブ状態（Browser Chooser 2互換）</summary>
-        </member>
         <member name="M:BrowserChooser3.Classes.Models.Protocol.#ctor">
             <summary>
             Protocolクラスの新しいインスタンスを初期化します
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Models.Protocol.#ctor(System.String,System.String,System.Collections.Generic.List{System.Guid},System.Collections.Generic.List{System.String})">
-            <summary>
-            Protocolクラスの新しいインスタンスを初期化します（Browser Chooser 2互換）
-            </summary>
-            <param name="name">プロトコル名</param>
-            <param name="header">プロトコルヘッダー</param>
-            <param name="supportingBrowsers">対応ブラウザのGUIDリスト</param>
-            <param name="categories">カテゴリリスト</param>
-        </member>
         <member name="M:BrowserChooser3.Classes.Models.Protocol.Clone">
             <summary>
-            プロトコルのクローンを作成（Browser Chooser 2互換）
+            プロトコルのクローンを作成
             </summary>
         </member>
         <member name="T:BrowserChooser3.Classes.Models.URL">
@@ -244,17 +217,11 @@
         <member name="P:BrowserChooser3.Classes.Models.URL.URLPattern">
             <summary>URLパターン</summary>
         </member>
-        <member name="P:BrowserChooser3.Classes.Models.URL.URLValue">
-            <summary>URL（Browser Chooser 2互換）</summary>
-        </member>
         <member name="P:BrowserChooser3.Classes.Models.URL.BrowserGuid">
             <summary>関連するブラウザのGUID</summary>
         </member>
         <member name="P:BrowserChooser3.Classes.Models.URL.Delay">
             <summary>遅延時間</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Models.URL.DelayTime">
-            <summary>遅延時間（Browser Chooser 2互換）</summary>
         </member>
         <member name="P:BrowserChooser3.Classes.Models.URL.IsActive">
             <summary>アクティブ状態</summary>
@@ -262,21 +229,9 @@
         <member name="P:BrowserChooser3.Classes.Models.URL.AutoClose">
             <summary>自動クローズ</summary>
         </member>
-        <member name="P:BrowserChooser3.Classes.Models.URL.Pattern">
-            <summary>URLパターン（Browser Chooser 2互換）</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Models.URL.SupportingBrowsers">
-            <summary>対応ブラウザのGUIDリスト（Browser Chooser 2互換）</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Models.URL.Category">
-            <summary>カテゴリ（Browser Chooser 2互換）</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Models.URL.Active">
-            <summary>アクティブ状態（Browser Chooser 2互換）</summary>
-        </member>
         <member name="M:BrowserChooser3.Classes.Models.URL.Clone">
             <summary>
-            URLのクローンを作成（Browser Chooser 2互換）
+            URLのクローンを作成
             </summary>
         </member>
         <member name="T:BrowserChooser3.Classes.Services.BrowserServices.BrowserDetector">
@@ -753,17 +708,6 @@
             保存ボタンのクリックイベント
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormFormHandlers.CheckTransparencySettingChange">
-            <summary>
-            透明化設定の変更を検出し、必要に応じて情報メッセージを表示
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormFormHandlers.GetCurrentTransparencyEnabled">
-            <summary>
-            現在の透明化設定を取得
-            </summary>
-            <returns>透明化が有効かどうか</returns>
-        </member>
         <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormFormHandlers.HelpButton_Click(System.Object,System.EventArgs)">
             <summary>
             ヘルプボタンのクリックイベント
@@ -1226,14 +1170,6 @@
         <member name="F:BrowserChooser3.Classes.Settings.CURRENT_FILE_VERSION">
             <summary>
             現在の設定ファイルバージョン
-            将来のアップグレード検出に使用されます
-            
-            バージョン履歴:
-            - Version 2: プロトコルとファイルタイプを追加（自動追加）
-            - Version 3: プロトコルとファイルタイプを再構築、アクセシビリティ設定を追加
-            - Version 4: アクセシビリティ設定を再構築、v3を模倣
-            - Version 5: レジストリチェック用（キャンセル時はバージョンを更新しない）
-            - Version 6: 透明化設定を追加（EnableTransparency, TransparencyColor, Opacity, HideTitleBar, RoundedCorners）
             </summary>
         </member>
         <member name="T:BrowserChooser3.Classes.Settings.AvailableStartingPositions">
@@ -1421,12 +1357,6 @@
         <member name="P:BrowserChooser3.Classes.Settings.Height">
             <summary>高さ</summary>
         </member>
-        <member name="P:BrowserChooser3.Classes.Settings.GridWidth">
-            <summary>グリッド幅（Browser Chooser 2互換）</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Settings.GridHeight">
-            <summary>グリッド高さ（Browser Chooser 2互換）</summary>
-        </member>
         <member name="P:BrowserChooser3.Classes.Settings.IconWidth">
             <summary>アイコン幅</summary>
         </member>
@@ -1486,7 +1416,7 @@
             <summary>背景色</summary>
         </member>
         <member name="P:BrowserChooser3.Classes.Settings.BackgroundColorValue">
-            <summary>背景色（Color型、Browser Chooser 2互換）</summary>
+            <summary>背景色（Color型）</summary>
         </member>
         <member name="P:BrowserChooser3.Classes.Settings.StartingPosition">
             <summary>開始位置</summary>
@@ -1514,6 +1444,12 @@
         </member>
         <member name="P:BrowserChooser3.Classes.Settings.GridLineWidth">
             <summary>グリッド線幅</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Settings.GridWidth">
+            <summary>グリッド幅</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Settings.GridHeight">
+            <summary>グリッド高さ</summary>
         </member>
         <member name="P:BrowserChooser3.Classes.Settings.StartMinimized">
             <summary>最小化で起動</summary>
@@ -2583,7 +2519,7 @@
         </member>
         <member name="M:BrowserChooser3.Forms.MainForm.BrowserButton_Click(System.Object,System.EventArgs)">
             <summary>
-            ブラウザボタンのクリックイベント（Browser Chooser 2互換）
+            ブラウザボタンのクリックイベント
             </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.MainForm.LaunchBrowser(BrowserChooser3.Classes.Models.Browser,System.String)">
@@ -2613,7 +2549,7 @@
         </member>
         <member name="M:BrowserChooser3.Forms.MainForm.AdjustCompatibilityUILayout">
             <summary>
-            Browser Chooser 2互換のUI要素の位置調整
+            UI要素の位置調整
             </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.MainForm.LoadIcons">
@@ -2703,22 +2639,22 @@
         </member>
         <member name="M:BrowserChooser3.Forms.MainForm.MainForm_KeyDown(System.Object,System.Windows.Forms.KeyEventArgs)">
             <summary>
-            キーボードイベントの処理（Browser Chooser 2互換）
+            キーボードイベントの処理
             </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.MainForm.HandleArrowKeyUp(System.Windows.Forms.Keys)">
             <summary>
-            矢印キーによるフォーカス移動（Browser Chooser 2互換）
+            矢印キーによるフォーカス移動
             </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.MainForm.MinusLoop(System.Int32,System.Int32)">
             <summary>
-            ループ減算（Browser Chooser 2互換）
+            ループ減算
             </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.MainForm.AddLoop(System.Int32,System.Int32)">
             <summary>
-            ループ加算（Browser Chooser 2互換）
+            ループ加算
             </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.MainForm.BtnInfo_Click(System.Object,System.EventArgs)">
@@ -2753,7 +2689,7 @@
         </member>
         <member name="M:BrowserChooser3.Forms.MainForm.TmrDelay_Tick(System.Object,System.EventArgs)">
             <summary>
-            遅延タイマーのティックイベント（Browser Chooser 2互換）
+            遅延タイマーのティックイベント
             </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.MainForm.MiEditMode_Click(System.Object,System.EventArgs)">
@@ -2836,7 +2772,7 @@
         </member>
         <member name="M:BrowserChooser3.Forms.OptionsForm.InitializeForm">
             <summary>
-            フォームの初期化（Browser Chooser 2互換）
+            フォームの初期化
             </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.OptionsForm.IsTestEnvironment">
@@ -2972,7 +2908,7 @@
         </member>
         <member name="M:BrowserChooser3.Forms.OptionsForm.LoadSettings">
             <summary>
-            設定値の読み込み（Browser Chooser 2互換）
+            設定値の読み込み
             </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.OptionsForm.SetModified(System.Boolean)">
@@ -2988,23 +2924,17 @@
         </member>
         <member name="M:BrowserChooser3.Forms.OptionsForm.LoadSettingsToControls">
             <summary>
-            設定値をコントロールに設定（Browser Chooser 2互換）
+            設定値をコントロールに設定
             </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.OptionsForm.SaveSettings">
             <summary>
-            設定値の保存（Browser Chooser 2互換）
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.SetupAutoURLsDragDrop(System.Windows.Forms.ListView)">
-            <summary>
-            Auto URLsのドラッグ&amp;ドロップ機能を設定（Browser Chooser 2互換）
-            現在は未実装（Browser Chooser 2でも実装されていない）
+            設定値の保存
             </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.OptionsForm.SetupBrowsersDragDrop(System.Windows.Forms.ListView)">
             <summary>
-            ブラウザリストへのファイルドロップ機能を設定（Browser Chooser 2互換）
+            ブラウザリストへのファイルドロップ機能を設定
             </summary>
             <param name="listView">対象のListView</param>
         </member>

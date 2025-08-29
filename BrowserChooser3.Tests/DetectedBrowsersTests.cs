@@ -256,8 +256,8 @@ namespace BrowserChooser3.Tests
                 
                 // オプショナルプロパティが適切な範囲内であることを確認
                 browser.Scale.Should().BeGreaterThan(0);
-                browser.PosX.Should().BeGreaterThanOrEqualTo(0);
-                browser.PosY.Should().BeGreaterThanOrEqualTo(0);
+                browser.X.Should().BeGreaterThanOrEqualTo(0);
+                browser.Y.Should().BeGreaterThanOrEqualTo(0);
                 browser.IconIndex.Should().BeGreaterThanOrEqualTo(0);
             }
         }

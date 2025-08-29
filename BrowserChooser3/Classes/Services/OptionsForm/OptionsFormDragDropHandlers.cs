@@ -246,8 +246,8 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                             Name = Path.GetFileNameWithoutExtension(filePath),
                             Target = filePath,
                             Arguments = "",
-                            PosX = 0,
-                            PosY = 0,
+                            X = 0,
+                            Y = 0,
                             Hotkey = '\0'
                         };
 
@@ -393,8 +393,8 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                                     Name = Path.GetFileNameWithoutExtension(filePath),
                                     Target = filePath,
                                     Arguments = "",
-                                    PosX = 0,
-                                    PosY = 0,
+                                    X = 0,
+                                    Y = 0,
                                     Hotkey = '\0'
                                 };
 

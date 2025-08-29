@@ -339,6 +339,36 @@ namespace BrowserChooser3.Classes
         /// <summary>背景色</summary>
         public int BackgroundColor { get; set; } = Color.White.ToArgb();
         
+        /// <summary>背景色（Color型）</summary>
+        public Color BackgroundColorValue 
+        { 
+            get
+            {
+                // BackgroundColorが-1（Color.White）の場合は白を返す
+                if (BackgroundColor == -1)
+                {
+                    return Color.White;
+                }
+                
+                // BackgroundColorが有効な値の場合は、その値を正しく使用
+                var c = Color.FromArgb(BackgroundColor);
+                // 常に不透明（A=255）で返す
+                return c.A == 255 ? c : Color.FromArgb(255, c.R, c.G, c.B);
+            }
+            set
+            {
+                // Color.Emptyが設定された場合は処理をスキップ（XMLデシリアライゼーションの副作用回避）
+                if (value == Color.Empty)
+                {
+                    return;
+                }
+                
+                // 常に不透明（A=255）で保存
+                var c = value.A == 255 ? value : Color.FromArgb(255, value.R, value.G, value.B);
+                BackgroundColor = c.ToArgb();
+            }
+        }
+        
 
         
         /// <summary>開始位置</summary>
@@ -369,6 +399,12 @@ namespace BrowserChooser3.Classes
 
         /// <summary>グリッド線幅</summary>
         public int GridLineWidth { get; set; } = 1;
+
+        /// <summary>グリッド幅</summary>
+        public int GridWidth { get; set; } = 5;
+        
+        /// <summary>グリッド高さ</summary>
+        public int GridHeight { get; set; } = 1;
 
 
 
@@ -517,12 +553,12 @@ namespace BrowserChooser3.Classes
                 if (existingBrowser == null)
                 {
                     // rowとcolを自動設定
-                    detectedBrowser.PosY = rowIndex;
-                    detectedBrowser.PosX = 0;
+                                    detectedBrowser.Y = rowIndex;
+                detectedBrowser.X = 0;
                     rowIndex++;
                     
                     Browsers.Add(detectedBrowser);
-                    Logger.LogDebug("Settings.DetectBrowsers", "ブラウザ追加", detectedBrowser.Name, detectedBrowser.PosY, detectedBrowser.PosX);
+                    Logger.LogDebug("Settings.DetectBrowsers", "ブラウザ追加", detectedBrowser.Name, detectedBrowser.Y, detectedBrowser.X);
                 }
             }
             

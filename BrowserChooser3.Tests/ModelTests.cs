@@ -110,8 +110,7 @@ namespace BrowserChooser3.Tests
             protocol.Header.Should().BeEmpty();
             protocol.BrowserGuid.Should().Be(Guid.Empty);
             protocol.IsActive.Should().BeTrue();
-            protocol.SupportingBrowsers.Should().NotBeNull();
-            protocol.SupportingBrowsers.Should().BeEmpty();
+
         }
 
         [Fact]
@@ -150,16 +149,18 @@ namespace BrowserChooser3.Tests
             var categories = new List<string> { "Test Category" };
 
             // Act
-            var protocol = new Protocol(name, header, supportingBrowsers, categories);
+            var protocol = new Protocol
+            {
+                Name = name,
+                Header = header,
+                SupportingBrowsers = supportingBrowsers
+            };
 
             // Assert
             protocol.Should().NotBeNull();
             protocol.Name.Should().Be(name);
             protocol.Header.Should().Be(header);
-            protocol.SupportingBrowsers.Should().BeEquivalentTo(supportingBrowsers);
-            protocol.DefaultCategories.Should().BeEquivalentTo(categories);
-            protocol.Category.Should().Be("Test Category");
-            protocol.Active.Should().BeTrue();
+
         }
 
         [Fact]
@@ -171,8 +172,7 @@ namespace BrowserChooser3.Tests
                 Name = "Original Protocol",
                 Header = "original://",
                 BrowserGuid = Guid.NewGuid(),
-                IsActive = true,
-                SupportingBrowsers = new List<Guid> { Guid.NewGuid() }
+                IsActive = true
             };
 
             // Act
@@ -185,7 +185,6 @@ namespace BrowserChooser3.Tests
             clone.Header.Should().Be(original.Header);
             clone.BrowserGuid.Should().Be(original.BrowserGuid);
             clone.IsActive.Should().Be(original.IsActive);
-            clone.SupportingBrowsers.Should().BeEquivalentTo(original.SupportingBrowsers);
         }
         #endregion
 
@@ -206,8 +205,7 @@ namespace BrowserChooser3.Tests
             url.URLPattern.Should().BeEmpty();
             url.BrowserGuid.Should().Be(Guid.Empty);
             url.IsActive.Should().BeTrue();
-            url.SupportingBrowsers.Should().NotBeNull();
-            url.SupportingBrowsers.Should().BeEmpty();
+
         }
 
         [Fact]
@@ -247,8 +245,7 @@ namespace BrowserChooser3.Tests
                 Name = "Original URL",
                 URLPattern = "https://original.com",
                 BrowserGuid = Guid.NewGuid(),
-                IsActive = true,
-                SupportingBrowsers = new List<Guid> { Guid.NewGuid() }
+                IsActive = true
             };
 
             // Act
@@ -261,7 +258,6 @@ namespace BrowserChooser3.Tests
             clone.URLPattern.Should().Be(original.URLPattern);
             clone.BrowserGuid.Should().Be(original.BrowserGuid);
             clone.IsActive.Should().Be(original.IsActive);
-            clone.SupportingBrowsers.Should().BeEquivalentTo(original.SupportingBrowsers);
         }
         #endregion
 

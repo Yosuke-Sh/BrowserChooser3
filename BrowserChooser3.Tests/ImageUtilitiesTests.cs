@@ -77,7 +77,7 @@ namespace BrowserChooser3.Tests
             {
                 Name = "Test Browser",
                 Target = "invalid_path.exe",
-                CustomImagePath = _testImagePath,
+                ImagePath = _testImagePath,
                 IconIndex = 0
             };
 
