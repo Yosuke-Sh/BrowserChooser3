@@ -219,5 +219,88 @@ namespace BrowserChooser3.Tests
             memoryIncrease.Should().BeLessThan(10 * 1024 * 1024); // 10MB以内
         }
         #endregion
+
+        [Fact]
+        public void BackgroundColorChange_ShouldNotHideBrowserIcons()
+        {
+            // Arrange
+            var testSettingsPath = Path.Combine(Path.GetTempPath(), "test_settings.xml");
+            var settings = new Settings();
+            settings.Browsers.Add(new Browser { Name = "Test Browser", Target = "test.exe" });
+            
+            try
+            {
+                // テスト用設定ファイルを保存
+                settings.DoSave(true);
+                
+                // アプリケーションのパスを一時的に変更
+                var originalStartupPath = Application.StartupPath;
+                var tempDir = Path.GetTempPath();
+                
+                // MainFormを作成（設定ファイルが読み込まれる）
+                using var mainForm = new MainForm();
+                mainForm.Show(); // フォームを表示状態にする
+                
+                // 少し待機して初期化が完了するのを待つ
+                Thread.Sleep(100);
+                
+                // 初期状態でブラウザボタンが存在することを確認
+                var initialBrowserButtons = mainForm.Controls.OfType<Button>().Where(b => b.Tag is Browser).ToList();
+                initialBrowserButtons.Should().NotBeEmpty("初期状態でブラウザボタンが存在する必要があります");
+                
+                // 背景色を変更
+                var newColor = Color.Red;
+                mainForm.BackColor = newColor;
+                
+                // 背景色変更後にブラウザボタンが依然として存在することを確認
+                var browserButtonsAfterColorChange = mainForm.Controls.OfType<Button>().Where(b => b.Tag is Browser).ToList();
+                browserButtonsAfterColorChange.Should().NotBeEmpty("背景色変更後もブラウザボタンが存在する必要があります");
+                browserButtonsAfterColorChange.Count.Should().Be(initialBrowserButtons.Count, "ブラウザボタンの数が変わってはいけません");
+                
+                // 背景色が正しく設定されていることを確認
+                mainForm.BackColor.Should().Be(newColor);
+            }
+            finally
+            {
+                // クリーンアップ
+                if (File.Exists(testSettingsPath))
+                {
+                    File.Delete(testSettingsPath);
+                }
+            }
+        }
+
+        [Fact]
+        public void OptionsFormBackgroundColorChange_ShouldUpdateMainFormCorrectly()
+        {
+            // Arrange
+            var settings = new Settings();
+            settings.Browsers.Add(new Browser { Name = "Test Browser", Target = "test.exe" });
+            Settings.Current = settings; // グローバル設定を設定
+            
+            using var mainForm = new MainForm();
+            mainForm.Show();
+            
+            // 初期状態を確認
+            var initialBrowserButtons = mainForm.Controls.OfType<Button>().Where(b => b.Tag is Browser).ToList();
+            initialBrowserButtons.Should().NotBeEmpty();
+            
+            // OptionsFormで背景色を変更
+            using var optionsForm = new OptionsForm(settings);
+            var newColor = Color.Blue;
+            settings.BackgroundColorValue = newColor;
+            
+            // メイン画面の背景色を即時更新（OptionsFormの処理を模擬）
+            mainForm.BackColor = settings.BackgroundColorValue;
+            mainForm.Invalidate(); // 再描画を強制
+            
+            // 背景色変更後にブラウザボタンが存在することを確認
+            var browserButtonsAfterChange = mainForm.Controls.OfType<Button>().Where(b => b.Tag is Browser).ToList();
+            browserButtonsAfterChange.Should().NotBeEmpty("背景色変更後もブラウザボタンが存在する必要があります");
+            browserButtonsAfterChange.Count.Should().Be(initialBrowserButtons.Count, "ブラウザボタンの数が変わってはいけません");
+            
+            // 背景色が正しく設定されていることを確認
+            mainForm.BackColor.Should().Be(newColor);
+        }
     }
 }

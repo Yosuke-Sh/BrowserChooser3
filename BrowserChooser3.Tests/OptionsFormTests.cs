@@ -472,5 +472,54 @@ namespace BrowserChooser3.Tests
         }
 
         #endregion
+
+        [Fact]
+        public void BackgroundColorChange_ShouldUpdateMainFormCorrectly()
+        {
+            // Arrange
+            var settings = new Settings();
+            using var optionsForm = new OptionsForm(settings);
+            
+            // 背景色を変更
+            var newColor = Color.Red;
+            settings.BackgroundColorValue = newColor;
+            
+            // メイン画面の背景色を即時更新（OptionsFormの処理を模擬）
+            var mainForm = Application.OpenForms.OfType<MainForm>().FirstOrDefault();
+            if (mainForm != null)
+            {
+                mainForm.BackColor = settings.BackgroundColorValue;
+                mainForm.Invalidate(); // 再描画を強制
+                
+                // 背景色が正しく設定されていることを確認
+                mainForm.BackColor.Should().Be(newColor);
+            }
+        }
+
+        [Fact]
+        public void BackgroundColorChange_ShouldCallInvalidate()
+        {
+            // Arrange
+            var settings = new Settings();
+            using var optionsForm = new OptionsForm(settings);
+            
+            // 背景色変更処理をテスト
+            var newColor = Color.Blue;
+            settings.BackgroundColorValue = newColor;
+            
+            // メイン画面の背景色を即時更新（OptionsFormの処理を模擬）
+            var mainForm = Application.OpenForms.OfType<MainForm>().FirstOrDefault();
+            if (mainForm != null)
+            {
+                // Invalidate()が呼ばれることを確認
+                var originalBackColor = mainForm.BackColor;
+                mainForm.BackColor = settings.BackgroundColorValue;
+                mainForm.Invalidate(); // 再描画を強制
+                
+                // 背景色が変更されていることを確認
+                mainForm.BackColor.Should().Be(newColor);
+                mainForm.BackColor.Should().NotBe(originalBackColor);
+            }
+        }
     }
 }

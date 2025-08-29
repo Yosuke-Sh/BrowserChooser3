@@ -328,6 +328,86 @@ namespace BrowserChooser3.Tests
             result.PortableMode.Should().BeTrue();
         }
 
+        [Fact]
+        public void ParseArguments_WithLongURL_ShouldHandleCorrectly()
+        {
+            // Arrange
+            var longUrl = "https://www.google.com/search?q=goole&oq=goole&gs_lcrp=EgZjaHJvbWUyBggAEEUYOTIPCAEQABgKGIMBGLEDGIAEMg8IAhAAGAoYgwEYsQMYgAQyDwgDEAAYChiDARixAxiABDIPCAQQABgKGIMBGLEDGIAEMg8IBRAAGAoYgwEYsQMYgAQyDwgGEAAYChiDARixAxiABDIGCAcQRRg80gEIMjA3M2owajSoAgawAgHxBaFbFMlJv5Ac&sourceid=chrome&ie=UTF-8";
+            var args = new[] { longUrl };
+
+            // Act
+            var result = CommandLineProcessor.ParseArguments(args);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.URL.Should().Be(longUrl, "長いURLが正しく処理される必要があります");
+            result.URL!.Length.Should().Be(longUrl.Length, "URLの長さが変わってはいけません");
+        }
+
+        [Fact]
+        public void ParseArguments_WithVeryLongURL_ShouldTruncateCorrectly()
+        {
+            // Arrange
+            var veryLongUrl = new string('a', 10000); // 8191文字を超えるURL
+            var args = new[] { veryLongUrl };
+
+            // Act
+            var result = CommandLineProcessor.ParseArguments(args);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.URL.Should().NotBeNull();
+            result.URL!.Length.Should().BeLessThanOrEqualTo(8191, "Windowsのコマンドライン制限を超えてはいけません");
+            result.URL.Should().Be(veryLongUrl.Substring(0, 8191), "長すぎるURLは8191文字で切り詰められる必要があります");
+        }
+
+        [Fact]
+        public void ParseArguments_WithURLContainingPercentEncoding_ShouldDecodeCorrectly()
+        {
+            // Arrange
+            var encodedUrl = "https://example.com/search?q=test%20space&param=value%3D123";
+            var expectedDecodedUrl = "https://example.com/search?q=test space&param=value=123";
+            var args = new[] { encodedUrl };
+
+            // Act
+            var result = CommandLineProcessor.ParseArguments(args);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.URL.Should().Be(expectedDecodedUrl, "URLエンコーディングが正しくデコードされる必要があります");
+        }
+
+        [Fact]
+        public void ParseArguments_WithInvalidPercentEncoding_ShouldHandleGracefully()
+        {
+            // Arrange
+            var invalidEncodedUrl = "https://example.com/search?q=test%invalid";
+            var args = new[] { invalidEncodedUrl };
+
+            // Act
+            var result = CommandLineProcessor.ParseArguments(args);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.URL.Should().Be(invalidEncodedUrl, "無効なURLエンコーディングの場合は元のURLを使用する必要があります");
+        }
+
+        [Fact]
+        public void ParseArguments_WithLongURLAndOptions_ShouldHandleCorrectly()
+        {
+            // Arrange
+            var longUrl = "https://www.google.com/search?q=verylongquery" + new string('a', 1000);
+            var args = new[] { "--delay", "5", longUrl };
+
+            // Act
+            var result = CommandLineProcessor.ParseArguments(args);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Delay.Should().Be(5, "遅延オプションが正しく処理される必要があります");
+            result.URL.Should().Be(longUrl, "長いURLが正しく処理される必要があります");
+        }
+
         #endregion
 
         #region 境界値テスト
