@@ -298,18 +298,27 @@ namespace BrowserChooser3.Classes.Services.SystemServices
 
             try
             {
+                Logger.LogDebug("StartupLauncher.Initialize", "コマンドライン引数解析開始", $"引数数: {args?.Length ?? 0}");
+                if (args != null && args.Length > 0)
+                {
+                    Logger.LogDebug("StartupLauncher.Initialize", "コマンドライン引数内容", string.Join(" ", args));
+                }
+                
                 // コマンドライン引数の解析
                 var commandLineArgs = CommandLineProcessor.ParseArguments(args);
+                Logger.LogDebug("StartupLauncher.Initialize", "CommandLineProcessor.ParseArguments完了", $"URL: {commandLineArgs.URL}, 長さ: {commandLineArgs.URL?.Length ?? 0}");
                 
                 // 環境変数からのオプション読み込み
                 commandLineArgs = CommandLineProcessor.LoadFromEnvironment(commandLineArgs);
                 
                 // 引数の検証
+                Logger.LogDebug("StartupLauncher.Initialize", "引数検証開始");
                 if (!CommandLineProcessor.ValidateArguments(commandLineArgs))
                 {
                     Logger.LogError("StartupLauncher.Initialize", "無効なコマンドライン引数");
                     return false;
                 }
+                Logger.LogDebug("StartupLauncher.Initialize", "引数検証完了");
 
                 // ポリシーの初期化
                 Policy.Initialize();

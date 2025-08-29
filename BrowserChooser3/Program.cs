@@ -50,6 +50,8 @@ namespace BrowserChooser3
                 string url = string.Empty;
                 if (args.Length > 1)
                 {
+                    Logger.LogDebug("Program.Main", "従来のURL処理開始", $"引数数: {startupArgs.Length}");
+                    
                     // 最初の非オプション引数をURLとして扱う
                     var firstNonOptionArg = startupArgs.FirstOrDefault(arg => 
                         !arg.StartsWith("-") && !arg.StartsWith("/") && 
@@ -58,9 +60,15 @@ namespace BrowserChooser3
                     if (!string.IsNullOrEmpty(firstNonOptionArg))
                     {
                         url = firstNonOptionArg;
+                        Logger.LogDebug("Program.Main", "従来のURL処理でURLを検出", $"URL: {url}, 長さ: {url.Length}");
+                        
                         // フォームのLoadイベントでURLを設定するように設定
                         mainForm.SetInitialURL(url);
                         Logger.LogInfo("Program.Main", "初期URL設定", url);
+                    }
+                    else
+                    {
+                        Logger.LogDebug("Program.Main", "従来のURL処理でURLが見つかりませんでした");
                     }
                 }
 
