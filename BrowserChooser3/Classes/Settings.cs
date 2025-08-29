@@ -230,6 +230,36 @@ namespace BrowserChooser3.Classes
         
         /// <summary>ポータブルモード</summary>
         public bool PortableMode { get; set; } = true;
+
+        /// <summary>
+        /// インストール方法を自動判定してPortableModeを設定します
+        /// </summary>
+        public void DeterminePortableMode()
+        {
+            try
+            {
+                var appPath = Application.StartupPath;
+                var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+                
+                // アプリケーションフォルダがAppData内にある場合はインストーラー経由でインストールされたと判定
+                if (appPath.StartsWith(appDataPath, StringComparison.OrdinalIgnoreCase))
+                {
+                    PortableMode = false;
+                    Logger.LogDebug("Settings.DeterminePortableMode", "インストーラー経由でインストールされたと判定", appPath);
+                }
+                else
+                {
+                    PortableMode = true;
+                    Logger.LogDebug("Settings.DeterminePortableMode", "ポータブルモードと判定", appPath);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("Settings.DeterminePortableMode", "インストール方法の判定に失敗", ex.Message);
+                // エラーの場合はデフォルトでポータブルモード
+                PortableMode = true;
+            }
+        }
         
         /// <summary>URL表示</summary>
         public bool ShowURL { get; set; } = true;
@@ -492,11 +522,13 @@ namespace BrowserChooser3.Classes
             Logger.LogDebug("Settings.SharedNew", "Start");
             Browsers = new List<Browser>();
             URLs = new List<URL>();
-            PortableMode = true; // default
             RevealShortURL = false; // default
             ShowURL = true; // default
             Width = 8; // default
             Height = 1; // default
+            
+            // インストール方法を自動判定
+            DeterminePortableMode();
             
             // 設定ファイルが存在する場合は自動検出をスキップ
             var configPath = Path.Combine(Application.StartupPath, BrowserChooserConfigFileName);

@@ -61,7 +61,6 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
         /// <param name="settings">設定オブジェクト</param>
         /// <param name="mBrowser">ブラウザ辞書</param>
         /// <param name="mProtocols">プロトコル辞書</param>
-        /// <param name="mFileTypes">ファイルタイプ辞書</param>
         /// <param name="mLastBrowserID">最後のブラウザID</param>
         /// <param name="imBrowserIcons">ブラウザアイコンリスト</param>
         /// <param name="setModified">変更フラグ設定アクション</param>
@@ -134,11 +133,11 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             };
 
             listView.Columns.Add("Name", 109);
-            listView.Columns.Add("Default", 60);
+            listView.Columns.Add("Target", 60);
             listView.Columns.Add("Row", 50);
             listView.Columns.Add("Column", 60);
             listView.Columns.Add("Hotkey", 60);
-            listView.Columns.Add("File Types and Protocols", 333);
+            listView.Columns.Add("Arguments", 333);
 
             // ボタン群（Browser Chooser 2互換）
             var addButton = new Button
@@ -1991,27 +1990,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             };
             currentY += 34;
 
-            // ポータブルモード設定
-            var chkPortableMode = new CheckBox
-            {
-                Name = "chkPortableMode",
-                Text = "Portable Mode",
-                Location = new Point(6, currentY),
-                Size = new Size(150, 25),
-                Checked = settings.PortableMode,
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            };
-            chkPortableMode.CheckedChanged += (s, e) => setModified(true);
 
-            var lblPortableModeDesc = new Label
-            {
-                Text = "設定ファイルをアプリケーションフォルダに保存します（USBメモリなどで持ち運び可能）",
-                Location = new Point(160, currentY + 3),
-                Size = new Size(500, 20),
-                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
-                ForeColor = Color.Gray
-            };
-            currentY += 34;
 
 
 
@@ -2259,8 +2238,6 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
 
             // コントロールの追加
             panel.Controls.Add(lblGeneralTitle);
-            panel.Controls.Add(chkPortableMode);
-            panel.Controls.Add(lblPortableModeDesc);
             panel.Controls.Add(chkAllowStayOpen);
             panel.Controls.Add(lblAllowStayOpenDesc);
             

@@ -76,11 +76,11 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                     {
                         var item = listView.Items.Add(newBrowser.Name);
                         item.Tag = newIndex;
-                        item.SubItems.Add(""); // Default column
+                        item.SubItems.Add(newBrowser.Target); // Target column
                         item.SubItems.Add(newBrowser.PosY.ToString());
                         item.SubItems.Add(newBrowser.PosX.ToString());
                         item.SubItems.Add(newBrowser.Hotkey.ToString());
-                        item.SubItems.Add(GetBrowserProtocolsAndFileTypes(newBrowser));
+                        item.SubItems.Add(newBrowser.Arguments); // Arguments column
                         
                         // アイコンを設定
                         if (_imBrowserIcons != null)
@@ -128,11 +128,11 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                         // ListViewアイテムの更新
                         var selectedItem = listView.SelectedItems[0];
                         selectedItem.Text = updatedBrowser.Name;
-                        selectedItem.SubItems[1].Text = ""; // Default column
+                        selectedItem.SubItems[1].Text = updatedBrowser.Target; // Target column
                         selectedItem.SubItems[2].Text = updatedBrowser.PosY.ToString();
                         selectedItem.SubItems[3].Text = updatedBrowser.PosX.ToString();
                         selectedItem.SubItems[4].Text = updatedBrowser.Hotkey.ToString();
-                        selectedItem.SubItems[5].Text = GetBrowserProtocolsAndFileTypes(updatedBrowser);
+                        selectedItem.SubItems[5].Text = updatedBrowser.Arguments; // Arguments column
                         
                         // ImageListアイコンの更新
                         if (_imBrowserIcons != null && selectedItem.Index < _imBrowserIcons.Images.Count)
@@ -235,7 +235,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                             item.SubItems.Add(clonedBrowser.PosY.ToString());
                             item.SubItems.Add(clonedBrowser.PosX.ToString());
                             item.SubItems.Add(clonedBrowser.Hotkey.ToString());
-                            item.SubItems.Add(GetBrowserProtocolsAndFileTypes(clonedBrowser));
+                            item.SubItems.Add(clonedBrowser.Arguments);
                         }
                         
                         // ImageListにアイコンを追加
@@ -344,11 +344,11 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                                  
                                  var item = listView.Items.Add(browser.Name);
                                  item.Tag = newIndex;
-                                 item.SubItems.Add(""); // Default column
+                                 item.SubItems.Add(browser.Target); // Target column
                                  item.SubItems.Add(browser.PosY.ToString());
                                  item.SubItems.Add(browser.PosX.ToString());
                                  item.SubItems.Add(browser.Hotkey.ToString());
-                                 item.SubItems.Add(GetBrowserProtocolsAndFileTypes(browser));
+                                 item.SubItems.Add(browser.Arguments); // Arguments column
                                  
                                  // ImageListにアイコンを追加
                                  if (_imBrowserIcons != null)
@@ -387,13 +387,6 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             }
         }
 
-        /// <summary>
-        /// ブラウザのプロトコルを取得
-        /// </summary>
-        public string GetBrowserProtocolsAndFileTypes(Browser browser)
-        {
-            var protocols = _mProtocols.Values.Where(p => p.BrowserGuid == browser.Guid).Select(p => p.Name);
-            return string.Join(", ", protocols);
-        }
+
     }
 }

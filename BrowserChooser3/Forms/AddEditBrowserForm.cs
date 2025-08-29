@@ -55,7 +55,7 @@ namespace BrowserChooser3.Forms
                     PosX = 1,
                     PosY = 1,
                     Hotkey = '\0',
-                    Category = "Default"
+
                 };
             }
 
@@ -96,7 +96,6 @@ namespace BrowserChooser3.Forms
             var txtTarget = Controls.Find("txtTarget", true).FirstOrDefault() as TextBox;
             var txtArguments = Controls.Find("txtArguments", true).FirstOrDefault() as TextBox;
             var txtHotkey = Controls.Find("txtHotkey", true).FirstOrDefault() as TextBox;
-            var txtCategory = Controls.Find("txtCategory", true).FirstOrDefault() as TextBox;
             var nudRow = Controls.Find("nudRow", true).FirstOrDefault() as NumericUpDown;
             var nudCol = Controls.Find("nudCol", true).FirstOrDefault() as NumericUpDown;
 
@@ -104,7 +103,6 @@ namespace BrowserChooser3.Forms
             if (txtTarget != null) txtTarget.Text = _browser.Target ?? "";
             if (txtArguments != null) txtArguments.Text = _browser.Arguments ?? "";
             if (txtHotkey != null) txtHotkey.Text = _browser.Hotkey != '\0' ? _browser.Hotkey.ToString() : "";
-            if (txtCategory != null) txtCategory.Text = _browser.Category ?? "";
             if (nudRow != null) nudRow.Value = _browser.PosY;
             if (nudCol != null) nudCol.Value = _browser.PosX;
         }
@@ -118,14 +116,12 @@ namespace BrowserChooser3.Forms
             var txtTarget = Controls.Find("txtTarget", true).FirstOrDefault() as TextBox;
             var txtArguments = Controls.Find("txtArguments", true).FirstOrDefault() as TextBox;
             var txtHotkey = Controls.Find("txtHotkey", true).FirstOrDefault() as TextBox;
-            var txtCategory = Controls.Find("txtCategory", true).FirstOrDefault() as TextBox;
             var nudRow = Controls.Find("nudRow", true).FirstOrDefault() as NumericUpDown;
             var nudCol = Controls.Find("nudCol", true).FirstOrDefault() as NumericUpDown;
 
             if (txtName != null) _browser.Name = txtName.Text;
             if (txtTarget != null) _browser.Target = txtTarget.Text;
             if (txtArguments != null) _browser.Arguments = txtArguments.Text;
-            if (txtCategory != null) _browser.Category = txtCategory.Text;
             if (nudRow != null) _browser.PosY = (int)nudRow.Value;
             if (nudCol != null) _browser.PosX = (int)nudCol.Value;
             
@@ -181,8 +177,7 @@ namespace BrowserChooser3.Forms
             var lblHotkey = new Label { Text = "Hotkey:", Location = new Point(10, 140), AutoSize = true };
             var txtHotkey = new TextBox { Name = "txtHotkey", Location = new Point(120, 137), Size = new Size(50, 23), MaxLength = 1 };
 
-            var lblCategory = new Label { Text = "Category:", Location = new Point(10, 180), AutoSize = true };
-            var txtCategory = new TextBox { Name = "txtCategory", Location = new Point(120, 177), Size = new Size(300, 23) };
+
 
             var lblRow = new Label { Text = "Row:", Location = new Point(10, 220), AutoSize = true };
             var nudRow = new NumericUpDown { Name = "nudRow", Location = new Point(120, 217), Size = new Size(80, 23), Minimum = 0, Maximum = 100 };
@@ -203,7 +198,7 @@ namespace BrowserChooser3.Forms
                 lblTarget, txtTarget, btnBrowse,
                 lblArguments, txtArguments,
                 lblHotkey, txtHotkey,
-                lblCategory, txtCategory,
+
                 lblRow, nudRow,
                 lblCol, nudCol,
                 btnOK, btnCancel
@@ -288,7 +283,7 @@ namespace BrowserChooser3.Forms
                     _browser.Name = txtName.Text;
                     _browser.Target = txtTarget.Text;
                     _browser.Arguments = txtArguments.Text;
-                    _browser.Category = txtCategory.Text;
+
                     
                     if (txtHotkey.Text.Length > 0)
                     {

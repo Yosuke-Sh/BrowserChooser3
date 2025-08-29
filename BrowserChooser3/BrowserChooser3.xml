@@ -605,11 +605,6 @@
             ブラウザ検出ボタンのクリックイベント
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormBrowserHandlers.GetBrowserProtocolsAndFileTypes(BrowserChooser3.Classes.Models.Browser)">
-            <summary>
-            ブラウザのプロトコルを取得
-            </summary>
-        </member>
         <member name="T:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormCheckBoxHandlers">
             <summary>
             OptionsFormのチェックボックスイベントハンドラーを管理するクラス
@@ -865,7 +860,6 @@
             <param name="settings">設定オブジェクト</param>
             <param name="mBrowser">ブラウザ辞書</param>
             <param name="mProtocols">プロトコル辞書</param>
-            <param name="mFileTypes">ファイルタイプ辞書</param>
             <param name="mLastBrowserID">最後のブラウザID</param>
             <param name="imBrowserIcons">ブラウザアイコンリスト</param>
             <param name="setModified">変更フラグ設定アクション</param>
@@ -1411,6 +1405,11 @@
         </member>
         <member name="P:BrowserChooser3.Classes.Settings.PortableMode">
             <summary>ポータブルモード</summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Settings.DeterminePortableMode">
+            <summary>
+            インストール方法を自動判定してPortableModeを設定します
+            </summary>
         </member>
         <member name="P:BrowserChooser3.Classes.Settings.ShowURL">
             <summary>URL表示</summary>

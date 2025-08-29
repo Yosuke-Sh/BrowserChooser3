@@ -965,7 +965,7 @@ namespace BrowserChooser3.Forms
             _settings.OffsetY = (int)_settings.Defaults[Settings.DefaultField.OffsetY];
             _settings.OptionsShortcut = (char)_settings.Defaults[Settings.DefaultField.OptionsShortcut];
             _settings.DefaultMessage = (string)_settings.Defaults[Settings.DefaultField.DefaultMessage];
-            _settings.PortableMode = true; // デフォルト値
+
 
             // UIに反映
             var nudDefaultDelay = tabPage.Controls.Find("nudDefaultDelay", true).FirstOrDefault() as NumericUpDown;
@@ -986,8 +986,7 @@ namespace BrowserChooser3.Forms
             var chkDownloadDetectionFile = tabPage.Controls.Find("chkDownloadDetectionFile", true).FirstOrDefault() as CheckBox;
             if (chkDownloadDetectionFile != null) chkDownloadDetectionFile.Checked = _settings.DownloadDetectionFile;
 
-            var chkPortableMode = tabPage.Controls.Find("chkPortableMode", true).FirstOrDefault() as CheckBox;
-            if (chkPortableMode != null) chkPortableMode.Checked = _settings.PortableMode;
+
 
             var txtOptionsShortcut = tabPage.Controls.Find("txtOptionsShortcut", true).FirstOrDefault() as TextBox;
             if (txtOptionsShortcut != null) txtOptionsShortcut.Text = _settings.OptionsShortcut.ToString();
@@ -1106,11 +1105,11 @@ namespace BrowserChooser3.Forms
                     {
                         var item = listView.Items.Add(clonedBrowser.Name);
                         item.Tag = _mBrowser.Count - 1;
-                        item.SubItems.Add(""); // Default column
+                        item.SubItems.Add(clonedBrowser.Target); // Target column
                         item.SubItems.Add(clonedBrowser.PosY.ToString());
                         item.SubItems.Add(clonedBrowser.PosX.ToString());
                         item.SubItems.Add(clonedBrowser.Hotkey.ToString());
-                        item.SubItems.Add(_browserHandlers.GetBrowserProtocolsAndFileTypes(clonedBrowser));
+                        item.SubItems.Add(clonedBrowser.Arguments); // Arguments column
                     }
 
                     // ImageListにアイコンを追加
@@ -1235,8 +1234,7 @@ namespace BrowserChooser3.Forms
                 var chkRevealShortURLs = Controls.Find("chkRevealShortURLs", true).FirstOrDefault() as CheckBox;
                 if (chkRevealShortURLs != null) chkRevealShortURLs.Checked = _settings.RevealShortURL;
 
-                var chkPortableMode = Controls.Find("chkPortableMode", true).FirstOrDefault() as CheckBox;
-                if (chkPortableMode != null) chkPortableMode.Checked = _settings.PortableMode;
+                
 
                 var nudHeight = Controls.Find("nudHeight", true).FirstOrDefault() as NumericUpDown;
                 if (nudHeight != null) nudHeight.Value = _settings.Height;
@@ -1539,8 +1537,7 @@ namespace BrowserChooser3.Forms
                 var chkRevealShortURLs = Controls.Find("chkRevealShortURLs", true).FirstOrDefault() as CheckBox;
                 if (chkRevealShortURLs != null) _settings.RevealShortURL = chkRevealShortURLs.Checked;
 
-                var chkPortableMode = Controls.Find("chkPortableMode", true).FirstOrDefault() as CheckBox;
-                if (chkPortableMode != null) _settings.PortableMode = chkPortableMode.Checked;
+                
 
                 var nudHeight = Controls.Find("nudHeight", true).FirstOrDefault() as NumericUpDown;
                 if (nudHeight != null) _settings.Height = (int)nudHeight.Value;
@@ -1927,7 +1924,7 @@ namespace BrowserChooser3.Forms
                                     item.SubItems.Add(browser.PosY.ToString());
                                     item.SubItems.Add(browser.PosX.ToString());
                                     item.SubItems.Add(browser.Hotkey.ToString());
-                                    item.SubItems.Add(_browserHandlers.GetBrowserProtocolsAndFileTypes(browser));
+
 
                                     // ImageListにアイコンを追加
                                     if (_imBrowserIcons != null)
