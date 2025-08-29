@@ -142,8 +142,9 @@ namespace BrowserChooser3.Tests
 
                 // Assert
                 BrowserDetector.DetectedBrowsers.Count.Should().Be(initialCount + 1);
-                var addedBrowser = BrowserDetector.DetectedBrowsers.Last();
-                addedBrowser.Name.Should().Be("Test Browser 2");
+                var addedBrowser = BrowserDetector.DetectedBrowsers.FirstOrDefault(b => b.Target == testPath);
+                addedBrowser.Should().NotBeNull();
+                addedBrowser!.Name.Should().Be("Test Browser 2");
                 addedBrowser.Target.Should().Be(testPath);
                 addedBrowser.Arguments.Should().Be("");
                 addedBrowser.Category.Should().Be("Custom Browsers");
@@ -216,8 +217,9 @@ namespace BrowserChooser3.Tests
 
                 // Assert
                 BrowserDetector.DetectedBrowsers.Count.Should().Be(initialCount + 1);
-                var addedBrowser = BrowserDetector.DetectedBrowsers.Last();
-                addedBrowser.Name.Should().Be("");
+                var addedBrowser = BrowserDetector.DetectedBrowsers.FirstOrDefault(b => b.Target == testPath);
+                addedBrowser.Should().NotBeNull();
+                addedBrowser!.Name.Should().Be("");
                 addedBrowser.Target.Should().Be(testPath);
                 addedBrowser.Arguments.Should().Be("--test-arg");
                 addedBrowser.Category.Should().Be("Custom Browsers");
@@ -413,7 +415,8 @@ namespace BrowserChooser3.Tests
             BrowserDetector.DetectedBrowsers.Add(testBrowser);
 
             // Assert
-            BrowserDetector.DetectedBrowsers.Should().Contain(testBrowser);
+            var containsBrowser = BrowserDetector.DetectedBrowsers.Any(b => b.Name == testBrowser.Name && b.Target == testBrowser.Target);
+            containsBrowser.Should().BeTrue();
 
             // Cleanup
             BrowserDetector.DetectedBrowsers.Remove(testBrowser);

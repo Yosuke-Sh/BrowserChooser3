@@ -1689,6 +1689,8 @@ namespace BrowserChooser3.Forms
                             if (!transparencyEnabled)
                             {
                                 mainForm.BackColor = _settings.BackgroundColorValue;
+                                // 背景色変更時にブラウザボタンを再描画
+                                mainForm.Invalidate();
                                 Logger.LogInfo("OptionsForm.SaveSettings", "メイン画面の背景色を即時更新しました", _settings.BackgroundColorValue.ToString());
                             }
                             else

@@ -142,7 +142,33 @@ namespace BrowserChooser3.Classes.Services.SystemServices
                             // URLとして扱う（最初の非オプション引数）
                             if (!arg.StartsWith("-") && !arg.StartsWith("/") && result.URL == null)
                             {
-                                result.URL = args[i]; // 元の大文字小文字を保持
+                                // 長いURLの場合の処理
+                                var url = args[i];
+                                
+                                // URLの長さ制限チェック（Windowsのコマンドライン制限を考慮）
+                                if (url.Length > 8191) // Windowsのコマンドライン制限
+                                {
+                                    Logger.LogWarning("CommandLineProcessor.ParseArguments", "URLが長すぎます", url.Length);
+                                    // 長すぎる場合は切り詰めるか、エラーとして扱う
+                                    url = url.Substring(0, 8191);
+                                }
+                                
+                                // URLエンコーディングの問題を修正
+                                try
+                                {
+                                    // 必要に応じてURLデコード
+                                    if (url.Contains("%"))
+                                    {
+                                        url = Uri.UnescapeDataString(url);
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    Logger.LogWarning("CommandLineProcessor.ParseArguments", "URLデコードエラー", ex.Message);
+                                    // デコードに失敗した場合は元のURLを使用
+                                }
+                                
+                                result.URL = url; // 処理済みのURLを設定
                             }
                             break;
                     }
