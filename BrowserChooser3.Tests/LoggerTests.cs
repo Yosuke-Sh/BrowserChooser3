@@ -36,7 +36,7 @@ namespace BrowserChooser3.Tests
             var logLevel = Logger.CurrentLogLevel;
 
             // Assert
-            logLevel.Should().Be(Logger.LogLevel.Info);
+            logLevel.Should().Be(Logger.LogLevel.Debug);
         }
 
         [Fact]
