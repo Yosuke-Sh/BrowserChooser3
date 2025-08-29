@@ -1546,6 +1546,9 @@
         <member name="P:BrowserChooser3.Classes.Settings.StartInTray">
             <summary>システムトレイで起動</summary>
         </member>
+        <member name="P:BrowserChooser3.Classes.Settings.AlwaysResidentInTray">
+            <summary>システムトレイに常駐</summary>
+        </member>
         <member name="P:BrowserChooser3.Classes.Settings.StartupDelay">
             <summary>起動遅延</summary>
         </member>

@@ -1762,6 +1762,16 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
 
 
 
+            // 相互排他設定の説明
+            var lblMutualExclusiveDesc = new Label
+            {
+                Text = "※ Start MinimizedとStart in System Trayは同時に設定できません",
+                Location = new Point(6, 6),
+                Size = new Size(500, 20),
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                ForeColor = Color.Orange
+            };
+
             // 最小化で起動設定
             var chkStartMinimized = new CheckBox
             {
@@ -1772,7 +1782,6 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 Checked = settings.StartMinimized,
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
-            chkStartMinimized.CheckedChanged += (s, e) => setModified(true);
 
             var lblStartMinimizedDesc = new Label
             {
@@ -1793,7 +1802,6 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 Checked = settings.StartInTray,
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
-            chkStartInTray.CheckedChanged += (s, e) => setModified(true);
 
             var lblStartInTrayDesc = new Label
             {
@@ -1804,13 +1812,56 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 ForeColor = Color.Gray
             };
 
+            // システムトレイ常駐設定
+            var chkAlwaysResidentInTray = new CheckBox
+            {
+                Name = "chkAlwaysResidentInTray",
+                Text = "Always Resident in System Tray",
+                Location = new Point(6, 105),
+                Size = new Size(250, 25),
+                Checked = settings.AlwaysResidentInTray,
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+
+            var lblAlwaysResidentInTrayDesc = new Label
+            {
+                Text = "アプリケーションを常にシステムトレイに常駐させます",
+                Location = new Point(260, 108),
+                Size = new Size(400, 20),
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                ForeColor = Color.Gray
+            };
+
+            // イベントハンドラーの設定（相互排他設定）
+            chkStartMinimized.CheckedChanged += (s, e) =>
+            {
+                // 相互排他設定：Start Minimizedがチェックされた場合、Start in System Trayを外す
+                if (chkStartMinimized.Checked && chkStartInTray.Checked)
+                {
+                    chkStartInTray.Checked = false;
+                }
+                setModified(true);
+            };
+
+            chkStartInTray.CheckedChanged += (s, e) =>
+            {
+                // 相互排他設定：Start in System Trayがチェックされた場合、Start Minimizedを外す
+                if (chkStartInTray.Checked && chkStartMinimized.Checked)
+                {
+                    chkStartMinimized.Checked = false;
+                }
+                setModified(true);
+            };
+
+            chkAlwaysResidentInTray.CheckedChanged += (s, e) => setModified(true);
+
 
 
             // 起動遅延設定
             var lblStartupDelay = new Label
             {
                 Text = "Startup Delay (ms):",
-                Location = new Point(6, 138),
+                Location = new Point(6, 171),
                 Size = new Size(150, 23),
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
@@ -1818,7 +1869,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var nudStartupDelay = new NumericUpDown
             {
                 Name = "nudStartupDelay",
-                Location = new Point(160, 135),
+                Location = new Point(160, 168),
                 Size = new Size(80, 23),
                 Minimum = 0,
                 Maximum = 10000,
@@ -1830,7 +1881,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var lblStartupDelayDesc = new Label
             {
                 Text = "起動時の遅延時間をミリ秒で設定します（0-10000ms）",
-                Location = new Point(250, 138),
+                Location = new Point(250, 171),
                 Size = new Size(400, 20),
                 Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
                 ForeColor = Color.Gray
@@ -1840,7 +1891,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var lblStartupMessage = new Label
             {
                 Text = "Startup Message:",
-                Location = new Point(6, 171),
+                Location = new Point(6, 204),
                 Size = new Size(150, 23),
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
@@ -1848,7 +1899,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var txtStartupMessage = new TextBox
             {
                 Name = "txtStartupMessage",
-                Location = new Point(160, 168),
+                Location = new Point(160, 201),
                 Size = new Size(200, 23),
                 Text = settings.StartupMessage,
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
@@ -1858,17 +1909,20 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var lblStartupMessageDesc = new Label
             {
                 Text = "起動時に表示するメッセージを設定します",
-                Location = new Point(370, 171),
+                Location = new Point(370, 204),
                 Size = new Size(400, 20),
                 Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
                 ForeColor = Color.Gray
             };
 
             // コントロールの追加
+            panel.Controls.Add(lblMutualExclusiveDesc);
             panel.Controls.Add(chkStartMinimized);
             panel.Controls.Add(lblStartMinimizedDesc);
             panel.Controls.Add(chkStartInTray);
             panel.Controls.Add(lblStartInTrayDesc);
+            panel.Controls.Add(chkAlwaysResidentInTray);
+            panel.Controls.Add(lblAlwaysResidentInTrayDesc);
             panel.Controls.Add(lblStartupDelay);
             panel.Controls.Add(nudStartupDelay);
             panel.Controls.Add(lblStartupDelayDesc);

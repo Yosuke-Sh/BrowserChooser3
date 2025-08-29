@@ -431,6 +431,9 @@ namespace BrowserChooser3.Classes
         /// <summary>システムトレイで起動</summary>
         public bool StartInTray { get; set; } = false;
 
+        /// <summary>システムトレイに常駐</summary>
+        public bool AlwaysResidentInTray { get; set; } = false;
+
         /// <summary>起動遅延</summary>
         public int StartupDelay { get; set; } = 0;
 

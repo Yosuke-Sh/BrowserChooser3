@@ -934,8 +934,11 @@ namespace BrowserChooser3.Forms
             var chkStartMinimized = tabPage.Controls.Find("chkStartMinimized", true).FirstOrDefault() as CheckBox;
             if (chkStartMinimized != null) chkStartMinimized.Checked = _settings.StartMinimized;
 
-            var chkStartInTray = tabPage.Controls.Find("chkStartInTray", true).FirstOrDefault() as CheckBox;
-            if (chkStartInTray != null) chkStartInTray.Checked = _settings.StartInTray;
+                            var chkStartInTray = tabPage.Controls.Find("chkStartInTray", true).FirstOrDefault() as CheckBox;
+                if (chkStartInTray != null) chkStartInTray.Checked = _settings.StartInTray;
+
+                var chkAlwaysResidentInTray = tabPage.Controls.Find("chkAlwaysResidentInTray", true).FirstOrDefault() as CheckBox;
+                if (chkAlwaysResidentInTray != null) chkAlwaysResidentInTray.Checked = _settings.AlwaysResidentInTray;
 
             var nudStartupDelay = tabPage.Controls.Find("nudStartupDelay", true).FirstOrDefault() as NumericUpDown;
             if (nudStartupDelay != null) nudStartupDelay.Value = _settings.StartupDelay;
@@ -1341,6 +1344,9 @@ namespace BrowserChooser3.Forms
                 var chkStartInTray = Controls.Find("chkStartInTray", true).FirstOrDefault() as CheckBox;
                 if (chkStartInTray != null) chkStartInTray.Checked = _settings.StartInTray;
 
+                var chkAlwaysResidentInTray = Controls.Find("chkAlwaysResidentInTray", true).FirstOrDefault() as CheckBox;
+                if (chkAlwaysResidentInTray != null) chkAlwaysResidentInTray.Checked = _settings.AlwaysResidentInTray;
+
                 var nudStartupDelay = Controls.Find("nudStartupDelay", true).FirstOrDefault() as NumericUpDown;
                 if (nudStartupDelay != null) nudStartupDelay.Value = _settings.StartupDelay;
 
@@ -1641,6 +1647,9 @@ namespace BrowserChooser3.Forms
 
                 var chkStartInTray = Controls.Find("chkStartInTray", true).FirstOrDefault() as CheckBox;
                 if (chkStartInTray != null) _settings.StartInTray = chkStartInTray.Checked;
+
+                var chkAlwaysResidentInTray = Controls.Find("chkAlwaysResidentInTray", true).FirstOrDefault() as CheckBox;
+                if (chkAlwaysResidentInTray != null) _settings.AlwaysResidentInTray = chkAlwaysResidentInTray.Checked;
 
 
 
