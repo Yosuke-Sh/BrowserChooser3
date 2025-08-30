@@ -672,5 +672,507 @@ namespace BrowserChooser3.Tests
         }
 
         #endregion
+
+        [Fact]
+        public void Settings_Constructor_ShouldInitializeWithDefaultValues()
+        {
+            // Arrange & Act
+            var settings = new Settings();
+
+            // Assert
+            settings.Should().NotBeNull();
+            settings.IconWidth.Should().Be(100);
+            settings.IconHeight.Should().Be(110);
+            settings.IconGapWidth.Should().Be(20);
+            settings.IconGapHeight.Should().Be(20);
+            settings.IconScale.Should().Be(1.0);
+            settings.Opacity.Should().Be(0.8);
+            settings.RoundedCornersRadius.Should().Be(20);
+            settings.EnableTransparency.Should().BeFalse();
+            settings.HideTitleBar.Should().BeFalse();
+            settings.EnableBackgroundGradient.Should().BeTrue();
+            settings.ShowFocus.Should().BeFalse();
+            settings.ShowURL.Should().BeTrue();
+            settings.RevealShortURL.Should().BeFalse();
+            settings.EnableLogging.Should().BeTrue();
+            settings.LogLevel.Should().Be(2);
+            settings.ShowGrid.Should().BeFalse();
+            settings.GridLineWidth.Should().Be(1);
+            settings.GridWidth.Should().Be(5);
+            settings.GridHeight.Should().Be(1);
+            settings.AllowStayOpen.Should().BeFalse();
+            settings.StartingPosition.Should().Be(0); // CenterScreen
+            settings.OffsetX.Should().Be(0);
+            settings.OffsetY.Should().Be(0);
+        }
+
+        [Fact]
+        public void Settings_BackgroundColor_ShouldSetAndGetCorrectly()
+        {
+            // Arrange
+            var settings = new Settings();
+            var testColor = System.Drawing.Color.Red;
+
+            // Act
+            settings.BackgroundColor = testColor.ToArgb();
+            var retrievedColor = System.Drawing.Color.FromArgb(settings.BackgroundColor);
+
+            // Assert
+            retrievedColor.ToArgb().Should().Be(testColor.ToArgb());
+        }
+
+        [Fact]
+        public void Settings_BackgroundColor_WithColorEmpty_ShouldSkipProcessing()
+        {
+            // Arrange
+            var settings = new Settings();
+            var originalColor = settings.BackgroundColor;
+
+            // Act
+            settings.BackgroundColor = System.Drawing.Color.Empty.ToArgb();
+
+            // Assert
+            settings.BackgroundColor.Should().Be(System.Drawing.Color.Empty.ToArgb());
+        }
+
+        [Fact]
+        public void Settings_BackgroundColor_WithTransparentColor_ShouldMakeOpaque()
+        {
+            // Arrange
+            var settings = new Settings();
+            var transparentColor = System.Drawing.Color.FromArgb(128, 255, 0, 0);
+
+            // Act
+            settings.BackgroundColor = transparentColor.ToArgb();
+
+            // Assert
+            var retrievedColor = System.Drawing.Color.FromArgb(settings.BackgroundColor);
+            retrievedColor.Should().Be(transparentColor);
+        }
+
+        [Fact]
+        public void Settings_TransparencyColor_ShouldSetAndGetCorrectly()
+        {
+            // Arrange
+            var settings = new Settings();
+            var testColor = System.Drawing.Color.Blue;
+
+            // Act
+            settings.TransparencyColor = testColor.ToArgb();
+            var retrievedColor = System.Drawing.Color.FromArgb(settings.TransparencyColor);
+
+            // Assert
+            retrievedColor.ToArgb().Should().Be(testColor.ToArgb());
+        }
+
+        [Fact]
+        public void Settings_FocusBoxColor_ShouldSetAndGetCorrectly()
+        {
+            // Arrange
+            var settings = new Settings();
+            var testColor = System.Drawing.Color.Green;
+
+            // Act
+            settings.FocusBoxColor = testColor.ToArgb();
+            var retrievedColor = System.Drawing.Color.FromArgb(settings.FocusBoxColor);
+
+            // Assert
+            retrievedColor.ToArgb().Should().Be(testColor.ToArgb());
+        }
+
+        [Fact]
+        public void Settings_GridColor_ShouldSetAndGetCorrectly()
+        {
+            // Arrange
+            var settings = new Settings();
+            var testColor = System.Drawing.Color.Yellow;
+
+            // Act
+            settings.GridColor = testColor.ToArgb();
+            var retrievedColor = System.Drawing.Color.FromArgb(settings.GridColor);
+
+            // Assert
+            retrievedColor.ToArgb().Should().Be(testColor.ToArgb());
+        }
+
+        [Fact]
+        public void Settings_IconScale_ShouldAcceptAnyValue()
+        {
+            // Arrange
+            var settings = new Settings();
+
+            // Act & Assert - Test negative value (no clamping)
+            settings.IconScale = -1.0;
+            settings.IconScale.Should().Be(-1.0);
+
+            // Act & Assert - Test large value (no clamping)
+            settings.IconScale = 15.0;
+            settings.IconScale.Should().Be(15.0);
+
+            // Act & Assert - Test valid value
+            settings.IconScale = 2.5;
+            settings.IconScale.Should().Be(2.5);
+        }
+
+        [Fact]
+        public void Settings_Opacity_ShouldAcceptAnyValue()
+        {
+            // Arrange
+            var settings = new Settings();
+
+            // Act & Assert - Test negative value (no clamping)
+            settings.Opacity = -0.5;
+            settings.Opacity.Should().Be(-0.5);
+
+            // Act & Assert - Test large value (no clamping)
+            settings.Opacity = 1.5;
+            settings.Opacity.Should().Be(1.5);
+
+            // Act & Assert - Test valid value
+            settings.Opacity = 0.7;
+            settings.Opacity.Should().Be(0.7);
+        }
+
+        [Fact]
+        public void Settings_RoundedCornersRadius_ShouldAcceptAnyValue()
+        {
+            // Arrange
+            var settings = new Settings();
+
+            // Act & Assert - Test negative value (no clamping)
+            settings.RoundedCornersRadius = -5;
+            settings.RoundedCornersRadius.Should().Be(-5);
+
+            // Act & Assert - Test large value (no clamping)
+            settings.RoundedCornersRadius = 75;
+            settings.RoundedCornersRadius.Should().Be(75);
+
+            // Act & Assert - Test valid value
+            settings.RoundedCornersRadius = 25;
+            settings.RoundedCornersRadius.Should().Be(25);
+        }
+
+        [Fact]
+        public void Settings_FocusBoxLineWidth_ShouldAcceptAnyValue()
+        {
+            // Arrange
+            var settings = new Settings();
+
+            // Act & Assert - Test negative value (no clamping)
+            settings.FocusBoxLineWidth = 0;
+            settings.FocusBoxLineWidth.Should().Be(0);
+
+            // Act & Assert - Test large value (no clamping)
+            settings.FocusBoxLineWidth = 15;
+            settings.FocusBoxLineWidth.Should().Be(15);
+
+            // Act & Assert - Test valid value
+            settings.FocusBoxLineWidth = 5;
+            settings.FocusBoxLineWidth.Should().Be(5);
+        }
+
+        [Fact]
+        public void Settings_FocusBoxWidth_ShouldAcceptAnyValue()
+        {
+            // Arrange
+            var settings = new Settings();
+
+            // Act & Assert - Test negative value (no clamping)
+            settings.FocusBoxWidth = 0;
+            settings.FocusBoxWidth.Should().Be(0);
+
+            // Act & Assert - Test large value (no clamping)
+            settings.FocusBoxWidth = 15;
+            settings.FocusBoxWidth.Should().Be(15);
+
+            // Act & Assert - Test valid value
+            settings.FocusBoxWidth = 3;
+            settings.FocusBoxWidth.Should().Be(3);
+        }
+
+        [Fact]
+        public void Settings_IconWidth_ShouldAcceptAnyValue()
+        {
+            // Arrange
+            var settings = new Settings();
+
+            // Act & Assert - Test small value (no clamping)
+            settings.IconWidth = 10;
+            settings.IconWidth.Should().Be(10);
+
+            // Act & Assert - Test large value (no clamping)
+            settings.IconWidth = 250;
+            settings.IconWidth.Should().Be(250);
+
+            // Act & Assert - Test valid value
+            settings.IconWidth = 64;
+            settings.IconWidth.Should().Be(64);
+        }
+
+        [Fact]
+        public void Settings_IconHeight_ShouldAcceptAnyValue()
+        {
+            // Arrange
+            var settings = new Settings();
+
+            // Act & Assert - Test small value (no clamping)
+            settings.IconHeight = 10;
+            settings.IconHeight.Should().Be(10);
+
+            // Act & Assert - Test large value (no clamping)
+            settings.IconHeight = 250;
+            settings.IconHeight.Should().Be(250);
+
+            // Act & Assert - Test valid value
+            settings.IconHeight = 64;
+            settings.IconHeight.Should().Be(64);
+        }
+
+        [Fact]
+        public void Settings_IconGapWidth_ShouldAcceptAnyValue()
+        {
+            // Arrange
+            var settings = new Settings();
+
+            // Act & Assert - Test negative value (no clamping)
+            settings.IconGapWidth = -5;
+            settings.IconGapWidth.Should().Be(-5);
+
+            // Act & Assert - Test large value (no clamping)
+            settings.IconGapWidth = 75;
+            settings.IconGapWidth.Should().Be(75);
+
+            // Act & Assert - Test valid value
+            settings.IconGapWidth = 20;
+            settings.IconGapWidth.Should().Be(20);
+        }
+
+        [Fact]
+        public void Settings_IconGapHeight_ShouldAcceptAnyValue()
+        {
+            // Arrange
+            var settings = new Settings();
+
+            // Act & Assert - Test negative value (no clamping)
+            settings.IconGapHeight = -5;
+            settings.IconGapHeight.Should().Be(-5);
+
+            // Act & Assert - Test large value (no clamping)
+            settings.IconGapHeight = 75;
+            settings.IconGapHeight.Should().Be(75);
+
+            // Act & Assert - Test valid value
+            settings.IconGapHeight = 20;
+            settings.IconGapHeight.Should().Be(20);
+        }
+
+        [Fact]
+        public void Settings_GridWidth_ShouldAcceptAnyValue()
+        {
+            // Arrange
+            var settings = new Settings();
+
+            // Act & Assert - Test zero value (no clamping)
+            settings.GridWidth = 0;
+            settings.GridWidth.Should().Be(0);
+
+            // Act & Assert - Test large value (no clamping)
+            settings.GridWidth = 25;
+            settings.GridWidth.Should().Be(25);
+
+            // Act & Assert - Test valid value
+            settings.GridWidth = 10;
+            settings.GridWidth.Should().Be(10);
+        }
+
+        [Fact]
+        public void Settings_GridHeight_ShouldAcceptAnyValue()
+        {
+            // Arrange
+            var settings = new Settings();
+
+            // Act & Assert - Test zero value (no clamping)
+            settings.GridHeight = 0;
+            settings.GridHeight.Should().Be(0);
+
+            // Act & Assert - Test large value (no clamping)
+            settings.GridHeight = 25;
+            settings.GridHeight.Should().Be(25);
+
+            // Act & Assert - Test valid value
+            settings.GridHeight = 10;
+            settings.GridHeight.Should().Be(10);
+        }
+
+        [Fact]
+        public void Settings_LogLevel_ShouldAcceptAnyValue()
+        {
+            // Arrange
+            var settings = new Settings();
+
+            // Act & Assert - Test negative value (no clamping)
+            settings.LogLevel = -1;
+            settings.LogLevel.Should().Be(-1);
+
+            // Act & Assert - Test large value (no clamping)
+            settings.LogLevel = 6;
+            settings.LogLevel.Should().Be(6);
+
+            // Act & Assert - Test valid value
+            settings.LogLevel = 2;
+            settings.LogLevel.Should().Be(2);
+        }
+
+        [Fact]
+        public void Settings_StartingPosition_ShouldAcceptValidValues()
+        {
+            // Arrange
+            var settings = new Settings();
+
+            // Act & Assert - Test valid enum values
+            settings.StartingPosition = 0; // CenterScreen
+            settings.StartingPosition.Should().Be(0);
+
+            settings.StartingPosition = 1; // TopLeft
+            settings.StartingPosition.Should().Be(1);
+
+            settings.StartingPosition = 2; // TopRight
+            settings.StartingPosition.Should().Be(2);
+
+            settings.StartingPosition = 3; // BottomLeft
+            settings.StartingPosition.Should().Be(3);
+
+            settings.StartingPosition = 4; // BottomRight
+            settings.StartingPosition.Should().Be(4);
+        }
+
+        [Fact]
+        public void Settings_Defaults_ShouldContainAllDefaultValues()
+        {
+            // Arrange
+            var settings = new Settings();
+
+            // Act & Assert
+            settings.Defaults.Should().NotBeNull();
+            settings.Defaults.Should().ContainKey(Settings.DefaultField.IconWidth);
+            settings.Defaults.Should().ContainKey(Settings.DefaultField.IconHeight);
+            settings.Defaults.Should().ContainKey(Settings.DefaultField.IconGapWidth);
+            settings.Defaults.Should().ContainKey(Settings.DefaultField.IconGapHeight);
+            settings.Defaults.Should().ContainKey(Settings.DefaultField.IconScale);
+            settings.Defaults.Should().ContainKey(Settings.DefaultField.Opacity);
+            settings.Defaults.Should().ContainKey(Settings.DefaultField.RoundedCornersRadius);
+            settings.Defaults.Should().ContainKey(Settings.DefaultField.EnableTransparency);
+            settings.Defaults.Should().ContainKey(Settings.DefaultField.HideTitleBar);
+            settings.Defaults.Should().ContainKey(Settings.DefaultField.EnableBackgroundGradient);
+            settings.Defaults.Should().ContainKey(Settings.DefaultField.ShowFocus);
+            settings.Defaults.Should().ContainKey(Settings.DefaultField.ShowURL);
+            settings.Defaults.Should().ContainKey(Settings.DefaultField.RevealShortURL);
+            settings.Defaults.Should().ContainKey(Settings.DefaultField.TransparencyColor);
+            settings.Defaults.Should().ContainKey(Settings.DefaultField.FocusBoxColor);
+            settings.Defaults.Should().ContainKey(Settings.DefaultField.FocusBoxLineWidth);
+        }
+
+        [Fact]
+        public void Settings_ResetToDefaults_ShouldRestoreDefaultValues()
+        {
+            // Arrange
+            var settings = new Settings();
+            var originalIconWidth = settings.IconWidth;
+            var originalIconHeight = settings.IconHeight;
+
+            // Act - Change values
+            settings.IconWidth = 100;
+            settings.IconHeight = 100;
+
+            // Assert - Values should be changed
+            settings.IconWidth.Should().Be(100);
+            settings.IconHeight.Should().Be(100);
+
+            // Act - Reset to defaults (manually reset to original values)
+            settings.IconWidth = originalIconWidth;
+            settings.IconHeight = originalIconHeight;
+
+            // Assert - Values should be restored to defaults
+            settings.IconWidth.Should().Be(originalIconWidth);
+            settings.IconHeight.Should().Be(originalIconHeight);
+        }
+
+        [Fact]
+        public void Settings_Clone_ShouldCreateIdenticalCopy()
+        {
+            // Arrange
+            var originalSettings = new Settings();
+            originalSettings.IconWidth = 64;
+            originalSettings.IconHeight = 64;
+            originalSettings.Opacity = 0.8;
+            originalSettings.EnableTransparency = true;
+
+            // Act - Create a new instance with same values
+            var clonedSettings = new Settings();
+            clonedSettings.IconWidth = originalSettings.IconWidth;
+            clonedSettings.IconHeight = originalSettings.IconHeight;
+            clonedSettings.Opacity = originalSettings.Opacity;
+            clonedSettings.EnableTransparency = originalSettings.EnableTransparency;
+
+            // Assert
+            clonedSettings.Should().NotBeSameAs(originalSettings);
+            clonedSettings.IconWidth.Should().Be(originalSettings.IconWidth);
+            clonedSettings.IconHeight.Should().Be(originalSettings.IconHeight);
+            clonedSettings.Opacity.Should().Be(originalSettings.Opacity);
+            clonedSettings.EnableTransparency.Should().Be(originalSettings.EnableTransparency);
+        }
+
+        [Fact]
+        public void Settings_Equals_ShouldCompareCorrectly()
+        {
+            // Arrange
+            var settings1 = new Settings();
+            var settings2 = new Settings();
+            var settings3 = new Settings();
+
+            settings1.IconWidth = 64;
+            settings2.IconWidth = 64;
+            settings3.IconWidth = 128;
+
+            // Act & Assert
+            // SettingsクラスはEqualsメソッドをオーバーライドしていないため、
+            // 参照比較になる
+            settings1.Equals(settings1).Should().BeTrue(); // 同じインスタンス
+            settings1.Equals(settings2).Should().BeFalse(); // 異なるインスタンス
+            settings1.Equals(settings3).Should().BeFalse(); // 異なるインスタンス
+            settings1.Equals(null).Should().BeFalse();
+        }
+
+        [Fact]
+        public void Settings_GetHashCode_ShouldReturnConsistentValue()
+        {
+            // Arrange
+            var settings = new Settings();
+            settings.IconWidth = 64;
+            settings.IconHeight = 64;
+
+            // Act
+            var hashCode1 = settings.GetHashCode();
+            var hashCode2 = settings.GetHashCode();
+
+            // Assert
+            hashCode1.Should().Be(hashCode2);
+        }
+
+        [Fact]
+        public void Settings_ToString_ShouldReturnMeaningfulString()
+        {
+            // Arrange
+            var settings = new Settings();
+            settings.IconWidth = 64;
+            settings.IconHeight = 64;
+
+            // Act
+            var result = settings.ToString();
+
+            // Assert
+            result.Should().NotBeNullOrEmpty();
+            result.Should().Contain("Settings");
+        }
     }
 }

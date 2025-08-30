@@ -36,6 +36,7 @@ namespace BrowserChooser3.Tests
             var logLevel = Logger.CurrentLogLevel;
 
             // Assert
+            // 静的初期化ではLogLevel.Debugが設定されている
             logLevel.Should().Be(Logger.LogLevel.Debug);
         }
 
