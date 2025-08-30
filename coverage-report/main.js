@@ -213,47 +213,47 @@ var assemblies = [
   {
     "name": "BrowserChooser3",
     "classes": [
-      { "name": "BrowserChooser3.ApplicationConfiguration", "rp": "BrowserChooser3_ApplicationConfiguration.html", "cl": 0, "ucl": 10, "cal": 10, "tl": 58, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "BrowserChooser3.Classes.Models.Browser", "rp": "BrowserChooser3_Browser.html", "cl": 82, "ucl": 0, "cal": 82, "tl": 192, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "BrowserChooser3.Classes.Models.BrowserDefinition", "rp": "BrowserChooser3_BrowserDefinition.html", "cl": 14, "ucl": 0, "cal": 14, "tl": 88, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "BrowserChooser3.Classes.Models.DisplayDictionary", "rp": "BrowserChooser3_DisplayDictionary.html", "cl": 0, "ucl": 30, "cal": 30, "tl": 102, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "BrowserChooser3.Classes.Models.FocusSettings", "rp": "BrowserChooser3_FocusSettings.html", "cl": 6, "ucl": 0, "cal": 6, "tl": 48, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "BrowserChooser3.Classes.Models.Protocol", "rp": "BrowserChooser3_Protocol.html", "cl": 44, "ucl": 0, "cal": 44, "tl": 118, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "BrowserChooser3.Classes.Models.URL", "rp": "BrowserChooser3_URL.html", "cl": 38, "ucl": 0, "cal": 38, "tl": 108, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "BrowserChooser3.Classes.Services.BrowserServices.BrowserDetector", "rp": "BrowserChooser3_BrowserDetector.html", "cl": 224, "ucl": 170, "cal": 394, "tl": 574, "cb": 32, "tb": 52, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "BrowserChooser3.Classes.Services.BrowserServices.DefaultBrowserChecker", "rp": "BrowserChooser3_DefaultBrowserChecker.html", "cl": 144, "ucl": 422, "cal": 566, "tl": 1014, "cb": 28, "tb": 144, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "BrowserChooser3.Classes.Services.BrowserServices.DetectedBrowsers", "rp": "BrowserChooser3_DetectedBrowsers.html", "cl": 392, "ucl": 282, "cal": 674, "tl": 1092, "cb": 70, "tb": 148, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormBrowserHandlers", "rp": "BrowserChooser3_OptionsFormBrowserHandlers.html", "cl": 32, "ucl": 522, "cal": 554, "tl": 778, "cb": 0, "tb": 196, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormCheckBoxHandlers", "rp": "BrowserChooser3_OptionsFormCheckBoxHandlers.html", "cl": 48, "ucl": 6, "cal": 54, "tl": 130, "cb": 10, "tb": 12, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormDragDropHandlers", "rp": "BrowserChooser3_OptionsFormDragDropHandlers.html", "cl": 38, "ucl": 490, "cal": 528, "tl": 868, "cb": 0, "tb": 212, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormFormHandlers", "rp": "BrowserChooser3_OptionsFormFormHandlers.html", "cl": 54, "ucl": 104, "cal": 158, "tl": 296, "cb": 10, "tb": 28, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormHelpHandlers", "rp": "BrowserChooser3_OptionsFormHelpHandlers.html", "cl": 34, "ucl": 22, "cal": 56, "tl": 128, "cb": 12, "tb": 24, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormListHandlers", "rp": "BrowserChooser3_OptionsFormListHandlers.html", "cl": 8, "ucl": 250, "cal": 258, "tl": 424, "cb": 0, "tb": 168, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormPanels", "rp": "BrowserChooser3_OptionsFormPanels.html", "cl": 2944, "ucl": 300, "cal": 3244, "tl": 4154, "cb": 8, "tb": 108, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormProtocolHandlers", "rp": "BrowserChooser3_OptionsFormProtocolHandlers.html", "cl": 22, "ucl": 276, "cal": 298, "tl": 422, "cb": 0, "tb": 120, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "BrowserChooser3.Classes.Services.SystemServices.CommandLineProcessor", "rp": "BrowserChooser3_CommandLineProcessor.html", "cl": 302, "ucl": 32, "cal": 334, "tl": 624, "cb": 248, "tb": 252, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "BrowserChooser3.Classes.Services.SystemServices.Policy", "rp": "BrowserChooser3_Policy.html", "cl": 142, "ucl": 116, "cal": 258, "tl": 480, "cb": 20, "tb": 52, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "BrowserChooser3.Classes.Services.SystemServices.StartupLauncher", "rp": "BrowserChooser3_StartupLauncher.html", "cl": 268, "ucl": 162, "cal": 430, "tl": 778, "cb": 89, "tb": 150, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "BrowserChooser3.Classes.Services.UI.FileDialogService", "rp": "BrowserChooser3_FileDialogService.html", "cl": 16, "ucl": 48, "cal": 64, "tl": 114, "cb": 4, "tb": 16, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "BrowserChooser3.Classes.Services.UI.FormService", "rp": "BrowserChooser3_FormService.html", "cl": 78, "ucl": 37, "cal": 115, "tl": 225, "cb": 24, "tb": 46, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "BrowserChooser3.Classes.Services.UI.MessageBoxService", "rp": "BrowserChooser3_MessageBoxService.html", "cl": 32, "ucl": 28, "cal": 60, "tl": 134, "cb": 4, "tb": 16, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "BrowserChooser3.Classes.Settings", "rp": "BrowserChooser3_Settings.html", "cl": 425, "ucl": 131, "cal": 556, "tl": 1448, "cb": 77, "tb": 136, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "BrowserChooser3.Classes.Utilities.BrowserUtilities", "rp": "BrowserChooser3_BrowserUtilities.html", "cl": 149, "ucl": 579, "cal": 728, "tl": 1160, "cb": 70, "tb": 520, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "BrowserChooser3.Classes.Utilities.GeneralUtilities", "rp": "BrowserChooser3_GeneralUtilities.html", "cl": 68, "ucl": 120, "cal": 188, "tl": 460, "cb": 24, "tb": 44, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "BrowserChooser3.Classes.Utilities.ImageUtilities", "rp": "BrowserChooser3_ImageUtilities.html", "cl": 276, "ucl": 68, "cal": 344, "tl": 630, "cb": 46, "tb": 52, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "BrowserChooser3.Classes.Utilities.Logger", "rp": "BrowserChooser3_Logger.html", "cl": 181, "ucl": 199, "cal": 380, "tl": 766, "cb": 42, "tb": 96, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "BrowserChooser3.Classes.Utilities.TestEnvironmentDetector", "rp": "BrowserChooser3_TestEnvironmentDetector.html", "cl": 19, "ucl": 13, "cal": 32, "tl": 70, "cb": 11, "tb": 22, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "BrowserChooser3.Classes.Utilities.URLUtilities", "rp": "BrowserChooser3_URLUtilities.html", "cl": 162, "ucl": 52, "cal": 214, "tl": 416, "cb": 110, "tb": 156, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "BrowserChooser3.CustomControls.FFButton", "rp": "BrowserChooser3_FFButton.html", "cl": 156, "ucl": 224, "cal": 380, "tl": 826, "cb": 24, "tb": 156, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "BrowserChooser3.CustomControls.FFCheckBox", "rp": "BrowserChooser3_FFCheckBox.html", "cl": 154, "ucl": 40, "cal": 194, "tl": 398, "cb": 60, "tb": 120, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "BrowserChooser3.Forms.AboutForm", "rp": "BrowserChooser3_AboutForm.html", "cl": 538, "ucl": 312, "cal": 850, "tl": 1190, "cb": 0, "tb": 56, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "BrowserChooser3.Forms.AddEditBrowserForm", "rp": "BrowserChooser3_AddEditBrowserForm.html", "cl": 142, "ucl": 280, "cal": 422, "tl": 598, "cb": 0, "tb": 112, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "BrowserChooser3.Forms.AddEditProtocolForm", "rp": "BrowserChooser3_AddEditProtocolForm.html", "cl": 84, "ucl": 176, "cal": 260, "tl": 392, "cb": 0, "tb": 68, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "BrowserChooser3.Forms.AddEditURLForm", "rp": "BrowserChooser3_AddEditURLForm.html", "cl": 90, "ucl": 222, "cal": 312, "tl": 452, "cb": 0, "tb": 100, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "BrowserChooser3.Forms.IconSelectionForm", "rp": "BrowserChooser3_IconSelectionForm.html", "cl": 238, "ucl": 150, "cal": 388, "tl": 598, "cb": 19, "tb": 68, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "BrowserChooser3.Forms.MainForm", "rp": "BrowserChooser3_MainForm.html", "cl": 998, "ucl": 1676, "cal": 2674, "tl": 4410, "cb": 242, "tb": 910, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "BrowserChooser3.Forms.OptionsForm", "rp": "BrowserChooser3_OptionsForm.html", "cl": 529, "ucl": 2373, "cal": 2902, "tl": 4424, "cb": 30, "tb": 1168, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "BrowserChooser3.Properties.Resources", "rp": "BrowserChooser3_Resources.html", "cl": 78, "ucl": 40, "cal": 118, "tl": 342, "cb": 4, "tb": 4, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "BrowserChooser3.ApplicationConfiguration", "rp": "BrowserChooser3_ApplicationConfiguration.html", "cl": 0, "ucl": 15, "cal": 15, "tl": 87, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "BrowserChooser3.Classes.Models.Browser", "rp": "BrowserChooser3_Browser.html", "cl": 123, "ucl": 0, "cal": 123, "tl": 288, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "BrowserChooser3.Classes.Models.BrowserDefinition", "rp": "BrowserChooser3_BrowserDefinition.html", "cl": 21, "ucl": 0, "cal": 21, "tl": 132, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "BrowserChooser3.Classes.Models.DisplayDictionary", "rp": "BrowserChooser3_DisplayDictionary.html", "cl": 0, "ucl": 45, "cal": 45, "tl": 153, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "BrowserChooser3.Classes.Models.FocusSettings", "rp": "BrowserChooser3_FocusSettings.html", "cl": 9, "ucl": 0, "cal": 9, "tl": 72, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "BrowserChooser3.Classes.Models.Protocol", "rp": "BrowserChooser3_Protocol.html", "cl": 66, "ucl": 0, "cal": 66, "tl": 177, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "BrowserChooser3.Classes.Models.URL", "rp": "BrowserChooser3_URL.html", "cl": 57, "ucl": 0, "cal": 57, "tl": 162, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "BrowserChooser3.Classes.Services.BrowserServices.BrowserDetector", "rp": "BrowserChooser3_BrowserDetector.html", "cl": 336, "ucl": 255, "cal": 591, "tl": 861, "cb": 48, "tb": 78, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "BrowserChooser3.Classes.Services.BrowserServices.DefaultBrowserChecker", "rp": "BrowserChooser3_DefaultBrowserChecker.html", "cl": 216, "ucl": 633, "cal": 849, "tl": 1521, "cb": 42, "tb": 216, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "BrowserChooser3.Classes.Services.BrowserServices.DetectedBrowsers", "rp": "BrowserChooser3_DetectedBrowsers.html", "cl": 588, "ucl": 423, "cal": 1011, "tl": 1638, "cb": 105, "tb": 222, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormBrowserHandlers", "rp": "BrowserChooser3_OptionsFormBrowserHandlers.html", "cl": 48, "ucl": 783, "cal": 831, "tl": 1167, "cb": 0, "tb": 294, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormCheckBoxHandlers", "rp": "BrowserChooser3_OptionsFormCheckBoxHandlers.html", "cl": 72, "ucl": 9, "cal": 81, "tl": 195, "cb": 15, "tb": 18, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormDragDropHandlers", "rp": "BrowserChooser3_OptionsFormDragDropHandlers.html", "cl": 57, "ucl": 735, "cal": 792, "tl": 1302, "cb": 0, "tb": 318, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormFormHandlers", "rp": "BrowserChooser3_OptionsFormFormHandlers.html", "cl": 81, "ucl": 156, "cal": 237, "tl": 444, "cb": 15, "tb": 42, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormHelpHandlers", "rp": "BrowserChooser3_OptionsFormHelpHandlers.html", "cl": 51, "ucl": 33, "cal": 84, "tl": 192, "cb": 18, "tb": 36, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormListHandlers", "rp": "BrowserChooser3_OptionsFormListHandlers.html", "cl": 12, "ucl": 375, "cal": 387, "tl": 636, "cb": 0, "tb": 252, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormPanels", "rp": "BrowserChooser3_OptionsFormPanels.html", "cl": 4416, "ucl": 450, "cal": 4866, "tl": 6231, "cb": 12, "tb": 162, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormProtocolHandlers", "rp": "BrowserChooser3_OptionsFormProtocolHandlers.html", "cl": 33, "ucl": 414, "cal": 447, "tl": 633, "cb": 0, "tb": 180, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "BrowserChooser3.Classes.Services.SystemServices.CommandLineProcessor", "rp": "BrowserChooser3_CommandLineProcessor.html", "cl": 453, "ucl": 48, "cal": 501, "tl": 936, "cb": 372, "tb": 378, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "BrowserChooser3.Classes.Services.SystemServices.Policy", "rp": "BrowserChooser3_Policy.html", "cl": 213, "ucl": 174, "cal": 387, "tl": 720, "cb": 30, "tb": 78, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "BrowserChooser3.Classes.Services.SystemServices.StartupLauncher", "rp": "BrowserChooser3_StartupLauncher.html", "cl": 402, "ucl": 243, "cal": 645, "tl": 1167, "cb": 136, "tb": 228, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "BrowserChooser3.Classes.Services.UI.FileDialogService", "rp": "BrowserChooser3_FileDialogService.html", "cl": 32, "ucl": 96, "cal": 128, "tl": 228, "cb": 8, "tb": 32, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "BrowserChooser3.Classes.Services.UI.FormService", "rp": "BrowserChooser3_FormService.html", "cl": 156, "ucl": 74, "cal": 230, "tl": 450, "cb": 48, "tb": 92, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "BrowserChooser3.Classes.Services.UI.MessageBoxService", "rp": "BrowserChooser3_MessageBoxService.html", "cl": 64, "ucl": 56, "cal": 120, "tl": 268, "cb": 8, "tb": 32, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "BrowserChooser3.Classes.Settings", "rp": "BrowserChooser3_Settings.html", "cl": 640, "ucl": 194, "cal": 834, "tl": 2172, "cb": 116, "tb": 204, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "BrowserChooser3.Classes.Utilities.BrowserUtilities", "rp": "BrowserChooser3_BrowserUtilities.html", "cl": 221, "ucl": 871, "cal": 1092, "tl": 1740, "cb": 103, "tb": 780, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "BrowserChooser3.Classes.Utilities.GeneralUtilities", "rp": "BrowserChooser3_GeneralUtilities.html", "cl": 102, "ucl": 180, "cal": 282, "tl": 690, "cb": 36, "tb": 66, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "BrowserChooser3.Classes.Utilities.ImageUtilities", "rp": "BrowserChooser3_ImageUtilities.html", "cl": 414, "ucl": 102, "cal": 516, "tl": 945, "cb": 69, "tb": 78, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "BrowserChooser3.Classes.Utilities.Logger", "rp": "BrowserChooser3_Logger.html", "cl": 229, "ucl": 341, "cal": 570, "tl": 1149, "cb": 52, "tb": 144, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "BrowserChooser3.Classes.Utilities.TestEnvironmentDetector", "rp": "BrowserChooser3_TestEnvironmentDetector.html", "cl": 38, "ucl": 26, "cal": 64, "tl": 140, "cb": 22, "tb": 44, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "BrowserChooser3.Classes.Utilities.URLUtilities", "rp": "BrowserChooser3_URLUtilities.html", "cl": 243, "ucl": 78, "cal": 321, "tl": 624, "cb": 165, "tb": 234, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "BrowserChooser3.CustomControls.FFButton", "rp": "BrowserChooser3_FFButton.html", "cl": 234, "ucl": 336, "cal": 570, "tl": 1239, "cb": 36, "tb": 234, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "BrowserChooser3.CustomControls.FFCheckBox", "rp": "BrowserChooser3_FFCheckBox.html", "cl": 231, "ucl": 60, "cal": 291, "tl": 597, "cb": 90, "tb": 180, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "BrowserChooser3.Forms.AboutForm", "rp": "BrowserChooser3_AboutForm.html", "cl": 807, "ucl": 468, "cal": 1275, "tl": 1785, "cb": 0, "tb": 84, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "BrowserChooser3.Forms.AddEditBrowserForm", "rp": "BrowserChooser3_AddEditBrowserForm.html", "cl": 213, "ucl": 420, "cal": 633, "tl": 897, "cb": 0, "tb": 168, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "BrowserChooser3.Forms.AddEditProtocolForm", "rp": "BrowserChooser3_AddEditProtocolForm.html", "cl": 126, "ucl": 264, "cal": 390, "tl": 588, "cb": 0, "tb": 102, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "BrowserChooser3.Forms.AddEditURLForm", "rp": "BrowserChooser3_AddEditURLForm.html", "cl": 135, "ucl": 333, "cal": 468, "tl": 678, "cb": 0, "tb": 150, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "BrowserChooser3.Forms.IconSelectionForm", "rp": "BrowserChooser3_IconSelectionForm.html", "cl": 363, "ucl": 219, "cal": 582, "tl": 897, "cb": 29, "tb": 102, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "BrowserChooser3.Forms.MainForm", "rp": "BrowserChooser3_MainForm.html", "cl": 1497, "ucl": 2514, "cal": 4011, "tl": 6615, "cb": 363, "tb": 1365, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "BrowserChooser3.Forms.OptionsForm", "rp": "BrowserChooser3_OptionsForm.html", "cl": 795, "ucl": 3558, "cal": 4353, "tl": 6636, "cb": 45, "tb": 1752, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "BrowserChooser3.Properties.Resources", "rp": "BrowserChooser3_Resources.html", "cl": 117, "ucl": 60, "cal": 177, "tl": 513, "cb": 6, "tb": 6, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
     ]},
 ];
 
@@ -280,6 +280,12 @@ var riskHotspots = [
       { "value": 130, "exceeded": true },
     ]},
   {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.OptionsForm", "reportPath": "BrowserChooser3_OptionsForm.html", "methodName": "SaveSettings()", "methodShortName": "SaveSettings()", "fileIndex": 4, "line": 1450,
+    "metrics": [
+      { "value": 17030, "exceeded": true },
+      { "value": 130, "exceeded": true },
+    ]},
+  {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.OptionsForm", "reportPath": "BrowserChooser3_OptionsForm.html", "methodName": "LoadSettingsToControls()", "methodShortName": "LoadSettingsToControls()", "fileIndex": 0, "line": 1218,
     "metrics": [
       { "value": 11342, "exceeded": true },
@@ -287,6 +293,12 @@ var riskHotspots = [
     ]},
   {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.OptionsForm", "reportPath": "BrowserChooser3_OptionsForm.html", "methodName": "LoadSettingsToControls()", "methodShortName": "LoadSettingsToControls()", "fileIndex": 2, "line": 1218,
+    "metrics": [
+      { "value": 11342, "exceeded": true },
+      { "value": 106, "exceeded": true },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.OptionsForm", "reportPath": "BrowserChooser3_OptionsForm.html", "methodName": "LoadSettingsToControls()", "methodShortName": "LoadSettingsToControls()", "fileIndex": 4, "line": 1218,
     "metrics": [
       { "value": 11342, "exceeded": true },
       { "value": 106, "exceeded": true },
@@ -304,6 +316,12 @@ var riskHotspots = [
       { "value": 76, "exceeded": true },
     ]},
   {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Utilities.BrowserUtilities", "reportPath": "BrowserChooser3_BrowserUtilities.html", "methodName": "DoLaunch(BrowserChooser3.Classes.Models.Browser,System.String,System.Boolean)", "methodShortName": "DoLaunch(...)", "fileIndex": 2, "line": 255,
+    "metrics": [
+      { "value": 5852, "exceeded": true },
+      { "value": 76, "exceeded": true },
+    ]},
+  {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Utilities.BrowserUtilities", "reportPath": "BrowserChooser3_BrowserUtilities.html", "methodName": "LaunchEdge(BrowserChooser3.Classes.Models.Browser,System.String,System.Boolean)", "methodShortName": "LaunchEdge(...)", "fileIndex": 0, "line": 192,
     "metrics": [
       { "value": 1980, "exceeded": true },
@@ -311,6 +329,12 @@ var riskHotspots = [
     ]},
   {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Utilities.BrowserUtilities", "reportPath": "BrowserChooser3_BrowserUtilities.html", "methodName": "LaunchEdge(BrowserChooser3.Classes.Models.Browser,System.String,System.Boolean)", "methodShortName": "LaunchEdge(...)", "fileIndex": 1, "line": 192,
+    "metrics": [
+      { "value": 1980, "exceeded": true },
+      { "value": 44, "exceeded": true },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Utilities.BrowserUtilities", "reportPath": "BrowserChooser3_BrowserUtilities.html", "methodName": "LaunchEdge(BrowserChooser3.Classes.Models.Browser,System.String,System.Boolean)", "methodShortName": "LaunchEdge(...)", "fileIndex": 2, "line": 192,
     "metrics": [
       { "value": 1980, "exceeded": true },
       { "value": 44, "exceeded": true },
@@ -328,6 +352,12 @@ var riskHotspots = [
       { "value": 42, "exceeded": true },
     ]},
   {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.OptionsForm", "reportPath": "BrowserChooser3_OptionsForm.html", "methodName": "LoadSettings()", "methodShortName": "LoadSettings()", "fileIndex": 4, "line": 1073,
+    "metrics": [
+      { "value": 1806, "exceeded": true },
+      { "value": 42, "exceeded": true },
+    ]},
+  {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.OptionsForm", "reportPath": "BrowserChooser3_OptionsForm.html", "methodName": "ResetCurrentPanelToDefaults(System.Windows.Forms.TabPage)", "methodShortName": "ResetCurrentPanelToDefaults(...)", "fileIndex": 0, "line": 749,
     "metrics": [
       { "value": 1482, "exceeded": true },
@@ -335,6 +365,12 @@ var riskHotspots = [
     ]},
   {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.OptionsForm", "reportPath": "BrowserChooser3_OptionsForm.html", "methodName": "ResetCurrentPanelToDefaults(System.Windows.Forms.TabPage)", "methodShortName": "ResetCurrentPanelToDefaults(...)", "fileIndex": 2, "line": 749,
+    "metrics": [
+      { "value": 1482, "exceeded": true },
+      { "value": 38, "exceeded": true },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.OptionsForm", "reportPath": "BrowserChooser3_OptionsForm.html", "methodName": "ResetCurrentPanelToDefaults(System.Windows.Forms.TabPage)", "methodShortName": "ResetCurrentPanelToDefaults(...)", "fileIndex": 4, "line": 749,
     "metrics": [
       { "value": 1482, "exceeded": true },
       { "value": 38, "exceeded": true },
@@ -352,6 +388,12 @@ var riskHotspots = [
       { "value": 32, "exceeded": true },
     ]},
   {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Utilities.BrowserUtilities", "reportPath": "BrowserChooser3_BrowserUtilities.html", "methodName": "LaunchIE(BrowserChooser3.Classes.Models.Browser,System.String,System.Boolean)", "methodShortName": "LaunchIE(...)", "fileIndex": 2, "line": 144,
+    "metrics": [
+      { "value": 1056, "exceeded": true },
+      { "value": 32, "exceeded": true },
+    ]},
+  {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.MainForm", "reportPath": "BrowserChooser3_MainForm.html", "methodName": "MainForm_KeyDown(System.Object,System.Windows.Forms.KeyEventArgs)", "methodShortName": "MainForm_KeyDown(...)", "fileIndex": 0, "line": 1581,
     "metrics": [
       { "value": 930, "exceeded": true },
@@ -359,6 +401,12 @@ var riskHotspots = [
     ]},
   {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.MainForm", "reportPath": "BrowserChooser3_MainForm.html", "methodName": "MainForm_KeyDown(System.Object,System.Windows.Forms.KeyEventArgs)", "methodShortName": "MainForm_KeyDown(...)", "fileIndex": 2, "line": 1581,
+    "metrics": [
+      { "value": 930, "exceeded": true },
+      { "value": 30, "exceeded": true },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.MainForm", "reportPath": "BrowserChooser3_MainForm.html", "methodName": "MainForm_KeyDown(System.Object,System.Windows.Forms.KeyEventArgs)", "methodShortName": "MainForm_KeyDown(...)", "fileIndex": 4, "line": 1581,
     "metrics": [
       { "value": 930, "exceeded": true },
       { "value": 30, "exceeded": true },
@@ -376,6 +424,12 @@ var riskHotspots = [
       { "value": 40, "exceeded": true },
     ]},
   {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.MainForm", "reportPath": "BrowserChooser3_MainForm.html", "methodName": "CreateBrowserButtons()", "methodShortName": "CreateBrowserButtons()", "fileIndex": 4, "line": 719,
+    "metrics": [
+      { "value": 824, "exceeded": true },
+      { "value": 40, "exceeded": true },
+    ]},
+  {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormBrowserHandlers", "reportPath": "BrowserChooser3_OptionsFormBrowserHandlers.html", "methodName": "DetectBrowsers_Click(System.Object,System.EventArgs)", "methodShortName": "DetectBrowsers_Click(...)", "fileIndex": 0, "line": 272,
     "metrics": [
       { "value": 812, "exceeded": true },
@@ -383,6 +437,12 @@ var riskHotspots = [
     ]},
   {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormBrowserHandlers", "reportPath": "BrowserChooser3_OptionsFormBrowserHandlers.html", "methodName": "DetectBrowsers_Click(System.Object,System.EventArgs)", "methodShortName": "DetectBrowsers_Click(...)", "fileIndex": 1, "line": 272,
+    "metrics": [
+      { "value": 812, "exceeded": true },
+      { "value": 28, "exceeded": true },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormBrowserHandlers", "reportPath": "BrowserChooser3_OptionsFormBrowserHandlers.html", "methodName": "DetectBrowsers_Click(System.Object,System.EventArgs)", "methodShortName": "DetectBrowsers_Click(...)", "fileIndex": 2, "line": 272,
     "metrics": [
       { "value": 812, "exceeded": true },
       { "value": 28, "exceeded": true },
@@ -400,6 +460,12 @@ var riskHotspots = [
       { "value": 28, "exceeded": true },
     ]},
   {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormListHandlers", "reportPath": "BrowserChooser3_OptionsFormListHandlers.html", "methodName": "LstURLs_SelectedIndexChanged(System.Object,System.EventArgs)", "methodShortName": "LstURLs_SelectedIndexChanged(...)", "fileIndex": 2, "line": 70,
+    "metrics": [
+      { "value": 812, "exceeded": true },
+      { "value": 28, "exceeded": true },
+    ]},
+  {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.AddEditURLForm", "reportPath": "BrowserChooser3_AddEditURLForm.html", "methodName": "LoadURLData()", "methodShortName": "LoadURLData()", "fileIndex": 0, "line": 62,
     "metrics": [
       { "value": 812, "exceeded": true },
@@ -407,6 +473,12 @@ var riskHotspots = [
     ]},
   {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.AddEditURLForm", "reportPath": "BrowserChooser3_AddEditURLForm.html", "methodName": "LoadURLData()", "methodShortName": "LoadURLData()", "fileIndex": 1, "line": 62,
+    "metrics": [
+      { "value": 812, "exceeded": true },
+      { "value": 28, "exceeded": true },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.AddEditURLForm", "reportPath": "BrowserChooser3_AddEditURLForm.html", "methodName": "LoadURLData()", "methodShortName": "LoadURLData()", "fileIndex": 2, "line": 62,
     "metrics": [
       { "value": 812, "exceeded": true },
       { "value": 28, "exceeded": true },
@@ -424,6 +496,12 @@ var riskHotspots = [
       { "value": 28, "exceeded": true },
     ]},
   {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.OptionsForm", "reportPath": "BrowserChooser3_OptionsForm.html", "methodName": "ResetDisplayPanelToDefaults(System.Windows.Forms.TabPage)", "methodShortName": "ResetDisplayPanelToDefaults(...)", "fileIndex": 4, "line": 787,
+    "metrics": [
+      { "value": 812, "exceeded": true },
+      { "value": 28, "exceeded": true },
+    ]},
+  {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Utilities.BrowserUtilities", "reportPath": "BrowserChooser3_BrowserUtilities.html", "methodName": "LaunchBrowser(BrowserChooser3.Classes.Models.Browser,System.String,System.Boolean)", "methodShortName": "LaunchBrowser(...)", "fileIndex": 0, "line": 82,
     "metrics": [
       { "value": 666, "exceeded": true },
@@ -431,6 +509,12 @@ var riskHotspots = [
     ]},
   {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Utilities.BrowserUtilities", "reportPath": "BrowserChooser3_BrowserUtilities.html", "methodName": "LaunchBrowser(BrowserChooser3.Classes.Models.Browser,System.String,System.Boolean)", "methodShortName": "LaunchBrowser(...)", "fileIndex": 1, "line": 82,
+    "metrics": [
+      { "value": 666, "exceeded": true },
+      { "value": 42, "exceeded": true },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Utilities.BrowserUtilities", "reportPath": "BrowserChooser3_BrowserUtilities.html", "methodName": "LaunchBrowser(BrowserChooser3.Classes.Models.Browser,System.String,System.Boolean)", "methodShortName": "LaunchBrowser(...)", "fileIndex": 2, "line": 82,
     "metrics": [
       { "value": 666, "exceeded": true },
       { "value": 42, "exceeded": true },
@@ -448,6 +532,12 @@ var riskHotspots = [
       { "value": 24, "exceeded": true },
     ]},
   {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormListHandlers", "reportPath": "BrowserChooser3_OptionsFormListHandlers.html", "methodName": "LstBrowsers_SelectedIndexChanged(System.Object,System.EventArgs)", "methodShortName": "LstBrowsers_SelectedIndexChanged(...)", "fileIndex": 2, "line": 27,
+    "metrics": [
+      { "value": 600, "exceeded": true },
+      { "value": 24, "exceeded": true },
+    ]},
+  {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.AddEditBrowserForm", "reportPath": "BrowserChooser3_AddEditBrowserForm.html", "methodName": "LoadBrowserData()", "methodShortName": "LoadBrowserData()", "fileIndex": 0, "line": 86,
     "metrics": [
       { "value": 600, "exceeded": true },
@@ -455,6 +545,12 @@ var riskHotspots = [
     ]},
   {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.AddEditBrowserForm", "reportPath": "BrowserChooser3_AddEditBrowserForm.html", "methodName": "LoadBrowserData()", "methodShortName": "LoadBrowserData()", "fileIndex": 1, "line": 86,
+    "metrics": [
+      { "value": 600, "exceeded": true },
+      { "value": 24, "exceeded": true },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.AddEditBrowserForm", "reportPath": "BrowserChooser3_AddEditBrowserForm.html", "methodName": "LoadBrowserData()", "methodShortName": "LoadBrowserData()", "fileIndex": 2, "line": 86,
     "metrics": [
       { "value": 600, "exceeded": true },
       { "value": 24, "exceeded": true },
@@ -484,6 +580,18 @@ var riskHotspots = [
       { "value": 22, "exceeded": true },
     ]},
   {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormBrowserHandlers", "reportPath": "BrowserChooser3_OptionsFormBrowserHandlers.html", "methodName": "EditBrowser_Click(System.Object,System.EventArgs)", "methodShortName": "EditBrowser_Click(...)", "fileIndex": 2, "line": 112,
+    "metrics": [
+      { "value": 506, "exceeded": true },
+      { "value": 22, "exceeded": true },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormBrowserHandlers", "reportPath": "BrowserChooser3_OptionsFormBrowserHandlers.html", "methodName": "CloneBrowser_Click(System.Object,System.EventArgs)", "methodShortName": "CloneBrowser_Click(...)", "fileIndex": 2, "line": 208,
+    "metrics": [
+      { "value": 506, "exceeded": true },
+      { "value": 22, "exceeded": true },
+    ]},
+  {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.OptionsForm", "reportPath": "BrowserChooser3_OptionsForm.html", "methodName": "SetupBrowserPanelButtons()", "methodShortName": "SetupBrowserPanelButtons()", "fileIndex": 0, "line": 266,
     "metrics": [
       { "value": 506, "exceeded": true },
@@ -496,6 +604,12 @@ var riskHotspots = [
       { "value": 22, "exceeded": true },
     ]},
   {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.OptionsForm", "reportPath": "BrowserChooser3_OptionsForm.html", "methodName": "SetupBrowserPanelButtons()", "methodShortName": "SetupBrowserPanelButtons()", "fileIndex": 4, "line": 266,
+    "metrics": [
+      { "value": 506, "exceeded": true },
+      { "value": 22, "exceeded": true },
+    ]},
+  {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormProtocolHandlers", "reportPath": "BrowserChooser3_OptionsFormProtocolHandlers.html", "methodName": "EditProtocol_Click(System.Object,System.EventArgs)", "methodShortName": "EditProtocol_Click(...)", "fileIndex": 0, "line": 86,
     "metrics": [
       { "value": 420, "exceeded": true },
@@ -503,6 +617,12 @@ var riskHotspots = [
     ]},
   {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormProtocolHandlers", "reportPath": "BrowserChooser3_OptionsFormProtocolHandlers.html", "methodName": "EditProtocol_Click(System.Object,System.EventArgs)", "methodShortName": "EditProtocol_Click(...)", "fileIndex": 1, "line": 86,
+    "metrics": [
+      { "value": 420, "exceeded": true },
+      { "value": 20, "exceeded": true },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormProtocolHandlers", "reportPath": "BrowserChooser3_OptionsFormProtocolHandlers.html", "methodName": "EditProtocol_Click(System.Object,System.EventArgs)", "methodShortName": "EditProtocol_Click(...)", "fileIndex": 2, "line": 86,
     "metrics": [
       { "value": 420, "exceeded": true },
       { "value": 20, "exceeded": true },
@@ -544,6 +664,24 @@ var riskHotspots = [
       { "value": 20, "exceeded": true },
     ]},
   {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.OptionsForm", "reportPath": "BrowserChooser3_OptionsForm.html", "methodName": "EditAutoURL_Click(System.Object,System.EventArgs)", "methodShortName": "EditAutoURL_Click(...)", "fileIndex": 4, "line": 407,
+    "metrics": [
+      { "value": 420, "exceeded": true },
+      { "value": 20, "exceeded": true },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.OptionsForm", "reportPath": "BrowserChooser3_OptionsForm.html", "methodName": "ResetGridPanelToDefaults(System.Windows.Forms.TabPage)", "methodShortName": "ResetGridPanelToDefaults(...)", "fileIndex": 4, "line": 853,
+    "metrics": [
+      { "value": 420, "exceeded": true },
+      { "value": 20, "exceeded": true },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.OptionsForm", "reportPath": "BrowserChooser3_OptionsForm.html", "methodName": "SetupBrowsersDragDrop(System.Windows.Forms.ListView)", "methodShortName": "SetupBrowsersDragDrop(...)", "fileIndex": 4, "line": 1821,
+    "metrics": [
+      { "value": 420, "exceeded": true },
+      { "value": 20, "exceeded": true },
+    ]},
+  {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.MainForm", "reportPath": "BrowserChooser3_MainForm.html", "methodName": "HandleArrowKeyUp(System.Windows.Forms.Keys)", "methodShortName": "HandleArrowKeyUp(...)", "fileIndex": 0, "line": 1628,
     "metrics": [
       { "value": 380, "exceeded": true },
@@ -551,6 +689,12 @@ var riskHotspots = [
     ]},
   {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.MainForm", "reportPath": "BrowserChooser3_MainForm.html", "methodName": "HandleArrowKeyUp(System.Windows.Forms.Keys)", "methodShortName": "HandleArrowKeyUp(...)", "fileIndex": 2, "line": 1628,
+    "metrics": [
+      { "value": 380, "exceeded": true },
+      { "value": 19, "exceeded": true },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.MainForm", "reportPath": "BrowserChooser3_MainForm.html", "methodName": "HandleArrowKeyUp(System.Windows.Forms.Keys)", "methodShortName": "HandleArrowKeyUp(...)", "fileIndex": 4, "line": 1628,
     "metrics": [
       { "value": 380, "exceeded": true },
       { "value": 19, "exceeded": true },
@@ -592,6 +736,24 @@ var riskHotspots = [
       { "value": 18, "exceeded": true },
     ]},
   {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.MainForm", "reportPath": "BrowserChooser3_MainForm.html", "methodName": "CreateOverlayLabel(System.Windows.Forms.Button,BrowserChooser3.Classes.Models.Browser,System.Int32)", "methodShortName": "CreateOverlayLabel(...)", "fileIndex": 4, "line": 841,
+    "metrics": [
+      { "value": 342, "exceeded": true },
+      { "value": 18, "exceeded": true },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.MainForm", "reportPath": "BrowserChooser3_MainForm.html", "methodName": "RefreshForm()", "methodShortName": "RefreshForm()", "fileIndex": 4, "line": 974,
+    "metrics": [
+      { "value": 342, "exceeded": true },
+      { "value": 18, "exceeded": true },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.MainForm", "reportPath": "BrowserChooser3_MainForm.html", "methodName": "HandleGotFocus(System.Object,System.EventArgs)", "methodShortName": "HandleGotFocus(...)", "fileIndex": 4, "line": 1855,
+    "metrics": [
+      { "value": 342, "exceeded": true },
+      { "value": 18, "exceeded": true },
+    ]},
+  {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormListHandlers", "reportPath": "BrowserChooser3_OptionsFormListHandlers.html", "methodName": "LstProtocols_SelectedIndexChanged(System.Object,System.EventArgs)", "methodShortName": "LstProtocols_SelectedIndexChanged(...)", "fileIndex": 0, "line": 147,
     "metrics": [
       { "value": 272, "exceeded": true },
@@ -616,6 +778,18 @@ var riskHotspots = [
       { "value": 16, "exceeded": true },
     ]},
   {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormListHandlers", "reportPath": "BrowserChooser3_OptionsFormListHandlers.html", "methodName": "LstProtocols_SelectedIndexChanged(System.Object,System.EventArgs)", "methodShortName": "LstProtocols_SelectedIndexChanged(...)", "fileIndex": 2, "line": 147,
+    "metrics": [
+      { "value": 272, "exceeded": true },
+      { "value": 16, "exceeded": true },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormListHandlers", "reportPath": "BrowserChooser3_OptionsFormListHandlers.html", "methodName": "LstFileTypes_SelectedIndexChanged(System.Object,System.EventArgs)", "methodShortName": "LstFileTypes_SelectedIndexChanged(...)", "fileIndex": 2, "line": 182,
+    "metrics": [
+      { "value": 272, "exceeded": true },
+      { "value": 16, "exceeded": true },
+    ]},
+  {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.CustomControls.FFButton", "reportPath": "BrowserChooser3_FFButton.html", "methodName": "MoveFocus(System.Windows.Forms.Keys)", "methodShortName": "MoveFocus(...)", "fileIndex": 0, "line": 212,
     "metrics": [
       { "value": 272, "exceeded": true },
@@ -623,6 +797,12 @@ var riskHotspots = [
     ]},
   {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.CustomControls.FFButton", "reportPath": "BrowserChooser3_FFButton.html", "methodName": "MoveFocus(System.Windows.Forms.Keys)", "methodShortName": "MoveFocus(...)", "fileIndex": 1, "line": 212,
+    "metrics": [
+      { "value": 272, "exceeded": true },
+      { "value": 16, "exceeded": true },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.CustomControls.FFButton", "reportPath": "BrowserChooser3_FFButton.html", "methodName": "MoveFocus(System.Windows.Forms.Keys)", "methodShortName": "MoveFocus(...)", "fileIndex": 2, "line": 212,
     "metrics": [
       { "value": 272, "exceeded": true },
       { "value": 16, "exceeded": true },
@@ -640,6 +820,12 @@ var riskHotspots = [
       { "value": 16, "exceeded": true },
     ]},
   {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.AboutForm", "reportPath": "BrowserChooser3_AboutForm.html", "methodName": "IsTestEnvironment()", "methodShortName": "IsTestEnvironment()", "fileIndex": 2, "line": 582,
+    "metrics": [
+      { "value": 272, "exceeded": true },
+      { "value": 16, "exceeded": true },
+    ]},
+  {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.AddEditProtocolForm", "reportPath": "BrowserChooser3_AddEditProtocolForm.html", "methodName": "LoadProtocolData()", "methodShortName": "LoadProtocolData()", "fileIndex": 0, "line": 62,
     "metrics": [
       { "value": 272, "exceeded": true },
@@ -647,6 +833,12 @@ var riskHotspots = [
     ]},
   {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.AddEditProtocolForm", "reportPath": "BrowserChooser3_AddEditProtocolForm.html", "methodName": "LoadProtocolData()", "methodShortName": "LoadProtocolData()", "fileIndex": 1, "line": 62,
+    "metrics": [
+      { "value": 272, "exceeded": true },
+      { "value": 16, "exceeded": true },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.AddEditProtocolForm", "reportPath": "BrowserChooser3_AddEditProtocolForm.html", "methodName": "LoadProtocolData()", "methodShortName": "LoadProtocolData()", "fileIndex": 2, "line": 62,
     "metrics": [
       { "value": 272, "exceeded": true },
       { "value": 16, "exceeded": true },
@@ -664,6 +856,12 @@ var riskHotspots = [
       { "value": 16, "exceeded": true },
     ]},
   {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.MainForm", "reportPath": "BrowserChooser3_MainForm.html", "methodName": "HandleLostFocus(System.Object,System.EventArgs)", "methodShortName": "HandleLostFocus(...)", "fileIndex": 4, "line": 1889,
+    "metrics": [
+      { "value": 272, "exceeded": true },
+      { "value": 16, "exceeded": true },
+    ]},
+  {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.CustomControls.FFButton", "reportPath": "BrowserChooser3_FFButton.html", "methodName": "DrawText(System.Drawing.Graphics,System.Drawing.Rectangle)", "methodShortName": "DrawText(...)", "fileIndex": 0, "line": 317,
     "metrics": [
       { "value": 266, "exceeded": true },
@@ -676,6 +874,12 @@ var riskHotspots = [
       { "value": 18, "exceeded": true },
     ]},
   {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.CustomControls.FFButton", "reportPath": "BrowserChooser3_FFButton.html", "methodName": "DrawText(System.Drawing.Graphics,System.Drawing.Rectangle)", "methodShortName": "DrawText(...)", "fileIndex": 2, "line": 317,
+    "metrics": [
+      { "value": 266, "exceeded": true },
+      { "value": 18, "exceeded": true },
+    ]},
+  {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormBrowserHandlers", "reportPath": "BrowserChooser3_OptionsFormBrowserHandlers.html", "methodName": "DeleteBrowser_Click(System.Object,System.EventArgs)", "methodShortName": "DeleteBrowser_Click(...)", "fileIndex": 0, "line": 168,
     "metrics": [
       { "value": 210, "exceeded": true },
@@ -683,6 +887,12 @@ var riskHotspots = [
     ]},
   {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormBrowserHandlers", "reportPath": "BrowserChooser3_OptionsFormBrowserHandlers.html", "methodName": "DeleteBrowser_Click(System.Object,System.EventArgs)", "methodShortName": "DeleteBrowser_Click(...)", "fileIndex": 1, "line": 168,
+    "metrics": [
+      { "value": 210, "exceeded": true },
+      { "value": 14, "exceeded": false },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormBrowserHandlers", "reportPath": "BrowserChooser3_OptionsFormBrowserHandlers.html", "methodName": "DeleteBrowser_Click(System.Object,System.EventArgs)", "methodShortName": "DeleteBrowser_Click(...)", "fileIndex": 2, "line": 168,
     "metrics": [
       { "value": 210, "exceeded": true },
       { "value": 14, "exceeded": false },
@@ -712,6 +922,18 @@ var riskHotspots = [
       { "value": 14, "exceeded": false },
     ]},
   {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormDragDropHandlers", "reportPath": "BrowserChooser3_OptionsFormDragDropHandlers.html", "methodName": "LstURLs_DragDrop(System.Object,System.Windows.Forms.DragEventArgs)", "methodShortName": "LstURLs_DragDrop(...)", "fileIndex": 2, "line": 109,
+    "metrics": [
+      { "value": 210, "exceeded": true },
+      { "value": 14, "exceeded": false },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormDragDropHandlers", "reportPath": "BrowserChooser3_OptionsFormDragDropHandlers.html", "methodName": "ListViewBrowsers_DragDrop(System.Object,System.Windows.Forms.DragEventArgs)", "methodShortName": "ListViewBrowsers_DragDrop(...)", "fileIndex": 2, "line": 375,
+    "metrics": [
+      { "value": 210, "exceeded": true },
+      { "value": 14, "exceeded": false },
+    ]},
+  {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormProtocolHandlers", "reportPath": "BrowserChooser3_OptionsFormProtocolHandlers.html", "methodName": "AddProtocol_Click(System.Object,System.EventArgs)", "methodShortName": "AddProtocol_Click(...)", "fileIndex": 0, "line": 40,
     "metrics": [
       { "value": 210, "exceeded": true },
@@ -736,6 +958,18 @@ var riskHotspots = [
       { "value": 14, "exceeded": false },
     ]},
   {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormProtocolHandlers", "reportPath": "BrowserChooser3_OptionsFormProtocolHandlers.html", "methodName": "AddProtocol_Click(System.Object,System.EventArgs)", "methodShortName": "AddProtocol_Click(...)", "fileIndex": 2, "line": 40,
+    "metrics": [
+      { "value": 210, "exceeded": true },
+      { "value": 14, "exceeded": false },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormProtocolHandlers", "reportPath": "BrowserChooser3_OptionsFormProtocolHandlers.html", "methodName": "DeleteProtocol_Click(System.Object,System.EventArgs)", "methodShortName": "DeleteProtocol_Click(...)", "fileIndex": 2, "line": 135,
+    "metrics": [
+      { "value": 210, "exceeded": true },
+      { "value": 14, "exceeded": false },
+    ]},
+  {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.CustomControls.FFCheckBox", "reportPath": "BrowserChooser3_FFCheckBox.html", "methodName": "Parent_MouseUp(System.Object,System.Windows.Forms.MouseEventArgs)", "methodShortName": "Parent_MouseUp(...)", "fileIndex": 0, "line": 159,
     "metrics": [
       { "value": 210, "exceeded": true },
@@ -743,6 +977,12 @@ var riskHotspots = [
     ]},
   {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.CustomControls.FFCheckBox", "reportPath": "BrowserChooser3_FFCheckBox.html", "methodName": "Parent_MouseUp(System.Object,System.Windows.Forms.MouseEventArgs)", "methodShortName": "Parent_MouseUp(...)", "fileIndex": 1, "line": 159,
+    "metrics": [
+      { "value": 210, "exceeded": true },
+      { "value": 14, "exceeded": false },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.CustomControls.FFCheckBox", "reportPath": "BrowserChooser3_FFCheckBox.html", "methodName": "Parent_MouseUp(System.Object,System.Windows.Forms.MouseEventArgs)", "methodShortName": "Parent_MouseUp(...)", "fileIndex": 2, "line": 159,
     "metrics": [
       { "value": 210, "exceeded": true },
       { "value": 14, "exceeded": false },
@@ -760,6 +1000,12 @@ var riskHotspots = [
       { "value": 14, "exceeded": false },
     ]},
   {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.AddEditBrowserForm", "reportPath": "BrowserChooser3_AddEditBrowserForm.html", "methodName": "GetData()", "methodShortName": "GetData()", "fileIndex": 2, "line": 114,
+    "metrics": [
+      { "value": 210, "exceeded": true },
+      { "value": 14, "exceeded": false },
+    ]},
+  {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.IconSelectionForm", "reportPath": "BrowserChooser3_IconSelectionForm.html", "methodName": "IconListView_SelectedIndexChanged(System.Object,System.EventArgs)", "methodShortName": "IconListView_SelectedIndexChanged(...)", "fileIndex": 0, "line": 226,
     "metrics": [
       { "value": 210, "exceeded": true },
@@ -772,6 +1018,12 @@ var riskHotspots = [
       { "value": 14, "exceeded": false },
     ]},
   {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.IconSelectionForm", "reportPath": "BrowserChooser3_IconSelectionForm.html", "methodName": "IconListView_SelectedIndexChanged(System.Object,System.EventArgs)", "methodShortName": "IconListView_SelectedIndexChanged(...)", "fileIndex": 2, "line": 226,
+    "metrics": [
+      { "value": 210, "exceeded": true },
+      { "value": 14, "exceeded": false },
+    ]},
+  {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.MainForm", "reportPath": "BrowserChooser3_MainForm.html", "methodName": "AdjustOverlayLabels()", "methodShortName": "AdjustOverlayLabels()", "fileIndex": 0, "line": 912,
     "metrics": [
       { "value": 210, "exceeded": true },
@@ -779,6 +1031,12 @@ var riskHotspots = [
     ]},
   {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.MainForm", "reportPath": "BrowserChooser3_MainForm.html", "methodName": "AdjustOverlayLabels()", "methodShortName": "AdjustOverlayLabels()", "fileIndex": 2, "line": 912,
+    "metrics": [
+      { "value": 210, "exceeded": true },
+      { "value": 14, "exceeded": false },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.MainForm", "reportPath": "BrowserChooser3_MainForm.html", "methodName": "AdjustOverlayLabels()", "methodShortName": "AdjustOverlayLabels()", "fileIndex": 4, "line": 912,
     "metrics": [
       { "value": 210, "exceeded": true },
       { "value": 14, "exceeded": false },
@@ -808,6 +1066,18 @@ var riskHotspots = [
       { "value": 14, "exceeded": false },
     ]},
   {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.OptionsForm", "reportPath": "BrowserChooser3_OptionsForm.html", "methodName": "SetupAutoURLsPanelButtons()", "methodShortName": "SetupAutoURLsPanelButtons()", "fileIndex": 4, "line": 309,
+    "metrics": [
+      { "value": 210, "exceeded": true },
+      { "value": 14, "exceeded": false },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.OptionsForm", "reportPath": "BrowserChooser3_OptionsForm.html", "methodName": "SetupProtocolsPanelButtons()", "methodShortName": "SetupProtocolsPanelButtons()", "fileIndex": 4, "line": 581,
+    "metrics": [
+      { "value": 210, "exceeded": true },
+      { "value": 14, "exceeded": false },
+    ]},
+  {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.SystemServices.Policy", "reportPath": "BrowserChooser3_Policy.html", "methodName": "LoadRegistryPolicies()", "methodShortName": "LoadRegistryPolicies()", "fileIndex": 0, "line": 80,
     "metrics": [
       { "value": 188, "exceeded": true },
@@ -815,6 +1085,12 @@ var riskHotspots = [
     ]},
   {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.SystemServices.Policy", "reportPath": "BrowserChooser3_Policy.html", "methodName": "LoadRegistryPolicies()", "methodShortName": "LoadRegistryPolicies()", "fileIndex": 1, "line": 80,
+    "metrics": [
+      { "value": 188, "exceeded": true },
+      { "value": 16, "exceeded": true },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.SystemServices.Policy", "reportPath": "BrowserChooser3_Policy.html", "methodName": "LoadRegistryPolicies()", "methodShortName": "LoadRegistryPolicies()", "fileIndex": 2, "line": 80,
     "metrics": [
       { "value": 188, "exceeded": true },
       { "value": 16, "exceeded": true },
@@ -832,6 +1108,12 @@ var riskHotspots = [
       { "value": 12, "exceeded": false },
     ]},
   {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.BrowserServices.DefaultBrowserChecker", "reportPath": "BrowserChooser3_DefaultBrowserChecker.html", "methodName": "GetAppIdFromPath(System.String)", "methodShortName": "GetAppIdFromPath(...)", "fileIndex": 2, "line": 433,
+    "metrics": [
+      { "value": 156, "exceeded": true },
+      { "value": 12, "exceeded": false },
+    ]},
+  {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormBrowserHandlers", "reportPath": "BrowserChooser3_OptionsFormBrowserHandlers.html", "methodName": "AddBrowser_Click(System.Object,System.EventArgs)", "methodShortName": "AddBrowser_Click(...)", "fileIndex": 0, "line": 54,
     "metrics": [
       { "value": 156, "exceeded": true },
@@ -839,6 +1121,12 @@ var riskHotspots = [
     ]},
   {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormBrowserHandlers", "reportPath": "BrowserChooser3_OptionsFormBrowserHandlers.html", "methodName": "AddBrowser_Click(System.Object,System.EventArgs)", "methodShortName": "AddBrowser_Click(...)", "fileIndex": 1, "line": 54,
+    "metrics": [
+      { "value": 156, "exceeded": true },
+      { "value": 12, "exceeded": false },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormBrowserHandlers", "reportPath": "BrowserChooser3_OptionsFormBrowserHandlers.html", "methodName": "AddBrowser_Click(System.Object,System.EventArgs)", "methodShortName": "AddBrowser_Click(...)", "fileIndex": 2, "line": 54,
     "metrics": [
       { "value": 156, "exceeded": true },
       { "value": 12, "exceeded": false },
@@ -856,6 +1144,12 @@ var riskHotspots = [
       { "value": 12, "exceeded": false },
     ]},
   {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormDragDropHandlers", "reportPath": "BrowserChooser3_OptionsFormDragDropHandlers.html", "methodName": "LstBrowsers_DragDrop(System.Object,System.Windows.Forms.DragEventArgs)", "methodShortName": "LstBrowsers_DragDrop(...)", "fileIndex": 2, "line": 229,
+    "metrics": [
+      { "value": 156, "exceeded": true },
+      { "value": 12, "exceeded": false },
+    ]},
+  {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormProtocolHandlers", "reportPath": "BrowserChooser3_OptionsFormProtocolHandlers.html", "methodName": "RefreshProtocolsListView()", "methodShortName": "RefreshProtocolsListView()", "fileIndex": 0, "line": 182,
     "metrics": [
       { "value": 156, "exceeded": true },
@@ -868,6 +1162,12 @@ var riskHotspots = [
       { "value": 12, "exceeded": false },
     ]},
   {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormProtocolHandlers", "reportPath": "BrowserChooser3_OptionsFormProtocolHandlers.html", "methodName": "RefreshProtocolsListView()", "methodShortName": "RefreshProtocolsListView()", "fileIndex": 2, "line": 182,
+    "metrics": [
+      { "value": 156, "exceeded": true },
+      { "value": 12, "exceeded": false },
+    ]},
+  {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.AddEditURLForm", "reportPath": "BrowserChooser3_AddEditURLForm.html", "methodName": "GetData()", "methodShortName": "GetData()", "fileIndex": 0, "line": 113,
     "metrics": [
       { "value": 156, "exceeded": true },
@@ -875,6 +1175,12 @@ var riskHotspots = [
     ]},
   {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.AddEditURLForm", "reportPath": "BrowserChooser3_AddEditURLForm.html", "methodName": "GetData()", "methodShortName": "GetData()", "fileIndex": 1, "line": 113,
+    "metrics": [
+      { "value": 156, "exceeded": true },
+      { "value": 12, "exceeded": false },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.AddEditURLForm", "reportPath": "BrowserChooser3_AddEditURLForm.html", "methodName": "GetData()", "methodShortName": "GetData()", "fileIndex": 2, "line": 113,
     "metrics": [
       { "value": 156, "exceeded": true },
       { "value": 12, "exceeded": false },
@@ -916,6 +1222,24 @@ var riskHotspots = [
       { "value": 12, "exceeded": false },
     ]},
   {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.OptionsForm", "reportPath": "BrowserChooser3_OptionsForm.html", "methodName": "AddAutoURL_Click(System.Object,System.EventArgs)", "methodShortName": "AddAutoURL_Click(...)", "fileIndex": 4, "line": 367,
+    "metrics": [
+      { "value": 156, "exceeded": true },
+      { "value": 12, "exceeded": false },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.OptionsForm", "reportPath": "BrowserChooser3_OptionsForm.html", "methodName": "DeleteAutoURL_Click(System.Object,System.EventArgs)", "methodShortName": "DeleteAutoURL_Click(...)", "fileIndex": 4, "line": 451,
+    "metrics": [
+      { "value": 156, "exceeded": true },
+      { "value": 12, "exceeded": false },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.OptionsForm", "reportPath": "BrowserChooser3_OptionsForm.html", "methodName": "ResetOthersPanelToDefaults(System.Windows.Forms.TabPage)", "methodShortName": "ResetOthersPanelToDefaults(...)", "fileIndex": 4, "line": 953,
+    "metrics": [
+      { "value": 156, "exceeded": true },
+      { "value": 12, "exceeded": false },
+    ]},
+  {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.SystemServices.CommandLineProcessor", "reportPath": "BrowserChooser3_CommandLineProcessor.html", "methodName": "ParseArguments(System.String[])", "methodShortName": "ParseArguments(...)", "fileIndex": 0, "line": 63,
     "metrics": [
       { "value": 115, "exceeded": true },
@@ -923,6 +1247,12 @@ var riskHotspots = [
     ]},
   {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.SystemServices.CommandLineProcessor", "reportPath": "BrowserChooser3_CommandLineProcessor.html", "methodName": "ParseArguments(System.String[])", "methodShortName": "ParseArguments(...)", "fileIndex": 1, "line": 63,
+    "metrics": [
+      { "value": 115, "exceeded": true },
+      { "value": 104, "exceeded": true },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.SystemServices.CommandLineProcessor", "reportPath": "BrowserChooser3_CommandLineProcessor.html", "methodName": "ParseArguments(System.String[])", "methodShortName": "ParseArguments(...)", "fileIndex": 2, "line": 63,
     "metrics": [
       { "value": 115, "exceeded": true },
       { "value": 104, "exceeded": true },
@@ -940,6 +1270,12 @@ var riskHotspots = [
       { "value": 10, "exceeded": false },
     ]},
   {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.BrowserServices.DefaultBrowserChecker", "reportPath": "BrowserChooser3_DefaultBrowserChecker.html", "methodName": "GetBrowserFromRegistry()", "methodShortName": "GetBrowserFromRegistry()", "fileIndex": 2, "line": 125,
+    "metrics": [
+      { "value": 110, "exceeded": true },
+      { "value": 10, "exceeded": false },
+    ]},
+  {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.BrowserServices.DetectedBrowsers", "reportPath": "BrowserChooser3_DetectedBrowsers.html", "methodName": "DetectFromOnlineDefinitions(System.Boolean)", "methodShortName": "DetectFromOnlineDefinitions(...)", "fileIndex": 0, "line": 123,
     "metrics": [
       { "value": 110, "exceeded": true },
@@ -947,6 +1283,12 @@ var riskHotspots = [
     ]},
   {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.BrowserServices.DetectedBrowsers", "reportPath": "BrowserChooser3_DetectedBrowsers.html", "methodName": "DetectFromOnlineDefinitions(System.Boolean)", "methodShortName": "DetectFromOnlineDefinitions(...)", "fileIndex": 1, "line": 123,
+    "metrics": [
+      { "value": 110, "exceeded": true },
+      { "value": 10, "exceeded": false },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.BrowserServices.DetectedBrowsers", "reportPath": "BrowserChooser3_DetectedBrowsers.html", "methodName": "DetectFromOnlineDefinitions(System.Boolean)", "methodShortName": "DetectFromOnlineDefinitions(...)", "fileIndex": 2, "line": 123,
     "metrics": [
       { "value": 110, "exceeded": true },
       { "value": 10, "exceeded": false },
@@ -988,6 +1330,24 @@ var riskHotspots = [
       { "value": 10, "exceeded": false },
     ]},
   {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormDragDropHandlers", "reportPath": "BrowserChooser3_OptionsFormDragDropHandlers.html", "methodName": "LstURLs_DragOver(System.Object,System.Windows.Forms.DragEventArgs)", "methodShortName": "LstURLs_DragOver(...)", "fileIndex": 2, "line": 76,
+    "metrics": [
+      { "value": 110, "exceeded": true },
+      { "value": 10, "exceeded": false },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormDragDropHandlers", "reportPath": "BrowserChooser3_OptionsFormDragDropHandlers.html", "methodName": "LstURLs_MouseMove(System.Object,System.Windows.Forms.MouseEventArgs)", "methodShortName": "LstURLs_MouseMove(...)", "fileIndex": 2, "line": 167,
+    "metrics": [
+      { "value": 110, "exceeded": true },
+      { "value": 10, "exceeded": false },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormDragDropHandlers", "reportPath": "BrowserChooser3_OptionsFormDragDropHandlers.html", "methodName": "ListViewURLs_DragDrop(System.Object,System.Windows.Forms.DragEventArgs)", "methodShortName": "ListViewURLs_DragDrop(...)", "fileIndex": 2, "line": 313,
+    "metrics": [
+      { "value": 110, "exceeded": true },
+      { "value": 10, "exceeded": false },
+    ]},
+  {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.SystemServices.StartupLauncher", "reportPath": "BrowserChooser3_StartupLauncher.html", "methodName": "Worker_DoWork_HTTP()", "methodShortName": "Worker_DoWork_HTTP()", "fileIndex": 0, "line": 348,
     "metrics": [
       { "value": 110, "exceeded": true },
@@ -995,6 +1355,12 @@ var riskHotspots = [
     ]},
   {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.SystemServices.StartupLauncher", "reportPath": "BrowserChooser3_StartupLauncher.html", "methodName": "Worker_DoWork_HTTP()", "methodShortName": "Worker_DoWork_HTTP()", "fileIndex": 1, "line": 348,
+    "metrics": [
+      { "value": 110, "exceeded": true },
+      { "value": 10, "exceeded": false },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.SystemServices.StartupLauncher", "reportPath": "BrowserChooser3_StartupLauncher.html", "methodName": "Worker_DoWork_HTTP()", "methodShortName": "Worker_DoWork_HTTP()", "fileIndex": 2, "line": 348,
     "metrics": [
       { "value": 110, "exceeded": true },
       { "value": 10, "exceeded": false },
@@ -1012,6 +1378,12 @@ var riskHotspots = [
       { "value": 10, "exceeded": false },
     ]},
   {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Utilities.BrowserUtilities", "reportPath": "BrowserChooser3_BrowserUtilities.html", "methodName": "TryToBringToFront(System.String)", "methodShortName": "TryToBringToFront(...)", "fileIndex": 2, "line": 420,
+    "metrics": [
+      { "value": 110, "exceeded": true },
+      { "value": 10, "exceeded": false },
+    ]},
+  {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.CustomControls.FFButton", "reportPath": "BrowserChooser3_FFButton.html", "methodName": "FFButton_KeyDown(System.Object,System.Windows.Forms.KeyEventArgs)", "methodShortName": "FFButton_KeyDown(...)", "fileIndex": 0, "line": 179,
     "metrics": [
       { "value": 110, "exceeded": true },
@@ -1024,6 +1396,12 @@ var riskHotspots = [
       { "value": 10, "exceeded": false },
     ]},
   {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.CustomControls.FFButton", "reportPath": "BrowserChooser3_FFButton.html", "methodName": "FFButton_KeyDown(System.Object,System.Windows.Forms.KeyEventArgs)", "methodShortName": "FFButton_KeyDown(...)", "fileIndex": 2, "line": 179,
+    "metrics": [
+      { "value": 110, "exceeded": true },
+      { "value": 10, "exceeded": false },
+    ]},
+  {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.AddEditProtocolForm", "reportPath": "BrowserChooser3_AddEditProtocolForm.html", "methodName": "GetData()", "methodShortName": "GetData()", "fileIndex": 0, "line": 100,
     "metrics": [
       { "value": 110, "exceeded": true },
@@ -1031,6 +1409,12 @@ var riskHotspots = [
     ]},
   {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.AddEditProtocolForm", "reportPath": "BrowserChooser3_AddEditProtocolForm.html", "methodName": "GetData()", "methodShortName": "GetData()", "fileIndex": 1, "line": 100,
+    "metrics": [
+      { "value": 110, "exceeded": true },
+      { "value": 10, "exceeded": false },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.AddEditProtocolForm", "reportPath": "BrowserChooser3_AddEditProtocolForm.html", "methodName": "GetData()", "methodShortName": "GetData()", "fileIndex": 2, "line": 100,
     "metrics": [
       { "value": 110, "exceeded": true },
       { "value": 10, "exceeded": false },
@@ -1055,6 +1439,18 @@ var riskHotspots = [
     ]},
   {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.MainForm", "reportPath": "BrowserChooser3_MainForm.html", "methodName": "HandleKeyUp(System.Object,System.Windows.Forms.KeyEventArgs)", "methodShortName": "HandleKeyUp(...)", "fileIndex": 2, "line": 1918,
+    "metrics": [
+      { "value": 110, "exceeded": true },
+      { "value": 10, "exceeded": false },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.MainForm", "reportPath": "BrowserChooser3_MainForm.html", "methodName": "TmrDelay_Tick(System.Object,System.EventArgs)", "methodShortName": "TmrDelay_Tick(...)", "fileIndex": 4, "line": 1805,
+    "metrics": [
+      { "value": 110, "exceeded": true },
+      { "value": 10, "exceeded": false },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.MainForm", "reportPath": "BrowserChooser3_MainForm.html", "methodName": "HandleKeyUp(System.Object,System.Windows.Forms.KeyEventArgs)", "methodShortName": "HandleKeyUp(...)", "fileIndex": 4, "line": 1918,
     "metrics": [
       { "value": 110, "exceeded": true },
       { "value": 10, "exceeded": false },
@@ -1096,6 +1492,24 @@ var riskHotspots = [
       { "value": 10, "exceeded": false },
     ]},
   {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.OptionsForm", "reportPath": "BrowserChooser3_OptionsForm.html", "methodName": "MoveUpAutoURL_Click(System.Object,System.EventArgs)", "methodShortName": "MoveUpAutoURL_Click(...)", "fileIndex": 4, "line": 491,
+    "metrics": [
+      { "value": 110, "exceeded": true },
+      { "value": 10, "exceeded": false },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.OptionsForm", "reportPath": "BrowserChooser3_OptionsForm.html", "methodName": "MoveDownAutoURL_Click(System.Object,System.EventArgs)", "methodShortName": "MoveDownAutoURL_Click(...)", "fileIndex": 4, "line": 536,
+    "metrics": [
+      { "value": 110, "exceeded": true },
+      { "value": 10, "exceeded": false },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.OptionsForm", "reportPath": "BrowserChooser3_OptionsForm.html", "methodName": "ResetStartupPanelToDefaults(System.Windows.Forms.TabPage)", "methodShortName": "ResetStartupPanelToDefaults(...)", "fileIndex": 4, "line": 925,
+    "metrics": [
+      { "value": 110, "exceeded": true },
+      { "value": 10, "exceeded": false },
+    ]},
+  {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.MainForm", "reportPath": "BrowserChooser3_MainForm.html", "methodName": "SetupURLUnshortening()", "methodShortName": "SetupURLUnshortening()", "fileIndex": 0, "line": 261,
     "metrics": [
       { "value": 103, "exceeded": true },
@@ -1103,6 +1517,12 @@ var riskHotspots = [
     ]},
   {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.MainForm", "reportPath": "BrowserChooser3_MainForm.html", "methodName": "SetupURLUnshortening()", "methodShortName": "SetupURLUnshortening()", "fileIndex": 2, "line": 261,
+    "metrics": [
+      { "value": 103, "exceeded": true },
+      { "value": 12, "exceeded": false },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.MainForm", "reportPath": "BrowserChooser3_MainForm.html", "methodName": "SetupURLUnshortening()", "methodShortName": "SetupURLUnshortening()", "fileIndex": 4, "line": 261,
     "metrics": [
       { "value": 103, "exceeded": true },
       { "value": 12, "exceeded": false },
@@ -1120,7 +1540,19 @@ var riskHotspots = [
       { "value": 18, "exceeded": true },
     ]},
   {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.MainForm", "reportPath": "BrowserChooser3_MainForm.html", "methodName": "RecalculateButtonLayout()", "methodShortName": "RecalculateButtonLayout()", "fileIndex": 4, "line": 589,
+    "metrics": [
+      { "value": 101, "exceeded": true },
+      { "value": 18, "exceeded": true },
+    ]},
+  {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Utilities.BrowserUtilities", "reportPath": "BrowserChooser3_BrowserUtilities.html", "methodName": "IsTestEnvironment()", "methodShortName": "IsTestEnvironment()", "fileIndex": 0, "line": 39,
+    "metrics": [
+      { "value": 82, "exceeded": true },
+      { "value": 16, "exceeded": true },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Utilities.BrowserUtilities", "reportPath": "BrowserChooser3_BrowserUtilities.html", "methodName": "IsTestEnvironment()", "methodShortName": "IsTestEnvironment()", "fileIndex": 1, "line": 39,
     "metrics": [
       { "value": 82, "exceeded": true },
       { "value": 16, "exceeded": true },
@@ -1138,6 +1570,12 @@ var riskHotspots = [
       { "value": 26, "exceeded": true },
     ]},
   {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.MainForm", "reportPath": "BrowserChooser3_MainForm.html", "methodName": "ApplyTransparencySettings()", "methodShortName": "ApplyTransparencySettings()", "fileIndex": 4, "line": 350,
+    "metrics": [
+      { "value": 80, "exceeded": true },
+      { "value": 26, "exceeded": true },
+    ]},
+  {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.BrowserServices.DetectedBrowsers", "reportPath": "BrowserChooser3_DetectedBrowsers.html", "methodName": "CreateBrowserFromOnlineDefinition(BrowserChooser3.Classes.Services.BrowserServices.DetectedBrowsers/OnlineBrowserDefinition)", "methodShortName": "CreateBrowserFromOnlineDefinition(...)", "fileIndex": 0, "line": 408,
     "metrics": [
       { "value": 72, "exceeded": true },
@@ -1145,6 +1583,12 @@ var riskHotspots = [
     ]},
   {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.BrowserServices.DetectedBrowsers", "reportPath": "BrowserChooser3_DetectedBrowsers.html", "methodName": "CreateBrowserFromOnlineDefinition(BrowserChooser3.Classes.Services.BrowserServices.DetectedBrowsers/OnlineBrowserDefinition)", "methodShortName": "CreateBrowserFromOnlineDefinition(...)", "fileIndex": 1, "line": 408,
+    "metrics": [
+      { "value": 72, "exceeded": true },
+      { "value": 8, "exceeded": false },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.BrowserServices.DetectedBrowsers", "reportPath": "BrowserChooser3_DetectedBrowsers.html", "methodName": "CreateBrowserFromOnlineDefinition(BrowserChooser3.Classes.Services.BrowserServices.DetectedBrowsers/OnlineBrowserDefinition)", "methodShortName": "CreateBrowserFromOnlineDefinition(...)", "fileIndex": 2, "line": 408,
     "metrics": [
       { "value": 72, "exceeded": true },
       { "value": 8, "exceeded": false },
@@ -1162,6 +1606,12 @@ var riskHotspots = [
       { "value": 8, "exceeded": false },
     ]},
   {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Settings", "reportPath": "BrowserChooser3_Settings.html", "methodName": "DetectBrowsers()", "methodShortName": "DetectBrowsers()", "fileIndex": 2, "line": 530,
+    "metrics": [
+      { "value": 72, "exceeded": true },
+      { "value": 8, "exceeded": false },
+    ]},
+  {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.MainForm", "reportPath": "BrowserChooser3_MainForm.html", "methodName": "BrowserButton_Click(System.Object,System.EventArgs)", "methodShortName": "BrowserButton_Click(...)", "fileIndex": 0, "line": 1065,
     "metrics": [
       { "value": 72, "exceeded": true },
@@ -1169,6 +1619,12 @@ var riskHotspots = [
     ]},
   {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.MainForm", "reportPath": "BrowserChooser3_MainForm.html", "methodName": "BrowserButton_Click(System.Object,System.EventArgs)", "methodShortName": "BrowserButton_Click(...)", "fileIndex": 2, "line": 1065,
+    "metrics": [
+      { "value": 72, "exceeded": true },
+      { "value": 8, "exceeded": false },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.MainForm", "reportPath": "BrowserChooser3_MainForm.html", "methodName": "BrowserButton_Click(System.Object,System.EventArgs)", "methodShortName": "BrowserButton_Click(...)", "fileIndex": 4, "line": 1065,
     "metrics": [
       { "value": 72, "exceeded": true },
       { "value": 8, "exceeded": false },
@@ -1186,7 +1642,13 @@ var riskHotspots = [
       { "value": 24, "exceeded": true },
     ]},
   {
-    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Settings", "reportPath": "BrowserChooser3_Settings.html", "methodName": "Load(System.String)", "methodShortName": "Load(...)", "fileIndex": 1, "line": 619,
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Utilities.BrowserUtilities", "reportPath": "BrowserChooser3_BrowserUtilities.html", "methodName": "NormalizeTarget(System.String)", "methodShortName": "NormalizeTarget(...)", "fileIndex": 2, "line": 464,
+    "metrics": [
+      { "value": 71, "exceeded": true },
+      { "value": 24, "exceeded": true },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Settings", "reportPath": "BrowserChooser3_Settings.html", "methodName": "Load(System.String)", "methodShortName": "Load(...)", "fileIndex": 2, "line": 619,
     "metrics": [
       { "value": 56, "exceeded": true },
       { "value": 38, "exceeded": true },
@@ -1198,7 +1660,19 @@ var riskHotspots = [
       { "value": 10, "exceeded": false },
     ]},
   {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.UI.FileDialogService", "reportPath": "BrowserChooser3_FileDialogService.html", "methodName": "ShowSaveFileDialog(System.String,System.String,System.String)", "methodShortName": "ShowSaveFileDialog(...)", "fileIndex": 1, "line": 68,
+    "metrics": [
+      { "value": 55, "exceeded": true },
+      { "value": 10, "exceeded": false },
+    ]},
+  {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Utilities.TestEnvironmentDetector", "reportPath": "BrowserChooser3_TestEnvironmentDetector.html", "methodName": "IsTestEnvironment()", "methodShortName": "IsTestEnvironment()", "fileIndex": 0, "line": 15,
+    "metrics": [
+      { "value": 55, "exceeded": true },
+      { "value": 20, "exceeded": true },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Utilities.TestEnvironmentDetector", "reportPath": "BrowserChooser3_TestEnvironmentDetector.html", "methodName": "IsTestEnvironment()", "methodShortName": "IsTestEnvironment()", "fileIndex": 1, "line": 15,
     "metrics": [
       { "value": 55, "exceeded": true },
       { "value": 20, "exceeded": true },
@@ -1216,6 +1690,12 @@ var riskHotspots = [
       { "value": 18, "exceeded": true },
     ]},
   {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Utilities.GeneralUtilities", "reportPath": "BrowserChooser3_GeneralUtilities.html", "methodName": "IsValidPath(System.String)", "methodShortName": "IsValidPath(...)", "fileIndex": 2, "line": 164,
+    "metrics": [
+      { "value": 52, "exceeded": true },
+      { "value": 18, "exceeded": true },
+    ]},
+  {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.MainForm", "reportPath": "BrowserChooser3_MainForm.html", "methodName": "ApplyStartupSettings()", "methodShortName": "ApplyStartupSettings()", "fileIndex": 0, "line": 137,
     "metrics": [
       { "value": 50, "exceeded": true },
@@ -1223,6 +1703,12 @@ var riskHotspots = [
     ]},
   {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.MainForm", "reportPath": "BrowserChooser3_MainForm.html", "methodName": "ApplyStartupSettings()", "methodShortName": "ApplyStartupSettings()", "fileIndex": 2, "line": 137,
+    "metrics": [
+      { "value": 50, "exceeded": true },
+      { "value": 10, "exceeded": false },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.MainForm", "reportPath": "BrowserChooser3_MainForm.html", "methodName": "ApplyStartupSettings()", "methodShortName": "ApplyStartupSettings()", "fileIndex": 4, "line": 137,
     "metrics": [
       { "value": 50, "exceeded": true },
       { "value": 10, "exceeded": false },
@@ -1240,7 +1726,19 @@ var riskHotspots = [
       { "value": 16, "exceeded": true },
     ]},
   {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.AddEditBrowserForm", "reportPath": "BrowserChooser3_AddEditBrowserForm.html", "methodName": "InitializeComponent()", "methodShortName": "InitializeComponent()", "fileIndex": 2, "line": 154,
+    "metrics": [
+      { "value": 49, "exceeded": true },
+      { "value": 16, "exceeded": true },
+    ]},
+  {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Utilities.Logger", "reportPath": "BrowserChooser3_Logger.html", "methodName": "AddToLog(BrowserChooser3.Classes.Utilities.Logger/LogLevel,System.String,System.String,System.Object[])", "methodShortName": "AddToLog(...)", "fileIndex": 0, "line": 224,
+    "metrics": [
+      { "value": 48, "exceeded": true },
+      { "value": 10, "exceeded": false },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Utilities.Logger", "reportPath": "BrowserChooser3_Logger.html", "methodName": "AddToLog(BrowserChooser3.Classes.Utilities.Logger/LogLevel,System.String,System.String,System.Object[])", "methodShortName": "AddToLog(...)", "fileIndex": 1, "line": 224,
     "metrics": [
       { "value": 48, "exceeded": true },
       { "value": 10, "exceeded": false },
@@ -1253,6 +1751,12 @@ var riskHotspots = [
     ]},
   {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.CustomControls.FFButton", "reportPath": "BrowserChooser3_FFButton.html", "methodName": "DrawBackground(System.Drawing.Graphics,System.Drawing.Rectangle)", "methodShortName": "DrawBackground(...)", "fileIndex": 1, "line": 270,
+    "metrics": [
+      { "value": 46, "exceeded": true },
+      { "value": 14, "exceeded": false },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.CustomControls.FFButton", "reportPath": "BrowserChooser3_FFButton.html", "methodName": "DrawBackground(System.Drawing.Graphics,System.Drawing.Rectangle)", "methodShortName": "DrawBackground(...)", "fileIndex": 2, "line": 270,
     "metrics": [
       { "value": 46, "exceeded": true },
       { "value": 14, "exceeded": false },
@@ -1282,7 +1786,25 @@ var riskHotspots = [
       { "value": 6, "exceeded": false },
     ]},
   {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormDragDropHandlers", "reportPath": "BrowserChooser3_OptionsFormDragDropHandlers.html", "methodName": "LstBrowsers_DragEnter(System.Object,System.Windows.Forms.DragEventArgs)", "methodShortName": "LstBrowsers_DragEnter(...)", "fileIndex": 2, "line": 199,
+    "metrics": [
+      { "value": 42, "exceeded": true },
+      { "value": 6, "exceeded": false },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormDragDropHandlers", "reportPath": "BrowserChooser3_OptionsFormDragDropHandlers.html", "methodName": "ListViewBrowsers_DragEnter(System.Object,System.Windows.Forms.DragEventArgs)", "methodShortName": "ListViewBrowsers_DragEnter(...)", "fileIndex": 2, "line": 343,
+    "metrics": [
+      { "value": 42, "exceeded": true },
+      { "value": 6, "exceeded": false },
+    ]},
+  {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Settings", "reportPath": "BrowserChooser3_Settings.html", "methodName": "Load(System.String)", "methodShortName": "Load(...)", "fileIndex": 0, "line": 619,
+    "metrics": [
+      { "value": 42, "exceeded": true },
+      { "value": 38, "exceeded": true },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Settings", "reportPath": "BrowserChooser3_Settings.html", "methodName": "Load(System.String)", "methodShortName": "Load(...)", "fileIndex": 1, "line": 619,
     "metrics": [
       { "value": 42, "exceeded": true },
       { "value": 38, "exceeded": true },
@@ -1300,6 +1822,18 @@ var riskHotspots = [
       { "value": 6, "exceeded": false },
     ]},
   {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Utilities.Logger", "reportPath": "BrowserChooser3_Logger.html", "methodName": "get_LogDirectory()", "methodShortName": "get_LogDirectory()", "fileIndex": 1, "line": 105,
+    "metrics": [
+      { "value": 42, "exceeded": true },
+      { "value": 6, "exceeded": false },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Utilities.Logger", "reportPath": "BrowserChooser3_Logger.html", "methodName": "CleanupOldLogFiles()", "methodShortName": "CleanupOldLogFiles()", "fileIndex": 1, "line": 182,
+    "metrics": [
+      { "value": 42, "exceeded": true },
+      { "value": 6, "exceeded": false },
+    ]},
+  {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.CustomControls.FFButton", "reportPath": "BrowserChooser3_FFButton.html", "methodName": "get_Name()", "methodShortName": "get_Name()", "fileIndex": 0, "line": 404,
     "metrics": [
       { "value": 42, "exceeded": true },
@@ -1312,6 +1846,12 @@ var riskHotspots = [
       { "value": 6, "exceeded": false },
     ]},
   {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.CustomControls.FFButton", "reportPath": "BrowserChooser3_FFButton.html", "methodName": "get_Name()", "methodShortName": "get_Name()", "fileIndex": 2, "line": 404,
+    "metrics": [
+      { "value": 42, "exceeded": true },
+      { "value": 6, "exceeded": false },
+    ]},
+  {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.MainForm", "reportPath": "BrowserChooser3_MainForm.html", "methodName": "CountdownTimer_Tick(System.Object,System.EventArgs)", "methodShortName": "CountdownTimer_Tick(...)", "fileIndex": 0, "line": 1446,
     "metrics": [
       { "value": 42, "exceeded": true },
@@ -1319,6 +1859,12 @@ var riskHotspots = [
     ]},
   {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.MainForm", "reportPath": "BrowserChooser3_MainForm.html", "methodName": "CountdownTimer_Tick(System.Object,System.EventArgs)", "methodShortName": "CountdownTimer_Tick(...)", "fileIndex": 2, "line": 1446,
+    "metrics": [
+      { "value": 42, "exceeded": true },
+      { "value": 6, "exceeded": false },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.MainForm", "reportPath": "BrowserChooser3_MainForm.html", "methodName": "CountdownTimer_Tick(System.Object,System.EventArgs)", "methodShortName": "CountdownTimer_Tick(...)", "fileIndex": 4, "line": 1446,
     "metrics": [
       { "value": 42, "exceeded": true },
       { "value": 6, "exceeded": false },
@@ -1360,6 +1906,24 @@ var riskHotspots = [
       { "value": 6, "exceeded": false },
     ]},
   {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.OptionsForm", "reportPath": "BrowserChooser3_OptionsForm.html", "methodName": "ResetToDefaults_Click(System.Object,System.EventArgs)", "methodShortName": "ResetToDefaults_Click(...)", "fileIndex": 4, "line": 704,
+    "metrics": [
+      { "value": 42, "exceeded": true },
+      { "value": 6, "exceeded": false },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.OptionsForm", "reportPath": "BrowserChooser3_OptionsForm.html", "methodName": "TreeSettings_AfterSelect(System.Object,System.Windows.Forms.TreeViewEventArgs)", "methodShortName": "TreeSettings_AfterSelect(...)", "fileIndex": 4, "line": 1048,
+    "metrics": [
+      { "value": 42, "exceeded": true },
+      { "value": 6, "exceeded": false },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.OptionsForm", "reportPath": "BrowserChooser3_OptionsForm.html", "methodName": "MapIndexToLogLevel()", "methodShortName": "MapIndexToLogLevel()", "fileIndex": 4, "line": 1591,
+    "metrics": [
+      { "value": 42, "exceeded": true },
+      { "value": 6, "exceeded": false },
+    ]},
+  {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormFormHandlers", "reportPath": "BrowserChooser3_OptionsFormFormHandlers.html", "methodName": "OptionsForm_FormClosing(System.Object,System.Windows.Forms.FormClosingEventArgs)", "methodShortName": "OptionsForm_FormClosing(...)", "fileIndex": 0, "line": 103,
     "metrics": [
       { "value": 38, "exceeded": true },
@@ -1372,7 +1936,19 @@ var riskHotspots = [
       { "value": 8, "exceeded": false },
     ]},
   {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormFormHandlers", "reportPath": "BrowserChooser3_OptionsFormFormHandlers.html", "methodName": "OptionsForm_FormClosing(System.Object,System.Windows.Forms.FormClosingEventArgs)", "methodShortName": "OptionsForm_FormClosing(...)", "fileIndex": 2, "line": 103,
+    "metrics": [
+      { "value": 38, "exceeded": true },
+      { "value": 8, "exceeded": false },
+    ]},
+  {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.SystemServices.StartupLauncher", "reportPath": "BrowserChooser3_StartupLauncher.html", "methodName": "SetURL(System.String,System.Boolean,BrowserChooser3.Classes.Services.SystemServices.StartupLauncher/UpdateURL)", "methodShortName": "SetURL(...)", "fileIndex": 1, "line": 70,
+    "metrics": [
+      { "value": 37, "exceeded": true },
+      { "value": 12, "exceeded": false },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.SystemServices.StartupLauncher", "reportPath": "BrowserChooser3_StartupLauncher.html", "methodName": "SetURL(System.String,System.Boolean,BrowserChooser3.Classes.Services.SystemServices.StartupLauncher/UpdateURL)", "methodShortName": "SetURL(...)", "fileIndex": 2, "line": 70,
     "metrics": [
       { "value": 37, "exceeded": true },
       { "value": 12, "exceeded": false },
@@ -1390,6 +1966,12 @@ var riskHotspots = [
       { "value": 22, "exceeded": true },
     ]},
   {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Utilities.URLUtilities", "reportPath": "BrowserChooser3_URLUtilities.html", "methodName": "UnshortenURL(System.String,System.String)", "methodShortName": "UnshortenURL(...)", "fileIndex": 2, "line": 126,
+    "metrics": [
+      { "value": 37, "exceeded": true },
+      { "value": 22, "exceeded": true },
+    ]},
+  {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.CustomControls.FFCheckBox", "reportPath": "BrowserChooser3_FFCheckBox.html", "methodName": "FFCheckBox_Paint(System.Object,System.Windows.Forms.PaintEventArgs)", "methodShortName": "FFCheckBox_Paint(...)", "fileIndex": 0, "line": 96,
     "metrics": [
       { "value": 36, "exceeded": true },
@@ -1402,7 +1984,13 @@ var riskHotspots = [
       { "value": 36, "exceeded": true },
     ]},
   {
-    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Utilities.BrowserUtilities", "reportPath": "BrowserChooser3_BrowserUtilities.html", "methodName": "IsTestEnvironment()", "methodShortName": "IsTestEnvironment()", "fileIndex": 1, "line": 39,
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.CustomControls.FFCheckBox", "reportPath": "BrowserChooser3_FFCheckBox.html", "methodName": "FFCheckBox_Paint(System.Object,System.Windows.Forms.PaintEventArgs)", "methodShortName": "FFCheckBox_Paint(...)", "fileIndex": 2, "line": 96,
+    "metrics": [
+      { "value": 36, "exceeded": true },
+      { "value": 36, "exceeded": true },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Utilities.BrowserUtilities", "reportPath": "BrowserChooser3_BrowserUtilities.html", "methodName": "IsTestEnvironment()", "methodShortName": "IsTestEnvironment()", "fileIndex": 2, "line": 39,
     "metrics": [
       { "value": 34, "exceeded": true },
       { "value": 16, "exceeded": true },
@@ -1420,6 +2008,12 @@ var riskHotspots = [
       { "value": 28, "exceeded": true },
     ]},
   {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.SystemServices.StartupLauncher", "reportPath": "BrowserChooser3_StartupLauncher.html", "methodName": "ProcessCommandLineArgs(BrowserChooser3.Classes.Services.SystemServices.CommandLineProcessor/CommandLineArgs,BrowserChooser3.Classes.Services.SystemServices.StartupLauncher/UpdateURL)", "methodShortName": "ProcessCommandLineArgs(...)", "fileIndex": 2, "line": 137,
+    "metrics": [
+      { "value": 32, "exceeded": true },
+      { "value": 28, "exceeded": true },
+    ]},
+  {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.BrowserServices.DetectedBrowsers", "reportPath": "BrowserChooser3_DetectedBrowsers.html", "methodName": "DetectFromRegistry(System.Boolean)", "methodShortName": "DetectFromRegistry(...)", "fileIndex": 0, "line": 312,
     "metrics": [
       { "value": 19, "exceeded": false },
@@ -1427,6 +2021,12 @@ var riskHotspots = [
     ]},
   {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.BrowserServices.DetectedBrowsers", "reportPath": "BrowserChooser3_DetectedBrowsers.html", "methodName": "DetectFromRegistry(System.Boolean)", "methodShortName": "DetectFromRegistry(...)", "fileIndex": 1, "line": 312,
+    "metrics": [
+      { "value": 19, "exceeded": false },
+      { "value": 18, "exceeded": true },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Services.BrowserServices.DetectedBrowsers", "reportPath": "BrowserChooser3_DetectedBrowsers.html", "methodName": "DetectFromRegistry(System.Boolean)", "methodShortName": "DetectFromRegistry(...)", "fileIndex": 2, "line": 312,
     "metrics": [
       { "value": 19, "exceeded": false },
       { "value": 18, "exceeded": true },
@@ -1444,6 +2044,12 @@ var riskHotspots = [
       { "value": 18, "exceeded": true },
     ]},
   {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Classes.Utilities.URLUtilities", "reportPath": "BrowserChooser3_URLUtilities.html", "methodName": "IsValidURL(System.String)", "methodShortName": "IsValidURL(...)", "fileIndex": 2, "line": 19,
+    "metrics": [
+      { "value": 19, "exceeded": false },
+      { "value": 18, "exceeded": true },
+    ]},
+  {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.MainForm", "reportPath": "BrowserChooser3_MainForm.html", "methodName": "AdjustCompatibilityUILayout()", "methodShortName": "AdjustCompatibilityUILayout()", "fileIndex": 0, "line": 1204,
     "metrics": [
       { "value": 16, "exceeded": false },
@@ -1451,6 +2057,12 @@ var riskHotspots = [
     ]},
   {
     "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.MainForm", "reportPath": "BrowserChooser3_MainForm.html", "methodName": "AdjustCompatibilityUILayout()", "methodShortName": "AdjustCompatibilityUILayout()", "fileIndex": 2, "line": 1204,
+    "metrics": [
+      { "value": 16, "exceeded": false },
+      { "value": 16, "exceeded": true },
+    ]},
+  {
+    "assembly": "BrowserChooser3", "class": "BrowserChooser3.Forms.MainForm", "reportPath": "BrowserChooser3_MainForm.html", "methodName": "AdjustCompatibilityUILayout()", "methodShortName": "AdjustCompatibilityUILayout()", "fileIndex": 4, "line": 1204,
     "metrics": [
       { "value": 16, "exceeded": false },
       { "value": 16, "exceeded": true },

@@ -71,6 +71,14 @@
   b. 実際の結果と差異
   c. 必要な対応策（該当する場合）
 
+- **テストガバレッジ計測時は必ずレポートを生成してください**:
+  ```bash
+  # カバレッジ計測とレポート生成の手順
+  dotnet test --collect:"XPlat Code Coverage" --settings coverlet.runsettings
+  reportgenerator -reports:"BrowserChooser3.Tests\TestResults\*\coverage.cobertura.xml" -targetdir:"coverage-report" -reporttypes:Html
+  ```
+- レポート生成後は `coverage-report/index.html` を確認してカバレッジ状況を把握してください
+
 ### 4. Git Commit
 - **コミットタイミング**: すべての修正が完了してから一度にコミットする
 - **コミットメッセージ**: 日本語で詳細な説明を記載する
@@ -99,7 +107,13 @@
 - 当初の指示内容との整合性を確認し、必要に応じて調整を行ってください
 - 実装した機能に重複がないことを最終確認してください
 - テストカバレッジの確認と不足テストの特定をしてください
-- テストガバレッジ確認時にreportgeneratorにてレポートを作成してください
+- **テストガバレッジ計測時は必ずreportgeneratorでレポートを作成してください**:
+  ```bash
+  # カバレッジ計測とレポート生成の手順
+  dotnet test --collect:"XPlat Code Coverage" --settings coverlet.runsettings
+  reportgenerator -reports:"BrowserChooser3.Tests\TestResults\*\coverage.cobertura.xml" -targetdir:"coverage-report" -reporttypes:Html
+  ```
+- レポート生成後は `coverage-report/index.html` を確認してカバレッジ状況を把握してください
 
 ### 6. 結果報告
 以下のフォーマットで最終的な結果を報告してください：
