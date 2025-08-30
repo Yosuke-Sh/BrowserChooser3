@@ -1,0 +1,92 @@
+# BrowserChooser3 プロジェクト開発ガイドライン
+
+## プロジェクト概要
+BrowserChooser3は、Windows Formsベースのブラウザ選択アプリケーションです。
+.NET 8.0を使用し、複数のブラウザから適切なブラウザを選択してURLを開く機能を提供します。
+
+## 開発プロセス
+
+### アーキテクチャ改善計画
+現在、アーキテクチャ改善を段階的に実施中です。
+
+#### Phase 0: テストフォルダ構造化 ✅ 完了
+- **完了日**: 2025年8月30日
+- **内容**: 
+  - テストフォルダを責任別に整理
+  - UnitTests/Models: モデル関連テスト
+  - UnitTests/Services/System: システムサービステスト
+  - UnitTests/Services/UI: UIサービステスト
+  - UnitTests/Services/OptionsFormHandlers: オプションフォームハンドラーテスト
+  - UnitTests/Utilities: ユーティリティテスト
+  - UnitTests/Forms: フォームテスト
+  - IntegrationTests/UI: UI統合テスト
+  - IntegrationTests/System: システム統合テスト
+  - IntegrationTests/EndToEnd: エンドツーエンドテスト
+  - TestHelpers: テストヘルパー
+  - TestData: テストデータ
+- **結果**: 全30個のテストファイルを適切なディレクトリに移動、テストの責任分離と保守性向上を実現
+
+#### Phase 1: コントロール識別性の向上 🔄 進行中
+- **対象**: OptionsFormの全コントロール
+- **内容**: 
+  - すべてのコントロールに意味のあるNameプロパティを設定
+  - 命名規則: プレフィックス + 機能名（例：btnSave, txtUserName, lblStatus）
+  - AccessibleNameとAccessibleDescriptionを設定
+  - AutomationIdを設定
+
+#### Phase 2: インターフェース設計 🔄 予定
+- **対象**: OptionsForm関連
+- **内容**: 
+  - IOptionsViewインターフェースを作成
+  - OptionsPresenterクラスを作成
+  - ビジネスロジックをUIから分離
+
+#### Phase 3: テスト用メソッド追加 🔄 予定
+- **対象**: 全フォーム
+- **内容**: 
+  - SetInputValue(string controlName, string value)
+  - GetControlValue(string controlName)
+  - ClickButton(string buttonName)
+  - GetCurrentState()
+
+#### Phase 4: 状態管理改善 🔄 予定
+- **対象**: 全フォーム
+- **内容**: 
+  - FormState列挙型を定義
+  - CurrentStateプロパティを追加
+  - 非同期処理の状態管理
+
+#### Phase 5: データバインディング活用 🔄 予定
+- **対象**: 設定関連フォーム
+- **内容**: 
+  - BindingSourceの活用
+  - INotifyPropertyChangedを実装したViewModel
+  - 双方向バインディング
+
+#### Phase 6: エラーハンドリング改善 🔄 予定
+- **対象**: 全クラス
+- **内容**: 
+  - try-catchブロックの適切な配置
+  - エラー情報取得プロパティ
+  - ログ出力機能
+
+#### Phase 7: イベント処理整理 🔄 予定
+- **対象**: 全フォーム
+- **内容**: 
+  - イベントハンドラーをPresenterに移動
+  - UI更新ロジックとビジネスロジックの分離
+  - Commandパターンの実装
+
+### WPF/.NET Core移行準備
+各Phaseで以下の移行準備も同時に実施：
+- 依存性注入（DI）コンテナの導入
+- 設定管理の抽象化
+- ログ機能の抽象化
+- ファイルシステム操作の抽象化
+- UI操作の抽象化（データバインディング対応）
+- 非同期処理の導入
+- 設定検証の強化
+description:
+globs:
+alwaysApply: true
+---
