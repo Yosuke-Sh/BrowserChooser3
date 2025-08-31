@@ -794,7 +794,7 @@ namespace BrowserChooser3.Forms
             _settings.ShowFocus = (bool)_settings.Defaults[Settings.DefaultField.ShowFocus];
             _settings.ShowURL = (bool)_settings.Defaults[Settings.DefaultField.ShowURL];
             _settings.RevealShortURL = (bool)_settings.Defaults[Settings.DefaultField.RevealShortURL];
-            _settings.TransparencyColor = (int)_settings.Defaults[Settings.DefaultField.TransparencyColor];
+
             _settings.FocusBoxColor = (int)_settings.Defaults[Settings.DefaultField.FocusBoxColor];
             _settings.UseAccessibleRendering = false; // デフォルト値
             _settings.ShowVisualFocus = false; // デフォルト値
@@ -827,8 +827,7 @@ namespace BrowserChooser3.Forms
             if (chkRevealShortURLs != null) chkRevealShortURLs.Checked = _settings.RevealShortURL;
 
             // 色設定のリセット
-            var pbTransparencyColor = tabPage.Controls.Find("pbTransparencyColor", true).FirstOrDefault() as PictureBox;
-            if (pbTransparencyColor != null) pbTransparencyColor.BackColor = Color.FromArgb(_settings.TransparencyColor);
+
 
             var pbFocusBoxColor = tabPage.Controls.Find("pbFocusBoxColor", true).FirstOrDefault() as PictureBox;
             if (pbFocusBoxColor != null) pbFocusBoxColor.BackColor = Color.FromArgb(_settings.FocusBoxColor);
@@ -911,7 +910,23 @@ namespace BrowserChooser3.Forms
             if (chkEnableLogging != null) chkEnableLogging.Checked = _settings.EnableLogging;
 
             var cmbLogLevel = tabPage.Controls.Find("cmbLogLevel", true).FirstOrDefault() as ComboBox;
-            if (cmbLogLevel != null) cmbLogLevel.SelectedIndex = Math.Min(_settings.LogLevel, cmbLogLevel.Items.Count - 1);
+            if (cmbLogLevel != null) 
+            {
+                // Settings.LogLevel(int) → ComboBox.Index へのマッピング
+                int MapLogLevelToIndex(int level)
+                {
+                    return level switch
+                    {
+                        1 => 0, // Error
+                        2 => 1, // Warning
+                        3 => 2, // Info
+                        4 => 3, // Debug
+                        5 => 4, // Trace
+                        _ => 2  // 既定はInfo
+                    };
+                }
+                cmbLogLevel.SelectedIndex = MapLogLevelToIndex(_settings.LogLevel);
+            }
 
             
 
@@ -1199,7 +1214,9 @@ namespace BrowserChooser3.Forms
         /// <param name="modified">変更フラグ</param>
         private void SetModified(bool modified)
         {
+            var oldValue = _isModified;
             _isModified = modified;
+            Logger.LogTrace("OptionsForm.SetModified", "_isModified変更", $"変更前: {oldValue}, 変更後: {_isModified}");
         }
 
         /// <summary>
@@ -1320,7 +1337,23 @@ namespace BrowserChooser3.Forms
                 // プライバシー設定
 
                 var cmbLogLevel = Controls.Find("cmbLogLevel", true).FirstOrDefault() as ComboBox;
-                if (cmbLogLevel != null) cmbLogLevel.SelectedIndex = Math.Min(_settings.LogLevel, cmbLogLevel.Items.Count - 1);
+                if (cmbLogLevel != null) 
+                {
+                    // Settings.LogLevel(int) → ComboBox.Index へのマッピング
+                    int MapLogLevelToIndex(int level)
+                    {
+                        return level switch
+                        {
+                            1 => 0, // Error
+                            2 => 1, // Warning
+                            3 => 2, // Info
+                            4 => 3, // Debug
+                            5 => 4, // Trace
+                            _ => 2  // 既定はInfo
+                        };
+                    }
+                    cmbLogLevel.SelectedIndex = MapLogLevelToIndex(_settings.LogLevel);
+                }
 
 
 
@@ -1388,13 +1421,26 @@ namespace BrowserChooser3.Forms
 
                 // 透明化設定
                 var chkEnableTransparency = Controls.Find("chkEnableTransparency", true).FirstOrDefault() as CheckBox;
-                if (chkEnableTransparency != null) chkEnableTransparency.Checked = _settings.EnableTransparency;
+                if (chkEnableTransparency != null) 
+                {
+                    var oldValue = chkEnableTransparency.Checked;
+                    var newValue = _settings.EnableTransparency;
+                    chkEnableTransparency.Checked = newValue;
+                    Logger.LogTrace("OptionsForm.LoadSettingsToControls", "EnableTransparency設定を読み込み", 
+                        $"設定前: {oldValue}, 設定後: {newValue}, 設定値: {_settings.EnableTransparency}");
+                }
 
-                var pbTransparencyColor = Controls.Find("pbTransparencyColor", true).FirstOrDefault() as PictureBox;
-                if (pbTransparencyColor != null) pbTransparencyColor.BackColor = Color.FromArgb(_settings.TransparencyColor);
+                
 
                 var nudOpacity = Controls.Find("nudOpacity", true).FirstOrDefault() as NumericUpDown;
-                if (nudOpacity != null) nudOpacity.Value = (decimal)_settings.Opacity;
+                if (nudOpacity != null) 
+                {
+                    var oldValue = nudOpacity.Value;
+                    var newValue = (decimal)_settings.Opacity;
+                    nudOpacity.Value = newValue;
+                    Logger.LogTrace("OptionsForm.LoadSettingsToControls", "Opacity設定を読み込み", 
+                        $"設定前: {oldValue}, 設定後: {newValue}, 設定値: {_settings.Opacity}");
+                }
 
                 var chkHideTitleBar = Controls.Find("chkHideTitleBar", true).FirstOrDefault() as CheckBox;
                 if (chkHideTitleBar != null) chkHideTitleBar.Checked = _settings.HideTitleBar;
@@ -1440,6 +1486,12 @@ namespace BrowserChooser3.Forms
                     MessageBox.Show($"コントロールの設定に失敗しました: {ex.Message}", "エラー",
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
+            }
+            finally
+            {
+                // 設定読み込み完了後、変更フラグをリセット
+                SetModified(false);
+                Logger.LogTrace("OptionsForm.LoadSettingsToControls", "設定読み込み完了", "_isModifiedをリセットしました");
             }
         }
 
@@ -1589,14 +1641,14 @@ namespace BrowserChooser3.Forms
                     // ComboBox.Index → Settings.LogLevel(int) へのマッピング
                     int MapIndexToLogLevel(int idx)
                     {
-                        // ComboBox: Trace(0), Debug(1), Info(2), Warning(3), Error(4)
+                        // ComboBox: Error(0), Warning(1), Info(2), Debug(3), Trace(4)
                         return idx switch
                         {
-                            0 => 5, // Trace
-                            1 => 4, // Debug
+                            0 => 1, // Error
+                            1 => 2, // Warning
                             2 => 3, // Info
-                            3 => 2, // Warning
-                            4 => 1, // Error
+                            3 => 4, // Debug
+                            4 => 5, // Trace
                             _ => 3
                         };
                     }
@@ -1740,13 +1792,26 @@ namespace BrowserChooser3.Forms
 
                 // 透明化設定
                 var chkEnableTransparency = Controls.Find("chkEnableTransparency", true).FirstOrDefault() as CheckBox;
-                if (chkEnableTransparency != null) _settings.EnableTransparency = chkEnableTransparency.Checked;
+                if (chkEnableTransparency != null) 
+                {
+                    var oldValue = _settings.EnableTransparency;
+                    var newValue = chkEnableTransparency.Checked;
+                    _settings.EnableTransparency = newValue;
+                    Logger.LogTrace("OptionsForm.SaveSettings", "EnableTransparency設定を保存", 
+                        $"設定前: {oldValue}, 設定後: {newValue}, コントロール値: {chkEnableTransparency.Checked}");
+                }
 
-                var pbTransparencyColor = Controls.Find("pbTransparencyColor", true).FirstOrDefault() as PictureBox;
-                if (pbTransparencyColor != null) _settings.TransparencyColor = pbTransparencyColor.BackColor.ToArgb();
+                
 
                 var nudOpacity = Controls.Find("nudOpacity", true).FirstOrDefault() as NumericUpDown;
-                if (nudOpacity != null) _settings.Opacity = (double)nudOpacity.Value;
+                if (nudOpacity != null) 
+                {
+                    var oldValue = _settings.Opacity;
+                    var newValue = (double)nudOpacity.Value;
+                    _settings.Opacity = newValue;
+                    Logger.LogTrace("OptionsForm.SaveSettings", "Opacity設定を保存", 
+                        $"設定前: {oldValue}, 設定後: {newValue}, コントロールValue: {nudOpacity.Value}");
+                }
 
                 var chkHideTitleBar = Controls.Find("chkHideTitleBar", true).FirstOrDefault() as CheckBox;
                 if (chkHideTitleBar != null) _settings.HideTitleBar = chkHideTitleBar.Checked;

@@ -357,11 +357,18 @@ namespace BrowserChooser3.Forms
                 {
                     // 透明化が有効な場合
                     this.SetStyle(ControlStyles.SupportsTransparentBackColor, true);
-                    this.TransparencyKey = Color.FromArgb(_settings.TransparencyColor);
+                    this.TransparencyKey = Color.Magenta; // 固定の透明色を使用
                     this.Opacity = _settings.Opacity;
                     
-                    // 背景色を透明化色に設定
-                    this.BackColor = Color.FromArgb(_settings.TransparencyColor);
+                    // 背景色は通常の背景色を維持（TransparencyKeyで指定した色のみ透明化）
+                    var bg = _settings?.BackgroundColorValue ?? Color.FromArgb(185, 209, 234);
+                    this.BackColor = bg;
+                    
+                    Logger.LogTrace("MainForm.ApplyTransparencySettings", "透明化設定を適用", 
+                        $"EnableTransparency: {_settings?.EnableTransparency}, " +
+                        $"Opacity: {_settings?.Opacity}, " +
+                        $"BackColor: {this.BackColor}, " +
+                        $"TransparencyKey: {this.TransparencyKey}");
                     
                     // 角を丸くする設定
                     if (_settings?.RoundedCornersRadius > 0)
@@ -370,7 +377,7 @@ namespace BrowserChooser3.Forms
                     }
                     
                     Logger.LogDebug("MainForm.ApplyTransparencySettings", 
-                        $"透明化設定を適用: Opacity={_settings?.Opacity}, TransparencyKey={_settings?.TransparencyColor}, HideTitleBar={_settings?.HideTitleBar}, RoundedCornersRadius={_settings?.RoundedCornersRadius}");
+                        $"透明化設定を適用: Opacity={_settings?.Opacity}, TransparencyKey=Magenta, HideTitleBar={_settings?.HideTitleBar}, RoundedCornersRadius={_settings?.RoundedCornersRadius}");
                 }
                 else
                 {
@@ -382,6 +389,11 @@ namespace BrowserChooser3.Forms
                     var bg = _settings?.BackgroundColorValue ?? Color.FromArgb(185, 209, 234);
                     if (bg.A != 255) bg = Color.FromArgb(255, bg.R, bg.G, bg.B);
                     this.BackColor = bg;
+                    
+                    Logger.LogTrace("MainForm.ApplyTransparencySettings", "透明化を無効に設定", 
+                        $"EnableTransparency: {_settings?.EnableTransparency}, " +
+                        $"Opacity: {this.Opacity}, " +
+                        $"BackColor: {this.BackColor}");
                     
                     // リージョンをクリア（角を丸くする設定を無効化）
                     this.Region = null;

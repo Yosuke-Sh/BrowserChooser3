@@ -152,9 +152,6 @@ namespace BrowserChooser3.Classes
             /// <summary>透明化有効</summary>
             EnableTransparency,
             
-            /// <summary>透明化色</summary>
-            TransparencyColor,
-            
             /// <summary>透明度</summary>
             Opacity,
             
@@ -204,7 +201,6 @@ namespace BrowserChooser3.Classes
 
             { DefaultField.LogLevel, 2 },
             { DefaultField.EnableTransparency, false },
-            { DefaultField.TransparencyColor, Color.FromArgb(255, 255, 0, 255).ToArgb() },
             { DefaultField.Opacity, 0.8 },
             { DefaultField.HideTitleBar, false },
             { DefaultField.RoundedCornersRadius, 20 },
@@ -427,9 +423,6 @@ namespace BrowserChooser3.Classes
 
         /// <summary>透明化有効</summary>
         public bool EnableTransparency { get; set; } = false;
-
-        /// <summary>透明化色</summary>
-        public int TransparencyColor { get; set; } = Color.FromArgb(255, 255, 0, 255).ToArgb();
 
         /// <summary>透明度（0.01-1.0）</summary>
         public double Opacity { get; set; } = 0.8;

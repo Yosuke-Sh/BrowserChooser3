@@ -653,52 +653,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             };
             currentY += 35;
 
-            // 透明化色設定
-            var lblTransparencyColor = new Label
-            {
-                Text = "Transparency Color:",
-                Location = new Point(6, currentY - 5),
-                Size = new Size(120, 23),
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            };
 
-            var pbTransparencyColor = new PictureBox
-            {
-                Name = "pbTransparencyColor",
-                Location = new Point(130, currentY),
-                Size = new Size(30, 23),
-                BackColor = Color.FromArgb(settings.TransparencyColor),
-                BorderStyle = BorderStyle.FixedSingle
-            };
-            pbTransparencyColor.Click += (s, e) =>
-            {
-                // テスト環境ではダイアログを表示しない
-                if (IsTestEnvironment())
-                {
-                    return;
-                }
-
-                using var colorDialog = new ColorDialog
-                {
-                    Color = Color.FromArgb(settings.TransparencyColor)
-                };
-                if (colorDialog.ShowDialog() == DialogResult.OK)
-                {
-                    pbTransparencyColor.BackColor = colorDialog.Color;
-                    settings.TransparencyColor = colorDialog.Color.ToArgb();
-                    setModified(true);
-                }
-            };
-
-            var lblTransparencyColorDesc = new Label
-            {
-                Text = "透明化に使用する色を設定します",
-                Location = new Point(170, currentY + 3),
-                Size = new Size(400, 23),
-                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
-                ForeColor = Color.Gray
-            };
-            currentY += 35;
 
             // 透明度設定
             var lblOpacity = new Label
@@ -838,9 +793,6 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             panel.Controls.Add(pbBackgroundColor);
             panel.Controls.Add(chkEnableTransparency);
             panel.Controls.Add(lblEnableTransparencyDesc);
-            panel.Controls.Add(lblTransparencyColor);
-            panel.Controls.Add(pbTransparencyColor);
-            panel.Controls.Add(lblTransparencyColorDesc);
             panel.Controls.Add(lblOpacity);
             panel.Controls.Add(nudOpacity);
             panel.Controls.Add(lblOpacityDesc);
@@ -1552,18 +1504,18 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 DropDownStyle = ComboBoxStyle.DropDownList,
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
-            cmbLogLevel.Items.AddRange(new object[] { "Trace", "Debug", "Info", "Warning", "Error" });
+            cmbLogLevel.Items.AddRange(new object[] { "Error", "Warning", "Info", "Debug", "Trace" });
             // Settings.LogLevel(int) → ComboBox.Index へのマッピング
             int MapLogLevelToIndex(int level)
             {
                 // Logger.LogLevel: None(0), Error(1), Warning(2), Info(3), Debug(4), Trace(5)
                 return level switch
                 {
-                    5 => 0, // Trace
-                    4 => 1, // Debug
+                    1 => 0, // Error
+                    2 => 1, // Warning
                     3 => 2, // Info
-                    2 => 3, // Warning
-                    1 => 4, // Error
+                    4 => 3, // Debug
+                    5 => 4, // Trace
                     _ => 2  // 既定はInfo
                 };
             }

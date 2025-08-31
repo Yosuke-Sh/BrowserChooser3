@@ -631,11 +631,10 @@ namespace BrowserChooser3.Tests
 
             ((int)Settings.DefaultField.LogLevel).Should().Be(23);
             ((int)Settings.DefaultField.EnableTransparency).Should().Be(24);
-            ((int)Settings.DefaultField.TransparencyColor).Should().Be(25);
-            ((int)Settings.DefaultField.Opacity).Should().Be(26);
-            ((int)Settings.DefaultField.HideTitleBar).Should().Be(27);
-            ((int)Settings.DefaultField.RoundedCornersRadius).Should().Be(28);
-            ((int)Settings.DefaultField.EnableBackgroundGradient).Should().Be(29);
+            ((int)Settings.DefaultField.Opacity).Should().Be(25);
+            ((int)Settings.DefaultField.HideTitleBar).Should().Be(26);
+            ((int)Settings.DefaultField.RoundedCornersRadius).Should().Be(27);
+            ((int)Settings.DefaultField.EnableBackgroundGradient).Should().Be(28);
         }
 
         #endregion
@@ -750,20 +749,7 @@ namespace BrowserChooser3.Tests
             retrievedColor.Should().Be(transparentColor);
         }
 
-        [Fact]
-        public void Settings_TransparencyColor_ShouldSetAndGetCorrectly()
-        {
-            // Arrange
-            var settings = new Settings();
-            var testColor = System.Drawing.Color.Blue;
 
-            // Act
-            settings.TransparencyColor = testColor.ToArgb();
-            var retrievedColor = System.Drawing.Color.FromArgb(settings.TransparencyColor);
-
-            // Assert
-            retrievedColor.ToArgb().Should().Be(testColor.ToArgb());
-        }
 
         [Fact]
         public void Settings_FocusBoxColor_ShouldSetAndGetCorrectly()
@@ -1067,7 +1053,7 @@ namespace BrowserChooser3.Tests
             settings.Defaults.Should().ContainKey(Settings.DefaultField.ShowFocus);
             settings.Defaults.Should().ContainKey(Settings.DefaultField.ShowURL);
             settings.Defaults.Should().ContainKey(Settings.DefaultField.RevealShortURL);
-            settings.Defaults.Should().ContainKey(Settings.DefaultField.TransparencyColor);
+
             settings.Defaults.Should().ContainKey(Settings.DefaultField.FocusBoxColor);
             settings.Defaults.Should().ContainKey(Settings.DefaultField.FocusBoxLineWidth);
         }

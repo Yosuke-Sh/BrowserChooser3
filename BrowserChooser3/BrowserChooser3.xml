@@ -1524,9 +1524,6 @@
         <member name="F:BrowserChooser3.Classes.Settings.DefaultField.EnableTransparency">
             <summary>透明化有効</summary>
         </member>
-        <member name="F:BrowserChooser3.Classes.Settings.DefaultField.TransparencyColor">
-            <summary>透明化色</summary>
-        </member>
         <member name="F:BrowserChooser3.Classes.Settings.DefaultField.Opacity">
             <summary>透明度</summary>
         </member>
@@ -1691,9 +1688,6 @@
         </member>
         <member name="P:BrowserChooser3.Classes.Settings.EnableTransparency">
             <summary>透明化有効</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Settings.TransparencyColor">
-            <summary>透明化色</summary>
         </member>
         <member name="P:BrowserChooser3.Classes.Settings.Opacity">
             <summary>透明度（0.01-1.0）</summary>
