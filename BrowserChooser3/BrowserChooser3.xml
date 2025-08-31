@@ -1395,54 +1395,6 @@
             現在の設定ファイルバージョン
             </summary>
         </member>
-        <member name="T:BrowserChooser3.Classes.Settings.AvailableStartingPositions">
-            <summary>
-            ウィンドウの開始位置を定義する列挙型
-            </summary>
-            <summary>利用可能な開始位置を定義する列挙型</summary>
-        </member>
-        <member name="F:BrowserChooser3.Classes.Settings.AvailableStartingPositions.CenterScreen">
-            <summary>画面中央</summary>
-        </member>
-        <member name="F:BrowserChooser3.Classes.Settings.AvailableStartingPositions.OffsetCenter">
-            <summary>中央からオフセット</summary>
-        </member>
-        <member name="F:BrowserChooser3.Classes.Settings.AvailableStartingPositions.XY">
-            <summary>指定座標</summary>
-        </member>
-        <member name="F:BrowserChooser3.Classes.Settings.AvailableStartingPositions.TopLeft">
-            <summary>左上</summary>
-        </member>
-        <member name="F:BrowserChooser3.Classes.Settings.AvailableStartingPositions.TopRight">
-            <summary>右上</summary>
-        </member>
-        <member name="F:BrowserChooser3.Classes.Settings.AvailableStartingPositions.BottomLeft">
-            <summary>左下</summary>
-        </member>
-        <member name="F:BrowserChooser3.Classes.Settings.AvailableStartingPositions.BottomRight">
-            <summary>右下</summary>
-        </member>
-        <member name="F:BrowserChooser3.Classes.Settings.AvailableStartingPositions.OffsetTopLeft">
-            <summary>左上からオフセット</summary>
-        </member>
-        <member name="F:BrowserChooser3.Classes.Settings.AvailableStartingPositions.OffsetTopRight">
-            <summary>右上からオフセット</summary>
-        </member>
-        <member name="F:BrowserChooser3.Classes.Settings.AvailableStartingPositions.OffsetBottomLeft">
-            <summary>左下からオフセット</summary>
-        </member>
-        <member name="F:BrowserChooser3.Classes.Settings.AvailableStartingPositions.OffsetBottomRight">
-            <summary>右下からオフセット</summary>
-        </member>
-        <member name="F:BrowserChooser3.Classes.Settings.AvailableStartingPositions.Separator1">
-            <summary>セパレータ1</summary>
-        </member>
-        <member name="F:BrowserChooser3.Classes.Settings.AvailableStartingPositions.Separator2">
-            <summary>セパレータ2</summary>
-        </member>
-        <member name="F:BrowserChooser3.Classes.Settings.AvailableStartingPositions.Separator3">
-            <summary>セパレータ3</summary>
-        </member>
         <member name="T:BrowserChooser3.Classes.Settings.DefaultField">
             <summary>
             デフォルト値フィールドを定義する列挙型
@@ -1502,15 +1454,6 @@
         </member>
         <member name="F:BrowserChooser3.Classes.Settings.DefaultField.BackgroundColor">
             <summary>背景色</summary>
-        </member>
-        <member name="F:BrowserChooser3.Classes.Settings.DefaultField.StartingPosition">
-            <summary>開始位置</summary>
-        </member>
-        <member name="F:BrowserChooser3.Classes.Settings.DefaultField.OffsetX">
-            <summary>Xオフセット</summary>
-        </member>
-        <member name="F:BrowserChooser3.Classes.Settings.DefaultField.OffsetY">
-            <summary>Yオフセット</summary>
         </member>
         <member name="F:BrowserChooser3.Classes.Settings.DefaultField.AllowStayOpen">
             <summary>開いたまま許可</summary>
@@ -1638,15 +1581,6 @@
         <member name="P:BrowserChooser3.Classes.Settings.BackgroundColorValue">
             <summary>背景色（Color型）</summary>
         </member>
-        <member name="P:BrowserChooser3.Classes.Settings.StartingPosition">
-            <summary>開始位置</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Settings.OffsetX">
-            <summary>Xオフセット</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Settings.OffsetY">
-            <summary>Yオフセット</summary>
-        </member>
         <member name="P:BrowserChooser3.Classes.Settings.AllowStayOpen">
             <summary>開いたまま許可</summary>
         </member>
@@ -1670,9 +1604,6 @@
         </member>
         <member name="P:BrowserChooser3.Classes.Settings.GridHeight">
             <summary>グリッド高さ</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Settings.StartMinimized">
-            <summary>最小化で起動</summary>
         </member>
         <member name="P:BrowserChooser3.Classes.Settings.StartInTray">
             <summary>システムトレイで起動</summary>
@@ -2475,6 +2406,11 @@
         <member name="M:BrowserChooser3.Forms.AddEditBrowserForm.LoadBrowserData">
             <summary>
             ブラウザデータを読み込み
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.AddEditBrowserForm.UpdateIconDisplay">
+            <summary>
+            アイコン表示を更新
             </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.AddEditBrowserForm.GetData">

@@ -67,7 +67,7 @@ namespace BrowserChooser3.Tests.IntegrationTests
             // Assert
             iconForm.Should().NotBeNull();
             iconForm.Text.Should().Be("Icon Selection");
-            iconForm.Size.Should().Be(new Size(600, 400));
+            iconForm.Size.Should().Be(new Size(700, 420));
             
             // フォームを表示せずに破棄
             iconForm.Dispose();

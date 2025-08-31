@@ -162,12 +162,7 @@ namespace BrowserChooser3.Forms
                     return;
                 }
 
-                // 最小化で起動の処理
-                if (_settings.StartMinimized)
-                {
-                    Logger.LogDebug("MainForm.ApplyStartupSettings", "最小化で起動を適用");
-                    WindowState = FormWindowState.Minimized;
-                }
+
 
                 // システムトレイで起動の処理
                 if (_settings.StartInTray)

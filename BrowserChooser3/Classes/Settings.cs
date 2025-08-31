@@ -18,54 +18,7 @@ namespace BrowserChooser3.Classes
         /// </summary>
         public const int CURRENT_FILE_VERSION = 1;
 
-        /// <summary>
-        /// ウィンドウの開始位置を定義する列挙型
-        /// </summary>
-        /// <summary>利用可能な開始位置を定義する列挙型</summary>
-        public enum AvailableStartingPositions
-        {
-            /// <summary>画面中央</summary>
-            CenterScreen,
-            
-            /// <summary>中央からオフセット</summary>
-            OffsetCenter,
-            
-            /// <summary>指定座標</summary>
-            XY,
-            
-            /// <summary>左上</summary>
-            TopLeft,
-            
-            /// <summary>右上</summary>
-            TopRight,
-            
-            /// <summary>左下</summary>
-            BottomLeft,
-            
-            /// <summary>右下</summary>
-            BottomRight,
-            
-            /// <summary>左上からオフセット</summary>
-            OffsetTopLeft,
-            
-            /// <summary>右上からオフセット</summary>
-            OffsetTopRight,
-            
-            /// <summary>左下からオフセット</summary>
-            OffsetBottomLeft,
-            
-            /// <summary>右下からオフセット</summary>
-            OffsetBottomRight,
-            
-            /// <summary>セパレータ1</summary>
-            Separator1 = -1,
-            
-            /// <summary>セパレータ2</summary>
-            Separator2 = -2,
-            
-            /// <summary>セパレータ3</summary>
-            Separator3 = -3
-        }
+
 
         /// <summary>
         /// デフォルト値フィールドを定義する列挙型
@@ -129,14 +82,7 @@ namespace BrowserChooser3.Classes
             /// <summary>背景色</summary>
             BackgroundColor,
             
-            /// <summary>開始位置</summary>
-            StartingPosition,
-            
-            /// <summary>Xオフセット</summary>
-            OffsetX,
-            
-            /// <summary>Yオフセット</summary>
-            OffsetY,
+
             
             /// <summary>開いたまま許可</summary>
             AllowStayOpen,
@@ -193,9 +139,6 @@ namespace BrowserChooser3.Classes
             { DefaultField.UserAgent, "Mozilla/5.0" },
 
             { DefaultField.BackgroundColor, Color.White.ToArgb() },
-            { DefaultField.StartingPosition, AvailableStartingPositions.CenterScreen },
-            { DefaultField.OffsetX, 0 },
-            { DefaultField.OffsetY, 0 },
             { DefaultField.AllowStayOpen, false },
             { DefaultField.EnableLogging, true },
 
@@ -367,14 +310,7 @@ namespace BrowserChooser3.Classes
         
 
         
-        /// <summary>開始位置</summary>
-        public int StartingPosition { get; set; } = (int)AvailableStartingPositions.CenterScreen;
-        
-        /// <summary>Xオフセット</summary>
-        public int OffsetX { get; set; } = 0;
-        
-        /// <summary>Yオフセット</summary>
-        public int OffsetY { get; set; } = 0;
+
         
         /// <summary>開いたまま許可</summary>
         public bool AllowStayOpen { get; set; } = false;
@@ -406,8 +342,7 @@ namespace BrowserChooser3.Classes
 
 
 
-        /// <summary>最小化で起動</summary>
-        public bool StartMinimized { get; set; } = false;
+
 
         /// <summary>システムトレイで起動</summary>
         public bool StartInTray { get; set; } = false;

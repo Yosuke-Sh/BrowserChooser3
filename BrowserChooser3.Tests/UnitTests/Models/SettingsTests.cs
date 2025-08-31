@@ -274,14 +274,7 @@ namespace BrowserChooser3.Tests
             settings.BackgroundColor = 0x00FF00;
             settings.BackgroundColor.Should().Be(0x00FF00);
 
-            settings.StartingPosition = (int)Settings.AvailableStartingPositions.TopLeft;
-            settings.StartingPosition.Should().Be((int)Settings.AvailableStartingPositions.TopLeft);
 
-            settings.OffsetX = 50;
-            settings.OffsetX.Should().Be(50);
-
-            settings.OffsetY = 100;
-            settings.OffsetY.Should().Be(100);
 
             settings.LogLevel = 5;
             settings.LogLevel.Should().Be(5);
@@ -571,25 +564,7 @@ namespace BrowserChooser3.Tests
 
         #region 列挙型テスト
 
-        [Fact]
-        public void AvailableStartingPositions_ShouldHaveExpectedValues()
-        {
-            // Assert
-            ((int)Settings.AvailableStartingPositions.CenterScreen).Should().Be(0);
-            ((int)Settings.AvailableStartingPositions.OffsetCenter).Should().Be(1);
-            ((int)Settings.AvailableStartingPositions.XY).Should().Be(2);
-            ((int)Settings.AvailableStartingPositions.TopLeft).Should().Be(3);
-            ((int)Settings.AvailableStartingPositions.TopRight).Should().Be(4);
-            ((int)Settings.AvailableStartingPositions.BottomLeft).Should().Be(5);
-            ((int)Settings.AvailableStartingPositions.BottomRight).Should().Be(6);
-            ((int)Settings.AvailableStartingPositions.OffsetTopLeft).Should().Be(7);
-            ((int)Settings.AvailableStartingPositions.OffsetTopRight).Should().Be(8);
-            ((int)Settings.AvailableStartingPositions.OffsetBottomLeft).Should().Be(9);
-            ((int)Settings.AvailableStartingPositions.OffsetBottomRight).Should().Be(10);
-            ((int)Settings.AvailableStartingPositions.Separator1).Should().Be(-1);
-            ((int)Settings.AvailableStartingPositions.Separator2).Should().Be(-2);
-            ((int)Settings.AvailableStartingPositions.Separator3).Should().Be(-3);
-        }
+
 
         [Fact]
         public void DefaultField_ShouldHaveExpectedValues()
@@ -620,21 +595,18 @@ namespace BrowserChooser3.Tests
             ((int)Settings.DefaultField.UserAgent).Should().Be(16);
 
             ((int)Settings.DefaultField.BackgroundColor).Should().Be(17);
-            ((int)Settings.DefaultField.StartingPosition).Should().Be(18);
-            ((int)Settings.DefaultField.OffsetX).Should().Be(19);
-            ((int)Settings.DefaultField.OffsetY).Should().Be(20);
-            ((int)Settings.DefaultField.AllowStayOpen).Should().Be(21);
+            ((int)Settings.DefaultField.AllowStayOpen).Should().Be(18);
             // Canonicalize関連は削除されたため、テストをコメントアウト
             // ((int)Settings.DefaultField.Canonicalize).Should().Be(26);
             // ((int)Settings.DefaultField.CanonicalizeAppendedText).Should().Be(27);
-            ((int)Settings.DefaultField.EnableLogging).Should().Be(22);
+            ((int)Settings.DefaultField.EnableLogging).Should().Be(19);
 
-            ((int)Settings.DefaultField.LogLevel).Should().Be(23);
-            ((int)Settings.DefaultField.EnableTransparency).Should().Be(24);
-            ((int)Settings.DefaultField.Opacity).Should().Be(25);
-            ((int)Settings.DefaultField.HideTitleBar).Should().Be(26);
-            ((int)Settings.DefaultField.RoundedCornersRadius).Should().Be(27);
-            ((int)Settings.DefaultField.EnableBackgroundGradient).Should().Be(28);
+            ((int)Settings.DefaultField.LogLevel).Should().Be(20);
+            ((int)Settings.DefaultField.EnableTransparency).Should().Be(21);
+            ((int)Settings.DefaultField.Opacity).Should().Be(22);
+            ((int)Settings.DefaultField.HideTitleBar).Should().Be(23);
+            ((int)Settings.DefaultField.RoundedCornersRadius).Should().Be(24);
+            ((int)Settings.DefaultField.EnableBackgroundGradient).Should().Be(25);
         }
 
         #endregion
@@ -700,9 +672,7 @@ namespace BrowserChooser3.Tests
             settings.GridWidth.Should().Be(5);
             settings.GridHeight.Should().Be(1);
             settings.AllowStayOpen.Should().BeFalse();
-            settings.StartingPosition.Should().Be(0); // CenterScreen
-            settings.OffsetX.Should().Be(0);
-            settings.OffsetY.Should().Be(0);
+
         }
 
         [Fact]
@@ -1009,28 +979,7 @@ namespace BrowserChooser3.Tests
             settings.LogLevel.Should().Be(2);
         }
 
-        [Fact]
-        public void Settings_StartingPosition_ShouldAcceptValidValues()
-        {
-            // Arrange
-            var settings = new Settings();
 
-            // Act & Assert - Test valid enum values
-            settings.StartingPosition = 0; // CenterScreen
-            settings.StartingPosition.Should().Be(0);
-
-            settings.StartingPosition = 1; // TopLeft
-            settings.StartingPosition.Should().Be(1);
-
-            settings.StartingPosition = 2; // TopRight
-            settings.StartingPosition.Should().Be(2);
-
-            settings.StartingPosition = 3; // BottomLeft
-            settings.StartingPosition.Should().Be(3);
-
-            settings.StartingPosition = 4; // BottomRight
-            settings.StartingPosition.Should().Be(4);
-        }
 
         [Fact]
         public void Settings_Defaults_ShouldContainAllDefaultValues()

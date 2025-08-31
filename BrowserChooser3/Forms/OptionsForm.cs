@@ -939,14 +939,11 @@ namespace BrowserChooser3.Forms
         private void ResetStartupPanelToDefaults(TabPage tabPage)
         {
             // 設定をデフォルト値に更新
-            _settings.StartMinimized = false; // デフォルト値はfalse
             _settings.StartInTray = false; // デフォルト値
             _settings.StartupDelay = 0; // デフォルト値
             _settings.StartupMessage = "BrowserChooser3 Started"; // デフォルト値
 
             // UIに反映
-            var chkStartMinimized = tabPage.Controls.Find("chkStartMinimized", true).FirstOrDefault() as CheckBox;
-            if (chkStartMinimized != null) chkStartMinimized.Checked = _settings.StartMinimized;
 
                             var chkStartInTray = tabPage.Controls.Find("chkStartInTray", true).FirstOrDefault() as CheckBox;
                 if (chkStartInTray != null) chkStartInTray.Checked = _settings.StartInTray;
@@ -972,9 +969,7 @@ namespace BrowserChooser3.Forms
             _settings.AllowStayOpen = (bool)_settings.Defaults[Settings.DefaultField.AllowStayOpen];
             _settings.UserAgent = (string)_settings.Defaults[Settings.DefaultField.UserAgent];
             _settings.BackgroundColor = (int)_settings.Defaults[Settings.DefaultField.BackgroundColor];
-            _settings.StartingPosition = (int)_settings.Defaults[Settings.DefaultField.StartingPosition];
-            _settings.OffsetX = (int)_settings.Defaults[Settings.DefaultField.OffsetX];
-            _settings.OffsetY = (int)_settings.Defaults[Settings.DefaultField.OffsetY];
+
             _settings.OptionsShortcut = (char)_settings.Defaults[Settings.DefaultField.OptionsShortcut];
             _settings.DefaultMessage = (string)_settings.Defaults[Settings.DefaultField.DefaultMessage];
 
@@ -1360,8 +1355,7 @@ namespace BrowserChooser3.Forms
 
 
                 // スタートアップ設定
-                var chkStartMinimized = Controls.Find("chkStartMinimized", true).FirstOrDefault() as CheckBox;
-                if (chkStartMinimized != null) chkStartMinimized.Checked = _settings.StartMinimized;
+
 
                 var chkStartInTray = Controls.Find("chkStartInTray", true).FirstOrDefault() as CheckBox;
                 if (chkStartInTray != null) chkStartInTray.Checked = _settings.StartInTray;
@@ -1375,27 +1369,7 @@ namespace BrowserChooser3.Forms
                 var txtStartupMessage = Controls.Find("txtStartupMessage", true).FirstOrDefault() as TextBox;
                 if (txtStartupMessage != null) txtStartupMessage.Text = _settings.StartupMessage;
 
-                // 位置設定
-                var nudXOffset = Controls.Find("nudXOffset", true).FirstOrDefault() as NumericUpDown;
-                if (nudXOffset != null) nudXOffset.Value = _settings.OffsetX;
 
-                var nudYOffset = Controls.Find("nudYOffset", true).FirstOrDefault() as NumericUpDown;
-                if (nudYOffset != null) nudYOffset.Value = _settings.OffsetY;
-
-                // 開始位置設定
-                var cmbStartingPosition = Controls.Find("cmbStartingPosition", true).FirstOrDefault() as ComboBox;
-                if (cmbStartingPosition != null)
-                {
-                    // 開始位置の選択
-                    for (int i = 0; i < cmbStartingPosition.Items.Count; i++)
-                    {
-                        if (cmbStartingPosition.Items[i] is DisplayDictionary position && position.Index == _settings.StartingPosition)
-                        {
-                            cmbStartingPosition.SelectedIndex = i;
-                            break;
-                        }
-                    }
-                }
 
                 // アクセシビリティ設定
                 var chkUseAccessibleRendering = Controls.Find("chkUseAccessibleRendering", true).FirstOrDefault() as CheckBox;
@@ -1661,8 +1635,7 @@ namespace BrowserChooser3.Forms
 
 
                 // スタートアップ設定
-                var chkStartMinimized = Controls.Find("chkStartMinimized", true).FirstOrDefault() as CheckBox;
-                if (chkStartMinimized != null) _settings.StartMinimized = chkStartMinimized.Checked;
+
 
                 var chkStartInTray = Controls.Find("chkStartInTray", true).FirstOrDefault() as CheckBox;
                 if (chkStartInTray != null) _settings.StartInTray = chkStartInTray.Checked;
@@ -1678,22 +1651,7 @@ namespace BrowserChooser3.Forms
                 var txtStartupMessage = Controls.Find("txtStartupMessage", true).FirstOrDefault() as TextBox;
                 if (txtStartupMessage != null) _settings.StartupMessage = txtStartupMessage.Text;
 
-                // 位置設定
-                var cmbStartingPosition = Controls.Find("cmbStartingPosition", true).FirstOrDefault() as ComboBox;
-                if (cmbStartingPosition?.SelectedItem != null)
-                {
-                    var selectedPosition = cmbStartingPosition.SelectedItem as DisplayDictionary;
-                    if (selectedPosition != null)
-                    {
-                        _settings.StartingPosition = selectedPosition.Index;
-                    }
-                }
 
-                var nudXOffset = Controls.Find("nudXOffset", true).FirstOrDefault() as NumericUpDown;
-                if (nudXOffset != null) _settings.OffsetX = (int)nudXOffset.Value;
-
-                var nudYOffset = Controls.Find("nudYOffset", true).FirstOrDefault() as NumericUpDown;
-                if (nudYOffset != null) _settings.OffsetY = (int)nudYOffset.Value;
 
                 // アクセシビリティ設定
                 var chkUseAccessibleRendering = Controls.Find("chkUseAccessibleRendering", true).FirstOrDefault() as CheckBox;

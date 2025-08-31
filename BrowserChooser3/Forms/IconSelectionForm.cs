@@ -30,6 +30,11 @@ namespace BrowserChooser3.Forms
             _filePath = filePath;
             InitializeComponent();
             LoadIcons();
+            
+            // フォームを最前面に表示
+            this.TopMost = true;
+            this.BringToFront();
+            this.Activate();
         }
 
         /// <summary>
@@ -38,7 +43,7 @@ namespace BrowserChooser3.Forms
         private void InitializeComponent()
         {
             Text = "Icon Selection";
-            Size = new Size(600, 400);
+            Size = new Size(700, 420);
             StartPosition = FormStartPosition.CenterParent;
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;

@@ -821,15 +821,32 @@ namespace BrowserChooser3.Tests
                 IgnoreSettings = false
             };
 
-            // Act
-            var result = CommandLineProcessor.LoadFromEnvironment(originalArgs);
+            // 環境変数をクリア（テスト用）
+            Environment.SetEnvironmentVariable("BROWSERCHOOSER_DEBUG", null);
+            Environment.SetEnvironmentVariable("BROWSERCHOOSER_EXTRACT_DLLS", null);
+            Environment.SetEnvironmentVariable("BROWSERCHOOSER_PORTABLE", null);
+            Environment.SetEnvironmentVariable("BROWSERCHOOSER_IGNORE_SETTINGS", null);
 
-            // Assert
-            result.Should().BeSameAs(originalArgs);
-            result.DebugLog.Should().BeFalse();
-            result.ExtractDLLs.Should().BeFalse();
-            result.PortableMode.Should().BeFalse();
-            result.IgnoreSettings.Should().BeFalse();
+            try
+            {
+                // Act
+                var result = CommandLineProcessor.LoadFromEnvironment(originalArgs);
+
+                // Assert
+                result.Should().BeSameAs(originalArgs);
+                result.DebugLog.Should().BeFalse();
+                result.ExtractDLLs.Should().BeFalse();
+                result.PortableMode.Should().BeFalse();
+                result.IgnoreSettings.Should().BeFalse();
+            }
+            finally
+            {
+                // 環境変数をクリア
+                Environment.SetEnvironmentVariable("BROWSERCHOOSER_DEBUG", null);
+                Environment.SetEnvironmentVariable("BROWSERCHOOSER_EXTRACT_DLLS", null);
+                Environment.SetEnvironmentVariable("BROWSERCHOOSER_PORTABLE", null);
+                Environment.SetEnvironmentVariable("BROWSERCHOOSER_IGNORE_SETTINGS", null);
+            }
         }
 
         [Fact]

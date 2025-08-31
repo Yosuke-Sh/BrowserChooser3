@@ -1564,42 +1564,16 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
 
 
 
-            // 相互排他設定の説明
-            var lblMutualExclusiveDesc = new Label
-            {
-                Text = "※ Start MinimizedとStart in System Trayは同時に設定できません",
-                Location = new Point(6, 6),
-                Size = new Size(500, 20),
-                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
-                ForeColor = Color.Orange
-            };
 
-            // 最小化で起動設定
-            var chkStartMinimized = new CheckBox
-            {
-                Name = "chkStartMinimized",
-                Text = "Start Minimized",
-                Location = new Point(6, 39),
-                Size = new Size(200, 25),
-                Checked = settings.StartMinimized,
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            };
 
-            var lblStartMinimizedDesc = new Label
-            {
-                Text = "起動時にメイン画面を最小化状態で表示します",
-                Location = new Point(210, 42),
-                Size = new Size(400, 20),
-                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
-                ForeColor = Color.Gray
-            };
+
 
             // システムトレイ設定
             var chkStartInTray = new CheckBox
             {
                 Name = "chkStartInTray",
                 Text = "Start in System Tray",
-                Location = new Point(6, 72),
+                Location = new Point(6, 39),
                 Size = new Size(200, 25),
                 Checked = settings.StartInTray,
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
@@ -1608,7 +1582,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var lblStartInTrayDesc = new Label
             {
                 Text = "起動時にシステムトレイに最小化して表示します",
-                Location = new Point(210, 75),
+                Location = new Point(210, 42),
                 Size = new Size(400, 20),
                 Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
                 ForeColor = Color.Gray
@@ -1619,7 +1593,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             {
                 Name = "chkAlwaysResidentInTray",
                 Text = "Always Resident in System Tray",
-                Location = new Point(6, 105),
+                Location = new Point(6, 72),
                 Size = new Size(250, 25),
                 Checked = settings.AlwaysResidentInTray,
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
@@ -1628,32 +1602,14 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var lblAlwaysResidentInTrayDesc = new Label
             {
                 Text = "アプリケーションを常にシステムトレイに常駐させます",
-                Location = new Point(260, 108),
+                Location = new Point(260, 75),
                 Size = new Size(400, 20),
                 Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
                 ForeColor = Color.Gray
             };
 
-            // イベントハンドラーの設定（相互排他設定）
-            chkStartMinimized.CheckedChanged += (s, e) =>
-            {
-                // 相互排他設定：Start Minimizedがチェックされた場合、Start in System Trayを外す
-                if (chkStartMinimized.Checked && chkStartInTray.Checked)
-                {
-                    chkStartInTray.Checked = false;
-                }
-                setModified(true);
-            };
-
-            chkStartInTray.CheckedChanged += (s, e) =>
-            {
-                // 相互排他設定：Start in System Trayがチェックされた場合、Start Minimizedを外す
-                if (chkStartInTray.Checked && chkStartMinimized.Checked)
-                {
-                    chkStartMinimized.Checked = false;
-                }
-                setModified(true);
-            };
+            // イベントハンドラーの設定
+            chkStartInTray.CheckedChanged += (s, e) => setModified(true);
 
             chkAlwaysResidentInTray.CheckedChanged += (s, e) => setModified(true);
 
@@ -1718,9 +1674,6 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             };
 
             // コントロールの追加
-            panel.Controls.Add(lblMutualExclusiveDesc);
-            panel.Controls.Add(chkStartMinimized);
-            panel.Controls.Add(lblStartMinimizedDesc);
             panel.Controls.Add(chkStartInTray);
             panel.Controls.Add(lblStartInTrayDesc);
             panel.Controls.Add(chkAlwaysResidentInTray);

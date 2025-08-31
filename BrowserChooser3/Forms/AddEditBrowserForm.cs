@@ -105,6 +105,44 @@ namespace BrowserChooser3.Forms
             if (txtHotkey != null) txtHotkey.Text = _browser.Hotkey != '\0' ? _browser.Hotkey.ToString() : "";
             if (nudRow != null) nudRow.Value = _browser.Y;
             if (nudCol != null) nudCol.Value = _browser.X;
+
+            // アイコン表示を更新
+            UpdateIconDisplay();
+        }
+
+        /// <summary>
+        /// アイコン表示を更新
+        /// </summary>
+        private void UpdateIconDisplay()
+        {
+            try
+            {
+                var picIcon = Controls.Find("picIcon", true).FirstOrDefault() as PictureBox;
+                if (picIcon == null) return;
+
+                if (!string.IsNullOrEmpty(_browser.ImagePath) && File.Exists(_browser.ImagePath))
+                {
+                    // アイコンを抽出して表示
+                    var icon = Icon.ExtractAssociatedIcon(_browser.ImagePath);
+                    if (icon != null)
+                    {
+                        picIcon.Image = icon.ToBitmap();
+                        return;
+                    }
+                }
+
+                // アイコンが取得できない場合はクリア
+                picIcon.Image = null;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWarning("AddEditBrowserForm.UpdateIconDisplay", "アイコン表示更新エラー", ex.Message);
+                var picIcon = Controls.Find("picIcon", true).FirstOrDefault() as PictureBox;
+                if (picIcon != null)
+                {
+                    picIcon.Image = null;
+                }
+            }
         }
 
         /// <summary>
@@ -177,13 +215,16 @@ namespace BrowserChooser3.Forms
             var lblHotkey = new Label { Text = "Hotkey:", Location = new Point(10, 140), AutoSize = true };
             var txtHotkey = new TextBox { Name = "txtHotkey", Location = new Point(120, 137), Size = new Size(50, 23), MaxLength = 1 };
 
+            // アイコン表示用PictureBox
+            var lblIcon = new Label { Text = "Icon:", Location = new Point(10, 180), AutoSize = true };
+            var picIcon = new PictureBox { Name = "picIcon", Location = new Point(120, 177), Size = new Size(64, 64), SizeMode = PictureBoxSizeMode.Zoom, BorderStyle = BorderStyle.FixedSingle };
+            var btnEditIcon = new Button { Text = "Edit Icon", Location = new Point(200, 177), Size = new Size(85, 35) };
 
+            var lblRow = new Label { Text = "Row:", Location = new Point(10, 250), AutoSize = true };
+            var nudRow = new NumericUpDown { Name = "nudRow", Location = new Point(120, 247), Size = new Size(80, 23), Minimum = 0, Maximum = 100 };
 
-            var lblRow = new Label { Text = "Row:", Location = new Point(10, 220), AutoSize = true };
-            var nudRow = new NumericUpDown { Name = "nudRow", Location = new Point(120, 217), Size = new Size(80, 23), Minimum = 0, Maximum = 100 };
-
-            var lblCol = new Label { Text = "Column:", Location = new Point(220, 220), AutoSize = true };
-            var nudCol = new NumericUpDown { Name = "nudCol", Location = new Point(300, 217), Size = new Size(80, 23), Minimum = 0, Maximum = 100 };
+            var lblCol = new Label { Text = "Column:", Location = new Point(220, 250), AutoSize = true };
+            var nudCol = new NumericUpDown { Name = "nudCol", Location = new Point(320, 247), Size = new Size(80, 23), Minimum = 0, Maximum = 100 };
 
             // ボタン
             var btnOK = new Button { Text = "OK", DialogResult = DialogResult.OK, Location = new Point(300, 350), Size = new Size(90, 30) };
@@ -198,7 +239,7 @@ namespace BrowserChooser3.Forms
                 lblTarget, txtTarget, btnBrowse,
                 lblArguments, txtArguments,
                 lblHotkey, txtHotkey,
-
+                lblIcon, picIcon, btnEditIcon,
                 lblRow, nudRow,
                 lblCol, nudCol,
                 btnOK, btnCancel
@@ -247,6 +288,7 @@ namespace BrowserChooser3.Forms
                             // 選択されたアイコンをブラウザに設定
                             _browser.ImagePath = openFileDialog.FileName;
                             _browser.IconIndex = 0; // デフォルトアイコンインデックス
+                            UpdateIconDisplay();
                         }
                     }
                     catch (Exception ex)
@@ -254,6 +296,31 @@ namespace BrowserChooser3.Forms
                         // アイコン選択に失敗した場合は無視（デフォルトアイコンを使用）
                         Logger.LogWarning("AddEditBrowserForm.btnBrowse_Click", "アイコン選択に失敗しました", ex.Message);
                     }
+                }
+            };
+
+            // アイコン編集ボタンのクリックイベント
+            btnEditIcon.Click += (s, e) =>
+            {
+                if (string.IsNullOrEmpty(_browser.ImagePath) || !File.Exists(_browser.ImagePath))
+                {
+                    MessageBox.Show("先に実行ファイルを選択してください。", "警告", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                try
+                {
+                    using var iconSelectionForm = new IconSelectionForm(_browser.ImagePath);
+                    if (iconSelectionForm.ShowDialog() == DialogResult.OK && iconSelectionForm.SelectedIcon != null)
+                    {
+                        // アイコン表示を更新
+                        UpdateIconDisplay();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError("AddEditBrowserForm.btnEditIcon_Click", "アイコン編集エラー", ex.Message);
+                    MessageBox.Show($"アイコンの編集に失敗しました: {ex.Message}", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             };
             
@@ -285,7 +352,7 @@ namespace BrowserChooser3.Forms
                     _browser.Arguments = txtArguments.Text;
 
                     
-                    if (txtHotkey.Text.Length > 0)
+                    if (txtHotkey != null && txtHotkey.Text.Length > 0)
                     {
                         _browser.Hotkey = txtHotkey.Text[0];
                     }
