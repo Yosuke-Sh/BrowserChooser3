@@ -2522,6 +2522,11 @@
             選択されたアイコンのインデックス
             </summary>
         </member>
+        <member name="P:BrowserChooser3.Forms.IconSelectionForm.SelectedIconPath">
+            <summary>
+            選択されたアイコンファイルのパス
+            </summary>
+        </member>
         <member name="M:BrowserChooser3.Forms.IconSelectionForm.#ctor(System.String)">
             <summary>
             アイコン選択フォームクラスの新しいインスタンスを初期化します

@@ -29,6 +29,11 @@ namespace BrowserChooser3.Forms
         public int SelectedIconIndex => _selectedIconIndex;
 
         /// <summary>
+        /// 選択されたアイコンファイルのパス
+        /// </summary>
+        public string SelectedIconPath => _filePath;
+
+        /// <summary>
         /// アイコン選択フォームクラスの新しいインスタンスを初期化します
         /// </summary>
         /// <param name="filePath">アイコンを抽出するファイルパス</param>

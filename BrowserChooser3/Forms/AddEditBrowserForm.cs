@@ -120,23 +120,28 @@ namespace BrowserChooser3.Forms
                 var picIcon = Controls.Find("picIcon", true).FirstOrDefault() as PictureBox;
                 if (picIcon == null) return;
 
-                if (!string.IsNullOrEmpty(_browser.ImagePath) && File.Exists(_browser.ImagePath))
+                // アイコンパスが存在しない場合はブラウザパスを利用
+                var iconPath = !string.IsNullOrEmpty(_browser.ImagePath) && File.Exists(_browser.ImagePath) 
+                    ? _browser.ImagePath 
+                    : _browser.Target;
+
+                if (!string.IsNullOrEmpty(iconPath) && File.Exists(iconPath))
                 {
                     // ファイル拡張子をチェック
-                    var extension = Path.GetExtension(_browser.ImagePath).ToLowerInvariant();
+                    var extension = Path.GetExtension(iconPath).ToLowerInvariant();
                     Icon? icon = null;
 
                     if (extension == ".exe")
                     {
                         // 実行ファイルからアイコンを抽出
-                        icon = ExtractIconFromFile(_browser.ImagePath, _browser.IconIndex);
+                        icon = ExtractIconFromFile(iconPath, _browser.IconIndex);
                     }
                     else if (extension == ".ico")
                     {
                         // ICOファイルからアイコンを読み込み
                         try
                         {
-                            icon = new Icon(_browser.ImagePath);
+                            icon = new Icon(iconPath);
                         }
                         catch (Exception ex)
                         {
@@ -148,7 +153,7 @@ namespace BrowserChooser3.Forms
                         // 画像ファイルからアイコンを作成
                         try
                         {
-                            using var originalBitmap = new Bitmap(_browser.ImagePath);
+                            using var originalBitmap = new Bitmap(iconPath);
                             var resizedBitmap = new Bitmap(originalBitmap, new Size(32, 32));
                             icon = Icon.FromHandle(resizedBitmap.GetHicon());
                         }
@@ -162,7 +167,7 @@ namespace BrowserChooser3.Forms
                         // その他のファイルは関連付けられたアイコンを取得
                         try
                         {
-                            icon = Icon.ExtractAssociatedIcon(_browser.ImagePath);
+                            icon = Icon.ExtractAssociatedIcon(iconPath);
                         }
                         catch (Exception ex)
                         {
@@ -379,8 +384,8 @@ namespace BrowserChooser3.Forms
                         if (iconSelectionForm.ShowDialog() == DialogResult.OK && iconSelectionForm.SelectedIcon != null)
                         {
                             // 選択されたアイコンをブラウザに設定
-                            _browser.ImagePath = openFileDialog.FileName;
-                            _browser.IconIndex = iconSelectionForm.SelectedIconIndex; // 選択されたアイコンのインデックスを保存
+                            _browser.ImagePath = iconSelectionForm.SelectedIconPath;
+                            _browser.IconIndex = iconSelectionForm.SelectedIconIndex;
                             UpdateIconDisplay();
                             
                             Logger.LogInfo("AddEditBrowserForm.btnBrowse_Click", "アイコン選択完了", 
@@ -398,18 +403,25 @@ namespace BrowserChooser3.Forms
             // アイコン編集ボタンのクリックイベント
             btnEditIcon.Click += (s, e) =>
             {
-                if (string.IsNullOrEmpty(_browser.ImagePath) || !File.Exists(_browser.ImagePath))
+                // アイコンファイルが設定されていない場合は、現在のブラウザパスを使用
+                string iconFilePath = _browser.ImagePath;
+                if (string.IsNullOrEmpty(iconFilePath) || !File.Exists(iconFilePath))
                 {
-                    MessageBox.Show("先に実行ファイルを選択してください。", "警告", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
+                    iconFilePath = _browser.Target;
+                    if (string.IsNullOrEmpty(iconFilePath) || !File.Exists(iconFilePath))
+                    {
+                        MessageBox.Show("先に実行ファイルを選択してください。", "警告", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
                 }
 
                 try
                 {
-                    using var iconSelectionForm = new IconSelectionForm(_browser.ImagePath);
+                    using var iconSelectionForm = new IconSelectionForm(iconFilePath);
                     if (iconSelectionForm.ShowDialog() == DialogResult.OK && iconSelectionForm.SelectedIcon != null)
                     {
-                        // 選択されたアイコンのインデックスを保存
+                        // アイコンパスとインデックスを更新
+                        _browser.ImagePath = iconSelectionForm.SelectedIconPath;
                         _browser.IconIndex = iconSelectionForm.SelectedIconIndex;
                         
                         // アイコン表示を更新
