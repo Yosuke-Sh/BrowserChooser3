@@ -15,11 +15,17 @@ namespace BrowserChooser3.Forms
         private List<Icon> _icons = new();
         private Icon? _selectedIcon = null;
         private string _filePath = string.Empty;
+        private int _selectedIconIndex = -1;
 
         /// <summary>
         /// 選択されたアイコン
         /// </summary>
         public Icon? SelectedIcon => _selectedIcon;
+
+        /// <summary>
+        /// 選択されたアイコンのインデックス
+        /// </summary>
+        public int SelectedIconIndex => _selectedIconIndex;
 
         /// <summary>
         /// アイコン選択フォームクラスの新しいインスタンスを初期化します
@@ -43,7 +49,7 @@ namespace BrowserChooser3.Forms
         private void InitializeComponent()
         {
             Text = "Icon Selection";
-            Size = new Size(700, 420);
+            Size = new Size(700, 550);
             StartPosition = FormStartPosition.CenterParent;
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
@@ -89,13 +95,32 @@ namespace BrowserChooser3.Forms
                 Text = $"File: {_filePath}"
             };
 
+            // アイコンパス変更ボタン
+            var btnChangePath = new Button
+            {
+                Name = "btnChangePath",
+                Text = "Change Icon Path",
+                Location = new Point(10, 350),
+                Size = new Size(120, 30)
+            };
+            btnChangePath.Click += BtnChangePath_Click;
+
+            // アイコンインデックスラベル
+            var iconIndexLabel = new Label
+            {
+                Name = "iconIndexLabel",
+                Location = new Point(140, 355),
+                Size = new Size(200, 20),
+                Text = "Icon Index: -"
+            };
+
             // OKボタン
             var btnOK = new Button
             {
                 Name = "btnOK",
                 Text = "OK",
-                Location = new Point(420, 320),
-                Size = new Size(75, 25),
+                Location = new Point(420, 450),
+                Size = new Size(75, 30),
                 DialogResult = DialogResult.OK,
                 Enabled = false
             };
@@ -106,8 +131,8 @@ namespace BrowserChooser3.Forms
             {
                 Name = "btnCancel",
                 Text = "Cancel",
-                Location = new Point(505, 320),
-                Size = new Size(75, 25),
+                Location = new Point(505, 450),
+                Size = new Size(75, 30),
                 DialogResult = DialogResult.Cancel
             };
 
@@ -115,12 +140,98 @@ namespace BrowserChooser3.Forms
             Controls.Add(iconListView);
             Controls.Add(previewPictureBox);
             Controls.Add(filePathLabel);
+            Controls.Add(btnChangePath);
+            Controls.Add(iconIndexLabel);
             Controls.Add(btnOK);
             Controls.Add(btnCancel);
 
             // フォームのAcceptButtonとCancelButtonを設定
             AcceptButton = btnOK;
             CancelButton = btnCancel;
+        }
+
+        /// <summary>
+        /// アイコンパス変更ボタンのクリックイベント
+        /// </summary>
+        private void BtnChangePath_Click(object? sender, EventArgs e)
+        {
+            try
+            {
+                using var openFileDialog = new OpenFileDialog
+                {
+                    Filter = "実行ファイル (*.exe)|*.exe|アイコンファイル (*.ico)|*.ico|すべてのファイル (*.*)|*.*",
+                    Title = "アイコンファイルを選択"
+                };
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    _filePath = openFileDialog.FileName;
+                    
+                    // ファイルパスラベルを更新
+                    var filePathLabel = Controls.Find("filePathLabel", true).FirstOrDefault() as Label;
+                    if (filePathLabel != null)
+                    {
+                        filePathLabel.Text = $"File: {_filePath}";
+                    }
+
+                    // アイコンを再読み込み
+                    ClearIcons();
+                    LoadIcons();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("IconSelectionForm.BtnChangePath_Click", "アイコンパス変更エラー", ex.Message);
+                MessageBox.Show($"アイコンパスの変更に失敗しました: {ex.Message}", "エラー", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// アイコンをクリアします
+        /// </summary>
+        private void ClearIcons()
+        {
+            try
+            {
+                var iconListView = Controls.Find("iconListView", true).FirstOrDefault() as ListView;
+                if (iconListView?.LargeImageList != null)
+                {
+                    // ImageListをクリア
+                    iconListView.LargeImageList.Images.Clear();
+                    iconListView.Items.Clear();
+                }
+
+                // アイコンリストをクリア
+                _icons.Clear();
+                _selectedIcon = null;
+                _selectedIconIndex = -1;
+
+                // プレビューをクリア
+                var previewPictureBox = Controls.Find("previewPictureBox", true).FirstOrDefault() as PictureBox;
+                if (previewPictureBox != null)
+                {
+                    previewPictureBox.Image = null;
+                }
+
+                // アイコンインデックスラベルをクリア
+                var iconIndexLabel = Controls.Find("iconIndexLabel", true).FirstOrDefault() as Label;
+                if (iconIndexLabel != null)
+                {
+                    iconIndexLabel.Text = "Icon Index: -";
+                }
+
+                // OKボタンを無効化
+                var btnOK = Controls.Find("btnOK", true).FirstOrDefault() as Button;
+                if (btnOK != null)
+                {
+                    btnOK.Enabled = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("IconSelectionForm.ClearIcons", "アイコンクリアエラー", ex.Message);
+            }
         }
 
         /// <summary>
@@ -234,6 +345,7 @@ namespace BrowserChooser3.Forms
                 var iconListView = sender as ListView;
                 var previewPictureBox = Controls.Find("previewPictureBox", true).FirstOrDefault() as PictureBox;
                 var btnOK = Controls.Find("btnOK", true).FirstOrDefault() as Button;
+                var iconIndexLabel = Controls.Find("iconIndexLabel", true).FirstOrDefault() as Label;
 
                 if (iconListView?.SelectedItems.Count > 0)
                 {
@@ -241,11 +353,18 @@ namespace BrowserChooser3.Forms
                     if (selectedItem.Tag is Icon icon)
                     {
                         _selectedIcon = icon;
+                        _selectedIconIndex = selectedItem.Index;
                         
                         // プレビューを更新
                         if (previewPictureBox != null)
                         {
                             previewPictureBox.Image = icon.ToBitmap();
+                        }
+                        
+                        // アイコンインデックスラベルを更新
+                        if (iconIndexLabel != null)
+                        {
+                            iconIndexLabel.Text = $"Icon Index: {_selectedIconIndex}";
                         }
                         
                         // OKボタンを有効化
@@ -258,11 +377,18 @@ namespace BrowserChooser3.Forms
                 else
                 {
                     _selectedIcon = null;
+                    _selectedIconIndex = -1;
                     
                     // プレビューをクリア
                     if (previewPictureBox != null)
                     {
                         previewPictureBox.Image = null;
+                    }
+                    
+                    // アイコンインデックスラベルをクリア
+                    if (iconIndexLabel != null)
+                    {
+                        iconIndexLabel.Text = "Icon Index: -";
                     }
                     
                     // OKボタンを無効化

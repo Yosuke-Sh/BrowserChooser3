@@ -122,8 +122,8 @@ namespace BrowserChooser3.Forms
 
                 if (!string.IsNullOrEmpty(_browser.ImagePath) && File.Exists(_browser.ImagePath))
                 {
-                    // アイコンを抽出して表示
-                    var icon = Icon.ExtractAssociatedIcon(_browser.ImagePath);
+                    // 保存されたアイコンインデックスを使用してアイコンを抽出
+                    var icon = ExtractIconFromFile(_browser.ImagePath, _browser.IconIndex);
                     if (icon != null)
                     {
                         picIcon.Image = icon.ToBitmap();
@@ -144,6 +144,53 @@ namespace BrowserChooser3.Forms
                 }
             }
         }
+
+        /// <summary>
+        /// ファイルから指定されたインデックスのアイコンを抽出します
+        /// </summary>
+        /// <param name="filePath">ファイルパス</param>
+        /// <param name="iconIndex">アイコンインデックス</param>
+        /// <returns>抽出されたアイコン</returns>
+        private Icon? ExtractIconFromFile(string filePath, int iconIndex)
+        {
+            try
+            {
+                // 指定されたインデックスのアイコンを抽出
+                var largeIcon = IntPtr.Zero;
+                var smallIcon = IntPtr.Zero;
+                
+                if (ExtractIconEx(filePath, iconIndex, out largeIcon, out smallIcon, 1) > 0)
+                {
+                    if (largeIcon != IntPtr.Zero)
+                    {
+                        return Icon.FromHandle(largeIcon);
+                    }
+                }
+                
+                // フォールバック: 関連付けられたアイコンを取得
+                return Icon.ExtractAssociatedIcon(filePath);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWarning("AddEditBrowserForm.ExtractIconFromFile", "アイコン抽出エラー", ex.Message);
+                
+                // フォールバック: 関連付けられたアイコンを取得
+                try
+                {
+                    return Icon.ExtractAssociatedIcon(filePath);
+                }
+                catch (Exception fallbackEx)
+                {
+                    Logger.LogError("AddEditBrowserForm.ExtractIconFromFile", "フォールバックアイコン抽出エラー", fallbackEx.Message);
+                    return null;
+                }
+            }
+        }
+
+        #region Win32 API
+        [System.Runtime.InteropServices.DllImport("shell32.dll", CharSet = System.Runtime.InteropServices.CharSet.Auto)]
+        private static extern int ExtractIconEx(string szFileName, int nIconIndex, out IntPtr phiconLarge, out IntPtr phiconSmall, int nIcons);
+        #endregion
 
         /// <summary>
         /// ブラウザデータを取得
@@ -287,8 +334,11 @@ namespace BrowserChooser3.Forms
                         {
                             // 選択されたアイコンをブラウザに設定
                             _browser.ImagePath = openFileDialog.FileName;
-                            _browser.IconIndex = 0; // デフォルトアイコンインデックス
+                            _browser.IconIndex = iconSelectionForm.SelectedIconIndex; // 選択されたアイコンのインデックスを保存
                             UpdateIconDisplay();
+                            
+                            Logger.LogInfo("AddEditBrowserForm.btnBrowse_Click", "アイコン選択完了", 
+                                $"IconIndex: {_browser.IconIndex}, ImagePath: {_browser.ImagePath}");
                         }
                     }
                     catch (Exception ex)
@@ -313,8 +363,14 @@ namespace BrowserChooser3.Forms
                     using var iconSelectionForm = new IconSelectionForm(_browser.ImagePath);
                     if (iconSelectionForm.ShowDialog() == DialogResult.OK && iconSelectionForm.SelectedIcon != null)
                     {
+                        // 選択されたアイコンのインデックスを保存
+                        _browser.IconIndex = iconSelectionForm.SelectedIconIndex;
+                        
                         // アイコン表示を更新
                         UpdateIconDisplay();
+                        
+                        Logger.LogInfo("AddEditBrowserForm.btnEditIcon_Click", "アイコン編集完了", 
+                            $"IconIndex: {_browser.IconIndex}, ImagePath: {_browser.ImagePath}");
                     }
                 }
                 catch (Exception ex)

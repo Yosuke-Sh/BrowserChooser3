@@ -2413,6 +2413,14 @@
             アイコン表示を更新
             </summary>
         </member>
+        <member name="M:BrowserChooser3.Forms.AddEditBrowserForm.ExtractIconFromFile(System.String,System.Int32)">
+            <summary>
+            ファイルから指定されたインデックスのアイコンを抽出します
+            </summary>
+            <param name="filePath">ファイルパス</param>
+            <param name="iconIndex">アイコンインデックス</param>
+            <returns>抽出されたアイコン</returns>
+        </member>
         <member name="M:BrowserChooser3.Forms.AddEditBrowserForm.GetData">
             <summary>
             ブラウザデータを取得
@@ -2509,6 +2517,11 @@
             選択されたアイコン
             </summary>
         </member>
+        <member name="P:BrowserChooser3.Forms.IconSelectionForm.SelectedIconIndex">
+            <summary>
+            選択されたアイコンのインデックス
+            </summary>
+        </member>
         <member name="M:BrowserChooser3.Forms.IconSelectionForm.#ctor(System.String)">
             <summary>
             アイコン選択フォームクラスの新しいインスタンスを初期化します
@@ -2518,6 +2531,16 @@
         <member name="M:BrowserChooser3.Forms.IconSelectionForm.InitializeComponent">
             <summary>
             フォームの初期化
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.IconSelectionForm.BtnChangePath_Click(System.Object,System.EventArgs)">
+            <summary>
+            アイコンパス変更ボタンのクリックイベント
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.IconSelectionForm.ClearIcons">
+            <summary>
+            アイコンをクリアします
             </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.IconSelectionForm.LoadIcons">
