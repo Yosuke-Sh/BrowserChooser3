@@ -35,7 +35,7 @@ namespace BrowserChooser3.Forms
             {
                 URLPattern = "",
                 Guid = Guid.Empty,
-                DelayTime = -1
+                Delay = -1
             };
 
             LoadURLData();
@@ -77,7 +77,7 @@ namespace BrowserChooser3.Forms
             var txtDelay = Controls.Find("txtDelay", true).FirstOrDefault() as TextBox;
 
             if (txtURL != null) txtURL.Text = _url.URLPattern ?? "";
-            if (txtDelay != null) txtDelay.Text = _url.DelayTime < 0 ? "" : _url.DelayTime.ToString();
+            if (txtDelay != null) txtDelay.Text = _url.Delay < 0 ? "" : _url.Delay.ToString();
 
             // ブラウザコンボボックスの設定
             if (cmbBrowser != null)
@@ -129,11 +129,11 @@ namespace BrowserChooser3.Forms
             
             if (txtDelay != null && int.TryParse(txtDelay.Text, out var delay))
             {
-                _url.DelayTime = delay;
+                _url.Delay = delay;
             }
             else
             {
-                _url.DelayTime = -1; // Default
+                _url.Delay = -1; // Default
             }
 
             return _url;
@@ -214,11 +214,11 @@ namespace BrowserChooser3.Forms
                     
                     if (int.TryParse(txtDelay.Text, out var delay))
                     {
-                        _url.DelayTime = delay;
+                        _url.Delay = delay;
                     }
                     else
                     {
-                        _url.DelayTime = -1; // Default
+                        _url.Delay = -1; // Default
                     }
                 }
             };

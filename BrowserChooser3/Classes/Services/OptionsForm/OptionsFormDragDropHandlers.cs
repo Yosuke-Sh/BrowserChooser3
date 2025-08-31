@@ -14,7 +14,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
         private readonly Settings _settings;
         private readonly Dictionary<int, Browser> _mBrowser;
         private readonly Dictionary<int, Protocol> _mProtocols;
-        private readonly Dictionary<int, FileType> _mFileTypes;
+
         private readonly Action<bool> _setModified;
         private readonly Action _rebuildAutoURLs;
 
@@ -30,7 +30,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
         /// <param name="settings">設定オブジェクト</param>
         /// <param name="mBrowser">ブラウザ辞書</param>
         /// <param name="mProtocols">プロトコル辞書</param>
-        /// <param name="mFileTypes">ファイルタイプ辞書</param>
+
         /// <param name="setModified">変更フラグ設定アクション</param>
         /// <param name="rebuildAutoURLs">Auto URLs再構築アクション</param>
         public OptionsFormDragDropHandlers(
@@ -38,7 +38,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             Settings settings,
             Dictionary<int, Browser> mBrowser,
             Dictionary<int, Protocol> mProtocols,
-            Dictionary<int, FileType> mFileTypes,
+
             Action<bool> setModified,
             Action rebuildAutoURLs)
         {
@@ -46,7 +46,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             _settings = settings;
             _mBrowser = mBrowser;
             _mProtocols = mProtocols;
-            _mFileTypes = mFileTypes;
+
             _setModified = setModified;
             _rebuildAutoURLs = rebuildAutoURLs;
         }
@@ -246,12 +246,12 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                             Name = Path.GetFileNameWithoutExtension(filePath),
                             Target = filePath,
                             Arguments = "",
-                            PosX = 0,
-                            PosY = 0,
+                            X = 0,
+                            Y = 0,
                             Hotkey = '\0'
                         };
 
-                        if (addEditForm.EditBrowser(newBrowser, _mBrowser, _mProtocols, _mFileTypes, false))
+                        if (addEditForm.EditBrowser(newBrowser, _mBrowser, _mProtocols, false))
                         {
                             var finalBrowser = addEditForm.GetData();
                             _mBrowser.Add(_mBrowser.Count + 1, finalBrowser);
@@ -393,12 +393,12 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                                     Name = Path.GetFileNameWithoutExtension(filePath),
                                     Target = filePath,
                                     Arguments = "",
-                                    PosX = 0,
-                                    PosY = 0,
+                                    X = 0,
+                                    Y = 0,
                                     Hotkey = '\0'
                                 };
 
-                                if (addEditForm.EditBrowser(newBrowser, _mBrowser, _mProtocols, _mFileTypes, false))
+                                if (addEditForm.EditBrowser(newBrowser, _mBrowser, _mProtocols, false))
                                 {
                                     var finalBrowser = addEditForm.GetData();
                                     _mBrowser.Add(_mBrowser.Count + 1, finalBrowser);

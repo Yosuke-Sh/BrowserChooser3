@@ -15,66 +15,10 @@ namespace BrowserChooser3.Classes
     {
         /// <summary>
         /// 現在の設定ファイルバージョン
-        /// 将来のアップグレード検出に使用されます
-        /// 
-        /// バージョン履歴:
-        /// - Version 2: プロトコルとファイルタイプを追加（自動追加）
-        /// - Version 3: プロトコルとファイルタイプを再構築、アクセシビリティ設定を追加
-        /// - Version 4: アクセシビリティ設定を再構築、v3を模倣
-        /// - Version 5: レジストリチェック用（キャンセル時はバージョンを更新しない）
-        /// - Version 6: 透明化設定を追加（EnableTransparency, TransparencyColor, Opacity, HideTitleBar, RoundedCorners）
         /// </summary>
-        // バージョン管理は廃止
         public const int CURRENT_FILE_VERSION = 1;
 
-        /// <summary>
-        /// ウィンドウの開始位置を定義する列挙型
-        /// </summary>
-        /// <summary>利用可能な開始位置を定義する列挙型</summary>
-        public enum AvailableStartingPositions
-        {
-            /// <summary>画面中央</summary>
-            CenterScreen,
-            
-            /// <summary>中央からオフセット</summary>
-            OffsetCenter,
-            
-            /// <summary>指定座標</summary>
-            XY,
-            
-            /// <summary>左上</summary>
-            TopLeft,
-            
-            /// <summary>右上</summary>
-            TopRight,
-            
-            /// <summary>左下</summary>
-            BottomLeft,
-            
-            /// <summary>右下</summary>
-            BottomRight,
-            
-            /// <summary>左上からオフセット</summary>
-            OffsetTopLeft,
-            
-            /// <summary>右上からオフセット</summary>
-            OffsetTopRight,
-            
-            /// <summary>左下からオフセット</summary>
-            OffsetBottomLeft,
-            
-            /// <summary>右下からオフセット</summary>
-            OffsetBottomRight,
-            
-            /// <summary>セパレータ1</summary>
-            Separator1 = -1,
-            
-            /// <summary>セパレータ2</summary>
-            Separator2 = -2,
-            
-            /// <summary>セパレータ3</summary>
-            Separator3 = -3
-        }
+
 
         /// <summary>
         /// デフォルト値フィールドを定義する列挙型
@@ -133,20 +77,12 @@ namespace BrowserChooser3.Classes
             /// <summary>ユーザーエージェント</summary>
             UserAgent,
             
-            /// <summary>ダウンロード検出ファイル</summary>
-            DownloadDetectionFile,
+
             
             /// <summary>背景色</summary>
             BackgroundColor,
             
-            /// <summary>開始位置</summary>
-            StartingPosition,
-            
-            /// <summary>Xオフセット</summary>
-            OffsetX,
-            
-            /// <summary>Yオフセット</summary>
-            OffsetY,
+
             
             /// <summary>開いたまま許可</summary>
             AllowStayOpen,
@@ -154,17 +90,13 @@ namespace BrowserChooser3.Classes
             /// <summary>ログ有効化</summary>
             EnableLogging,
             
-            /// <summary>DLL抽出</summary>
-            ExtractDLLs,
+
             
             /// <summary>ログレベル</summary>
             LogLevel,
             
             /// <summary>透明化有効</summary>
             EnableTransparency,
-            
-            /// <summary>透明化色</summary>
-            TransparencyColor,
             
             /// <summary>透明度</summary>
             Opacity,
@@ -205,17 +137,13 @@ namespace BrowserChooser3.Classes
             { DefaultField.FocusBoxLineWidth, 1 },
             { DefaultField.FocusBoxColor, Color.White.ToArgb() },
             { DefaultField.UserAgent, "Mozilla/5.0" },
-            { DefaultField.DownloadDetectionFile, true },
+
             { DefaultField.BackgroundColor, Color.White.ToArgb() },
-            { DefaultField.StartingPosition, AvailableStartingPositions.CenterScreen },
-            { DefaultField.OffsetX, 0 },
-            { DefaultField.OffsetY, 0 },
             { DefaultField.AllowStayOpen, false },
             { DefaultField.EnableLogging, true },
-            { DefaultField.ExtractDLLs, false },
+
             { DefaultField.LogLevel, 2 },
             { DefaultField.EnableTransparency, false },
-            { DefaultField.TransparencyColor, Color.FromArgb(255, 255, 0, 255).ToArgb() },
             { DefaultField.Opacity, 0.8 },
             { DefaultField.HideTitleBar, false },
             { DefaultField.RoundedCornersRadius, 20 },
@@ -230,6 +158,36 @@ namespace BrowserChooser3.Classes
         
         /// <summary>ポータブルモード</summary>
         public bool PortableMode { get; set; } = true;
+
+        /// <summary>
+        /// インストール方法を自動判定してPortableModeを設定します
+        /// </summary>
+        public void DeterminePortableMode()
+        {
+            try
+            {
+                var appPath = Application.StartupPath;
+                var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+                
+                // アプリケーションフォルダがAppData内にある場合はインストーラー経由でインストールされたと判定
+                if (appPath.StartsWith(appDataPath, StringComparison.OrdinalIgnoreCase))
+                {
+                    PortableMode = false;
+                    Logger.LogDebug("Settings.DeterminePortableMode", "インストーラー経由でインストールされたと判定", appPath);
+                }
+                else
+                {
+                    PortableMode = true;
+                    Logger.LogDebug("Settings.DeterminePortableMode", "ポータブルモードと判定", appPath);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("Settings.DeterminePortableMode", "インストール方法の判定に失敗", ex.Message);
+                // エラーの場合はデフォルトでポータブルモード
+                PortableMode = true;
+            }
+        }
         
         /// <summary>URL表示</summary>
         public bool ShowURL { get; set; } = true;
@@ -256,11 +214,7 @@ namespace BrowserChooser3.Classes
         /// <summary>高さ</summary>
         public int Height { get; set; } = 1;
         
-        /// <summary>グリッド幅（Browser Chooser 2互換）</summary>
-        public int GridWidth { get; set; } = 5;
-        
-        /// <summary>グリッド高さ（Browser Chooser 2互換）</summary>
-        public int GridHeight { get; set; } = 1;
+
         
         /// <summary>アイコン幅</summary>
         public int IconWidth { get; set; } = 100;
@@ -319,29 +273,24 @@ namespace BrowserChooser3.Classes
         /// <summary>ユーザーエージェント</summary>
         public string UserAgent { get; set; } = "Mozilla/5.0";
         
-        /// <summary>ダウンロード検出ファイル</summary>
-        public bool DownloadDetectionFile { get; set; } = true;
+
         
         /// <summary>背景色</summary>
         public int BackgroundColor { get; set; } = Color.White.ToArgb();
         
-        /// <summary>背景色（Color型、Browser Chooser 2互換）</summary>
+        /// <summary>背景色（Color型）</summary>
         public Color BackgroundColorValue 
         { 
             get
             {
-                Logger.LogInfo("Settings.BackgroundColorValue.get", $"BackgroundColor: {BackgroundColor}");
-                
                 // BackgroundColorが-1（Color.White）の場合は白を返す
                 if (BackgroundColor == -1)
                 {
-                    Logger.LogInfo("Settings.BackgroundColorValue.get", "BackgroundColorが-1なので白を返します");
                     return Color.White;
                 }
                 
                 // BackgroundColorが有効な値の場合は、その値を正しく使用
                 var c = Color.FromArgb(BackgroundColor);
-                Logger.LogInfo("Settings.BackgroundColorValue.get", $"BackgroundColorから色を取得: {c}");
                 // 常に不透明（A=255）で返す
                 return c.A == 255 ? c : Color.FromArgb(255, c.R, c.G, c.B);
             }
@@ -350,25 +299,18 @@ namespace BrowserChooser3.Classes
                 // Color.Emptyが設定された場合は処理をスキップ（XMLデシリアライゼーションの副作用回避）
                 if (value == Color.Empty)
                 {
-                    Logger.LogInfo("Settings.BackgroundColorValue.set", "Color.Emptyが設定されたため処理をスキップ");
                     return;
                 }
                 
                 // 常に不透明（A=255）で保存
                 var c = value.A == 255 ? value : Color.FromArgb(255, value.R, value.G, value.B);
                 BackgroundColor = c.ToArgb();
-                Logger.LogInfo("Settings.BackgroundColorValue.set", $"背景色を設定しました: {value} -> BackgroundColor: {BackgroundColor}");
             }
         }
         
-        /// <summary>開始位置</summary>
-        public int StartingPosition { get; set; } = (int)AvailableStartingPositions.CenterScreen;
+
         
-        /// <summary>Xオフセット</summary>
-        public int OffsetX { get; set; } = 0;
-        
-        /// <summary>Yオフセット</summary>
-        public int OffsetY { get; set; } = 0;
+
         
         /// <summary>開いたまま許可</summary>
         public bool AllowStayOpen { get; set; } = false;
@@ -376,8 +318,7 @@ namespace BrowserChooser3.Classes
         /// <summary>ログ有効化</summary>
         public bool EnableLogging { get; set; } = true;
         
-        /// <summary>DLL抽出</summary>
-        public bool ExtractDLLs { get; set; } = false;
+
         
         /// <summary>ログレベル</summary>
         public int LogLevel { get; set; } = 2;
@@ -391,25 +332,23 @@ namespace BrowserChooser3.Classes
         /// <summary>グリッド線幅</summary>
         public int GridLineWidth { get; set; } = 1;
 
-        /// <summary>履歴保持</summary>
-        public bool KeepHistory { get; set; } = true;
-
-        /// <summary>履歴保持日数</summary>
-        public int HistoryDays { get; set; } = 30;
-
-        /// <summary>プライバシーモード</summary>
-        public bool PrivacyMode { get; set; } = false;
-
-        /// <summary>データ収集許可</summary>
-        public bool AllowDataCollection { get; set; } = false;
+        /// <summary>グリッド幅</summary>
+        public int GridWidth { get; set; } = 5;
+        
+        /// <summary>グリッド高さ</summary>
+        public int GridHeight { get; set; } = 1;
 
 
 
-        /// <summary>最小化で起動</summary>
-        public bool StartMinimized { get; set; } = false;
+
+
+
 
         /// <summary>システムトレイで起動</summary>
         public bool StartInTray { get; set; } = false;
+
+        /// <summary>システムトレイに常駐</summary>
+        public bool AlwaysResidentInTray { get; set; } = false;
 
         /// <summary>起動遅延</summary>
         public int StartupDelay { get; set; } = 0;
@@ -419,9 +358,6 @@ namespace BrowserChooser3.Classes
 
         /// <summary>透明化有効</summary>
         public bool EnableTransparency { get; set; } = false;
-
-        /// <summary>透明化色</summary>
-        public int TransparencyColor { get; set; } = Color.FromArgb(255, 255, 0, 255).ToArgb();
 
         /// <summary>透明度（0.01-1.0）</summary>
         public double Opacity { get; set; } = 0.8;
@@ -471,9 +407,9 @@ namespace BrowserChooser3.Classes
         /// </summary>
         public Settings()
         {
-            Logger.LogInfo("Settings.New (No args)", "Start");
+            Logger.LogDebug("Settings.New (No args)", "Start");
             SharedNew();
-            Logger.LogInfo("Settings.New (No args)", "End");
+            Logger.LogDebug("Settings.New (No args)", "End");
         }
 
         /// <summary>
@@ -482,27 +418,29 @@ namespace BrowserChooser3.Classes
         /// <param name="error">エラー状態</param>
         public Settings(bool error)
         {
-            Logger.LogInfo("Settings.New (Error)", "Start", error);
+            Logger.LogDebug("Settings.New (Error)", "Start", error);
             SharedNew();
-            Logger.LogInfo("Settings.New (Error)", "End", error);
+            Logger.LogDebug("Settings.New (Error)", "End", error);
         }
 
         private void SharedNew()
         {
-            Logger.LogInfo("Settings.SharedNew", "Start");
+            Logger.LogDebug("Settings.SharedNew", "Start");
             Browsers = new List<Browser>();
             URLs = new List<URL>();
-            PortableMode = true; // default
             RevealShortURL = false; // default
             ShowURL = true; // default
             Width = 8; // default
             Height = 1; // default
             
+            // インストール方法を自動判定
+            DeterminePortableMode();
+            
             // 設定ファイルが存在する場合は自動検出をスキップ
             var configPath = Path.Combine(Application.StartupPath, BrowserChooserConfigFileName);
             if (File.Exists(configPath))
             {
-                Logger.LogInfo("Settings.SharedNew", "設定ファイルが存在するため自動検出をスキップ", configPath);
+                Logger.LogDebug("Settings.SharedNew", "設定ファイルが存在するため自動検出をスキップ", configPath);
             }
             else
             {
@@ -510,7 +448,7 @@ namespace BrowserChooser3.Classes
                 DetectBrowsers();
             }
             
-            Logger.LogInfo("Settings.SharedNew", "End");
+            Logger.LogDebug("Settings.SharedNew", "End");
         }
 
         /// <summary>
@@ -518,12 +456,12 @@ namespace BrowserChooser3.Classes
         /// </summary>
         private void DetectBrowsers()
         {
-            Logger.LogInfo("Settings.DetectBrowsers", "Start");
+            Logger.LogDebug("Settings.DetectBrowsers", "Start");
             
             // 既存のブラウザがある場合は自動検出をスキップ
             if (Browsers.Count > 0)
             {
-                Logger.LogInfo("Settings.DetectBrowsers", "既存のブラウザが存在するため自動検出をスキップ", Browsers.Count);
+                Logger.LogDebug("Settings.DetectBrowsers", "既存のブラウザが存在するため自動検出をスキップ", Browsers.Count);
                 return;
             }
             
@@ -543,16 +481,16 @@ namespace BrowserChooser3.Classes
                 if (existingBrowser == null)
                 {
                     // rowとcolを自動設定
-                    detectedBrowser.PosY = rowIndex;
-                    detectedBrowser.PosX = 0;
+                                    detectedBrowser.Y = rowIndex;
+                detectedBrowser.X = 0;
                     rowIndex++;
                     
                     Browsers.Add(detectedBrowser);
-                    Logger.LogInfo("Settings.DetectBrowsers", "ブラウザ追加", detectedBrowser.Name, detectedBrowser.PosY, detectedBrowser.PosX);
+                    Logger.LogDebug("Settings.DetectBrowsers", "ブラウザ追加", detectedBrowser.Name, detectedBrowser.Y, detectedBrowser.X);
                 }
             }
             
-            Logger.LogInfo("Settings.DetectBrowsers", "End", Browsers.Count);
+            Logger.LogDebug("Settings.DetectBrowsers", "End", Browsers.Count);
         }
 
         /// <summary>
@@ -561,7 +499,7 @@ namespace BrowserChooser3.Classes
         /// <param name="overrideSafeMode">SafeModeを無視するかどうか</param>
         public void DoSave(bool overrideSafeMode = false)
         {
-            Logger.LogInfo("Settings.DoSave", "Start", overrideSafeMode);
+            Logger.LogDebug("Settings.DoSave", "Start", overrideSafeMode);
             if (SafeMode && !overrideSafeMode) return; // do not save
 
             if (PortableMode)
@@ -572,22 +510,22 @@ namespace BrowserChooser3.Classes
             {
                 IntSave(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BrowserChooser3"));
             }
-            Logger.LogInfo("Settings.DoSave", "End", overrideSafeMode);
+            Logger.LogDebug("Settings.DoSave", "End", overrideSafeMode);
         }
 
         private void IntSave(string path)
         {
-            Logger.LogInfo("Settings.IntSave", "Start", path);
+            Logger.LogDebug("Settings.IntSave", "Start", path);
             if (SafeMode)
             {
-                Logger.LogInfo("Settings.IntSave", "Safe Mode", path);
+                Logger.LogDebug("Settings.IntSave", "Safe Mode", path);
                 return; // do not save
             }
 
             var directory = new DirectoryInfo(path);
             if (!directory.Exists)
             {
-                Logger.LogInfo("Settings.IntSave", "Creating Directory", path);
+                Logger.LogDebug("Settings.IntSave", "Creating Directory", path);
                 Directory.CreateDirectory(path);
             }
 
@@ -595,9 +533,9 @@ namespace BrowserChooser3.Classes
             var filePath = Path.Combine(path, BrowserChooserConfigFileName);
 
             using var writer = new StreamWriter(filePath);
-            Logger.LogInfo("Settings.IntSave", "Writing", path);
+            Logger.LogDebug("Settings.IntSave", "Writing", path);
             xmlSerializer.Serialize(writer, this);
-            Logger.LogInfo("Settings.IntSave", "End", path);
+            Logger.LogDebug("Settings.IntSave", "End", path);
         }
 
         /// <summary>
@@ -607,7 +545,7 @@ namespace BrowserChooser3.Classes
         /// <returns>設定オブジェクト</returns>
         public static Settings Load(string path)
         {
-            Logger.LogInfo("Settings.Load", "Start", path);
+            Logger.LogDebug("Settings.Load", "Start", path);
             
             // ポリシーを初期化
             Policy.Initialize();
@@ -615,7 +553,7 @@ namespace BrowserChooser3.Classes
             // ポリシーで設定ファイルが無視される場合
             if (Policy.IgnoreSettingsFile)
             {
-                Logger.LogInfo("Settings.Load", "ポリシーにより設定ファイルが無視されます");
+                Logger.LogDebug("Settings.Load", "ポリシーにより設定ファイルが無視されます");
                 return new Settings(false);
             }
 
@@ -627,7 +565,7 @@ namespace BrowserChooser3.Classes
             {
                 try
                 {
-                    Logger.LogInfo("Settings.Load", "Reading Settings", path);
+                    Logger.LogDebug("Settings.Load", "Reading Settings", path);
                     using var reader = new StreamReader(configPath);
                     output = (Settings)serializer.Deserialize(reader)!;
 
@@ -636,10 +574,7 @@ namespace BrowserChooser3.Classes
                         LogDebugs = TriState.True;
                     }
 
-                    if (output.ExtractDLLs)
-                    {
-                        DoExtractDLLs = true;
-                    }
+
 
                     // ログレベルを初期化（ログが有効な場合のみ）
                     if (output?.EnableLogging == true)
@@ -663,25 +598,23 @@ namespace BrowserChooser3.Classes
                     {
                         // BackgroundColorValueが空の場合、BackgroundColorの値を使用して初期化
                         var currentBackgroundColor = output.BackgroundColor;
-                        Logger.LogInfo("Settings.Load", $"BackgroundColorValue初期化: BackgroundColor={currentBackgroundColor}");
+                        Logger.LogDebug("Settings.Load", $"BackgroundColorValue初期化: BackgroundColor={currentBackgroundColor}");
                         
                         // BackgroundColorValueプロパティを正しく設定（XMLデシリアライゼーションの副作用を回避）
                         if (currentBackgroundColor == -1)
                         {
                             // BackgroundColorが-1（白）の場合は、BackgroundColorValueを白に設定
-                            Logger.LogInfo("Settings.Load", "BackgroundColorが-1なので、BackgroundColorValueを白に設定");
+                            Logger.LogDebug("Settings.Load", "BackgroundColorが-1なので、BackgroundColorValueを白に設定");
                         }
                         else
                         {
                             // その他の値の場合は、BackgroundColorの値を使用
                             var color = Color.FromArgb(currentBackgroundColor);
-                            Logger.LogInfo("Settings.Load", $"BackgroundColorValueを設定: {color}");
+                            Logger.LogDebug("Settings.Load", $"BackgroundColorValueを設定: {color}");
                         }
                     }
 
-                    // 設定ファイルのマイグレーション処理は廃止（既存値をそのまま使用）
-
-                    Logger.LogInfo("Settings.Load", "設定ファイル読み込み成功", path, output?.Browsers?.Count ?? 0);
+                    Logger.LogDebug("Settings.Load", "設定ファイル読み込み成功", path, output?.Browsers?.Count ?? 0);
                     return output!;
                 }
                 catch (Exception ex)
@@ -689,18 +622,15 @@ namespace BrowserChooser3.Classes
                     Logger.LogError("Settings.Load", "Exception: Failed to load settings file. Default settings used.", path, ex.Message, ex.StackTrace ?? "");
                 }
             }
-            else
-            {
-                // レガシー設定ファイルのインポート機能は削除されました
-            }
 
-            Logger.LogInfo("Settings.Load", "設定ファイルが存在しないためデフォルト設定を使用", path);
+
+            Logger.LogDebug("Settings.Load", "設定ファイルが存在しないためデフォルト設定を使用", path);
             var defaultSettings = new Settings(false);
-            Logger.LogInfo("Settings.Load", "デフォルト設定作成完了", defaultSettings.Browsers?.Count ?? 0);
+            Logger.LogDebug("Settings.Load", "デフォルト設定作成完了", defaultSettings.Browsers?.Count ?? 0);
             return defaultSettings;
         }
 
-        // 旧マイグレーション関連コードは削除（不要化）
+
 
         /// <summary>
         /// デフォルトプロトコルを作成します
@@ -709,15 +639,14 @@ namespace BrowserChooser3.Classes
         private static void CreateDefaultProtocols(Settings settings)
         {
             var browserGuids = settings.Browsers.Select(b => b.Guid).ToList();
-            var defaultCategories = new List<string> { "Default" };
 
             settings.Protocols.AddRange(new[]
             {
-                new Protocol("HTTP", "http", browserGuids, defaultCategories),
-                new Protocol("Secure HTTP", "https", browserGuids, defaultCategories),
-                new Protocol("FTP", "ftp", browserGuids, defaultCategories),
-                new Protocol("Secure FTP", "ftps", browserGuids, defaultCategories),
-                new Protocol("URL Shortcut", "url", browserGuids, defaultCategories)
+                new Protocol { Name = "HTTP", Header = "http", SupportingBrowsers = new List<Guid>(browserGuids) },
+                new Protocol { Name = "Secure HTTP", Header = "https", SupportingBrowsers = new List<Guid>(browserGuids) },
+                new Protocol { Name = "FTP", Header = "ftp", SupportingBrowsers = new List<Guid>(browserGuids) },
+                new Protocol { Name = "Secure FTP", Header = "ftps", SupportingBrowsers = new List<Guid>(browserGuids) },
+                new Protocol { Name = "URL Shortcut", Header = "url", SupportingBrowsers = new List<Guid>(browserGuids) }
             });
         }
 

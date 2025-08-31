@@ -15,7 +15,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
         private readonly Settings _settings;
         private readonly Dictionary<int, Browser> _mBrowser;
         private readonly Dictionary<int, Protocol> _mProtocols;
-        private readonly Dictionary<int, FileType> _mFileTypes;
+
         private readonly ImageList? _imBrowserIcons;
         private readonly Action<bool> _setModified;
 
@@ -26,7 +26,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
         /// <param name="settings">設定オブジェクト</param>
         /// <param name="mBrowser">ブラウザ辞書</param>
         /// <param name="mProtocols">プロトコル辞書</param>
-        /// <param name="mFileTypes">ファイルタイプ辞書</param>
+
         /// <param name="imBrowserIcons">ブラウザアイコンリスト</param>
         /// <param name="setModified">変更フラグ設定アクション</param>
         public OptionsFormBrowserHandlers(
@@ -34,7 +34,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             Settings settings,
             Dictionary<int, Browser> mBrowser,
             Dictionary<int, Protocol> mProtocols,
-            Dictionary<int, FileType> mFileTypes,
+
             ImageList? imBrowserIcons,
             Action<bool> setModified)
         {
@@ -42,7 +42,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             _settings = settings;
             _mBrowser = mBrowser;
             _mProtocols = mProtocols;
-            _mFileTypes = mFileTypes;
+
             _imBrowserIcons = imBrowserIcons;
             _setModified = setModified;
         }
@@ -52,19 +52,19 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
         /// </summary>
         public void AddBrowser_Click(object? sender, EventArgs e)
         {
-            Logger.LogInfo("OptionsFormBrowserHandlers.AddBrowser_Click", "ブラウザ追加ボタンがクリックされました");
+            Logger.LogDebug("OptionsFormBrowserHandlers.AddBrowser_Click", "ブラウザ追加ボタンがクリックされました");
             try
             {
                 var addEditForm = new AddEditBrowserForm();
-                if (addEditForm.AddBrowser(_mBrowser, _mProtocols, _mFileTypes, false, 
+                if (addEditForm.AddBrowser(_mBrowser, _mProtocols, false, 
                     new Point(_settings.GridWidth, _settings.GridHeight)))
                 {
                     var newBrowser = addEditForm.GetData();
                     
                     // rowとcolを自動設定（重複を避ける）
-                    var maxRow = _mBrowser.Values.Max(b => b.PosY);
-                    newBrowser.PosY = maxRow + 1;
-                    newBrowser.PosX = 0;
+                                var maxRow = _mBrowser.Values.Max(b => b.Y);
+            newBrowser.Y = maxRow + 1;
+            newBrowser.X = 0;
                     
                     var newIndex = _mBrowser.Count + 1;
                     _mBrowser.Add(newIndex, newBrowser);
@@ -76,11 +76,11 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                     {
                         var item = listView.Items.Add(newBrowser.Name);
                         item.Tag = newIndex;
-                        item.SubItems.Add(""); // Default column
-                        item.SubItems.Add(newBrowser.PosY.ToString());
-                        item.SubItems.Add(newBrowser.PosX.ToString());
+                        item.SubItems.Add(newBrowser.Target); // Target column
+                                        item.SubItems.Add(newBrowser.Y.ToString());
+                item.SubItems.Add(newBrowser.X.ToString());
                         item.SubItems.Add(newBrowser.Hotkey.ToString());
-                        item.SubItems.Add(GetBrowserProtocolsAndFileTypes(newBrowser));
+                        item.SubItems.Add(newBrowser.Arguments); // Arguments column
                         
                         // アイコンを設定
                         if (_imBrowserIcons != null)
@@ -120,7 +120,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                     if (selectedIndex == -1 || !_mBrowser.ContainsKey(selectedIndex)) return;
                     
                     var addEditForm = new AddEditBrowserForm();
-                    if (addEditForm.EditBrowser(_mBrowser[selectedIndex], _mBrowser, _mProtocols, _mFileTypes, false))
+                    if (addEditForm.EditBrowser(_mBrowser[selectedIndex], _mBrowser, _mProtocols, false))
                     {
                         var updatedBrowser = addEditForm.GetData();
                         _mBrowser[selectedIndex] = updatedBrowser;
@@ -128,11 +128,11 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                         // ListViewアイテムの更新
                         var selectedItem = listView.SelectedItems[0];
                         selectedItem.Text = updatedBrowser.Name;
-                        selectedItem.SubItems[1].Text = ""; // Default column
-                        selectedItem.SubItems[2].Text = updatedBrowser.PosY.ToString();
-                        selectedItem.SubItems[3].Text = updatedBrowser.PosX.ToString();
+                        selectedItem.SubItems[1].Text = updatedBrowser.Target; // Target column
+                                        selectedItem.SubItems[2].Text = updatedBrowser.Y.ToString();
+                selectedItem.SubItems[3].Text = updatedBrowser.X.ToString();
                         selectedItem.SubItems[4].Text = updatedBrowser.Hotkey.ToString();
-                        selectedItem.SubItems[5].Text = GetBrowserProtocolsAndFileTypes(updatedBrowser);
+                        selectedItem.SubItems[5].Text = updatedBrowser.Arguments; // Arguments column
                         
                         // ImageListアイコンの更新
                         if (_imBrowserIcons != null && selectedItem.Index < _imBrowserIcons.Images.Count)
@@ -217,7 +217,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                     
                     var templateBrowser = _mBrowser[selectedIndex];
                     var addEditForm = new AddEditBrowserForm();
-                    if (addEditForm.AddBrowser(_mBrowser, _mProtocols, _mFileTypes, false, 
+                                                        if (addEditForm.AddBrowser(_mBrowser, _mProtocols, false, 
                         new Point(_settings.GridWidth, _settings.GridHeight), templateBrowser))
                     {
                         var clonedBrowser = addEditForm.GetData();
@@ -232,10 +232,10 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                             var item = listView.Items.Add(clonedBrowser.Name);
                             item.Tag = _mBrowser.Count;
                             item.SubItems.Add(""); // Default column
-                            item.SubItems.Add(clonedBrowser.PosY.ToString());
-                            item.SubItems.Add(clonedBrowser.PosX.ToString());
+                                            item.SubItems.Add(clonedBrowser.Y.ToString());
+                item.SubItems.Add(clonedBrowser.X.ToString());
                             item.SubItems.Add(clonedBrowser.Hotkey.ToString());
-                            item.SubItems.Add(GetBrowserProtocolsAndFileTypes(clonedBrowser));
+                            item.SubItems.Add(clonedBrowser.Arguments);
                         }
                         
                         // ImageListにアイコンを追加
@@ -270,7 +270,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
         /// </summary>
         public void DetectBrowsers_Click(object? sender, EventArgs e)
         {
-            Logger.LogInfo("OptionsFormBrowserHandlers.DetectBrowsers_Click", "ブラウザ検出を開始");
+            Logger.LogDebug("OptionsFormBrowserHandlers.DetectBrowsers_Click", "ブラウザ検出を開始");
             try
             {
                 // Webブラウザのみを検出するかどうかを確認
@@ -289,7 +289,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 
                 // ブラウザ検出を実行
                 var detectedBrowsers = DetectedBrowsers.DoBrowserDetection(webBrowsersOnly);
-                Logger.LogInfo("OptionsFormBrowserHandlers.DetectBrowsers_Click", $"検出されたブラウザ数: {detectedBrowsers.Count}", webBrowsersOnly);
+                Logger.LogDebug("OptionsFormBrowserHandlers.DetectBrowsers_Click", $"検出されたブラウザ数: {detectedBrowsers.Count}", webBrowsersOnly);
                 
                 var missingBrowsers = new List<Browser>();
 
@@ -312,7 +312,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                     }
                 }
 
-                Logger.LogInfo("OptionsFormBrowserHandlers.DetectBrowsers_Click", $"不足しているブラウザ数: {missingBrowsers.Count}");
+                Logger.LogDebug("OptionsFormBrowserHandlers.DetectBrowsers_Click", $"不足しているブラウザ数: {missingBrowsers.Count}");
 
                 if (missingBrowsers.Count > 0)
                 {
@@ -327,7 +327,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                         // 正しいListViewを取得（タブページ内から検索）
                         var browsersTab = _form.tabSettings.TabPages["tabBrowsers"];
                         var listView = browsersTab?.Controls.Find("lstBrowsers", true).FirstOrDefault() as ListView;
-                        Logger.LogInfo("OptionsFormBrowserHandlers.DetectBrowsers_Click", $"ListView: {(listView != null ? "見つかりました" : "見つかりませんでした")}");
+                        Logger.LogDebug("OptionsFormBrowserHandlers.DetectBrowsers_Click", $"ListView: {(listView != null ? "見つかりました" : "見つかりませんでした")}");
                         
                                                  if (listView != null)
                          {
@@ -335,8 +335,8 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                              foreach (var browser in missingBrowsers)
                              {
                                  // rowとcolを自動設定（重複を避ける）
-                                 browser.PosY = rowIndex;
-                                 browser.PosX = 0;
+                                                 browser.Y = rowIndex;
+                browser.X = 0;
                                  rowIndex++;
                                  
                                  var newIndex = _mBrowser.Count + 1;
@@ -344,11 +344,11 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                                  
                                  var item = listView.Items.Add(browser.Name);
                                  item.Tag = newIndex;
-                                 item.SubItems.Add(""); // Default column
-                                 item.SubItems.Add(browser.PosY.ToString());
-                                 item.SubItems.Add(browser.PosX.ToString());
+                                 item.SubItems.Add(browser.Target); // Target column
+                                                 item.SubItems.Add(browser.Y.ToString());
+                item.SubItems.Add(browser.X.ToString());
                                  item.SubItems.Add(browser.Hotkey.ToString());
-                                 item.SubItems.Add(GetBrowserProtocolsAndFileTypes(browser));
+                                 item.SubItems.Add(browser.Arguments); // Arguments column
                                  
                                  // ImageListにアイコンを追加
                                  if (_imBrowserIcons != null)
@@ -387,16 +387,6 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             }
         }
 
-        /// <summary>
-        /// ブラウザのプロトコルを取得（FileTypesは未実装のため削除）
-        /// </summary>
-        public string GetBrowserProtocolsAndFileTypes(Browser browser)
-        {
-            var protocols = _mProtocols.Values.Where(p => p.BrowserGuid == browser.Guid).Select(p => p.Name);
-            // var fileTypes = _mFileTypes.Values.Where(f => f.BrowserGuid == browser.Guid).Select(f => f.Name);
-            
-            // var allItems = protocols.Concat(fileTypes);
-            return string.Join(", ", protocols);
-        }
+
     }
 }

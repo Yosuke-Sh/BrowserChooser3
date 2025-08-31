@@ -13,9 +13,37 @@ namespace BrowserChooser3.Forms
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing && (components != null))
+            if (disposing)
             {
-                components.Dispose();
+                if (components != null)
+                {
+                    components.Dispose();
+                }
+                
+                // カスタムリソースの破棄
+                if (_notifyIcon != null)
+                {
+                    _notifyIcon.Dispose();
+                    _notifyIcon = null;
+                }
+
+                if (_countdownTimer != null)
+                {
+                    _countdownTimer.Dispose();
+                    _countdownTimer = null;
+                }
+
+                if (_toolTip != null)
+                {
+                    _toolTip.Dispose();
+                    _toolTip = null;
+                }
+
+                if (_cmOptions != null)
+                {
+                    _cmOptions.Dispose();
+                    _cmOptions = null;
+                }
             }
             base.Dispose(disposing);
         }
@@ -35,7 +63,7 @@ namespace BrowserChooser3.Forms
             btnCopyToClipboard = new Button();
             btnCopyToClipboardAndClose = new Button();
             chkAutoClose = new CheckBox();
-            chkAutoOpen = new CheckBox();
+
             tmrDelay = new System.Windows.Forms.Timer(components);
             cmOptions = new ContextMenuStrip(components);
             miEditMode = new ToolStripMenuItem();
@@ -138,18 +166,7 @@ namespace BrowserChooser3.Forms
             chkAutoClose.UseVisualStyleBackColor = false;
             chkAutoClose.CheckedChanged += chkAutoClose_CheckedChanged;
             // 
-            // chkAutoOpen
-            // 
-            chkAutoOpen.AutoSize = true;
-            chkAutoOpen.BackColor = Color.Transparent;
-            chkAutoOpen.Location = new Point(16, 195);
-            chkAutoOpen.Margin = new Padding(4, 5, 4, 5);
-            chkAutoOpen.Name = "chkAutoOpen";
-            chkAutoOpen.Size = new Size(478, 24);
-            chkAutoOpen.TabIndex = 7;
-            chkAutoOpen.Text = "指定秒数後にデフォルトブラウザを開く [space key:Timerの一時停止/再開]";
-            chkAutoOpen.UseVisualStyleBackColor = false;
-            chkAutoOpen.CheckedChanged += chkAutoOpen_CheckedChanged;
+
             // 
             // tmrDelay
             // 
@@ -196,7 +213,7 @@ namespace BrowserChooser3.Forms
             ClientSize = new Size(434, 126);
             Controls.Add(btnInfo);
             Controls.Add(btnCopyToClipboardAndClose);
-            Controls.Add(chkAutoOpen);
+
             Controls.Add(chkAutoClose);
             Controls.Add(btnCopyToClipboard);
             Controls.Add(btnCancel);
@@ -226,7 +243,7 @@ namespace BrowserChooser3.Forms
         private System.Windows.Forms.Button btnCopyToClipboardAndClose;
         private System.Windows.Forms.CheckBox chkAutoClose;
         private System.Windows.Forms.Timer tmrDelay;
-        private System.Windows.Forms.CheckBox chkAutoOpen;
+
         private System.Windows.Forms.ContextMenuStrip cmOptions;
         private System.Windows.Forms.ToolStripMenuItem miEditMode;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;

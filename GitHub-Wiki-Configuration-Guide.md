@@ -1,326 +1,261 @@
-# Configuration Guide
+# 設定ガイド
 
-This comprehensive guide covers all configuration options available in BrowserChooser3.
+BrowserChooser3の設定について詳しく説明します。このガイドでは、各設定タブの機能と使用方法を説明します。
 
-## 🎛️ Accessing Configuration
+## 📋 設定画面の開き方
 
-### Opening the Options Dialog
-1. **Launch BrowserChooser3**
-2. **Press `O` key** to open the Options dialog
-3. **Navigate between tabs** using mouse or keyboard
+設定画面を開くには以下の方法があります：
 
-### Configuration File Location
-- **File**: `BrowserChooser3Config.xml`
-- **Location**: Same folder as `BrowserChooser3.exe`
-- **Format**: XML format for easy editing
-- **Backup**: Always backup before manual editing
+1. **キーボードショートカット**: `O`キーを押す
+2. **メニューから**: 右クリックメニューから「Options」を選択
+3. **ボタンから**: メイン画面の設定ボタンをクリック
 
-## 📑 Configuration Tabs
+## 🎨 Displayタブ
 
-### Display Tab
-Controls the visual appearance and transparency settings.
+### 透明化設定
 
-#### Transparency Settings
-- **Enable Transparency**: Master switch for transparency effects
-- **Transparency Color**: Color that becomes transparent (default: Magenta)
-- **Opacity**: Window transparency level (0.01-1.00, default: 0.9)
-- **Hide Title Bar**: Remove the window title bar
-- **Rounded Corners Radius**: Corner rounding (0-50, default: 0)
+#### Enable Transparency
+- **説明**: ウィンドウの透明化を有効/無効にします
+- **デフォルト**: 無効
+- **効果**: 有効にすると、ウィンドウが透明になり、背景が透けて見えます
 
-#### Visual Settings
-- **Show URLs**: Display URLs in the main window
-- **Reveal Short URLs**: Expand shortened URLs
-- **Background Color**: Custom background color picker
+#### Transparency Color
+- **説明**: 透明化する色を設定します
+- **デフォルト**: Magenta（ピンク）
+- **使用方法**: 色選択ボタンをクリックして色を選択
 
-#### Accessibility Settings
-- **Accessibility Settings Button**: Opens detailed accessibility options
+#### Opacity
+- **説明**: ウィンドウの透明度を設定します
+- **範囲**: 0.01 - 1.0
+- **デフォルト**: 0.8
+- **効果**: 値が小さいほど透明になります
 
-### Browsers Tab
-Manages browser detection and configuration.
+#### Hide Title Bar
+- **説明**: タイトルバーを非表示にします
+- **デフォルト**: 無効
+- **注意**: 有効にすると、ウィンドウの移動ができなくなります
 
-#### Browser List
-- **Add**: Add a new browser manually
-- **Edit**: Modify existing browser settings
-- **Delete**: Remove a browser from the list
-- **Detect Browsers**: Automatically find installed browsers
+#### Rounded Corners Radius
+- **説明**: ウィンドウの角を丸くする半径を設定します
+- **範囲**: 0 - 50
+- **デフォルト**: 20
+- **効果**: 値が大きいほど角が丸くなります
 
-#### Browser Properties
-- **Name**: Display name for the browser
-- **Target**: Path to the browser executable
-- **Arguments**: Command-line arguments for launching
-- **Icon**: Icon file or index for display
-- **Scale**: Icon size multiplier
-- **Position**: Grid position (X, Y coordinates)
-- **Visible**: Show/hide in the browser list
+#### Enable Background Gradient
+- **説明**: 背景に縦方向のグラデーション効果を適用します
+- **デフォルト**: 有効
+- **効果**: よりモダンな外観になります
 
-### Protocols Tab
-Configures protocol handlers for different URL schemes.
+### 背景色設定
 
-#### Protocol List
-- **Add**: Add a new protocol handler
-- **Edit**: Modify existing protocol settings
-- **Delete**: Remove a protocol handler
+#### Background Color
+- **説明**: メイン画面の背景色を設定します
+- **デフォルト**: 白
+- **使用方法**: 色選択ボタンをクリックして色を選択
 
-#### Protocol Properties
-- **Name**: Protocol name (e.g., "http", "https", "ftp")
-- **Description**: Human-readable description
-- **Default Browser**: Browser to use for this protocol
-- **Custom Arguments**: Special arguments for this protocol
+## ♿ Focusタブ
 
-### File Types Tab
-Manages file type associations.
+### フォーカス表示設定
 
-#### File Type List
-- **Add**: Add a new file type
-- **Edit**: Modify existing file type settings
-- **Delete**: Remove a file type
+#### Show Focus
+- **説明**: フォーカス表示を有効/無効にします
+- **デフォルト**: 無効
+- **効果**: 有効にすると、現在フォーカスされている要素が視覚的に表示されます
 
-#### File Type Properties
-- **Extension**: File extension (e.g., ".html", ".pdf")
-- **Description**: File type description
-- **Default Browser**: Browser to use for this file type
-- **MIME Type**: MIME type for the file
+#### Show Visual Focus
+- **説明**: 視覚的フォーカス表示を有効/無効にします
+- **デフォルト**: 無効
+- **効果**: より詳細なフォーカス表示が行われます
 
-### Categories Tab
-Organizes browsers into categories.
+#### Focus Box Line Width
+- **説明**: フォーカスボックスの線幅を設定します
+- **範囲**: 1 - 10
+- **デフォルト**: 1
+- **効果**: 値が大きいほど太い線でフォーカスが表示されます
 
-#### Category Management
-- **Add**: Create a new category
-- **Edit**: Modify category settings
-- **Delete**: Remove a category
-- **Assign Browsers**: Move browsers between categories
+#### Focus Box Width
+- **説明**: フォーカスボックスの幅を設定します
+- **範囲**: 1 - 10
+- **デフォルト**: 2
+- **効果**: フォーカスボックスの太さを調整します
 
-#### Category Properties
-- **Name**: Category display name
-- **Description**: Category description
-- **Icon**: Category icon
-- **Color**: Category color for visual grouping
+#### Focus Box Color
+- **説明**: フォーカスボックスの色を設定します
+- **デフォルト**: 白
+- **使用方法**: 色選択ボタンをクリックして色を選択
 
-### Grid Tab
-Controls the layout and appearance of browser buttons.
+#### Use Accessible Rendering
+- **説明**: アクセシブルレンダリングを使用します
+- **デフォルト**: 無効
+- **効果**: アクセシビリティツールとの互換性が向上します
 
-#### Grid Layout
-- **Width**: Number of columns (default: 5)
-- **Height**: Number of rows (default: 1)
-- **Show Grid**: Display grid lines
-- **Grid Color**: Color of grid lines
+## 🌐 Browsersタブ
 
-#### Icon Settings
-- **Icon Width**: Width of browser icons (default: 90)
-- **Icon Height**: Height of browser icons (default: 110)
-- **Icon Gap Width**: Horizontal spacing between icons (default: 0)
-- **Icon Gap Height**: Vertical spacing between icons (default: 0)
-- **Icon Scale**: Global scale factor for all icons (default: 1.0)
+### ブラウザ管理
 
-### Other Tab
-Miscellaneous settings and system options.
+#### ブラウザの追加
+1. 「Add」ボタンをクリック
+2. ブラウザ名を入力
+3. 実行ファイルのパスを指定
+4. 起動引数を設定（必要に応じて）
+5. アイコンを選択
+6. 「OK」をクリック
 
-#### General Settings
-- **Default Message**: Text displayed in the main window
-- **Default Delay**: Countdown timer duration (seconds)
-- **Options Shortcut**: Keyboard shortcut to open options (default: 'O')
-- **Allow Stay Open**: Keep window open after browser selection
+#### ブラウザの編集
+1. リストからブラウザを選択
+2. 「Edit」ボタンをクリック
+3. 設定を変更
+4. 「OK」をクリック
 
-#### System Settings
-- **Portable Mode**: Run without system installation
-- **Check Default on Launch**: Verify default browser on startup
-- **Advanced Screens**: Enable advanced screen detection
-- **Starting Position**: Window startup position
-- **Offset X/Y**: Fine-tune window position
+#### ブラウザの削除
+1. リストからブラウザを選択
+2. 「Delete」ボタンをクリック
+3. 確認ダイアログで「Yes」をクリック
 
-#### Network Settings
-- **User Agent**: HTTP user agent string
-- **Download Detection File**: Enable download detection
-- **Canonicalize**: Normalize URLs before opening
-- **Canonicalize Appended Text**: Text to append to canonicalized URLs
+#### ブラウザの検出
+- **Auto Detect**: システムにインストールされているブラウザを自動検出
+- **手動追加**: カスタムブラウザを手動で追加
 
-#### Logging Settings
-- **Enable Logging**: Turn on debug logging
-- **Log Level**: Detail level for logging (1-5)
-- **Extract DLLs**: Extract embedded DLLs for troubleshooting
+#### アイコン選択
+- **説明**: ブラウザのアイコンをカスタマイズできます
+- **方法**: 「Browse」ボタンをクリックしてアイコンファイルを選択
 
-#### Update Settings
-- **Automatic Updates**: Check for updates automatically
-- **Update Check Interval**: How often to check for updates
+## 🔗 Protocolsタブ
 
-## ⚙️ Advanced Configuration
+### プロトコル管理
 
-### Manual XML Editing
-For advanced users, you can edit the configuration file directly:
+#### プロトコルの追加
+1. 「Add」ボタンをクリック
+2. プロトコル名を入力
+3. プロトコル識別子を設定（例: http, https）
+4. 対応するブラウザを選択
+5. 「OK」をクリック
 
-#### Configuration File Structure
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<Settings>
-  <FileVersion>6</FileVersion>
-  <EnableTransparency>true</EnableTransparency>
-  <TransparencyColor>-65536</TransparencyColor>
-  <Opacity>0.9</Opacity>
-  <HideTitleBar>true</HideTitleBar>
-  <RoundedCornersRadius>0</RoundedCornersRadius>
-  <!-- Additional settings... -->
-</Settings>
-```
+#### プロトコルの編集
+1. リストからプロトコルを選択
+2. 「Edit」ボタンをクリック
+3. 設定を変更
+4. 「OK」をクリック
 
-#### Important Notes
-- **Backup First**: Always backup before editing
-- **Valid XML**: Ensure proper XML formatting
-- **Restart Required**: Restart BrowserChooser3 after editing
-- **Validation**: Invalid XML will reset to defaults
+#### プロトコルの削除
+1. リストからプロトコルを選択
+2. 「Delete」ボタンをクリック
+3. 確認ダイアログで「Yes」をクリック
 
-### Environment Variables
-Some settings can be controlled via environment variables:
+## 🚀 Startupタブ
 
-#### Available Variables
-- `BROWSERCHOOSER_IGNORE_SETTINGS`: Ignore settings file
-- `BROWSERCHOOSER_ICON_SCALE`: Override icon scale
-- `BROWSERCHOOSER_CANONICALIZE`: Force URL canonicalization
-- `BROWSERCHOOSER_CANONICALIZE_TEXT`: Canonicalization text
+### 起動設定
 
-#### Usage Example
-```bash
-set BROWSERCHOOSER_ICON_SCALE=1.5
-BrowserChooser3.exe
-```
+#### Start Minimized
+- **説明**: アプリケーションを最小化状態で起動します
+- **デフォルト**: 無効
+- **注意**: Start in System Trayと相互排他です
 
-### Registry Settings
-Some system-wide settings are stored in the registry:
+#### Start in System Tray
+- **説明**: アプリケーションをシステムトレイで起動します
+- **デフォルト**: 無効
+- **注意**: Start Minimizedと相互排他です
 
-#### Registry Locations
-- `HKEY_CURRENT_USER\Software\BrowserChooser3`: User settings
-- `HKEY_LOCAL_MACHINE\Software\BrowserChooser3`: System settings
+#### Always Resident in System Tray
+- **説明**: アプリケーションを常にシステムトレイに常駐させます
+- **デフォルト**: 無効
+- **効果**: アプリケーションが常にバックグラウンドで動作します
 
-#### Important Keys
-- `InstallPath`: Installation directory
-- `ConfigPath`: Configuration file path
-- `LogPath`: Log file directory
+#### Startup Delay
+- **説明**: 起動時の遅延時間を設定します
+- **範囲**: 0 - 10000ミリ秒
+- **デフォルト**: 0
+- **効果**: アプリケーション起動後に指定時間待機します
 
-## 🎨 Customization Examples
+#### Startup Message
+- **説明**: 起動時に表示するメッセージを設定します
+- **デフォルト**: "BrowserChooser3 Started"
+- **効果**: アプリケーション起動時にメッセージが表示されます
 
-### Modern Glass Effect
-```xml
-<EnableTransparency>true</EnableTransparency>
-<TransparencyColor>-65536</TransparencyColor>
-<Opacity>0.8</Opacity>
-<HideTitleBar>true</HideTitleBar>
-<RoundedCornersRadius>15</RoundedCornersRadius>
-```
+## ⚙️ Othersタブ
 
-### High Contrast Mode
-```xml
-<EnableTransparency>false</EnableTransparency>
-<BackgroundColor>-16777216</BackgroundColor>
-<ShowFocus>true</ShowFocus>
-<FocusBoxColor>-256</FocusBoxColor>
-<FocusBoxWidth>3</FocusBoxWidth>
-```
+### その他の設定
 
-### Minimal Interface
-```xml
-<ShowURLs>false</ShowURLs>
-<DefaultMessage>Choose Browser</DefaultMessage>
-<IconScale>0.8</IconScale>
-<IconGapWidth>5</IconGapWidth>
-<IconGapHeight>5</IconGapHeight>
-```
+#### Allow Window to Stay Open
+- **説明**: ブラウザ選択後もウィンドウを開いたままにします
+- **デフォルト**: 無効
+- **効果**: 有効にすると、ブラウザ選択後もアプリケーションが終了しません
 
-### Developer Mode
-```xml
-<EnableLogging>true</EnableLogging>
-<LogLevel>5</LogLevel>
-<ShowURLs>true</ShowURLs>
-<RevealShortURLs>true</RevealShortURLs>
-<Canonicalize>true</Canonicalize>
-```
+#### Default Delay
+- **説明**: デフォルトの遅延時間を設定します
+- **範囲**: 0 - 10000ミリ秒
+- **デフォルト**: 5
+- **効果**: ブラウザ起動時のデフォルト遅延時間
 
-## 🔧 Configuration Management
+#### Separator
+- **説明**: URLとブラウザ引数の間のセパレーター文字を設定します
+- **デフォルト**: " - "
+- **効果**: ブラウザ起動時の引数区切り文字
 
-### Backup and Restore
-#### Creating Backups
-1. **Copy Configuration File**: Copy `BrowserChooser3Config.xml`
-2. **Include Resources**: Backup any custom icons or images
-3. **Document Settings**: Note any custom configurations
+#### User Agent
+- **説明**: ブラウザで使用するユーザーエージェント文字列を設定します
+- **デフォルト**: "Mozilla/5.0"
+- **効果**: 一部のWebサイトでの互換性向上
 
-#### Restoring Backups
-1. **Close BrowserChooser3**
-2. **Replace Configuration File**: Copy backup over existing file
-3. **Restart Application**: Launch BrowserChooser3
-4. **Verify Settings**: Check that settings are restored correctly
+#### Options Shortcut
+- **説明**: オプション画面を開くショートカットキーを設定します
+- **デフォルト**: 'O'
+- **効果**: 指定したキーでオプション画面を開けます
 
-### Configuration Migration
-#### From Browser Chooser 2
-BrowserChooser3 doesn't automatically migrate from Browser Chooser 2:
-1. **Export Settings**: Note your BC2 settings
-2. **Configure Manually**: Set up equivalent settings in BC3
-3. **Test Thoroughly**: Verify all functionality works
+#### Default Message
+- **説明**: デフォルトで表示するメッセージを設定します
+- **デフォルト**: "Choose a Browser"
+- **効果**: メイン画面のタイトルに表示されます
 
-#### Between BC3 Versions
-Settings are generally compatible between versions:
-1. **Backup Current**: Save current configuration
-2. **Upgrade Application**: Install new version
-3. **Test Settings**: Verify settings still work
-4. **Report Issues**: Report any compatibility problems
+## 🌐 Windows Defaultタブ
 
-### Configuration Validation
-#### Built-in Validation
-BrowserChooser3 validates settings on startup:
-- **Range Checking**: Ensures values are within valid ranges
-- **File Existence**: Verifies referenced files exist
-- **Format Validation**: Checks data formats
+### デフォルトブラウザ設定
 
-#### Manual Validation
-You can validate settings manually:
-1. **Check Logs**: Look for validation errors in logs
-2. **Test Functions**: Try each configured feature
-3. **Reset if Needed**: Reset to defaults if validation fails
+#### 設定手順
+1. Windowsキー + I を押して設定を開く
+2. 「アプリ」をクリック
+3. 「デフォルトアプリ」をクリック
+4. 「Webブラウザー」をクリック
+5. 希望するブラウザを選択
 
-## 🚨 Troubleshooting Configuration
+#### Windowsの設定画面を開く
+- **説明**: Windowsの設定画面を直接開くボタン
+- **使用方法**: ボタンをクリックして設定画面を開く
+- **注意**: Windows 11では管理者権限が必要な場合があります
 
-### Common Configuration Issues
+#### 注意事項
+- デフォルトブラウザの変更には管理者権限が必要な場合があります
+- 一部のブラウザは自動的にデフォルト設定を要求する場合があります
+- 設定変更後は、ブラウザを再起動することをお勧めします
 
-#### Settings Not Saving
-**Symptoms**: Changes are lost after restart
-**Solutions**:
-1. Check file permissions
-2. Verify write access to configuration file
-3. Run as administrator if needed
+## 💾 設定の保存
 
-#### Invalid Configuration
-**Symptoms**: Application won't start or shows errors
-**Solutions**:
-1. Delete configuration file to reset
-2. Check XML syntax if editing manually
-3. Restore from backup
+設定を保存するには：
 
-#### Performance Issues
-**Symptoms**: Slow startup or high resource usage
-**Solutions**:
-1. Reduce icon scale and grid size
-2. Disable transparency effects
-3. Limit number of browsers
-4. Disable logging if not needed
+1. 設定画面で「OK」をクリック
+2. または「Apply」をクリックして即座に適用
 
-### Configuration Recovery
-#### Reset to Defaults
-1. Close BrowserChooser3
-2. Delete `BrowserChooser3Config.xml`
-3. Restart application
-4. Reconfigure settings
+設定は自動的に以下の場所に保存されます：
 
-#### Partial Reset
-1. Open configuration file
-2. Remove specific problematic settings
-3. Restart application
-4. Reconfigure removed settings
+- **ポータブルモード**: アプリケーションフォルダ内の`BrowserChooser3Config.xml`
+- **インストールモード**: `%APPDATA%\BrowserChooser3\BrowserChooser3Config.xml`
 
-## 📚 Related Topics
+## 🔄 設定のリセット
 
-- [Transparency Settings](Transparency-Settings)
-- [Accessibility Features](Accessibility-Features)
-- [Troubleshooting](Troubleshooting)
-- [User Guide](User-Guide)
+設定をデフォルトに戻すには：
 
----
+1. 設定画面で「Reset to Defaults」をクリック
+2. 確認ダイアログで「Yes」をクリック
+3. 設定がデフォルト値に戻ります
 
-*For specific configuration examples and advanced usage, see the individual feature guides in this wiki.*
+## 📁 設定ファイルの手動編集
+
+上級ユーザー向けに、設定ファイルを手動で編集することも可能です：
+
+1. `BrowserChooser3Config.xml`ファイルをテキストエディタで開く
+2. XML形式で設定を編集
+3. ファイルを保存
+4. アプリケーションを再起動
+
+**注意**: 手動編集時はXMLの構文エラーに注意してください。
 

@@ -35,37 +35,42 @@ namespace BrowserChooser3.Classes.Utilities
     }
 
         /// <summary>
-        /// 現在のログレベル（デフォルトはInfo）
+        /// 現在のログレベル
         /// </summary>
-        public static LogLevel CurrentLogLevel { get; set; } = LogLevel.Info;
+        public static LogLevel CurrentLogLevel { get; set; } = LogLevel.Warning;
 
         /// <summary>
-        /// テスト環境かどうかを判定する
+        /// テスト環境かどうかを判定
         /// </summary>
-        /// <returns>テスト環境の場合はtrue</returns>
-        private static bool IsTestEnvironment()
+        public static bool IsTestEnvironment
         {
-            try
+            get
             {
-                // 環境変数でダイアログ無効化が設定されている場合
-                var disableDialogs = Environment.GetEnvironmentVariable("DISABLE_DIALOGS");
-                if (!string.IsNullOrEmpty(disableDialogs) && disableDialogs.Equals("true", StringComparison.OrdinalIgnoreCase))
-                    return true;
-
-                // 環境変数でテスト環境が設定されている場合
+                // テスト実行中かどうかを判定
+                var testAssemblyNames = new[] { "xunit", "nunit", "mstest", "testhost" };
+                var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+                
+                foreach (var assembly in assemblies)
+                {
+                    var assemblyName = assembly.GetName().Name?.ToLowerInvariant();
+                    if (assemblyName != null && testAssemblyNames.Any(testName => assemblyName.Contains(testName)))
+                    {
+                        return true;
+                    }
+                }
+                
+                // 環境変数でテスト環境かどうかを判定
                 var testEnvironment = Environment.GetEnvironmentVariable("TEST_ENVIRONMENT");
-                if (!string.IsNullOrEmpty(testEnvironment) && testEnvironment.Equals("true", StringComparison.OrdinalIgnoreCase))
+                if (!string.IsNullOrEmpty(testEnvironment) && testEnvironment.ToLowerInvariant() == "true")
+                {
                     return true;
-
-                return false;
-            }
-            catch (Exception ex)
-            {
-                // エラーが発生した場合は、テスト環境ではないと判断
-                Console.WriteLine($"IsTestEnvironment check failed: {ex.Message}");
+                }
+                
                 return false;
             }
         }
+
+
 
         /// <summary>
         /// ログメッセージのキュー
@@ -225,7 +230,7 @@ namespace BrowserChooser3.Classes.Utilities
             if (level > CurrentLogLevel) return;
 
             // テスト環境ではログ出力をスキップ
-            if (IsTestEnvironment())
+            if (IsTestEnvironment)
             {
                 return;
             }

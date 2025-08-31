@@ -61,7 +61,6 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
         /// <param name="settings">設定オブジェクト</param>
         /// <param name="mBrowser">ブラウザ辞書</param>
         /// <param name="mProtocols">プロトコル辞書</param>
-        /// <param name="mFileTypes">ファイルタイプ辞書</param>
         /// <param name="mLastBrowserID">最後のブラウザID</param>
         /// <param name="imBrowserIcons">ブラウザアイコンリスト</param>
         /// <param name="setModified">変更フラグ設定アクション</param>
@@ -71,7 +70,6 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             Settings settings,
             Dictionary<int, Browser> mBrowser,
             Dictionary<int, Protocol> mProtocols,
-            Dictionary<int, FileType> mFileTypes,
             int mLastBrowserID,
             ImageList? imBrowserIcons,
             Action<bool> setModified,
@@ -135,11 +133,11 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             };
 
             listView.Columns.Add("Name", 109);
-            listView.Columns.Add("Default", 60);
+            listView.Columns.Add("Target", 60);
             listView.Columns.Add("Row", 50);
             listView.Columns.Add("Column", 60);
             listView.Columns.Add("Hotkey", 60);
-            listView.Columns.Add("File Types and Protocols", 333);
+            listView.Columns.Add("Arguments", 333);
 
             // ボタン群（Browser Chooser 2互換）
             var addButton = new Button
@@ -395,7 +393,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
         }
 
         /// <summary>
-        /// Windows Defaultパネルの作成
+        /// デフォルトブラウザパネルの作成
         /// </summary>
         /// <param name="settings">設定オブジェクト</param>
         /// <param name="setModified">変更フラグ設定アクション</param>
@@ -410,210 +408,111 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var panel = new Panel
             {
                 Dock = DockStyle.Fill,
-                Padding = new Padding(10)
+                Padding = new Padding(10),
+                AutoScroll = true
             };
 
-            // 現在のデフォルトブラウザ情報を取得
-            var defaultBrowserInfo = DefaultBrowserChecker.GetDefaultBrowser();
-            
+            int currentY = 10;
+
             // タイトルラベル
             var titleLabel = new Label
             {
                 Text = "Windows Default Browser Settings",
                 Font = new Font("Segoe UI", 12, FontStyle.Bold),
-                Location = new Point(10, 10),
+                Location = new Point(10, currentY),
                 AutoSize = true
             };
             panel.Controls.Add(titleLabel);
+            currentY += 40;
 
-            // 現在のデフォルトブラウザ情報表示
-            var currentBrowserLabel = new Label
+            // 説明文
+            var descriptionLabel = new Label
             {
-                Text = "Current Default Browser:",
-                Font = new Font("Segoe UI", 9, FontStyle.Bold),
-                Location = new Point(10, 50),
-                AutoSize = true
-            };
-            panel.Controls.Add(currentBrowserLabel);
-
-            var currentBrowserInfoLabel = new Label
-            {
-                Text = $"{defaultBrowserInfo.Name} ({defaultBrowserInfo.Path})",
+                Text = "Windows 11では、デフォルトブラウザの設定はWindowsの設定画面から行う必要があります。\n" +
+                       "以下の手順でデフォルトブラウザを設定してください：",
                 Font = new Font("Segoe UI", 9),
-                Location = new Point(10, 70),
-                Size = new Size(400, 40),
+                Location = new Point(10, currentY),
+                Size = new Size(500, 50),
                 AutoSize = false
             };
-            panel.Controls.Add(currentBrowserInfoLabel);
+            panel.Controls.Add(descriptionLabel);
+            currentY += 60;
 
-            // ブラウザ選択コンボボックス
-            var browserLabel = new Label
+            // 設定手順
+            var stepsLabel = new Label
             {
-                Text = "Select Browser to Set as Default:",
-                Font = new Font("Segoe UI", 9, FontStyle.Bold),
-                Location = new Point(10, 120),
-                AutoSize = true
+                Text = "設定手順：\n" +
+                       "1. Windowsキー + I を押して設定を開く\n" +
+                       "2. 「アプリ」をクリック\n" +
+                       "3. 「デフォルトアプリ」をクリック\n" +
+                       "4. 「Webブラウザー」をクリック\n" +
+                       "5. 希望するブラウザを選択",
+                Font = new Font("Segoe UI", 9),
+                Location = new Point(10, currentY),
+                Size = new Size(500, 100),
+                AutoSize = false
             };
-            panel.Controls.Add(browserLabel);
+            panel.Controls.Add(stepsLabel);
+            currentY += 120;
 
-            var browserComboBox = new ComboBox
+            // Windowsのアプリ設定画面を起動するボタン
+            var openSettingsButton = new Button
             {
-                Name = "cboDefaultBrowser",
-                Location = new Point(10, 140),
-                Size = new Size(300, 25),
-                DropDownStyle = ComboBoxStyle.DropDownList
+                Name = "btnOpenDefaultAppsSettings",
+                Text = "Windowsの設定画面を開く",
+                Location = new Point(10, currentY),
+                Size = new Size(250, 35),
+                Font = new Font("Segoe UI", 9, FontStyle.Bold)
             };
-            panel.Controls.Add(browserComboBox);
-
-            // ブラウザリストを取得してコンボボックスに追加
-            var browsers = GetInstalledBrowsers();
-            foreach (var browser in browsers)
-            {
-                browserComboBox.Items.Add(browser);
-            }
-
-            // 現在のデフォルトブラウザを選択
-            var currentIndex = browserComboBox.Items.Cast<string>()
-                .ToList()
-                .FindIndex(b => b.Contains(defaultBrowserInfo.Name));
-            if (currentIndex >= 0)
-            {
-                browserComboBox.SelectedIndex = currentIndex;
-            }
-
-            // 設定ボタン
-            var setButton = new Button
-            {
-                Name = "btnSetDefaultBrowser",
-                Text = "Set as Default Browser",
-                Location = new Point(10, 180),
-                Size = new Size(150, 30)
-            };
-            setButton.Click += (sender, e) =>
+            openSettingsButton.Click += (sender, e) =>
             {
                 try
                 {
-                    if (browserComboBox.SelectedItem != null)
-                    {
-                        var selectedBrowser = browserComboBox.SelectedItem.ToString();
-                        var browserPath = GetBrowserPath(selectedBrowser);
-                        
-                        if (!string.IsNullOrEmpty(browserPath))
-                        {
-                            var success = DefaultBrowserChecker.SetDefaultBrowser(browserPath);
-                            if (success)
-                            {
-                                MessageBox.Show(
-                                    $"Successfully set {selectedBrowser} as the default browser.",
-                                    "Success",
-                                    MessageBoxButtons.OK,
-                                    MessageBoxIcon.Information);
-                                
-                                // 設定を更新
-                                settings.DefaultBrowserGuid = Guid.NewGuid();
-                                setModified(true);
-                                
-                                // 情報を更新
-                                var newDefaultBrowser = DefaultBrowserChecker.GetDefaultBrowser();
-                                currentBrowserInfoLabel.Text = $"{newDefaultBrowser.Name} ({newDefaultBrowser.Path})";
-                            }
-                            else
-                            {
-                                MessageBox.Show(
-                                    $"Failed to set {selectedBrowser} as the default browser.",
-                                    "Error",
-                                    MessageBoxButtons.OK,
-                                    MessageBoxIcon.Error);
-                            }
-                        }
-                        else
-                        {
-                            MessageBox.Show(
-                                $"Could not find the path for {selectedBrowser}.",
-                                "Error",
-                                MessageBoxButtons.OK,
-                                MessageBoxIcon.Error);
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError("OptionsFormPanels.CreateDefaultBrowserPanel", "デフォルトブラウザ設定エラー", ex.Message);
-                    MessageBox.Show(
-                        $"Error setting default browser: {ex.Message}",
-                        "Error",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
-                }
-            };
-            panel.Controls.Add(setButton);
-
-            // リセットボタン
-            var resetButton = new Button
-            {
-                Name = "btnResetDefaultBrowser",
-                Text = "Reset to System Default",
-                Location = new Point(180, 180),
-                Size = new Size(150, 30)
-            };
-            resetButton.Click += (sender, e) =>
-            {
-                try
-                {
-                    var success = DefaultBrowserChecker.ResetDefaultBrowser();
+                    var success = DefaultBrowserChecker.ShowDefaultAppsSettings();
                     if (success)
                     {
                         MessageBox.Show(
-                            "Successfully reset to system default browser.",
-                            "Success",
+                            "Windowsの設定画面が開きました。\n\n" +
+                            "「アプリ」→「デフォルトアプリ」→「Webブラウザー」の順で進んでください。",
+                            "設定画面を開きました",
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Information);
-                        
-                        // 設定を更新
-                        settings.DefaultBrowserGuid = Guid.Empty;
-                        setModified(true);
-                        
-                        // 情報を更新
-                        var newDefaultBrowser = DefaultBrowserChecker.GetDefaultBrowser();
-                        currentBrowserInfoLabel.Text = $"{newDefaultBrowser.Name} ({newDefaultBrowser.Path})";
-                        
-                        // コンボボックスを更新
-                        browserComboBox.Items.Clear();
-                        var updatedBrowsers = GetInstalledBrowsers();
-                        foreach (var browser in updatedBrowsers)
-                        {
-                            browserComboBox.Items.Add(browser);
-                        }
                     }
                     else
                     {
                         MessageBox.Show(
-                            "Failed to reset to system default browser.",
-                            "Error",
+                            "Windowsの設定画面を開けませんでした。\n\n" +
+                            "手動でWindowsキー + I を押して設定を開き、\n" +
+                            "「アプリ」→「デフォルトアプリ」→「Webブラウザー」に進んでください。",
+                            "エラー",
                             MessageBoxButtons.OK,
-                            MessageBoxIcon.Error);
+                            MessageBoxIcon.Warning);
                     }
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError("OptionsFormPanels.CreateDefaultBrowserPanel", "デフォルトブラウザリセットエラー", ex.Message);
+                    Logger.LogError("OptionsFormPanels.CreateDefaultBrowserPanel", "Windows設定画面表示エラー", ex.Message);
                     MessageBox.Show(
-                        $"Error resetting default browser: {ex.Message}",
-                        "Error",
+                        $"設定画面を開く際にエラーが発生しました: {ex.Message}",
+                        "エラー",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Error);
                 }
             };
-            panel.Controls.Add(resetButton);
+            panel.Controls.Add(openSettingsButton);
+            currentY += 50;
 
             // 注意事項
             var noteLabel = new Label
             {
-                Text = "Note: Setting the default browser may require administrator privileges on Windows 11.",
+                Text = "注意：\n" +
+                       "• デフォルトブラウザの変更には管理者権限が必要な場合があります\n" +
+                       "• 一部のブラウザは自動的にデフォルト設定を要求する場合があります\n" +
+                       "• 設定変更後は、ブラウザを再起動することをお勧めします",
                 Font = new Font("Segoe UI", 8),
                 ForeColor = Color.Gray,
-                Location = new Point(10, 230),
-                Size = new Size(400, 40),
+                Location = new Point(10, currentY),
+                Size = new Size(500, 80),
                 AutoSize = false
             };
             panel.Controls.Add(noteLabel);
@@ -621,176 +520,14 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             tabPage.Controls.Add(panel);
             return tabPage;
         }
+
+
         
-        /// <summary>
-        /// インストールされているブラウザのリストを取得
-        /// </summary>
-        /// <returns>ブラウザ名のリスト</returns>
-        private List<string> GetInstalledBrowsers()
-        {
-            var browsers = new List<string>();
-            
-            try
-            {
-                // 主要ブラウザの一般的なインストール場所をチェック
-                var browserPaths = new Dictionary<string, string>
-                {
-                    { "Google Chrome", @"C:\Program Files\Google\Chrome\Application\chrome.exe" },
-                    { "Google Chrome (x86)", @"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" },
-                    { "Microsoft Edge", @"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" },
-                    { "Firefox", @"C:\Program Files\Mozilla Firefox\firefox.exe" },
-                    { "Firefox (x86)", @"C:\Program Files (x86)\Mozilla Firefox\firefox.exe" },
-                    { "Internet Explorer", @"C:\Program Files\Internet Explorer\iexplore.exe" },
-                    { "Internet Explorer (x86)", @"C:\Program Files (x86)\Internet Explorer\iexplore.exe" },
-                    { "Opera", @"C:\Program Files\Opera\launcher.exe" },
-                    { "Opera (x86)", @"C:\Program Files (x86)\Opera\launcher.exe" },
-                    { "Brave", @"C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe" },
-                    { "Brave (x86)", @"C:\Program Files (x86)\BraveSoftware\Brave-Browser\Application\brave.exe" }
-                };
 
-                foreach (var browser in browserPaths)
-                {
-                    if (File.Exists(browser.Value))
-                    {
-                        browsers.Add(browser.Key);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("OptionsFormPanels.GetInstalledBrowsers", "ブラウザ検出エラー", ex.Message);
-            }
 
-            return browsers;
-        }
-        
-        /// <summary>
-        /// ブラウザ名からパスを取得
-        /// </summary>
-        /// <param name="browserName">ブラウザ名</param>
-        /// <returns>ブラウザのパス</returns>
-        private string GetBrowserPath(string? browserName)
-        {
-            if (string.IsNullOrEmpty(browserName))
-                return "";
-                
-            var browserPaths = new Dictionary<string, string>
-            {
-                { "Google Chrome", @"C:\Program Files\Google\Chrome\Application\chrome.exe" },
-                { "Google Chrome (x86)", @"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" },
-                { "Microsoft Edge", @"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" },
-                { "Firefox", @"C:\Program Files\Mozilla Firefox\firefox.exe" },
-                { "Firefox (x86)", @"C:\Program Files (x86)\Mozilla Firefox\firefox.exe" },
-                { "Internet Explorer", @"C:\Program Files\Internet Explorer\iexplore.exe" },
-                { "Internet Explorer (x86)", @"C:\Program Files (x86)\Internet Explorer\iexplore.exe" },
-                { "Opera", @"C:\Program Files\Opera\launcher.exe" },
-                { "Opera (x86)", @"C:\Program Files (x86)\Opera\launcher.exe" },
-                { "Brave", @"C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe" },
-                { "Brave (x86)", @"C:\Program Files (x86)\BraveSoftware\Brave-Browser\Application\brave.exe" }
-            };
 
-            return browserPaths.TryGetValue(browserName, out var path) ? path : "";
-        }
 
-        /// <summary>
-        /// ファイルタイプパネルの作成
-        /// </summary>
-        /// <param name="settings">設定オブジェクト</param>
-        /// <param name="mFileTypes">ファイルタイプ辞書</param>
-        /// <param name="mBrowser">ブラウザ辞書</param>
-        /// <param name="setModified">変更フラグ設定アクション</param>
-        /// <returns>作成されたTabPage</returns>
-        public TabPage CreateFileTypesPanel(
-            Settings settings,
-            Dictionary<int, FileType> mFileTypes,
-            Dictionary<int, Browser> mBrowser,
-            Action<bool> setModified)
-        {
-            var tabPage = new TabPage("File Types");
-            tabPage.Name = "tabFileTypes";
-            
-            var panel = new Panel
-            {
-                Dock = DockStyle.Fill,
-                Padding = new Padding(10)
-            };
 
-            // ファイルタイプリストビュー
-            var listView = new ListView
-            {
-                Name = "lstFileTypes",
-                View = View.Details,
-                FullRowSelect = true,
-                GridLines = true,
-                Location = new Point(97, 6),
-                Size = new Size(630, 420),
-                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom,
-                AllowDrop = !IsTestEnvironment(), // テスト環境ではDragDropを無効化
-                MultiSelect = false,
-                HideSelection = false,
-                UseCompatibleStateImageBehavior = false,
-                Font = new Font("Segoe UI", 9.5f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            };
-
-            listView.Columns.Add("File Type", 200);
-            listView.Columns.Add("Browser", 300);
-            listView.Columns.Add("Default App", 200);
-
-            // ボタン群
-            var addButton = new Button
-            {
-                Name = "btnAdd",
-                Text = "Add",
-                Location = new Point(6, 6),
-                Size = new Size(85, 40),
-                Font = new Font("Segoe UI", 9.5f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            };
-            var editButton = new Button
-            {
-                Name = "btnEdit",
-                Text = "Edit",
-                Location = new Point(6, 52),
-                Size = new Size(85, 40),
-                Font = new Font("Segoe UI", 9.5f, FontStyle.Regular, GraphicsUnit.Point, 0),
-                Enabled = false
-            };
-
-            var deleteButton = new Button
-            {
-                Name = "btnDelete",
-                Text = "Delete",
-                Location = new Point(6, 98),
-                Size = new Size(85, 40),
-                Font = new Font("Segoe UI", 9.5f, FontStyle.Regular, GraphicsUnit.Point, 0),
-                Enabled = false
-            };
-
-            // コントロールの追加
-            panel.Controls.Add(listView);
-            panel.Controls.Add(addButton);
-            panel.Controls.Add(editButton);
-            panel.Controls.Add(deleteButton);
-
-            tabPage.Controls.Add(panel);
-            return tabPage;
-        }
-
-        /// <summary>
-        /// カテゴリパネルの作成
-        /// </summary>
-        /// <returns>作成されたTabPage</returns>
-        public TabPage CreateCategoriesPanel()
-        {
-            var tabPage = new TabPage("Categories");
-            tabPage.Name = "tabCategories";
-            
-            // デザイナーで定義されたcategoryPanelを使用
-            // このパネルはOptionsForm.Designer.csで定義されており、
-            // カテゴリ管理に必要なすべてのコントロールが含まれている
-            // このパネルは後でOptionsForm.csで表示/非表示を制御する
-            
-            return tabPage;
-        }
 
         /// <summary>
         /// 表示パネルの作成
@@ -846,8 +583,8 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 if (colorDialog.ShowDialog() == DialogResult.OK)
                 {
                     pbBackgroundColor.BackColor = colorDialog.Color;
-                    Logger.LogInfo("OptionsFormPanels.CreateDisplayPanel", "背景色を変更しました", colorDialog.Color.ToString());
-                    Logger.LogInfo("OptionsFormPanels.CreateDisplayPanel", "PictureBoxのBackColorを設定しました", pbBackgroundColor.BackColor.ToString());
+                    Logger.LogDebug("OptionsFormPanels.CreateDisplayPanel", "背景色を変更しました", colorDialog.Color.ToString());
+                    Logger.LogDebug("OptionsFormPanels.CreateDisplayPanel", "PictureBoxのBackColorを設定しました", pbBackgroundColor.BackColor.ToString());
                     // 即時に設定オブジェクトへも反映（保存前の不整合を防止）
                     settings.BackgroundColorValue = colorDialog.Color;
                     
@@ -855,7 +592,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                     if (Application.OpenForms.OfType<MainForm>().FirstOrDefault() is MainForm mainForm)
                     {
                         mainForm.BackColor = colorDialog.Color;
-                        Logger.LogInfo("OptionsFormPanels.CreateDisplayPanel", "メイン画面の背景色を更新しました", colorDialog.Color.ToString());
+                        Logger.LogDebug("OptionsFormPanels.CreateDisplayPanel", "メイン画面の背景色を更新しました", colorDialog.Color.ToString());
                     }
                     
                     setModified(true);
@@ -916,52 +653,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             };
             currentY += 35;
 
-            // 透明化色設定
-            var lblTransparencyColor = new Label
-            {
-                Text = "Transparency Color:",
-                Location = new Point(6, currentY - 5),
-                Size = new Size(120, 23),
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            };
 
-            var pbTransparencyColor = new PictureBox
-            {
-                Name = "pbTransparencyColor",
-                Location = new Point(130, currentY),
-                Size = new Size(30, 23),
-                BackColor = Color.FromArgb(settings.TransparencyColor),
-                BorderStyle = BorderStyle.FixedSingle
-            };
-            pbTransparencyColor.Click += (s, e) =>
-            {
-                // テスト環境ではダイアログを表示しない
-                if (IsTestEnvironment())
-                {
-                    return;
-                }
-
-                using var colorDialog = new ColorDialog
-                {
-                    Color = Color.FromArgb(settings.TransparencyColor)
-                };
-                if (colorDialog.ShowDialog() == DialogResult.OK)
-                {
-                    pbTransparencyColor.BackColor = colorDialog.Color;
-                    settings.TransparencyColor = colorDialog.Color.ToArgb();
-                    setModified(true);
-                }
-            };
-
-            var lblTransparencyColorDesc = new Label
-            {
-                Text = "透明化に使用する色を設定します",
-                Location = new Point(170, currentY + 3),
-                Size = new Size(400, 23),
-                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
-                ForeColor = Color.Gray
-            };
-            currentY += 35;
 
             // 透明度設定
             var lblOpacity = new Label
@@ -1090,7 +782,120 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
                 ForeColor = Color.Gray
             };
-            currentY += displayItemSpacing;
+
+
+            // コントロールの追加
+            panel.Controls.Add(lblVisualTitle);
+            // panel.Controls.Add(accessibilityButton);
+            // panel.Controls.Add(lblAccessibilityDesc);
+            // panel.Controls.Add(backgroundColorButton);
+            panel.Controls.Add(lblBackgroundColorDesc);
+            panel.Controls.Add(pbBackgroundColor);
+            panel.Controls.Add(chkEnableTransparency);
+            panel.Controls.Add(lblEnableTransparencyDesc);
+            panel.Controls.Add(lblOpacity);
+            panel.Controls.Add(nudOpacity);
+            panel.Controls.Add(lblOpacityDesc);
+            panel.Controls.Add(chkHideTitleBar);
+            panel.Controls.Add(lblHideTitleBarDesc);
+            panel.Controls.Add(lblRoundedCorners);
+            panel.Controls.Add(nudRoundedCorners);
+            panel.Controls.Add(lblRoundedCornersDesc);
+            panel.Controls.Add(chkEnableBackgroundGradient);
+            panel.Controls.Add(lblEnableBackgroundGradientDesc);
+            
+            panel.Controls.Add(lblEffectsTitle);
+            panel.Controls.Add(chkUseAccessibleRendering);
+            panel.Controls.Add(lblUseAccessibleRenderingDesc);
+
+            // === URL Display Settings ===
+            currentY += displayItemSpacing + 10;
+
+            var lblURLTitle = new Label
+            {
+                Text = "URL Display Settings",
+                Location = new Point(6, currentY),
+                Size = new Size(200, 25),
+                Font = new Font("Segoe UI", 10.0f, FontStyle.Bold, GraphicsUnit.Point, 0),
+                ForeColor = Color.DarkBlue
+            };
+            currentY += 34;
+
+            // ShowURL設定
+            var chkShowURLs = new CheckBox
+            {
+                Name = "chkShowURLs",
+                Text = "Show URLs in User Interface",
+                TextAlign = ContentAlignment.MiddleLeft,
+                Location = new Point(6, currentY),
+                Size = new Size(240, 25),
+                Checked = settings.ShowURL,
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+            chkShowURLs.CheckedChanged += (s, e) => setModified(true);
+
+            var lblShowURLsDesc = new Label
+            {
+                Text = "メイン画面でURLを表示します",
+                Location = new Point(250, currentY + 3),
+                Size = new Size(400, 23),
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                ForeColor = Color.Gray
+            };
+            currentY += 35;
+
+            // RevealShortURL設定
+            var chkRevealShortURLs = new CheckBox
+            {
+                Name = "chkRevealShortURLs",
+                Text = "Reveal Shortened URLs",
+                TextAlign = ContentAlignment.MiddleLeft,
+                Location = new Point(6, currentY),
+                Size = new Size(240, 25),
+                Checked = settings.RevealShortURL,
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+            chkRevealShortURLs.CheckedChanged += (s, e) => setModified(true);
+
+            var lblRevealShortURLsDesc = new Label
+            {
+                Text = "短縮URLを展開して表示します",
+                Location = new Point(250, currentY + 3),
+                Size = new Size(400, 23),
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                ForeColor = Color.Gray
+            };
+
+            // 新しいコントロールを追加
+            panel.Controls.Add(lblURLTitle);
+            panel.Controls.Add(chkShowURLs);
+            panel.Controls.Add(lblShowURLsDesc);
+            panel.Controls.Add(chkRevealShortURLs);
+            panel.Controls.Add(lblRevealShortURLsDesc);
+
+            tabPage.Controls.Add(panel);
+            return tabPage;
+        }
+
+        /// <summary>
+        /// フォーカスパネルの作成
+        /// </summary>
+        /// <param name="settings">設定オブジェクト</param>
+        /// <param name="setModified">変更フラグ設定アクション</param>
+        /// <returns>作成されたTabPage</returns>
+        public TabPage CreateFocusPanel(Settings settings, Action<bool> setModified)
+        {
+            var tabPage = new TabPage("Focus");
+            tabPage.Name = "tabFocus";
+            
+            var panel = new Panel
+            {
+                Dock = DockStyle.Fill,
+                Padding = new Padding(10),
+                AutoScroll = true
+            };
+
+            int currentY = 6;
 
             // === Focus Settings ===
             // レイアウト変数の定義
@@ -1264,32 +1069,6 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             };
 
             // コントロールの追加
-            panel.Controls.Add(lblVisualTitle);
-            // panel.Controls.Add(accessibilityButton);
-            // panel.Controls.Add(lblAccessibilityDesc);
-            // panel.Controls.Add(backgroundColorButton);
-            panel.Controls.Add(lblBackgroundColorDesc);
-            panel.Controls.Add(pbBackgroundColor);
-            panel.Controls.Add(chkEnableTransparency);
-            panel.Controls.Add(lblEnableTransparencyDesc);
-            panel.Controls.Add(lblTransparencyColor);
-            panel.Controls.Add(pbTransparencyColor);
-            panel.Controls.Add(lblTransparencyColorDesc);
-            panel.Controls.Add(lblOpacity);
-            panel.Controls.Add(nudOpacity);
-            panel.Controls.Add(lblOpacityDesc);
-            panel.Controls.Add(chkHideTitleBar);
-            panel.Controls.Add(lblHideTitleBarDesc);
-            panel.Controls.Add(lblRoundedCorners);
-            panel.Controls.Add(nudRoundedCorners);
-            panel.Controls.Add(lblRoundedCornersDesc);
-            panel.Controls.Add(chkEnableBackgroundGradient);
-            panel.Controls.Add(lblEnableBackgroundGradientDesc);
-            
-            panel.Controls.Add(lblEffectsTitle);
-            panel.Controls.Add(chkUseAccessibleRendering);
-            panel.Controls.Add(lblUseAccessibleRenderingDesc);
-            
             panel.Controls.Add(lblFocusTitle);
             panel.Controls.Add(chkShowFocus);
             panel.Controls.Add(lblShowFocusDesc);
@@ -1304,71 +1083,6 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             panel.Controls.Add(lblFocusBoxColor);
             panel.Controls.Add(pbFocusBoxColor);
             panel.Controls.Add(lblFocusBoxColorDesc);
-
-            // === URL Display Settings ===
-            currentY += focusItemSpacing + 10;
-
-            var lblURLTitle = new Label
-            {
-                Text = "URL Display Settings",
-                Location = new Point(6, currentY),
-                Size = new Size(200, 25),
-                Font = new Font("Segoe UI", 10.0f, FontStyle.Bold, GraphicsUnit.Point, 0),
-                ForeColor = Color.DarkBlue
-            };
-            currentY += 34;
-
-            // ShowURL設定
-            var chkShowURLs = new CheckBox
-            {
-                Name = "chkShowURLs",
-                Text = "Show URLs in User Interface",
-                TextAlign = ContentAlignment.MiddleLeft,
-                Location = new Point(6, currentY),
-                Size = new Size(240, 25),
-                Checked = settings.ShowURL,
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            };
-            chkShowURLs.CheckedChanged += (s, e) => setModified(true);
-
-            var lblShowURLsDesc = new Label
-            {
-                Text = "メイン画面でURLを表示します",
-                Location = new Point(250, currentY + 3),
-                Size = new Size(400, 23),
-                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
-                ForeColor = Color.Gray
-            };
-            currentY += 35;
-
-            // RevealShortURL設定
-            var chkRevealShortURLs = new CheckBox
-            {
-                Name = "chkRevealShortURLs",
-                Text = "Reveal Shortened URLs",
-                TextAlign = ContentAlignment.MiddleLeft,
-                Location = new Point(6, currentY),
-                Size = new Size(240, 25),
-                Checked = settings.RevealShortURL,
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            };
-            chkRevealShortURLs.CheckedChanged += (s, e) => setModified(true);
-
-            var lblRevealShortURLsDesc = new Label
-            {
-                Text = "短縮URLを展開して表示します",
-                Location = new Point(250, currentY + 3),
-                Size = new Size(400, 23),
-                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
-                ForeColor = Color.Gray
-            };
-
-            // 新しいコントロールを追加
-            panel.Controls.Add(lblURLTitle);
-            panel.Controls.Add(chkShowURLs);
-            panel.Controls.Add(lblShowURLsDesc);
-            panel.Controls.Add(chkRevealShortURLs);
-            panel.Controls.Add(lblRevealShortURLsDesc);
 
             tabPage.Controls.Add(panel);
             return tabPage;
@@ -1790,18 +1504,18 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 DropDownStyle = ComboBoxStyle.DropDownList,
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
-            cmbLogLevel.Items.AddRange(new object[] { "Trace", "Debug", "Info", "Warning", "Error" });
+            cmbLogLevel.Items.AddRange(new object[] { "Error", "Warning", "Info", "Debug", "Trace" });
             // Settings.LogLevel(int) → ComboBox.Index へのマッピング
             int MapLogLevelToIndex(int level)
             {
                 // Logger.LogLevel: None(0), Error(1), Warning(2), Info(3), Debug(4), Trace(5)
                 return level switch
                 {
-                    5 => 0, // Trace
-                    4 => 1, // Debug
+                    1 => 0, // Error
+                    2 => 1, // Warning
                     3 => 2, // Info
-                    2 => 3, // Warning
-                    1 => 4, // Error
+                    4 => 3, // Debug
+                    5 => 4, // Trace
                     _ => 2  // 既定はInfo
                 };
             }
@@ -1818,118 +1532,14 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 ForeColor = Color.Gray
             };
 
-            // 履歴保持設定
-            var chkKeepHistory = new CheckBox
-            {
-                Name = "chkKeepHistory",
-                Text = "Keep Browser History",
-                Location = new Point(6, 69),
-                Size = new Size(250, 25),
-                Checked = settings.KeepHistory,
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            };
-            chkKeepHistory.CheckedChanged += (s, e) => setModified(true);
 
-            // Keep History説明文
-            var lblKeepHistoryDesc = new Label
-            {
-                Text = "ブラウザの使用履歴を保持します",
-                Location = new Point(270, 72),
-                Size = new Size(400, 20),
-                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
-                ForeColor = Color.Gray
-            };
-
-            // 履歴保持日数
-            var lblHistoryDays = new Label
-            {
-                Text = "History Days:",
-                Location = new Point(6, 102),
-                Size = new Size(150, 23),
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            };
-
-            var nudHistoryDays = new NumericUpDown
-            {
-                Name = "nudHistoryDays",
-                Location = new Point(160, 99),
-                Size = new Size(80, 23),
-                Minimum = 1,
-                Maximum = 365,
-                Value = settings.HistoryDays,
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            };
-            nudHistoryDays.ValueChanged += (s, e) => setModified(true);
-
-            // History Days説明文
-            var lblHistoryDaysDesc = new Label
-            {
-                Text = "履歴を保持する日数を設定します（1-365日）",
-                Location = new Point(270, 102),
-                Size = new Size(400, 20),
-                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
-                ForeColor = Color.Gray
-            };
-
-            // プライバシーモード設定
-            var chkPrivacyMode = new CheckBox
-            {
-                Name = "chkPrivacyMode",
-                Text = "Privacy Mode (Clear on Exit)",
-                Location = new Point(6, 132),
-                Size = new Size(260, 25),
-                Checked = settings.PrivacyMode,
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            };
-            chkPrivacyMode.CheckedChanged += (s, e) => setModified(true);
-
-            // Privacy Mode説明文
-            var lblPrivacyModeDesc = new Label
-            {
-                Text = "アプリケーション終了時に履歴とログをクリアします",
-                Location = new Point(270, 135),
-                Size = new Size(400, 20),
-                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
-                ForeColor = Color.Gray
-            };
-
-            // データ収集設定
-            var chkAllowDataCollection = new CheckBox
-            {
-                Name = "chkAllowDataCollection",
-                Text = "Allow Data Collection",
-                Location = new Point(6, 165),
-                Size = new Size(260, 25),
-                Checked = settings.AllowDataCollection,
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            };
-            chkAllowDataCollection.CheckedChanged += (s, e) => setModified(true);
-
-            // Allow Data Collection説明文
-            var lblAllowDataCollectionDesc = new Label
-            {
-                Text = "アプリケーションの改善のための匿名データ収集を許可します",
-                Location = new Point(270, 168),
-                Size = new Size(400, 20),
-                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
-                ForeColor = Color.Gray
-            };
 
             // コントロールの追加
             panel.Controls.Add(chkEnableLogging);
             panel.Controls.Add(lblLogLevel);
             panel.Controls.Add(cmbLogLevel);
-            panel.Controls.Add(chkKeepHistory);
-            panel.Controls.Add(lblHistoryDays);
-            panel.Controls.Add(nudHistoryDays);
-            panel.Controls.Add(chkPrivacyMode);
-            panel.Controls.Add(chkAllowDataCollection);
             panel.Controls.Add(lblEnableLoggingDesc);
             panel.Controls.Add(lblLogLevelDesc);
-            panel.Controls.Add(lblKeepHistoryDesc);
-            panel.Controls.Add(lblHistoryDaysDesc);
-            panel.Controls.Add(lblPrivacyModeDesc);
-            panel.Controls.Add(lblAllowDataCollectionDesc);
 
             tabPage.Controls.Add(panel);
             return tabPage;
@@ -1954,47 +1564,54 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
 
 
 
-            // 最小化で起動設定
-            var chkStartMinimized = new CheckBox
-            {
-                Name = "chkStartMinimized",
-                Text = "Start Minimized",
-                Location = new Point(6, 39),
-                Size = new Size(200, 25),
-                Checked = settings.StartMinimized,
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            };
-            chkStartMinimized.CheckedChanged += (s, e) => setModified(true);
 
-            var lblStartMinimizedDesc = new Label
-            {
-                Text = "起動時にメイン画面を最小化状態で表示します",
-                Location = new Point(210, 42),
-                Size = new Size(400, 20),
-                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
-                ForeColor = Color.Gray
-            };
+
+
 
             // システムトレイ設定
             var chkStartInTray = new CheckBox
             {
                 Name = "chkStartInTray",
                 Text = "Start in System Tray",
-                Location = new Point(6, 72),
+                Location = new Point(6, 39),
                 Size = new Size(200, 25),
                 Checked = settings.StartInTray,
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
-            chkStartInTray.CheckedChanged += (s, e) => setModified(true);
 
             var lblStartInTrayDesc = new Label
             {
                 Text = "起動時にシステムトレイに最小化して表示します",
-                Location = new Point(210, 75),
+                Location = new Point(210, 42),
                 Size = new Size(400, 20),
                 Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
                 ForeColor = Color.Gray
             };
+
+            // システムトレイ常駐設定
+            var chkAlwaysResidentInTray = new CheckBox
+            {
+                Name = "chkAlwaysResidentInTray",
+                Text = "Always Resident in System Tray",
+                Location = new Point(6, 72),
+                Size = new Size(250, 25),
+                Checked = settings.AlwaysResidentInTray,
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+
+            var lblAlwaysResidentInTrayDesc = new Label
+            {
+                Text = "アプリケーションを常にシステムトレイに常駐させます",
+                Location = new Point(260, 75),
+                Size = new Size(400, 20),
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                ForeColor = Color.Gray
+            };
+
+            // イベントハンドラーの設定
+            chkStartInTray.CheckedChanged += (s, e) => setModified(true);
+
+            chkAlwaysResidentInTray.CheckedChanged += (s, e) => setModified(true);
 
 
 
@@ -2002,7 +1619,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var lblStartupDelay = new Label
             {
                 Text = "Startup Delay (ms):",
-                Location = new Point(6, 138),
+                Location = new Point(6, 171),
                 Size = new Size(150, 23),
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
@@ -2010,7 +1627,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var nudStartupDelay = new NumericUpDown
             {
                 Name = "nudStartupDelay",
-                Location = new Point(160, 135),
+                Location = new Point(160, 168),
                 Size = new Size(80, 23),
                 Minimum = 0,
                 Maximum = 10000,
@@ -2022,7 +1639,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var lblStartupDelayDesc = new Label
             {
                 Text = "起動時の遅延時間をミリ秒で設定します（0-10000ms）",
-                Location = new Point(250, 138),
+                Location = new Point(250, 171),
                 Size = new Size(400, 20),
                 Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
                 ForeColor = Color.Gray
@@ -2032,7 +1649,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var lblStartupMessage = new Label
             {
                 Text = "Startup Message:",
-                Location = new Point(6, 171),
+                Location = new Point(6, 204),
                 Size = new Size(150, 23),
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
@@ -2040,7 +1657,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var txtStartupMessage = new TextBox
             {
                 Name = "txtStartupMessage",
-                Location = new Point(160, 168),
+                Location = new Point(160, 201),
                 Size = new Size(200, 23),
                 Text = settings.StartupMessage,
                 Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
@@ -2050,17 +1667,17 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var lblStartupMessageDesc = new Label
             {
                 Text = "起動時に表示するメッセージを設定します",
-                Location = new Point(370, 171),
+                Location = new Point(370, 204),
                 Size = new Size(400, 20),
                 Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
                 ForeColor = Color.Gray
             };
 
             // コントロールの追加
-            panel.Controls.Add(chkStartMinimized);
-            panel.Controls.Add(lblStartMinimizedDesc);
             panel.Controls.Add(chkStartInTray);
             panel.Controls.Add(lblStartInTrayDesc);
+            panel.Controls.Add(chkAlwaysResidentInTray);
+            panel.Controls.Add(lblAlwaysResidentInTrayDesc);
             panel.Controls.Add(lblStartupDelay);
             panel.Controls.Add(nudStartupDelay);
             panel.Controls.Add(lblStartupDelayDesc);
@@ -2103,27 +1720,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             };
             currentY += 34;
 
-            // ポータブルモード設定
-            var chkPortableMode = new CheckBox
-            {
-                Name = "chkPortableMode",
-                Text = "Portable Mode",
-                Location = new Point(6, currentY),
-                Size = new Size(150, 25),
-                Checked = settings.PortableMode,
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            };
-            chkPortableMode.CheckedChanged += (s, e) => setModified(true);
 
-            var lblPortableModeDesc = new Label
-            {
-                Text = "設定ファイルをアプリケーションフォルダに保存します（USBメモリなどで持ち運び可能）",
-                Location = new Point(160, currentY + 3),
-                Size = new Size(500, 20),
-                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
-                ForeColor = Color.Gray
-            };
-            currentY += 34;
 
 
 
@@ -2262,51 +1859,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             };
             currentY += 34;
 
-            // ダウンロード検出ファイル設定
-            var chkDownloadDetectionFile = new CheckBox
-            {
-                Name = "chkDownloadDetectionFile",
-                Text = "Download Detection File",
-                Location = new Point(6, currentY),
-                Size = new Size(250, 25),
-                Checked = settings.DownloadDetectionFile,
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            };
-            chkDownloadDetectionFile.CheckedChanged += (s, e) => setModified(true);
 
-            var lblDownloadDetectionFileDesc = new Label
-            {
-                Text = "ダウンロード検出用のファイルを生成します",
-                Location = new Point(260, currentY + 3),
-                Size = new Size(400, 20),
-                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
-                ForeColor = Color.Gray
-            };
-            currentY += 34;
-
-
-
-            // DLL抽出設定
-            var chkExtractDLLs = new CheckBox
-            {
-                Name = "chkExtractDLLs",
-                Text = "Extract DLLs",
-                Location = new Point(6, currentY),
-                Size = new Size(150, 25),
-                Checked = settings.ExtractDLLs,
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            };
-            chkExtractDLLs.CheckedChanged += (s, e) => setModified(true);
-
-            var lblExtractDLLsDesc = new Label
-            {
-                Text = "必要なDLLファイルを自動的に抽出します",
-                Location = new Point(160, currentY + 3),
-                Size = new Size(400, 20),
-                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
-                ForeColor = Color.Gray
-            };
-            currentY += 34;
 
             // オプションショートカット設定
             var lblOptionsShortcut = new Label
@@ -2371,8 +1924,6 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
 
             // コントロールの追加
             panel.Controls.Add(lblGeneralTitle);
-            panel.Controls.Add(chkPortableMode);
-            panel.Controls.Add(lblPortableModeDesc);
             panel.Controls.Add(chkAllowStayOpen);
             panel.Controls.Add(lblAllowStayOpenDesc);
             
@@ -2388,10 +1939,6 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             panel.Controls.Add(lblUserAgentDesc);
             
             panel.Controls.Add(lblSystemTitle);
-            panel.Controls.Add(chkDownloadDetectionFile);
-            panel.Controls.Add(lblDownloadDetectionFileDesc);
-            panel.Controls.Add(chkExtractDLLs);
-            panel.Controls.Add(lblExtractDLLsDesc);
             panel.Controls.Add(lblOptionsShortcut);
             panel.Controls.Add(txtOptionsShortcut);
             panel.Controls.Add(lblOptionsShortcutDesc);

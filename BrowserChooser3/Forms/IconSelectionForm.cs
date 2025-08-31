@@ -1,6 +1,7 @@
 using BrowserChooser3.Classes;
 using BrowserChooser3.Classes.Models;
 using BrowserChooser3.Classes.Services;
+using BrowserChooser3.Classes.Services.UI;
 using BrowserChooser3.Classes.Utilities;
 using System.Drawing.Imaging;
 
@@ -8,18 +9,30 @@ namespace BrowserChooser3.Forms
 {
     /// <summary>
     /// アイコン選択フォーム
-    /// 実行ファイルからのアイコン抽出と選択を提供します
+    /// 実行ファイルからのアイコン抽出と直接イメージファイル選択を提供します
     /// </summary>
     public partial class IconSelectionForm : Form
     {
         private List<Icon> _icons = new();
         private Icon? _selectedIcon = null;
         private string _filePath = string.Empty;
+        private int _selectedIconIndex = -1;
+        private bool _isDirectImageFile = false;
 
         /// <summary>
         /// 選択されたアイコン
         /// </summary>
         public Icon? SelectedIcon => _selectedIcon;
+
+        /// <summary>
+        /// 選択されたアイコンのインデックス
+        /// </summary>
+        public int SelectedIconIndex => _selectedIconIndex;
+
+        /// <summary>
+        /// 選択されたアイコンファイルのパス
+        /// </summary>
+        public string SelectedIconPath => _filePath;
 
         /// <summary>
         /// アイコン選択フォームクラスの新しいインスタンスを初期化します
@@ -30,6 +43,11 @@ namespace BrowserChooser3.Forms
             _filePath = filePath;
             InitializeComponent();
             LoadIcons();
+            
+            // フォームを最前面に表示
+            this.TopMost = true;
+            this.BringToFront();
+            this.Activate();
         }
 
         /// <summary>
@@ -38,7 +56,7 @@ namespace BrowserChooser3.Forms
         private void InitializeComponent()
         {
             Text = "Icon Selection";
-            Size = new Size(600, 400);
+            Size = new Size(700, 550);
             StartPosition = FormStartPosition.CenterParent;
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
@@ -84,13 +102,41 @@ namespace BrowserChooser3.Forms
                 Text = $"File: {_filePath}"
             };
 
+            // アイコンパス変更ボタン
+            var btnChangePath = new Button
+            {
+                Name = "btnChangePath",
+                Text = "Change Icon Path",
+                Location = new Point(10, 350),
+                Size = new Size(120, 30)
+            };
+            btnChangePath.Click += BtnChangePath_Click;
+
+            // アイコンインデックスラベル
+            var iconIndexLabel = new Label
+            {
+                Name = "iconIndexLabel",
+                Location = new Point(140, 355),
+                Size = new Size(200, 20),
+                Text = "Icon Index: -"
+            };
+
+            // ファイルタイプラベル
+            var fileTypeLabel = new Label
+            {
+                Name = "fileTypeLabel",
+                Location = new Point(350, 355),
+                Size = new Size(200, 20),
+                Text = "Type: -"
+            };
+
             // OKボタン
             var btnOK = new Button
             {
                 Name = "btnOK",
                 Text = "OK",
-                Location = new Point(420, 320),
-                Size = new Size(75, 25),
+                Location = new Point(420, 450),
+                Size = new Size(75, 30),
                 DialogResult = DialogResult.OK,
                 Enabled = false
             };
@@ -101,8 +147,8 @@ namespace BrowserChooser3.Forms
             {
                 Name = "btnCancel",
                 Text = "Cancel",
-                Location = new Point(505, 320),
-                Size = new Size(75, 25),
+                Location = new Point(505, 450),
+                Size = new Size(75, 30),
                 DialogResult = DialogResult.Cancel
             };
 
@@ -110,12 +156,105 @@ namespace BrowserChooser3.Forms
             Controls.Add(iconListView);
             Controls.Add(previewPictureBox);
             Controls.Add(filePathLabel);
+            Controls.Add(btnChangePath);
+            Controls.Add(iconIndexLabel);
+            Controls.Add(fileTypeLabel);
             Controls.Add(btnOK);
             Controls.Add(btnCancel);
 
             // フォームのAcceptButtonとCancelButtonを設定
             AcceptButton = btnOK;
             CancelButton = btnCancel;
+        }
+
+        /// <summary>
+        /// アイコンパス変更ボタンのクリックイベント
+        /// </summary>
+        private void BtnChangePath_Click(object? sender, EventArgs e)
+        {
+            try
+            {
+                using var openFileDialog = new OpenFileDialog
+                {
+                    Filter = "実行ファイル (*.exe)|*.exe|アイコンファイル (*.ico)|*.ico|画像ファイル (*.png;*.jpg;*.jpeg;*.bmp)|*.png;*.jpg;*.jpeg;*.bmp|すべてのファイル (*.*)|*.*",
+                    Title = "アイコンファイルを選択"
+                };
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    _filePath = openFileDialog.FileName;
+                    
+                    // ファイルパスラベルを更新
+                    var filePathLabel = Controls.Find("filePathLabel", true).FirstOrDefault() as Label;
+                    if (filePathLabel != null)
+                    {
+                        filePathLabel.Text = $"File: {_filePath}";
+                    }
+
+                    // アイコンを再読み込み
+                    ClearIcons();
+                    LoadIcons();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("IconSelectionForm.BtnChangePath_Click", "アイコンパス変更エラー", ex.Message);
+                                MessageBoxService.ShowErrorStatic($"アイコンパスの変更に失敗しました: {ex.Message}", "エラー");
+            }
+        }
+
+        /// <summary>
+        /// アイコンをクリアします
+        /// </summary>
+        private void ClearIcons()
+        {
+            try
+            {
+                var iconListView = Controls.Find("iconListView", true).FirstOrDefault() as ListView;
+                if (iconListView?.LargeImageList != null)
+                {
+                    // ImageListをクリア
+                    iconListView.LargeImageList.Images.Clear();
+                    iconListView.Items.Clear();
+                }
+
+                // アイコンリストをクリア
+                _icons.Clear();
+                _selectedIcon = null;
+                _selectedIconIndex = -1;
+                _isDirectImageFile = false;
+
+                // プレビューをクリア
+                var previewPictureBox = Controls.Find("previewPictureBox", true).FirstOrDefault() as PictureBox;
+                if (previewPictureBox != null)
+                {
+                    previewPictureBox.Image = null;
+                }
+
+                // ラベルをクリア
+                var iconIndexLabel = Controls.Find("iconIndexLabel", true).FirstOrDefault() as Label;
+                if (iconIndexLabel != null)
+                {
+                    iconIndexLabel.Text = "Icon Index: -";
+                }
+
+                var fileTypeLabel = Controls.Find("fileTypeLabel", true).FirstOrDefault() as Label;
+                if (fileTypeLabel != null)
+                {
+                    fileTypeLabel.Text = "Type: -";
+                }
+
+                // OKボタンを無効化
+                var btnOK = Controls.Find("btnOK", true).FirstOrDefault() as Button;
+                if (btnOK != null)
+                {
+                    btnOK.Enabled = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("IconSelectionForm.ClearIcons", "アイコンクリアエラー", ex.Message);
+            }
         }
 
         /// <summary>
@@ -130,7 +269,49 @@ namespace BrowserChooser3.Forms
                 var iconListView = Controls.Find("iconListView", true).FirstOrDefault() as ListView;
                 if (iconListView?.LargeImageList == null) return;
 
-                // 実行ファイルからアイコンを抽出
+                // ファイル拡張子をチェック
+                var extension = Path.GetExtension(_filePath).ToLowerInvariant();
+                
+                if (extension == ".exe")
+                {
+                    // 実行ファイルからアイコンを抽出
+                    LoadIconsFromExecutable();
+                }
+                else if (extension == ".ico")
+                {
+                    // ICOファイルからアイコンを読み込み
+                    LoadIconFromIcoFile();
+                }
+                else if (extension == ".png" || extension == ".jpg" || extension == ".jpeg" || extension == ".bmp")
+                {
+                    // 画像ファイルからアイコンを作成
+                    LoadIconFromImageFile();
+                }
+                else
+                {
+                    // その他のファイルは関連付けられたアイコンを取得
+                    LoadAssociatedIcon();
+                }
+
+                Logger.LogInfo("IconSelectionForm.LoadIcons", "アイコン読み込み完了", $"Count: {_icons.Count}");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("IconSelectionForm.LoadIcons", "アイコン読み込みエラー", ex.Message);
+                MessageBoxService.ShowErrorStatic($"アイコンの読み込みに失敗しました: {ex.Message}", "エラー");
+            }
+        }
+
+        /// <summary>
+        /// 実行ファイルからアイコンを読み込みます
+        /// </summary>
+        private void LoadIconsFromExecutable()
+        {
+            try
+            {
+                var iconListView = Controls.Find("iconListView", true).FirstOrDefault() as ListView;
+                if (iconListView?.LargeImageList == null) return;
+
                 var icons = ExtractIconsFromFile(_filePath);
                 
                 foreach (var icon in icons)
@@ -147,13 +328,140 @@ namespace BrowserChooser3.Forms
                     item.Tag = icon;
                 }
 
-                Logger.LogInfo("IconSelectionForm.LoadIcons", "アイコン読み込み完了", $"Count: {_icons.Count}");
+                // ファイルタイプラベルを更新
+                var fileTypeLabel = Controls.Find("fileTypeLabel", true).FirstOrDefault() as Label;
+                if (fileTypeLabel != null)
+                {
+                    fileTypeLabel.Text = $"Type: Executable ({_icons.Count} icons)";
+                }
+
+                _isDirectImageFile = false;
             }
             catch (Exception ex)
             {
-                Logger.LogError("IconSelectionForm.LoadIcons", "アイコン読み込みエラー", ex.Message);
-                MessageBox.Show($"アイコンの読み込みに失敗しました: {ex.Message}", "エラー", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Logger.LogError("IconSelectionForm.LoadIconsFromExecutable", "実行ファイルアイコン読み込みエラー", ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// ICOファイルからアイコンを読み込みます
+        /// </summary>
+        private void LoadIconFromIcoFile()
+        {
+            try
+            {
+                var iconListView = Controls.Find("iconListView", true).FirstOrDefault() as ListView;
+                if (iconListView?.LargeImageList == null) return;
+
+                // ICOファイルからアイコンを読み込み
+                var icon = new Icon(_filePath);
+                _icons.Add(icon);
+                
+                // ImageListにアイコンを追加
+                var bitmap = icon.ToBitmap();
+                iconListView.LargeImageList.Images.Add(bitmap);
+                
+                // ListViewItemを追加
+                var item = iconListView.Items.Add("Icon");
+                item.ImageIndex = iconListView.LargeImageList.Images.Count - 1;
+                item.Tag = icon;
+
+                // ファイルタイプラベルを更新
+                var fileTypeLabel = Controls.Find("fileTypeLabel", true).FirstOrDefault() as Label;
+                if (fileTypeLabel != null)
+                {
+                    fileTypeLabel.Text = "Type: ICO File";
+                }
+
+                _isDirectImageFile = true;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("IconSelectionForm.LoadIconFromIcoFile", "ICOファイル読み込みエラー", ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// 画像ファイルからアイコンを作成します
+        /// </summary>
+        private void LoadIconFromImageFile()
+        {
+            try
+            {
+                var iconListView = Controls.Find("iconListView", true).FirstOrDefault() as ListView;
+                if (iconListView?.LargeImageList == null) return;
+
+                // 画像ファイルからBitmapを読み込み
+                using var originalBitmap = new Bitmap(_filePath);
+                
+                // 32x32のアイコンサイズにリサイズ
+                var resizedBitmap = new Bitmap(originalBitmap, new Size(32, 32));
+                
+                // Bitmapからアイコンを作成
+                var icon = Icon.FromHandle(resizedBitmap.GetHicon());
+                _icons.Add(icon);
+                
+                // ImageListにアイコンを追加
+                iconListView.LargeImageList.Images.Add(resizedBitmap);
+                
+                // ListViewItemを追加
+                var item = iconListView.Items.Add("Image");
+                item.ImageIndex = iconListView.LargeImageList.Images.Count - 1;
+                item.Tag = icon;
+
+                // ファイルタイプラベルを更新
+                var fileTypeLabel = Controls.Find("fileTypeLabel", true).FirstOrDefault() as Label;
+                if (fileTypeLabel != null)
+                {
+                    fileTypeLabel.Text = "Type: Image File";
+                }
+
+                _isDirectImageFile = true;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("IconSelectionForm.LoadIconFromImageFile", "画像ファイル読み込みエラー", ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// 関連付けられたアイコンを読み込みます
+        /// </summary>
+        private void LoadAssociatedIcon()
+        {
+            try
+            {
+                var iconListView = Controls.Find("iconListView", true).FirstOrDefault() as ListView;
+                if (iconListView?.LargeImageList == null) return;
+
+                // 関連付けられたアイコンを取得
+                var icon = Icon.ExtractAssociatedIcon(_filePath);
+                if (icon != null)
+                {
+                    _icons.Add(icon);
+                    
+                    // ImageListにアイコンを追加
+                    var bitmap = icon.ToBitmap();
+                    iconListView.LargeImageList.Images.Add(bitmap);
+                    
+                    // ListViewItemを追加
+                    var item = iconListView.Items.Add("Associated Icon");
+                    item.ImageIndex = iconListView.LargeImageList.Images.Count - 1;
+                    item.Tag = icon;
+                }
+
+                // ファイルタイプラベルを更新
+                var fileTypeLabel = Controls.Find("fileTypeLabel", true).FirstOrDefault() as Label;
+                if (fileTypeLabel != null)
+                {
+                    fileTypeLabel.Text = "Type: Associated Icon";
+                }
+
+                _isDirectImageFile = false;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("IconSelectionForm.LoadAssociatedIcon", "関連アイコン読み込みエラー", ex.Message);
             }
         }
 
@@ -229,6 +537,7 @@ namespace BrowserChooser3.Forms
                 var iconListView = sender as ListView;
                 var previewPictureBox = Controls.Find("previewPictureBox", true).FirstOrDefault() as PictureBox;
                 var btnOK = Controls.Find("btnOK", true).FirstOrDefault() as Button;
+                var iconIndexLabel = Controls.Find("iconIndexLabel", true).FirstOrDefault() as Label;
 
                 if (iconListView?.SelectedItems.Count > 0)
                 {
@@ -236,11 +545,25 @@ namespace BrowserChooser3.Forms
                     if (selectedItem.Tag is Icon icon)
                     {
                         _selectedIcon = icon;
+                        _selectedIconIndex = selectedItem.Index;
                         
                         // プレビューを更新
                         if (previewPictureBox != null)
                         {
                             previewPictureBox.Image = icon.ToBitmap();
+                        }
+                        
+                        // アイコンインデックスラベルを更新
+                        if (iconIndexLabel != null)
+                        {
+                            if (_isDirectImageFile)
+                            {
+                                iconIndexLabel.Text = "Icon Index: Direct File";
+                            }
+                            else
+                            {
+                                iconIndexLabel.Text = $"Icon Index: {_selectedIconIndex}";
+                            }
                         }
                         
                         // OKボタンを有効化
@@ -253,11 +576,18 @@ namespace BrowserChooser3.Forms
                 else
                 {
                     _selectedIcon = null;
+                    _selectedIconIndex = -1;
                     
                     // プレビューをクリア
                     if (previewPictureBox != null)
                     {
                         previewPictureBox.Image = null;
+                    }
+                    
+                    // アイコンインデックスラベルをクリア
+                    if (iconIndexLabel != null)
+                    {
+                        iconIndexLabel.Text = "Icon Index: -";
                     }
                     
                     // OKボタンを無効化

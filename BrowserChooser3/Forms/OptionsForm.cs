@@ -26,7 +26,7 @@ namespace BrowserChooser3.Forms
         // UIパネル作成クラス
         private OptionsFormPanels _panels;
 
-        // 内部データ管理（Browser Chooser 2互換）
+        // 内部データ管理
         private Dictionary<int, Browser> _mBrowser = new();
         private SortedDictionary<int, URL> _mURLs = new();
         private Dictionary<int, Protocol> _mProtocols = new();
@@ -34,10 +34,10 @@ namespace BrowserChooser3.Forms
         private int _mLastURLID = 0;
         private int _mLastProtocolID = 0;
 
-        // ImageList（Browser Chooser 2互換）
+        // ImageList
         private ImageList? _imBrowserIcons => _panels?.GetBrowserIcons();
 
-        // フォーカス設定（Browser Chooser 2互換）
+        // フォーカス設定
         private FocusSettings _mFocusSettings = new();
 
         /// <summary>
@@ -50,10 +50,10 @@ namespace BrowserChooser3.Forms
 
             // イベントハンドラークラスの初期化
             _formHandlers = new OptionsFormFormHandlers(this, LoadSettingsToControls, SaveSettings, () => _isModified);
-            _browserHandlers = new OptionsFormBrowserHandlers(this, _settings, _mBrowser, _mProtocols, null!, _imBrowserIcons, SetModified);
+            _browserHandlers = new OptionsFormBrowserHandlers(this, _settings, _mBrowser, _mProtocols, _imBrowserIcons, SetModified);
             _protocolHandlers = new OptionsFormProtocolHandlers(this, _mProtocols, _mBrowser, SetModified);
             _listHandlers = new OptionsFormListHandlers(this);
-            _dragDropHandlers = new OptionsFormDragDropHandlers(this, _settings, _mBrowser, _mProtocols, null!, SetModified, RebuildAutoURLs);
+            _dragDropHandlers = new OptionsFormDragDropHandlers(this, _settings, _mBrowser, _mProtocols, SetModified, RebuildAutoURLs);
 
             // UIパネル作成クラスの初期化
             _panels = new OptionsFormPanels();
@@ -77,7 +77,7 @@ namespace BrowserChooser3.Forms
         }
         
         /// <summary>
-        /// フォームの初期化（Browser Chooser 2互換）
+        /// フォームの初期化
         /// </summary>
         private void InitializeForm()
         {
@@ -101,6 +101,7 @@ namespace BrowserChooser3.Forms
 
                 var settingsNode = new TreeNode("Settings");
                 settingsNode.Nodes.Add(new TreeNode("Display") { Tag = "tabDisplay" });
+                settingsNode.Nodes.Add(new TreeNode("Focus") { Tag = "tabFocus" });
                 settingsNode.Nodes.Add(new TreeNode("Grid") { Tag = "tabGrid" });
                 settingsNode.Nodes.Add(new TreeNode("Privacy") { Tag = "tabPrivacy" });
                 settingsNode.Nodes.Add(new TreeNode("Startup") { Tag = "tabStartup" });
@@ -114,11 +115,12 @@ namespace BrowserChooser3.Forms
                 treeSettings.Nodes.Add(defaultBrowserNode);
 
                 // タブページの作成
-                var browsersTab = _panels.CreateBrowsersPanel(_settings, _mBrowser, _mProtocols, null!, _mLastBrowserID, _imBrowserIcons, SetModified, RebuildAutoURLs);
+                var browsersTab = _panels.CreateBrowsersPanel(_settings, _mBrowser, _mProtocols, _mLastBrowserID, _imBrowserIcons, SetModified, RebuildAutoURLs);
                 var autoUrlsTab = _panels.CreateAutoURLsPanel(_settings, _mURLs, _mBrowser, SetModified, RebuildAutoURLs);
                 var protocolsTab = _panels.CreateProtocolsPanel(_settings, _mProtocols, _mBrowser, SetModified);
                 var defaultBrowserTab = _panels.CreateDefaultBrowserPanel(_settings, SetModified);
                 var displayTab = _panels.CreateDisplayPanel(_settings, SetModified);
+                var focusTab = _panels.CreateFocusPanel(_settings, SetModified);
                 var gridTab = _panels.CreateGridPanel(_settings, SetModified);
                 var privacyTab = _panels.CreatePrivacyPanel(_settings, SetModified);
                 var startupTab = _panels.CreateStartupPanel(_settings, SetModified);
@@ -129,6 +131,7 @@ namespace BrowserChooser3.Forms
                 tabSettings.TabPages.Add(protocolsTab);
                 tabSettings.TabPages.Add(defaultBrowserTab);
                 tabSettings.TabPages.Add(displayTab);
+                tabSettings.TabPages.Add(focusTab);
                 tabSettings.TabPages.Add(gridTab);
                 tabSettings.TabPages.Add(privacyTab);
                 tabSettings.TabPages.Add(startupTab);
@@ -150,9 +153,6 @@ namespace BrowserChooser3.Forms
                     // ドラッグ&ドロップ機能の設定
                     SetupURLDragDrop();
                     SetupBrowserDragDrop();
-                    
-                    // カテゴリパネルの設定
-                    SetupCategoriesPanel();
                 }
                 else
                 {
@@ -201,30 +201,7 @@ namespace BrowserChooser3.Forms
             }
         }
 
-        /// <summary>
-        /// カテゴリパネルの設定
-        /// </summary>
-        private void SetupCategoriesPanel()
-        {
-            try
-            {
-                // カテゴリパネルをタブページに追加
-                var categoriesTab = tabSettings.TabPages["tabCategories"];
-                if (categoriesTab != null && categoryPanel != null)
-                {
-                    categoryPanel.Dock = DockStyle.Fill;
-                    categoriesTab.Controls.Add(categoryPanel);
-                    categoryPanel.Visible = true;
-                    
-                    // カテゴリリストの初期化
-                    LoadCategories();
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("OptionsForm.SetupCategoriesPanel", "カテゴリパネル設定エラー", ex.Message);
-            }
-        }
+
 
         /// <summary>
         /// パネルボタンイベントハンドラーの設定
@@ -405,7 +382,7 @@ namespace BrowserChooser3.Forms
                         var item = listView.Items.Add(newURL.URLPattern);
                         item.Tag = newIndex;
                         item.SubItems.Add(BrowserUtilities.GetBrowserByGUID(newURL.Guid, _mBrowser.Values.ToList())?.Name ?? "");
-                        item.SubItems.Add(newURL.DelayTime < 0 ? "Default" : newURL.DelayTime.ToString());
+                        item.SubItems.Add(newURL.Delay < 0 ? "Default" : newURL.Delay.ToString());
 
                         // 追加直後に選択してボタンを有効化
                         item.Selected = true;
@@ -447,7 +424,7 @@ namespace BrowserChooser3.Forms
                             var selectedItem = listView.SelectedItems[0];
                             selectedItem.Text = updatedURL.URLPattern;
                             selectedItem.SubItems[1].Text = BrowserUtilities.GetBrowserByGUID(updatedURL.Guid, _mBrowser.Values.ToList())?.Name ?? "";
-                            selectedItem.SubItems[2].Text = updatedURL.DelayTime < 0 ? "Default" : updatedURL.DelayTime.ToString();
+                            selectedItem.SubItems[2].Text = updatedURL.Delay < 0 ? "Default" : updatedURL.Delay.ToString();
                             
                             _isModified = true;
                         }
@@ -817,7 +794,7 @@ namespace BrowserChooser3.Forms
             _settings.ShowFocus = (bool)_settings.Defaults[Settings.DefaultField.ShowFocus];
             _settings.ShowURL = (bool)_settings.Defaults[Settings.DefaultField.ShowURL];
             _settings.RevealShortURL = (bool)_settings.Defaults[Settings.DefaultField.RevealShortURL];
-            _settings.TransparencyColor = (int)_settings.Defaults[Settings.DefaultField.TransparencyColor];
+
             _settings.FocusBoxColor = (int)_settings.Defaults[Settings.DefaultField.FocusBoxColor];
             _settings.UseAccessibleRendering = false; // デフォルト値
             _settings.ShowVisualFocus = false; // デフォルト値
@@ -850,8 +827,7 @@ namespace BrowserChooser3.Forms
             if (chkRevealShortURLs != null) chkRevealShortURLs.Checked = _settings.RevealShortURL;
 
             // 色設定のリセット
-            var pbTransparencyColor = tabPage.Controls.Find("pbTransparencyColor", true).FirstOrDefault() as PictureBox;
-            if (pbTransparencyColor != null) pbTransparencyColor.BackColor = Color.FromArgb(_settings.TransparencyColor);
+
 
             var pbFocusBoxColor = tabPage.Controls.Find("pbFocusBoxColor", true).FirstOrDefault() as PictureBox;
             if (pbFocusBoxColor != null) pbFocusBoxColor.BackColor = Color.FromArgb(_settings.FocusBoxColor);
@@ -883,8 +859,7 @@ namespace BrowserChooser3.Forms
             _settings.ShowGrid = false; // デフォルト値
             _settings.GridColor = Color.Gray.ToArgb(); // デフォルト値
             _settings.GridLineWidth = 1; // デフォルト値
-            _settings.GridWidth = 5; // デフォルト値（Browser Chooser 2互換）
-            _settings.GridHeight = 1; // デフォルト値（Browser Chooser 2互換）
+            
 
             // UIに反映
             var nudIconSizeWidth = tabPage.Controls.Find("nudIconSizeWidth", true).FirstOrDefault() as NumericUpDown;
@@ -911,7 +886,7 @@ namespace BrowserChooser3.Forms
             var nudGridLineWidth = tabPage.Controls.Find("nudGridLineWidth", true).FirstOrDefault() as NumericUpDown;
             if (nudGridLineWidth != null) nudGridLineWidth.Value = _settings.GridLineWidth;
 
-            // Grid SizeのWidth、Height（Browser Chooser 2互換）
+                            // Grid SizeのWidth、Height
             var nudGridWidth = tabPage.Controls.Find("nudGridWidth", true).FirstOrDefault() as NumericUpDown;
             if (nudGridWidth != null) nudGridWidth.Value = _settings.GridWidth;
 
@@ -927,25 +902,35 @@ namespace BrowserChooser3.Forms
             // 設定をデフォルト値に更新
             _settings.EnableLogging = (bool)_settings.Defaults[Settings.DefaultField.EnableLogging];
             _settings.LogLevel = (int)_settings.Defaults[Settings.DefaultField.LogLevel];
-            _settings.HistoryDays = 30; // デフォルト値
-            _settings.PrivacyMode = false; // デフォルト値
-            _settings.AllowDataCollection = false; // デフォルト値
+            
+            
 
             // UIに反映
             var chkEnableLogging = tabPage.Controls.Find("chkEnableLogging", true).FirstOrDefault() as CheckBox;
             if (chkEnableLogging != null) chkEnableLogging.Checked = _settings.EnableLogging;
 
             var cmbLogLevel = tabPage.Controls.Find("cmbLogLevel", true).FirstOrDefault() as ComboBox;
-            if (cmbLogLevel != null) cmbLogLevel.SelectedIndex = Math.Min(_settings.LogLevel, cmbLogLevel.Items.Count - 1);
+            if (cmbLogLevel != null) 
+            {
+                // Settings.LogLevel(int) → ComboBox.Index へのマッピング
+                int MapLogLevelToIndex(int level)
+                {
+                    return level switch
+                    {
+                        1 => 0, // Error
+                        2 => 1, // Warning
+                        3 => 2, // Info
+                        4 => 3, // Debug
+                        5 => 4, // Trace
+                        _ => 2  // 既定はInfo
+                    };
+                }
+                cmbLogLevel.SelectedIndex = MapLogLevelToIndex(_settings.LogLevel);
+            }
 
-            var nudHistoryDays = tabPage.Controls.Find("nudHistoryDays", true).FirstOrDefault() as NumericUpDown;
-            if (nudHistoryDays != null) nudHistoryDays.Value = _settings.HistoryDays;
+            
 
-            var chkPrivacyMode = tabPage.Controls.Find("chkPrivacyMode", true).FirstOrDefault() as CheckBox;
-            if (chkPrivacyMode != null) chkPrivacyMode.Checked = _settings.PrivacyMode;
-
-            var chkAllowDataCollection = tabPage.Controls.Find("chkAllowDataCollection", true).FirstOrDefault() as CheckBox;
-            if (chkAllowDataCollection != null) chkAllowDataCollection.Checked = _settings.AllowDataCollection;
+            
         }
 
         /// <summary>
@@ -954,17 +939,17 @@ namespace BrowserChooser3.Forms
         private void ResetStartupPanelToDefaults(TabPage tabPage)
         {
             // 設定をデフォルト値に更新
-            _settings.StartMinimized = false; // デフォルト値はfalse
             _settings.StartInTray = false; // デフォルト値
             _settings.StartupDelay = 0; // デフォルト値
             _settings.StartupMessage = "BrowserChooser3 Started"; // デフォルト値
 
             // UIに反映
-            var chkStartMinimized = tabPage.Controls.Find("chkStartMinimized", true).FirstOrDefault() as CheckBox;
-            if (chkStartMinimized != null) chkStartMinimized.Checked = _settings.StartMinimized;
 
-            var chkStartInTray = tabPage.Controls.Find("chkStartInTray", true).FirstOrDefault() as CheckBox;
-            if (chkStartInTray != null) chkStartInTray.Checked = _settings.StartInTray;
+                            var chkStartInTray = tabPage.Controls.Find("chkStartInTray", true).FirstOrDefault() as CheckBox;
+                if (chkStartInTray != null) chkStartInTray.Checked = _settings.StartInTray;
+
+                var chkAlwaysResidentInTray = tabPage.Controls.Find("chkAlwaysResidentInTray", true).FirstOrDefault() as CheckBox;
+                if (chkAlwaysResidentInTray != null) chkAlwaysResidentInTray.Checked = _settings.AlwaysResidentInTray;
 
             var nudStartupDelay = tabPage.Controls.Find("nudStartupDelay", true).FirstOrDefault() as NumericUpDown;
             if (nudStartupDelay != null) nudStartupDelay.Value = _settings.StartupDelay;
@@ -982,16 +967,12 @@ namespace BrowserChooser3.Forms
             _settings.Separator = (string)_settings.Defaults[Settings.DefaultField.Separator];
             _settings.DefaultDelay = (int)_settings.Defaults[Settings.DefaultField.DefaultDelay];
             _settings.AllowStayOpen = (bool)_settings.Defaults[Settings.DefaultField.AllowStayOpen];
-            _settings.ExtractDLLs = (bool)_settings.Defaults[Settings.DefaultField.ExtractDLLs];
             _settings.UserAgent = (string)_settings.Defaults[Settings.DefaultField.UserAgent];
-            _settings.DownloadDetectionFile = (bool)_settings.Defaults[Settings.DefaultField.DownloadDetectionFile];
             _settings.BackgroundColor = (int)_settings.Defaults[Settings.DefaultField.BackgroundColor];
-            _settings.StartingPosition = (int)_settings.Defaults[Settings.DefaultField.StartingPosition];
-            _settings.OffsetX = (int)_settings.Defaults[Settings.DefaultField.OffsetX];
-            _settings.OffsetY = (int)_settings.Defaults[Settings.DefaultField.OffsetY];
+
             _settings.OptionsShortcut = (char)_settings.Defaults[Settings.DefaultField.OptionsShortcut];
             _settings.DefaultMessage = (string)_settings.Defaults[Settings.DefaultField.DefaultMessage];
-            _settings.PortableMode = true; // デフォルト値
+
 
             // UIに反映
             var nudDefaultDelay = tabPage.Controls.Find("nudDefaultDelay", true).FirstOrDefault() as NumericUpDown;
@@ -1003,17 +984,10 @@ namespace BrowserChooser3.Forms
             var chkAllowStayOpen = tabPage.Controls.Find("chkAllowStayOpen", true).FirstOrDefault() as CheckBox;
             if (chkAllowStayOpen != null) chkAllowStayOpen.Checked = _settings.AllowStayOpen;
 
-            var chkExtractDLLs = tabPage.Controls.Find("chkExtractDLLs", true).FirstOrDefault() as CheckBox;
-            if (chkExtractDLLs != null) chkExtractDLLs.Checked = _settings.ExtractDLLs;
-
             var txtUserAgent = tabPage.Controls.Find("txtUserAgent", true).FirstOrDefault() as TextBox;
             if (txtUserAgent != null) txtUserAgent.Text = _settings.UserAgent;
 
-            var chkDownloadDetectionFile = tabPage.Controls.Find("chkDownloadDetectionFile", true).FirstOrDefault() as CheckBox;
-            if (chkDownloadDetectionFile != null) chkDownloadDetectionFile.Checked = _settings.DownloadDetectionFile;
 
-            var chkPortableMode = tabPage.Controls.Find("chkPortableMode", true).FirstOrDefault() as CheckBox;
-            if (chkPortableMode != null) chkPortableMode.Checked = _settings.PortableMode;
 
             var txtOptionsShortcut = tabPage.Controls.Find("txtOptionsShortcut", true).FirstOrDefault() as TextBox;
             if (txtOptionsShortcut != null) txtOptionsShortcut.Text = _settings.OptionsShortcut.ToString();
@@ -1099,29 +1073,11 @@ namespace BrowserChooser3.Forms
         /// </summary>
         private void TabSettings_SelectedIndexChanged(object? sender, EventArgs e)
         {
-            // カテゴリタブが選択された場合、categoryPanelを表示
-            if (tabSettings.SelectedTab?.Name == "tabCategories")
-            {
-                var categoryPanel = Controls.Find("categoryPanel", true).FirstOrDefault() as Panel;
-                if (categoryPanel != null)
-                {
-                    categoryPanel.Visible = true;
-                    categoryPanel.BringToFront();
-                }
-            }
-            else
-            {
-                // 他のタブが選択された場合、categoryPanelを非表示
-                var categoryPanel = Controls.Find("categoryPanel", true).FirstOrDefault() as Panel;
-                if (categoryPanel != null)
-                {
-                    categoryPanel.Visible = false;
-                }
-            }
+            // タブ選択変更時の処理（必要に応じて追加）
         }
 
         /// <summary>
-        /// 設定値の読み込み（Browser Chooser 2互換）
+        /// 設定値の読み込み
         /// </summary>
         private void LoadSettings()
         {
@@ -1150,11 +1106,11 @@ namespace BrowserChooser3.Forms
                     {
                         var item = listView.Items.Add(clonedBrowser.Name);
                         item.Tag = _mBrowser.Count - 1;
-                        item.SubItems.Add(""); // Default column
-                        item.SubItems.Add(clonedBrowser.PosY.ToString());
-                        item.SubItems.Add(clonedBrowser.PosX.ToString());
+                        item.SubItems.Add(clonedBrowser.Target); // Target column
+                                        item.SubItems.Add(clonedBrowser.Y.ToString());
+                item.SubItems.Add(clonedBrowser.X.ToString());
                         item.SubItems.Add(clonedBrowser.Hotkey.ToString());
-                        item.SubItems.Add(_browserHandlers.GetBrowserProtocolsAndFileTypes(clonedBrowser));
+                        item.SubItems.Add(clonedBrowser.Arguments); // Arguments column
                     }
 
                     // ImageListにアイコンを追加
@@ -1204,7 +1160,7 @@ namespace BrowserChooser3.Forms
                     // ListViewにアイテムを追加
                     if (urlListView != null)
                     {
-                        var item = urlListView.Items.Add(url.URLValue);
+                        var item = urlListView.Items.Add(url.URLPattern);
                         item.Tag = _mURLs.Count - 1;
 
                         // ブラウザ名
@@ -1219,14 +1175,14 @@ namespace BrowserChooser3.Forms
                         }
 
                         // 遅延時間
-                        if (url.DelayTime < 0)
-                        {
-                            item.SubItems.Add("Default");
-                        }
-                        else
-                        {
-                            item.SubItems.Add(url.DelayTime.ToString());
-                        }
+                                        if (url.Delay < 0)
+                {
+                    item.SubItems.Add("Default");
+                }
+                else
+                {
+                    item.SubItems.Add(url.Delay.ToString());
+                }
                     }
                 }
                 _mLastURLID = _mURLs.Count - 1;
@@ -1253,7 +1209,9 @@ namespace BrowserChooser3.Forms
         /// <param name="modified">変更フラグ</param>
         private void SetModified(bool modified)
         {
+            var oldValue = _isModified;
             _isModified = modified;
+            Logger.LogTrace("OptionsForm.SetModified", "_isModified変更", $"変更前: {oldValue}, 変更後: {_isModified}");
         }
 
         /// <summary>
@@ -1266,7 +1224,7 @@ namespace BrowserChooser3.Forms
         }
 
         /// <summary>
-        /// 設定値をコントロールに設定（Browser Chooser 2互換）
+        /// 設定値をコントロールに設定
         /// </summary>
         private void LoadSettingsToControls()
         {
@@ -1279,8 +1237,7 @@ namespace BrowserChooser3.Forms
                 var chkRevealShortURLs = Controls.Find("chkRevealShortURLs", true).FirstOrDefault() as CheckBox;
                 if (chkRevealShortURLs != null) chkRevealShortURLs.Checked = _settings.RevealShortURL;
 
-                var chkPortableMode = Controls.Find("chkPortableMode", true).FirstOrDefault() as CheckBox;
-                if (chkPortableMode != null) chkPortableMode.Checked = _settings.PortableMode;
+                
 
                 var nudHeight = Controls.Find("nudHeight", true).FirstOrDefault() as NumericUpDown;
                 if (nudHeight != null) nudHeight.Value = _settings.Height;
@@ -1309,8 +1266,7 @@ namespace BrowserChooser3.Forms
                 var txtUserAgent = Controls.Find("txtUserAgent", true).FirstOrDefault() as TextBox;
                 if (txtUserAgent != null) txtUserAgent.Text = _settings.UserAgent;
 
-                var chkDownloadDetectionFile = Controls.Find("chkDownloadDetectionFile", true).FirstOrDefault() as CheckBox;
-                if (chkDownloadDetectionFile != null) chkDownloadDetectionFile.Checked = _settings.DownloadDetectionFile;
+
 
                 var nudIconSizeWidth = Controls.Find("nudIconSizeWidth", true).FirstOrDefault() as NumericUpDown;
                 if (nudIconSizeWidth != null) 
@@ -1353,8 +1309,7 @@ namespace BrowserChooser3.Forms
 
 
 
-                var chkExtractDLLs = Controls.Find("chkExtractDLLs", true).FirstOrDefault() as CheckBox;
-                if (chkExtractDLLs != null) chkExtractDLLs.Checked = _settings.ExtractDLLs;
+
 
 
 
@@ -1377,26 +1332,36 @@ namespace BrowserChooser3.Forms
                 // プライバシー設定
 
                 var cmbLogLevel = Controls.Find("cmbLogLevel", true).FirstOrDefault() as ComboBox;
-                if (cmbLogLevel != null) cmbLogLevel.SelectedIndex = Math.Min(_settings.LogLevel, cmbLogLevel.Items.Count - 1);
+                if (cmbLogLevel != null) 
+                {
+                    // Settings.LogLevel(int) → ComboBox.Index へのマッピング
+                    int MapLogLevelToIndex(int level)
+                    {
+                        return level switch
+                        {
+                            1 => 0, // Error
+                            2 => 1, // Warning
+                            3 => 2, // Info
+                            4 => 3, // Debug
+                            5 => 4, // Trace
+                            _ => 2  // 既定はInfo
+                        };
+                    }
+                    cmbLogLevel.SelectedIndex = MapLogLevelToIndex(_settings.LogLevel);
+                }
 
-                var chkKeepHistory = Controls.Find("chkKeepHistory", true).FirstOrDefault() as CheckBox;
-                if (chkKeepHistory != null) chkKeepHistory.Checked = _settings.KeepHistory;
 
-                var nudHistoryDays = Controls.Find("nudHistoryDays", true).FirstOrDefault() as NumericUpDown;
-                if (nudHistoryDays != null) nudHistoryDays.Value = _settings.HistoryDays;
 
-                var chkPrivacyMode = Controls.Find("chkPrivacyMode", true).FirstOrDefault() as CheckBox;
-                if (chkPrivacyMode != null) chkPrivacyMode.Checked = _settings.PrivacyMode;
 
-                var chkAllowDataCollection = Controls.Find("chkAllowDataCollection", true).FirstOrDefault() as CheckBox;
-                if (chkAllowDataCollection != null) chkAllowDataCollection.Checked = _settings.AllowDataCollection;
 
                 // スタートアップ設定
-                var chkStartMinimized = Controls.Find("chkStartMinimized", true).FirstOrDefault() as CheckBox;
-                if (chkStartMinimized != null) chkStartMinimized.Checked = _settings.StartMinimized;
+
 
                 var chkStartInTray = Controls.Find("chkStartInTray", true).FirstOrDefault() as CheckBox;
                 if (chkStartInTray != null) chkStartInTray.Checked = _settings.StartInTray;
+
+                var chkAlwaysResidentInTray = Controls.Find("chkAlwaysResidentInTray", true).FirstOrDefault() as CheckBox;
+                if (chkAlwaysResidentInTray != null) chkAlwaysResidentInTray.Checked = _settings.AlwaysResidentInTray;
 
                 var nudStartupDelay = Controls.Find("nudStartupDelay", true).FirstOrDefault() as NumericUpDown;
                 if (nudStartupDelay != null) nudStartupDelay.Value = _settings.StartupDelay;
@@ -1404,27 +1369,7 @@ namespace BrowserChooser3.Forms
                 var txtStartupMessage = Controls.Find("txtStartupMessage", true).FirstOrDefault() as TextBox;
                 if (txtStartupMessage != null) txtStartupMessage.Text = _settings.StartupMessage;
 
-                // 位置設定
-                var nudXOffset = Controls.Find("nudXOffset", true).FirstOrDefault() as NumericUpDown;
-                if (nudXOffset != null) nudXOffset.Value = _settings.OffsetX;
 
-                var nudYOffset = Controls.Find("nudYOffset", true).FirstOrDefault() as NumericUpDown;
-                if (nudYOffset != null) nudYOffset.Value = _settings.OffsetY;
-
-                // 開始位置設定
-                var cmbStartingPosition = Controls.Find("cmbStartingPosition", true).FirstOrDefault() as ComboBox;
-                if (cmbStartingPosition != null)
-                {
-                    // 開始位置の選択
-                    for (int i = 0; i < cmbStartingPosition.Items.Count; i++)
-                    {
-                        if (cmbStartingPosition.Items[i] is DisplayDictionary position && position.Index == _settings.StartingPosition)
-                        {
-                            cmbStartingPosition.SelectedIndex = i;
-                            break;
-                        }
-                    }
-                }
 
                 // アクセシビリティ設定
                 var chkUseAccessibleRendering = Controls.Find("chkUseAccessibleRendering", true).FirstOrDefault() as CheckBox;
@@ -1450,13 +1395,26 @@ namespace BrowserChooser3.Forms
 
                 // 透明化設定
                 var chkEnableTransparency = Controls.Find("chkEnableTransparency", true).FirstOrDefault() as CheckBox;
-                if (chkEnableTransparency != null) chkEnableTransparency.Checked = _settings.EnableTransparency;
+                if (chkEnableTransparency != null) 
+                {
+                    var oldValue = chkEnableTransparency.Checked;
+                    var newValue = _settings.EnableTransparency;
+                    chkEnableTransparency.Checked = newValue;
+                    Logger.LogTrace("OptionsForm.LoadSettingsToControls", "EnableTransparency設定を読み込み", 
+                        $"設定前: {oldValue}, 設定後: {newValue}, 設定値: {_settings.EnableTransparency}");
+                }
 
-                var pbTransparencyColor = Controls.Find("pbTransparencyColor", true).FirstOrDefault() as PictureBox;
-                if (pbTransparencyColor != null) pbTransparencyColor.BackColor = Color.FromArgb(_settings.TransparencyColor);
+                
 
                 var nudOpacity = Controls.Find("nudOpacity", true).FirstOrDefault() as NumericUpDown;
-                if (nudOpacity != null) nudOpacity.Value = (decimal)_settings.Opacity;
+                if (nudOpacity != null) 
+                {
+                    var oldValue = nudOpacity.Value;
+                    var newValue = (decimal)_settings.Opacity;
+                    nudOpacity.Value = newValue;
+                    Logger.LogTrace("OptionsForm.LoadSettingsToControls", "Opacity設定を読み込み", 
+                        $"設定前: {oldValue}, 設定後: {newValue}, 設定値: {_settings.Opacity}");
+                }
 
                 var chkHideTitleBar = Controls.Find("chkHideTitleBar", true).FirstOrDefault() as CheckBox;
                 if (chkHideTitleBar != null) chkHideTitleBar.Checked = _settings.HideTitleBar;
@@ -1478,13 +1436,7 @@ namespace BrowserChooser3.Forms
                 if (txtDefaultMessage != null) txtDefaultMessage.Text = _settings.DefaultMessage;
 
                 // その他の設定項目の読み込み
-                var chkDownloadDetectionFileLoad = Controls.Find("chkDownloadDetectionFile", true).FirstOrDefault() as CheckBox;
-                if (chkDownloadDetectionFileLoad != null) chkDownloadDetectionFileLoad.Checked = _settings.DownloadDetectionFile;
 
-
-
-                var chkExtractDLLsLoad = Controls.Find("chkExtractDLLs", true).FirstOrDefault() as CheckBox;
-                if (chkExtractDLLsLoad != null) chkExtractDLLsLoad.Checked = _settings.ExtractDLLs;
 
 
 
@@ -1509,10 +1461,16 @@ namespace BrowserChooser3.Forms
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
+            finally
+            {
+                // 設定読み込み完了後、変更フラグをリセット
+                SetModified(false);
+                Logger.LogTrace("OptionsForm.LoadSettingsToControls", "設定読み込み完了", "_isModifiedをリセットしました");
+            }
         }
 
         /// <summary>
-        /// 設定値の保存（Browser Chooser 2互換）
+        /// 設定値の保存
         /// </summary>
         private void SaveSettings()
         {
@@ -1561,20 +1519,6 @@ namespace BrowserChooser3.Forms
                     _settings.Protocols.Add(protocol.Value.Clone());
                 }
 
-                // ファイルタイプ設定の保存（未実装のため削除）
-                // _settings.FileTypes = new List<FileType>();
-                // foreach (var fileType in _mFileTypes)
-                // {
-                //     _settings.FileTypes.Add(fileType.Value.Clone());
-                // }
-
-                // プロトコル・ファイルタイプが変更された場合の確認
-                // if (_mFileTypesAreDirty || _mProtocolsAreDirty)
-                // {
-                //     var result = MessageBox.Show("You have changed the accepted Protocols or Filetypes.",
-                //         "Protocols/Filetypes Updated", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                // }
-
                 // 各コントロールから設定値を取得して保存
                 // 基本設定
                 var chkShowURLs = Controls.Find("chkShowURLs", true).FirstOrDefault() as CheckBox;
@@ -1583,8 +1527,7 @@ namespace BrowserChooser3.Forms
                 var chkRevealShortURLs = Controls.Find("chkRevealShortURLs", true).FirstOrDefault() as CheckBox;
                 if (chkRevealShortURLs != null) _settings.RevealShortURL = chkRevealShortURLs.Checked;
 
-                var chkPortableMode = Controls.Find("chkPortableMode", true).FirstOrDefault() as CheckBox;
-                if (chkPortableMode != null) _settings.PortableMode = chkPortableMode.Checked;
+                
 
                 var nudHeight = Controls.Find("nudHeight", true).FirstOrDefault() as NumericUpDown;
                 if (nudHeight != null) _settings.Height = (int)nudHeight.Value;
@@ -1605,8 +1548,7 @@ namespace BrowserChooser3.Forms
                 var txtUserAgent = Controls.Find("txtUserAgent", true).FirstOrDefault() as TextBox;
                 if (txtUserAgent != null) _settings.UserAgent = txtUserAgent.Text;
 
-                            var chkDownloadDetectionFile = Controls.Find("chkDownloadDetectionFile", true).FirstOrDefault() as CheckBox;
-            if (chkDownloadDetectionFile != null) _settings.DownloadDetectionFile = chkDownloadDetectionFile.Checked;
+
 
                 var nudIconSizeWidth = Controls.Find("nudIconSizeWidth", true).FirstOrDefault() as NumericUpDown;
                 if (nudIconSizeWidth != null) 
@@ -1647,8 +1589,7 @@ namespace BrowserChooser3.Forms
 
 
 
-                            var chkExtractDLLs = Controls.Find("chkExtractDLLs", true).FirstOrDefault() as CheckBox;
-            if (chkExtractDLLs != null) _settings.ExtractDLLs = chkExtractDLLs.Checked;
+
 
                 // グリッド設定
                 var nudGridWidth = Controls.Find("nudGridWidth", true).FirstOrDefault() as NumericUpDown;
@@ -1674,14 +1615,14 @@ namespace BrowserChooser3.Forms
                     // ComboBox.Index → Settings.LogLevel(int) へのマッピング
                     int MapIndexToLogLevel(int idx)
                     {
-                        // ComboBox: Trace(0), Debug(1), Info(2), Warning(3), Error(4)
+                        // ComboBox: Error(0), Warning(1), Info(2), Debug(3), Trace(4)
                         return idx switch
                         {
-                            0 => 5, // Trace
-                            1 => 4, // Debug
+                            0 => 1, // Error
+                            1 => 2, // Warning
                             2 => 3, // Info
-                            3 => 2, // Warning
-                            4 => 1, // Error
+                            3 => 4, // Debug
+                            4 => 5, // Trace
                             _ => 3
                         };
                     }
@@ -1689,24 +1630,18 @@ namespace BrowserChooser3.Forms
                     Logger.InitializeLogLevel(_settings.LogLevel);
                 }
 
-                var chkKeepHistory = Controls.Find("chkKeepHistory", true).FirstOrDefault() as CheckBox;
-                if (chkKeepHistory != null) _settings.KeepHistory = chkKeepHistory.Checked;
 
-                var nudHistoryDays = Controls.Find("nudHistoryDays", true).FirstOrDefault() as NumericUpDown;
-                if (nudHistoryDays != null) _settings.HistoryDays = (int)nudHistoryDays.Value;
 
-                var chkPrivacyMode = Controls.Find("chkPrivacyMode", true).FirstOrDefault() as CheckBox;
-                if (chkPrivacyMode != null) _settings.PrivacyMode = chkPrivacyMode.Checked;
 
-                var chkAllowDataCollection = Controls.Find("chkAllowDataCollection", true).FirstOrDefault() as CheckBox;
-                if (chkAllowDataCollection != null) _settings.AllowDataCollection = chkAllowDataCollection.Checked;
 
                 // スタートアップ設定
-                var chkStartMinimized = Controls.Find("chkStartMinimized", true).FirstOrDefault() as CheckBox;
-                if (chkStartMinimized != null) _settings.StartMinimized = chkStartMinimized.Checked;
+
 
                 var chkStartInTray = Controls.Find("chkStartInTray", true).FirstOrDefault() as CheckBox;
                 if (chkStartInTray != null) _settings.StartInTray = chkStartInTray.Checked;
+
+                var chkAlwaysResidentInTray = Controls.Find("chkAlwaysResidentInTray", true).FirstOrDefault() as CheckBox;
+                if (chkAlwaysResidentInTray != null) _settings.AlwaysResidentInTray = chkAlwaysResidentInTray.Checked;
 
 
 
@@ -1716,22 +1651,7 @@ namespace BrowserChooser3.Forms
                 var txtStartupMessage = Controls.Find("txtStartupMessage", true).FirstOrDefault() as TextBox;
                 if (txtStartupMessage != null) _settings.StartupMessage = txtStartupMessage.Text;
 
-                // 位置設定
-                var cmbStartingPosition = Controls.Find("cmbStartingPosition", true).FirstOrDefault() as ComboBox;
-                if (cmbStartingPosition?.SelectedItem != null)
-                {
-                    var selectedPosition = cmbStartingPosition.SelectedItem as DisplayDictionary;
-                    if (selectedPosition != null)
-                    {
-                        _settings.StartingPosition = selectedPosition.Index;
-                    }
-                }
 
-                var nudXOffset = Controls.Find("nudXOffset", true).FirstOrDefault() as NumericUpDown;
-                if (nudXOffset != null) _settings.OffsetX = (int)nudXOffset.Value;
-
-                var nudYOffset = Controls.Find("nudYOffset", true).FirstOrDefault() as NumericUpDown;
-                if (nudYOffset != null) _settings.OffsetY = (int)nudYOffset.Value;
 
                 // アクセシビリティ設定
                 var chkUseAccessibleRendering = Controls.Find("chkUseAccessibleRendering", true).FirstOrDefault() as CheckBox;
@@ -1778,7 +1698,23 @@ namespace BrowserChooser3.Forms
                             Logger.LogInfo("OptionsForm.SaveSettings", $"即時反映: EnableTransparency={transparencyEnabled}");
                             if (!transparencyEnabled)
                             {
+                                Logger.LogDebug("OptionsForm.SaveSettings", "背景色変更開始", $"現在の背景色: {mainForm.BackColor}, 新しい背景色: {_settings.BackgroundColorValue}");
+                                
+                                // 変更前のブラウザボタン数を記録
+                                var browserButtonsBefore = mainForm.Controls.OfType<Button>().Where(b => b.Tag is Browser).ToList();
+                                Logger.LogDebug("OptionsForm.SaveSettings", "変更前のブラウザボタン数", browserButtonsBefore.Count);
+                                
                                 mainForm.BackColor = _settings.BackgroundColorValue;
+                                Logger.LogDebug("OptionsForm.SaveSettings", "背景色を設定しました", mainForm.BackColor.ToString());
+                                
+                                // 背景色変更時にブラウザボタンを再描画
+                                mainForm.Invalidate();
+                                Logger.LogDebug("OptionsForm.SaveSettings", "Invalidate()を呼び出しました");
+                                
+                                // 変更後のブラウザボタン数を記録
+                                var browserButtonsAfter = mainForm.Controls.OfType<Button>().Where(b => b.Tag is Browser).ToList();
+                                Logger.LogDebug("OptionsForm.SaveSettings", "変更後のブラウザボタン数", browserButtonsAfter.Count);
+                                
                                 Logger.LogInfo("OptionsForm.SaveSettings", "メイン画面の背景色を即時更新しました", _settings.BackgroundColorValue.ToString());
                             }
                             else
@@ -1814,13 +1750,26 @@ namespace BrowserChooser3.Forms
 
                 // 透明化設定
                 var chkEnableTransparency = Controls.Find("chkEnableTransparency", true).FirstOrDefault() as CheckBox;
-                if (chkEnableTransparency != null) _settings.EnableTransparency = chkEnableTransparency.Checked;
+                if (chkEnableTransparency != null) 
+                {
+                    var oldValue = _settings.EnableTransparency;
+                    var newValue = chkEnableTransparency.Checked;
+                    _settings.EnableTransparency = newValue;
+                    Logger.LogTrace("OptionsForm.SaveSettings", "EnableTransparency設定を保存", 
+                        $"設定前: {oldValue}, 設定後: {newValue}, コントロール値: {chkEnableTransparency.Checked}");
+                }
 
-                var pbTransparencyColor = Controls.Find("pbTransparencyColor", true).FirstOrDefault() as PictureBox;
-                if (pbTransparencyColor != null) _settings.TransparencyColor = pbTransparencyColor.BackColor.ToArgb();
+                
 
                 var nudOpacity = Controls.Find("nudOpacity", true).FirstOrDefault() as NumericUpDown;
-                if (nudOpacity != null) _settings.Opacity = (double)nudOpacity.Value;
+                if (nudOpacity != null) 
+                {
+                    var oldValue = _settings.Opacity;
+                    var newValue = (double)nudOpacity.Value;
+                    _settings.Opacity = newValue;
+                    Logger.LogTrace("OptionsForm.SaveSettings", "Opacity設定を保存", 
+                        $"設定前: {oldValue}, 設定後: {newValue}, コントロールValue: {nudOpacity.Value}");
+                }
 
                 var chkHideTitleBar = Controls.Find("chkHideTitleBar", true).FirstOrDefault() as CheckBox;
                 if (chkHideTitleBar != null) _settings.HideTitleBar = chkHideTitleBar.Checked;
@@ -1846,13 +1795,7 @@ namespace BrowserChooser3.Forms
                 if (txtDefaultMessage != null) _settings.DefaultMessage = txtDefaultMessage.Text;
 
                 // その他の設定項目の保存
-                var chkDownloadDetectionFileSave = Controls.Find("chkDownloadDetectionFile", true).FirstOrDefault() as CheckBox;
-                if (chkDownloadDetectionFileSave != null) _settings.DownloadDetectionFile = chkDownloadDetectionFileSave.Checked;
 
-
-
-                var chkExtractDLLsSave = Controls.Find("chkExtractDLLs", true).FirstOrDefault() as CheckBox;
-                if (chkExtractDLLsSave != null) _settings.ExtractDLLs = chkExtractDLLsSave.Checked;
 
 
 
@@ -1889,19 +1832,12 @@ namespace BrowserChooser3.Forms
             }
         }
 
-        /// <summary>
-        /// Auto URLsのドラッグ&amp;ドロップ機能を設定（Browser Chooser 2互換）
-        /// 現在は未実装（Browser Chooser 2でも実装されていない）
-        /// </summary>
-        private void SetupAutoURLsDragDrop(ListView listView)
-        {
-            // Browser Chooser 2では実装されていないため、空の実装のままとする
-        }
+
 
 
 
         /// <summary>
-        /// ブラウザリストへのファイルドロップ機能を設定（Browser Chooser 2互換）
+        /// ブラウザリストへのファイルドロップ機能を設定
         /// </summary>
         /// <param name="listView">対象のListView</param>
         private void SetupBrowsersDragDrop(ListView listView)
@@ -1951,13 +1887,13 @@ namespace BrowserChooser3.Forms
                                     Name = Path.GetFileNameWithoutExtension(filePath),
                                     Target = filePath,
                                     Arguments = "",
-                                    PosX = 1,
-                                    PosY = 1,
+                                                    X = 1,
+                Y = 1,
                                     Hotkey = '\0',
                                     Category = "Default"
                                 };
 
-                                if (addEditForm.AddBrowser(_mBrowser, _mProtocols, null!, false,
+                                if (addEditForm.AddBrowser(_mBrowser, _mProtocols, false,
                                     new Point(_settings.GridWidth, _settings.GridHeight), newBrowser))
                                 {
                                     var browser = addEditForm.GetData();
@@ -1968,10 +1904,10 @@ namespace BrowserChooser3.Forms
                                     item.Tag = _mLastBrowserID + 1;
                                     item.SubItems.Add(browser.Target);
                                     item.SubItems.Add(browser.Arguments);
-                                    item.SubItems.Add(browser.PosY.ToString());
-                                    item.SubItems.Add(browser.PosX.ToString());
+                                                    item.SubItems.Add(browser.Y.ToString());
+                item.SubItems.Add(browser.X.ToString());
                                     item.SubItems.Add(browser.Hotkey.ToString());
-                                    item.SubItems.Add(_browserHandlers.GetBrowserProtocolsAndFileTypes(browser));
+
 
                                     // ImageListにアイコンを追加
                                     if (_imBrowserIcons != null)
@@ -2035,65 +1971,7 @@ namespace BrowserChooser3.Forms
             }
         }
 
-        /// <summary>
-        /// カテゴリデータを読み込みます
-        /// </summary>
-        private void LoadCategories()
-        {
-            try
-            {
-                categoryListView.Items.Clear();
 
-                // ブラウザからカテゴリを収集
-                var categories = _mBrowser.Values
-                    .Select(b => b.Category)
-                    .Where(c => !string.IsNullOrEmpty(c))
-                    .Distinct()
-                    .ToList();
-
-                // URLからカテゴリを収集
-                categories.AddRange(_mURLs.Values
-                    .Select(u => u.Category)
-                    .Where(c => !string.IsNullOrEmpty(c))
-                    .Distinct());
-
-                // プロトコルからカテゴリを収集
-                categories.AddRange(_mProtocols.Values
-                    .Select(p => p.Category)
-                    .Where(c => !string.IsNullOrEmpty(c))
-                    .Distinct());
-
-
-                // 重複を除去してソート
-                categories = categories.Distinct().OrderBy(c => c).ToList();
-
-                foreach (var category in categories)
-                {
-                    var item = categoryListView.Items.Add(category);
-                    var count = GetCategoryItemCount(category);
-                    item.SubItems.Add(count.ToString());
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("OptionsForm.LoadCategories", "カテゴリ読み込みエラー", ex.Message);
-            }
-        }
-
-        /// <summary>
-        /// カテゴリ内のアイテム数を取得します
-        /// </summary>
-        /// <param name="category">カテゴリ名</param>
-        /// <returns>アイテム数</returns>
-        private int GetCategoryItemCount(string category)
-        {
-            var count = 0;
-            count += _mBrowser.Values.Count(b => b.Category == category);
-            count += _mURLs.Values.Count(u => u.Category == category);
-            count += _mProtocols.Values.Count(p => p.Category == category);
-            // count += _mFileTypes.Values.Count(f => f.Category == category);
-            return count;
-        }
 
         /// <summary>
         /// ブラウザドラッグ&amp;ドロップ機能の設定

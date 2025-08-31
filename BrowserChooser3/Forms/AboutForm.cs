@@ -2,6 +2,7 @@ using BrowserChooser3.Classes;
 using BrowserChooser3.Classes.Models;
 using BrowserChooser3.Classes.Services;
 using BrowserChooser3.Classes.Utilities;
+using System.Linq;
 
 namespace BrowserChooser3.Forms
 {
@@ -363,7 +364,7 @@ namespace BrowserChooser3.Forms
         /// </summary>
         private void AboutForm_Load(object? sender, EventArgs e)
         {
-            Logger.LogInfo("AboutForm.AboutForm_Load", "About画面を読み込み");
+            Logger.LogDebug("AboutForm.AboutForm_Load", "About画面を読み込み");
             
             try
             {
@@ -398,7 +399,7 @@ namespace BrowserChooser3.Forms
                 
                 lblDiagnostics.Text = diagnostics.ToString();
                 
-                Logger.LogInfo("AboutForm.AboutForm_Load", "About画面読み込み完了");
+                Logger.LogDebug("AboutForm.AboutForm_Load", "About画面読み込み完了");
             }
             catch (Exception ex)
             {
@@ -419,7 +420,7 @@ namespace BrowserChooser3.Forms
                 // pictureBox2のアイコン読み込み（BCLogoアイコン）
                 pictureBox2.Image = Properties.Resources.BCLogoIcon.ToBitmap();
 
-                Logger.LogInfo("AboutForm.LoadIcons", "アイコン読み込み完了");
+                Logger.LogDebug("AboutForm.LoadIcons", "アイコン読み込み完了");
             }
             catch (Exception ex)
             {
@@ -579,7 +580,15 @@ namespace BrowserChooser3.Forms
         /// </summary>
         private bool IsTestEnvironment()
         {
-            return Environment.GetEnvironmentVariable("TEST_ENVIRONMENT") == "true" ||
+            // テストアセンブリが読み込まれているかチェック
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            var isTestAssembly = assemblies.Any(assembly => 
+                assembly.FullName?.Contains("xunit") == true || 
+                assembly.FullName?.Contains("BrowserChooser3.Tests") == true ||
+                assembly.FullName?.Contains("Microsoft.VisualStudio.TestPlatform") == true);
+
+            return isTestAssembly ||
+                   Environment.GetEnvironmentVariable("TEST_ENVIRONMENT") == "true" ||
                    Environment.GetEnvironmentVariable("DISABLE_HELP") == "true" ||
                    System.Diagnostics.Process.GetCurrentProcess().ProcessName.Contains("test", StringComparison.OrdinalIgnoreCase);
         }

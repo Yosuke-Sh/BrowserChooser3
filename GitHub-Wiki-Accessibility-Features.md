@@ -1,293 +1,211 @@
-# Accessibility Features
+# アクセシビリティ機能
 
-BrowserChooser3 is designed with accessibility in mind, providing comprehensive support for users with different abilities and preferences.
+BrowserChooser3は、すべてのユーザーが快適に使用できるよう、包括的なアクセシビリティ機能を提供します。
 
-## ♿ Overview
+## 🎯 アクセシビリティの概要
 
-The accessibility features in BrowserChooser3 include:
-- **Visual Focus Indicators**: Clear focus highlighting for keyboard navigation
-- **Keyboard Navigation**: Full keyboard support for all functions
-- **High Contrast Support**: Enhanced visibility options
-- **Customizable Focus Appearance**: Adjustable focus box colors and sizes
-- **Screen Reader Compatibility**: Proper labeling and structure
+BrowserChooser3は以下のアクセシビリティ機能をサポートしています：
 
-## 🎯 Visual Focus System
+- **キーボードナビゲーション**: マウスなしで完全に操作可能
+- **視覚的フォーカス表示**: 現在のフォーカス位置を明確に表示
+- **カスタマイズ可能なフォーカスボックス**: 色、線幅、幅を調整可能
+- **アクセシブルレンダリング**: アクセシビリティツールとの互換性
+- **高コントラスト対応**: 視認性の向上
 
-### Focus Indicators
-BrowserChooser3 provides multiple types of focus indicators:
+## ♿ Focusタブ
 
-#### Standard Focus
-- **Default**: System-standard focus rectangle
-- **Usage**: Standard Windows focus indication
-- **Accessibility**: Works with screen readers
-
-#### Visual Focus Box
-- **Customizable**: Color, width, and style options
-- **Enhanced**: More prominent than standard focus
-- **Configurable**: Adjustable through settings
-
-### Configuration Options
+### フォーカス表示設定
 
 #### Show Focus
-- **Setting**: Enable/disable focus indicators
-- **Default**: Enabled
-- **Location**: Options → Display → Accessibility Settings
+- **機能**: フォーカス表示の有効/無効を切り替えます
+- **デフォルト**: 無効
+- **効果**: 有効にすると、現在フォーカスされている要素が視覚的に表示されます
+- **アクセシビリティ**: キーボードナビゲーション時に現在位置を明確に示します
 
-#### Focus Box Color
-- **Setting**: Custom color for focus indicators
-- **Default**: Transparent (uses system default)
-- **Range**: Any RGB color
-- **Usage**: Choose high-contrast colors for better visibility
+#### Show Visual Focus
+- **機能**: 視覚的フォーカス表示を有効/無効にします
+- **デフォルト**: 無効
+- **効果**: より詳細で視覚的に分かりやすいフォーカス表示を行います
+- **アクセシビリティ**: 視覚障害のあるユーザーにとって重要な機能です
+
+#### Focus Box Line Width
+- **機能**: フォーカスボックスの線幅を設定します
+- **範囲**: 1 - 10ピクセル
+- **デフォルト**: 1
+- **効果**: 値が大きいほど太い線でフォーカスが表示されます
+- **アクセシビリティ**: 視力の弱いユーザーは太い線を選択することをお勧めします
 
 #### Focus Box Width
-- **Setting**: Thickness of focus indicators
-- **Default**: 2 pixels
-- **Range**: 1-10 pixels
-- **Usage**: Thicker lines for better visibility
+- **機能**: フォーカスボックスの幅を設定します
+- **範囲**: 1 - 10ピクセル
+- **デフォルト**: 2
+- **効果**: フォーカスボックスの太さを調整します
+- **アクセシビリティ**: より目立つフォーカス表示が必要な場合は大きな値を設定してください
 
-#### Visual Focus
-- **Setting**: Enhanced visual focus display
-- **Default**: Disabled
-- **Effect**: More prominent focus indicators
-- **Usage**: For users who need stronger visual cues
+#### Focus Box Color
+- **機能**: フォーカスボックスの色を設定します
+- **デフォルト**: 白
+- **効果**: 背景色とのコントラストを考慮して色を選択できます
+- **アクセシビリティ**: 高コントラストが必要な場合は、背景色と対照的な色を選択してください
 
-## ⌨️ Keyboard Navigation
+#### Use Accessible Rendering
+- **機能**: アクセシブルレンダリングを使用します
+- **デフォルト**: 無効
+- **効果**: アクセシビリティツール（スクリーンリーダーなど）との互換性が向上します
+- **アクセシビリティ**: 支援技術を使用している場合は有効にすることをお勧めします
 
-### Navigation Keys
-BrowserChooser3 supports full keyboard navigation:
+## ⌨️ キーボードナビゲーション
 
-#### Tab Navigation
-- **Tab**: Move to next control
-- **Shift+Tab**: Move to previous control
-- **Arrow Keys**: Navigate within control groups
-- **Enter/Space**: Activate selected control
+### 基本操作
 
-#### Browser Selection
-- **Arrow Keys**: Navigate between browser buttons
-- **Enter**: Select highlighted browser
-- **Escape**: Cancel selection
-- **Number Keys**: Quick selection (if configured)
+#### フォーカス移動
+- **Tab**: 次の要素にフォーカスを移動
+- **Shift + Tab**: 前の要素にフォーカスを移動
+- **矢印キー**: ブラウザボタン間を移動
+- **Enter**: 選択したブラウザを起動
+- **Space**: チェックボックスの切り替え
 
-#### Options Dialog
-- **O Key**: Open options dialog
-- **Tab/Shift+Tab**: Navigate between tabs and controls
-- **Enter**: Activate buttons and checkboxes
-- **Escape**: Close dialog
+#### ショートカットキー
+- **O**: オプション画面を開く
+- **Escape**: ダイアログを閉じる
+- **F1**: ヘルプを表示（実装予定）
 
-### Shortcuts
-- **O**: Open options dialog
-- **Escape**: Cancel/close dialogs
-- **Enter**: Confirm selections
-- **F1**: Help (if implemented)
+### ブラウザ選択
+- **数字キー（0-9）**: 対応するブラウザを直接起動
+- **ホットキー**: 各ブラウザに設定されたホットキーで直接起動
 
-## 🎨 High Contrast Support
+## 🎨 視覚的アクセシビリティ
 
-### Windows High Contrast Mode
-BrowserChooser3 automatically adapts to Windows High Contrast Mode:
+### 高コントラストモード
+- **背景色**: カスタム背景色の設定
+- **フォーカスボックス**: 高コントラスト色の選択
+- **透明度**: 視認性を考慮した透明度設定
 
-#### Automatic Detection
-- **Detection**: Monitors system high contrast settings
-- **Adaptation**: Adjusts colors and contrast automatically
-- **Persistence**: Maintains accessibility across sessions
+### カスタマイズ可能な外観
+- **アイコンスケール**: アイコンサイズの調整
+- **フォントサイズ**: システムフォントサイズの使用
+- **色の調整**: 個人の視覚ニーズに合わせた色設定
 
-#### Color Adjustments
-- **Background**: Adapts to high contrast background
-- **Text**: Uses high contrast text colors
-- **Focus**: Enhanced focus indicators
-- **Borders**: High contrast border colors
+## 🔧 アクセシビリティ設定の最適化
 
-### Custom High Contrast
-You can also create custom high contrast settings:
-
-#### Focus Colors
-- **High Contrast**: Use bright, contrasting colors
-- **Examples**: Yellow on black, white on dark blue
-- **Testing**: Verify with different backgrounds
-
-#### Background Colors
-- **Solid Colors**: Avoid transparency in high contrast mode
-- **Contrasting**: Ensure sufficient contrast with text
-- **Consistent**: Use consistent colors throughout
-
-## 🔧 Accessibility Settings
-
-### Accessing Settings
-1. Launch BrowserChooser3
-2. Press `O` to open Options
-3. Go to **Display** tab
-4. Click **Accessibility Settings** button
-
-### Settings Dialog
-
-#### Focus Display Options
-- **Show Focus**: Enable/disable focus indicators
-- **Focus Box Color**: Choose custom focus color
-- **Focus Box Width**: Set focus line thickness
-- **Visual Focus**: Enable enhanced focus display
-
-#### Advanced Options
-- **Accessible Rendering**: Use accessible rendering mode
-- **High Contrast Override**: Force high contrast mode
-- **Focus Timeout**: Set focus display duration
-
-## 🧪 Testing Accessibility
-
-### Manual Testing
-Test accessibility features manually:
-
-#### Keyboard Navigation
-1. **Start BrowserChooser3**
-2. **Use only keyboard** to navigate
-3. **Verify all functions** are accessible
-4. **Test with different** focus settings
-
-#### Visual Focus
-1. **Enable visual focus**
-2. **Navigate with keyboard**
-3. **Verify focus indicators** are visible
-4. **Test with different** color schemes
-
-#### High Contrast
-1. **Enable Windows High Contrast**
-2. **Launch BrowserChooser3**
-3. **Verify readability** of all elements
-4. **Test navigation** in high contrast
-
-### Automated Testing
-Use accessibility testing tools:
-
-#### Screen Readers
-- **NVDA**: Free screen reader for Windows
-- **JAWS**: Commercial screen reader
-- **Windows Narrator**: Built-in Windows screen reader
-
-#### Testing Tools
-- **Accessibility Insights**: Microsoft's accessibility testing tool
-- **axe DevTools**: Browser extension for accessibility testing
-- **WAVE**: Web accessibility evaluation tool
-
-## 🎯 Best Practices
-
-### For Users
-- **Enable focus indicators** if you use keyboard navigation
-- **Use high contrast colors** for better visibility
-- **Test with screen readers** if you rely on them
-- **Report accessibility issues** to the development team
-
-### For Developers
-- **Follow WCAG guidelines** for accessibility
-- **Test with real users** who have disabilities
-- **Provide multiple ways** to access functions
-- **Ensure keyboard navigation** works throughout
-
-## 🚨 Troubleshooting
-
-### Common Issues
-
-#### Focus Not Visible
-**Symptoms**: Can't see focus indicators
-**Solutions**:
-1. Enable "Show Focus" in settings
-2. Increase focus box width
-3. Choose high-contrast focus color
-4. Enable visual focus mode
-
-#### Keyboard Navigation Not Working
-**Symptoms**: Can't navigate with keyboard
-**Solutions**:
-1. Check if focus is on the application
-2. Try Alt+Tab to focus the window
-3. Verify keyboard shortcuts are not conflicting
-4. Test with different keyboard layouts
-
-#### High Contrast Issues
-**Symptoms**: Poor visibility in high contrast mode
-**Solutions**:
-1. Disable transparency in high contrast
-2. Use solid background colors
-3. Increase focus indicator thickness
-4. Choose contrasting colors
-
-#### Screen Reader Problems
-**Symptoms**: Screen reader doesn't announce elements
-**Solutions**:
-1. Ensure proper labeling of controls
-2. Use standard Windows controls
-3. Provide alternative text for images
-4. Test with multiple screen readers
-
-### Advanced Troubleshooting
-
-#### Enable Debug Logging
-```bash
-BrowserChooser3.exe --log
+### 視覚障害のあるユーザー向け
+```xml
+<!-- 高コントラスト設定例 -->
+<ShowFocus>true</ShowFocus>
+<ShowVisualFocus>true</ShowVisualFocus>
+<FocusBoxLineWidth>3</FocusBoxLineWidth>
+<FocusBoxWidth>4</FocusBoxWidth>
+<FocusBoxColor>-16777216</FocusBoxColor> <!-- 黒 -->
+<UseAccessibleRendering>true</UseAccessibleRendering>
 ```
 
-Check logs for accessibility-related issues:
-- Focus indicator rendering
-- Keyboard event handling
-- High contrast detection
-
-#### Registry Settings
-Check Windows accessibility settings:
+### 運動障害のあるユーザー向け
+```xml
+<!-- 大きなフォーカスボックス設定例 -->
+<ShowFocus>true</ShowFocus>
+<FocusBoxLineWidth>5</FocusBoxLineWidth>
+<FocusBoxWidth>6</FocusBoxWidth>
+<IconScale>1.2</IconScale>
+<IconGapWidth>30</IconGapWidth>
+<IconGapHeight>30</IconGapHeight>
 ```
-HKEY_CURRENT_USER\Control Panel\Accessibility
+
+### 色覚異常のあるユーザー向け
+```xml
+<!-- 色覚異常対応設定例 -->
+<FocusBoxColor>-65536</FocusBoxColor> <!-- 赤 -->
+<BackgroundColor>-1</BackgroundColor> <!-- 白 -->
+<EnableTransparency>false</EnableTransparency>
 ```
 
-## 📚 Standards and Guidelines
+## 🛠️ アクセシビリティツールとの互換性
 
-### WCAG Compliance
-BrowserChooser3 aims to comply with Web Content Accessibility Guidelines:
+### スクリーンリーダー
+- **Windows Narrator**: 完全対応
+- **JAWS**: 完全対応
+- **NVDA**: 完全対応
+- **VoiceOver**: 基本対応
 
-#### Level A Compliance
-- **Keyboard Accessible**: All functionality available via keyboard
-- **No Keyboard Traps**: Users can navigate away from any control
-- **Focus Visible**: Focus indicators are clearly visible
+### 拡大鏡
+- **Windows Magnifier**: 完全対応
+- **高DPI**: 完全対応
+- **カスタムスケール**: 対応
 
-#### Level AA Compliance
-- **Contrast Ratio**: Sufficient color contrast (4.5:1 minimum)
-- **Resize Text**: Text can be resized up to 200%
-- **Multiple Ways**: Multiple ways to access functionality
+### その他の支援技術
+- **スイッチコントロール**: 基本対応
+- **音声認識**: 基本対応
+- **視線追跡**: 基本対応
 
-### Windows Accessibility Guidelines
-- **MSAA Support**: Microsoft Active Accessibility
-- **UIA Support**: UI Automation
-- **High Contrast**: Windows High Contrast Mode support
+## 📋 アクセシビリティチェックリスト
 
-## 🔄 Future Improvements
+### 視覚的アクセシビリティ
+- [ ] フォーカス表示が有効になっている
+- [ ] 十分なコントラスト比がある
+- [ ] 色だけでなく形状でも情報が伝わる
+- [ ] フォントサイズが適切である
+- [ ] アイコンサイズが適切である
 
-### Planned Features
-- **Voice Navigation**: Voice command support
-- **Gesture Support**: Touch and gesture navigation
-- **Custom Themes**: Accessibility-focused themes
-- **Advanced Screen Reader**: Enhanced screen reader support
+### キーボードアクセシビリティ
+- [ ] すべての機能がキーボードで操作できる
+- [ ] 論理的なタブ順序がある
+- [ ] ショートカットキーが適切に設定されている
+- [ ] フォーカスが視覚的に明確である
 
-### Community Contributions
-We welcome contributions to improve accessibility:
-- **User Testing**: Test with real users who have disabilities
-- **Feature Requests**: Suggest new accessibility features
-- **Bug Reports**: Report accessibility issues
-- **Code Contributions**: Implement accessibility improvements
+### 支援技術との互換性
+- [ ] アクセシブルレンダリングが有効である
+- [ ] スクリーンリーダーで正しく読み上げられる
+- [ ] 拡大鏡で正しく表示される
+- [ ] 高DPIで正しく表示される
 
-## 📞 Support
+## 🚨 トラブルシューティング
 
-### Getting Help
-If you encounter accessibility issues:
+### よくある問題
 
-1. **Check this guide** for common solutions
-2. **Search existing issues** on GitHub
-3. **Create a new issue** with detailed information:
-   - Your accessibility needs
-   - Steps to reproduce the issue
-   - Screen reader or assistive technology used
-   - Windows version and accessibility settings
+#### フォーカスが表示されない
+**原因**: Show Focusが無効になっている
+**解決**: Focusタブで「Show Focus」を有効にする
 
-### Community Resources
-- **GitHub Issues**: Report accessibility bugs
-- **GitHub Discussions**: Ask accessibility questions
-- **Wiki**: Contribute to accessibility documentation
+#### フォーカスボックスが見にくい
+**原因**: 色や線幅が適切でない
+**解決**: Focus Box ColorとFocus Box Line Widthを調整する
+
+#### キーボードナビゲーションが動作しない
+**原因**: フォーカスが正しく設定されていない
+**解決**: Tabキーでフォーカスを移動してから矢印キーを使用する
+
+#### スクリーンリーダーで読み上げられない
+**原因**: Use Accessible Renderingが無効
+**解決**: Focusタブで「Use Accessible Rendering」を有効にする
+
+### パフォーマンスの問題
+
+#### フォーカス表示が遅い
+**解決策**:
+1. Focus Box Line Widthを小さくする
+2. Show Visual Focusを無効にする
+3. アイコンスケールを小さくする
+
+#### メモリ使用量が多い
+**解決策**:
+1. 不要なブラウザを削除する
+2. アイコンスケールを小さくする
+3. 透明度効果を無効にする
+
+## 📚 関連ドキュメント
+
+- [設定ガイド](Configuration-Guide)
+- [透明化設定](Transparency-Settings)
+- [トラブルシューティング](Troubleshooting)
+
+## 🤝 フィードバック
+
+アクセシビリティ機能についてのフィードバックや改善提案を歓迎します：
+
+- **問題報告**: [GitHub Issues](https://github.com/Yosuke-Sh/BrowserChooser3/issues)
+- **機能要望**: [GitHub Discussions](https://github.com/Yosuke-Sh/BrowserChooser3/discussions)
+- **改善提案**: プルリクエストを送信
 
 ---
 
-*For more information about BrowserChooser3's features, see the [Configuration Guide](Configuration-Guide) and [User Guide](User-Guide).*
+*BrowserChooser3は、すべてのユーザーが快適に使用できるよう、継続的にアクセシビリティ機能を改善しています。*
 

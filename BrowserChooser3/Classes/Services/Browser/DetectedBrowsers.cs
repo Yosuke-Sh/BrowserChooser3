@@ -383,8 +383,8 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
                     Arguments = pathInfo.Arguments,
                     Guid = Guid.NewGuid(),
                     Hotkey = '\0',
-                    PosX = 1,
-                    PosY = 1,
+                                    X = 1,
+                Y = 1,
                     Scale = 1.0,
                     IconIndex = 0,
                     Category = pathInfo.Category,
@@ -421,8 +421,8 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
                     Arguments = definition.Arguments ?? "",
                     Guid = Guid.NewGuid(),
                     Hotkey = !string.IsNullOrEmpty(definition.Hotkey) ? definition.Hotkey[0] : '\0',
-                    PosX = definition.PosX ?? 1,
-                    PosY = definition.PosY ?? 1,
+                                    X = definition.X ?? 1,
+                Y = definition.Y ?? 1,
                     Scale = definition.Scale ?? 1.0,
                     IconIndex = definition.IconIndex ?? 0,
                     Category = definition.Category ?? "Online",
@@ -537,8 +537,8 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
             public string ExecutablePath { get; set; } = "";
             public string? Arguments { get; set; }
             public string? Hotkey { get; set; }
-            public int? PosX { get; set; }
-            public int? PosY { get; set; }
+                    public int? X { get; set; }
+        public int? Y { get; set; }
             public double? Scale { get; set; }
             public int? IconIndex { get; set; }
             public string? Category { get; set; }

@@ -1,6 +1,7 @@
 using BrowserChooser3.Classes;
 using BrowserChooser3.Classes.Models;
 using BrowserChooser3.Classes.Services.SystemServices;
+using BrowserChooser3.Classes.Services.UI;
 using BrowserChooser3.Classes.Utilities;
 using BrowserChooser3.Forms;
 
@@ -16,13 +17,13 @@ namespace BrowserChooser3
         {
             // アプリケーション起動時のログ初期化
             Logger.CurrentLogLevel = Logger.LogLevel.Trace;
-            Logger.LogInfo("Program.Main", "アプリケーション開始");
+            Logger.LogDebug("Program.Main", "アプリケーション開始");
 
             try
             {
                 // ログレベルを初期化
                 Logger.InitializeLogLevel();
-                Logger.LogInfo("Program.Main", "ログレベル初期化完了");
+                Logger.LogDebug("Program.Main", "ログレベル初期化完了");
 
                 // コマンドライン引数の処理
                 var args = Environment.GetCommandLineArgs();
@@ -39,17 +40,19 @@ namespace BrowserChooser3
 
                 // Windows Forms アプリケーションの設定
                 ApplicationConfiguration.Initialize();
-                Logger.LogInfo("Program.Main", "ApplicationConfiguration初期化完了");
+                Logger.LogDebug("Program.Main", "ApplicationConfiguration初期化完了");
 
                 // メインフォームの作成と実行
-                Logger.LogInfo("Program.Main", "メインフォーム作成開始");
+                Logger.LogDebug("Program.Main", "メインフォーム作成開始");
                 var mainForm = new MainForm();
-                Logger.LogInfo("Program.Main", "メインフォーム作成完了");
+                Logger.LogDebug("Program.Main", "メインフォーム作成完了");
 
                 // コマンドライン引数からURLを取得（従来の処理）
                 string url = string.Empty;
                 if (args.Length > 1)
                 {
+                    Logger.LogDebug("Program.Main", "従来のURL処理開始", $"引数数: {startupArgs.Length}");
+                    
                     // 最初の非オプション引数をURLとして扱う
                     var firstNonOptionArg = startupArgs.FirstOrDefault(arg => 
                         !arg.StartsWith("-") && !arg.StartsWith("/") && 
@@ -58,24 +61,29 @@ namespace BrowserChooser3
                     if (!string.IsNullOrEmpty(firstNonOptionArg))
                     {
                         url = firstNonOptionArg;
+                        Logger.LogDebug("Program.Main", "従来のURL処理でURLを検出", $"URL: {url}, 長さ: {url.Length}");
+                        
                         // フォームのLoadイベントでURLを設定するように設定
                         mainForm.SetInitialURL(url);
                         Logger.LogInfo("Program.Main", "初期URL設定", url);
                     }
+                    else
+                    {
+                        Logger.LogDebug("Program.Main", "従来のURL処理でURLが見つかりませんでした");
+                    }
                 }
 
-                Logger.LogInfo("Program.Main", "Application.Run開始");
+                Logger.LogDebug("Program.Main", "Application.Run開始");
                 Application.Run(mainForm);
-                Logger.LogInfo("Program.Main", "Application.Run終了");
+                Logger.LogDebug("Program.Main", "Application.Run終了");
             }
             catch (Exception ex)
             {
                 Logger.LogError("Program.Main", "アプリケーション起動エラー", ex.Message, ex.StackTrace ?? "");
-                MessageBox.Show($"アプリケーションの起動に失敗しました: {ex.Message}", "エラー", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                MessageBoxService.ShowErrorStatic($"アプリケーションの起動に失敗しました: {ex.Message}", "エラー");
             }
 
-            Logger.LogInfo("Program.Main", "アプリケーション終了");
+            Logger.LogDebug("Program.Main", "アプリケーション終了");
         }
 
         /// <summary>
@@ -84,7 +92,7 @@ namespace BrowserChooser3
         /// <param name="args">コマンドライン引数</param>
         private static void ProcessCommandLineArgs(string[] args)
         {
-            Logger.LogInfo("Program.ProcessCommandLineArgs", "Start", $"引数数={args.Length}");
+            Logger.LogDebug("Program.ProcessCommandLineArgs", "Start", $"引数数={args.Length}");
 
             foreach (var arg in args)
             {
@@ -109,7 +117,7 @@ namespace BrowserChooser3
                 }
             }
 
-            Logger.LogInfo("Program.ProcessCommandLineArgs", "End");
+            Logger.LogDebug("Program.ProcessCommandLineArgs", "End");
         }
     }
 }
