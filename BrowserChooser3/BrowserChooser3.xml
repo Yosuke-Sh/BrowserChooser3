@@ -2509,7 +2509,7 @@
         <member name="T:BrowserChooser3.Forms.IconSelectionForm">
             <summary>
             アイコン選択フォーム
-            実行ファイルからのアイコン抽出と選択を提供します
+            実行ファイルからのアイコン抽出と直接イメージファイル選択を提供します
             </summary>
         </member>
         <member name="P:BrowserChooser3.Forms.IconSelectionForm.SelectedIcon">
@@ -2546,6 +2546,26 @@
         <member name="M:BrowserChooser3.Forms.IconSelectionForm.LoadIcons">
             <summary>
             アイコンを読み込みます
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.IconSelectionForm.LoadIconsFromExecutable">
+            <summary>
+            実行ファイルからアイコンを読み込みます
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.IconSelectionForm.LoadIconFromIcoFile">
+            <summary>
+            ICOファイルからアイコンを読み込みます
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.IconSelectionForm.LoadIconFromImageFile">
+            <summary>
+            画像ファイルからアイコンを作成します
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.IconSelectionForm.LoadAssociatedIcon">
+            <summary>
+            関連付けられたアイコンを読み込みます
             </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.IconSelectionForm.ExtractIconsFromFile(System.String)">

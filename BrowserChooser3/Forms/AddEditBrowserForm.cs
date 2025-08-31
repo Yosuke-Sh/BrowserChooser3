@@ -122,8 +122,54 @@ namespace BrowserChooser3.Forms
 
                 if (!string.IsNullOrEmpty(_browser.ImagePath) && File.Exists(_browser.ImagePath))
                 {
-                    // 保存されたアイコンインデックスを使用してアイコンを抽出
-                    var icon = ExtractIconFromFile(_browser.ImagePath, _browser.IconIndex);
+                    // ファイル拡張子をチェック
+                    var extension = Path.GetExtension(_browser.ImagePath).ToLowerInvariant();
+                    Icon? icon = null;
+
+                    if (extension == ".exe")
+                    {
+                        // 実行ファイルからアイコンを抽出
+                        icon = ExtractIconFromFile(_browser.ImagePath, _browser.IconIndex);
+                    }
+                    else if (extension == ".ico")
+                    {
+                        // ICOファイルからアイコンを読み込み
+                        try
+                        {
+                            icon = new Icon(_browser.ImagePath);
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.LogWarning("AddEditBrowserForm.UpdateIconDisplay", "ICOファイル読み込みエラー", ex.Message);
+                        }
+                    }
+                    else if (extension == ".png" || extension == ".jpg" || extension == ".jpeg" || extension == ".bmp")
+                    {
+                        // 画像ファイルからアイコンを作成
+                        try
+                        {
+                            using var originalBitmap = new Bitmap(_browser.ImagePath);
+                            var resizedBitmap = new Bitmap(originalBitmap, new Size(32, 32));
+                            icon = Icon.FromHandle(resizedBitmap.GetHicon());
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.LogWarning("AddEditBrowserForm.UpdateIconDisplay", "画像ファイル読み込みエラー", ex.Message);
+                        }
+                    }
+                    else
+                    {
+                        // その他のファイルは関連付けられたアイコンを取得
+                        try
+                        {
+                            icon = Icon.ExtractAssociatedIcon(_browser.ImagePath);
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.LogWarning("AddEditBrowserForm.UpdateIconDisplay", "関連アイコン取得エラー", ex.Message);
+                        }
+                    }
+
                     if (icon != null)
                     {
                         picIcon.Image = icon.ToBitmap();
