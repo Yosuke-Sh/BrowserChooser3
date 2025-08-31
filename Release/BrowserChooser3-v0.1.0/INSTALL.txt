@@ -1,0 +1,20 @@
+BrowserChooser3 v0.1.0 ポータブル版
+
+インストール手順:
+1. このフォルダを任意の場所に展開してください
+2. .NET 8.0 Runtimeがインストールされていることを確認してください
+   - 未インストールの場合は以下からダウンロード:
+   https://dotnet.microsoft.com/download/dotnet/8.0
+3. BrowserChooser3.exeをダブルクリックして起動してください
+
+使用方法:
+- コマンドライン引数としてURLを指定:
+  BrowserChooser3.exe https://example.com
+- 設定変更は起動後、Oキーを押してオプション画面を開いてください
+
+システム要件:
+- Windows 10/11 x64
+- .NET 8.0 Runtime
+
+詳細情報:
+https://github.com/Yosuke-Sh/BrowserChooser3

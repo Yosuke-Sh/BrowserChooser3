@@ -20,6 +20,7 @@
 - **System.Xml.Serialization**: XMLシリアライゼーション
 - **System.Text.Json**: JSON処理（必要に応じて）
 - **System.Net.Http**: HTTP通信（URL短縮解除機能）
+- **System.Runtime.InteropServices**: Win32 API呼び出し（アイコン抽出）
 
 ### レジストリ・システム操作
 - **Microsoft.Win32**: レジストリ操作（ブラウザ検出）
@@ -32,6 +33,8 @@
 - **Service Layer Pattern**: ビジネスロジックの分離
 - **Repository Pattern**: 設定ファイルの読み書き
 - **Factory Pattern**: ブラウザ検出・作成
+- **Strategy Pattern**: アイコン読み込み方法の切り替え
+- **Adapter Pattern**: MessageBoxServiceによるテスト環境対応
 
 ### ディレクトリ構造
 ```
@@ -42,7 +45,9 @@ BrowserChooser3/
 │   ├── Services/         # サービス層
 │   │   ├── Browser/      # ブラウザ関連サービス
 │   │   ├── OptionsForm/  # オプション画面サービス
-│   │   └── System/       # システムサービス
+│   │   ├── System/       # システムサービス
+│   │   └── UI/           # UIサービス（MessageBoxService等）
+│   ├── Interfaces/       # インターフェース定義
 │   └── Utilities/        # ユーティリティクラス
 ├── CustomControls/       # カスタムコントロール
 └── Tests/               # 単体テスト
@@ -91,6 +96,12 @@ BrowserChooser3/
 - Safari
 - その他カスタムブラウザ
 
+### アイコン対応形式
+- **実行ファイル**: .exe（Win32 APIによるアイコン抽出）
+- **アイコンファイル**: .ico（直接読み込み）
+- **画像ファイル**: .png, .jpg, .jpeg, .bmp（リサイズしてアイコン化）
+- **その他ファイル**: 関連付けられたアイコン取得
+
 ## セキュリティ・制約
 
 ### セキュリティ要件
@@ -114,8 +125,12 @@ BrowserChooser3/
 - **テストランナー**: xUnit
 - **カバレッジ**: Cobertura XML形式
 - **レポート**: HTML形式（ReportGenerator）
+- **テスト環境検出**: アセンブリ名による自動判定
+- **UI制御**: MessageBoxServiceによるテスト環境でのダイアログ制御
 
 ### ビルド・デプロイ
 - **ビルドツール**: MSBuild / dotnet CLI
-- **インストーラー**: Inno Setup
+- **インストーラー**: Inno Setup 6
 - **配布形式**: Windows Installer (.exe)
+- **ビルドスクリプト**: build-inno-setup.bat
+- **インストーラー設定**: BrowserChooser3-Setup.iss

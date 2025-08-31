@@ -12,7 +12,7 @@ BrowserChooser3は、Windows環境で複数のブラウザから選択してURL�
 - 複数のブラウザから選択してURLを開く
 - 自動ブラウザ検出機能
 - カスタムブラウザの追加・編集
-- アイコン選択機能
+- アイコン選択機能（.exe、.ico、画像ファイル対応）
 - デフォルトブラウザの設定
 
 ### 🎨 透明化とカスタマイズ
@@ -74,6 +74,12 @@ BrowserChooser3は、Windows環境で複数のブラウザから選択してURL�
 git clone https://github.com/Yosuke-Sh/BrowserChooser3.git
 cd BrowserChooser3
 dotnet build
+```
+
+### 📦 インストーラー作成
+```bash
+# Inno Setup 6が必要
+.\build-inno-setup.bat
 ```
 
 ## 🎯 使用方法

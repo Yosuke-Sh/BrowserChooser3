@@ -19,9 +19,16 @@
 ## 🔽 ダウンロードオプション
 
 ### オプション1: 事前ビルド済み実行ファイル（推奨）
+
+#### インストーラー版
 1. [リリースページ](https://github.com/Yosuke-Sh/BrowserChooser3/releases)にアクセス
-2. 最新の`BrowserChooser3-vX.X.X.zip`ファイルをダウンロード
-3. 希望する場所に保存（例：`C:\Programs\BrowserChooser3\`）
+2. 最新の`BrowserChooser3-Setup.exe`ファイルをダウンロード
+3. インストーラーを実行してセットアップ
+
+#### ポータブル版
+1. [リリースページ](https://github.com/Yosuke-Sh/BrowserChooser3/releases)にアクセス
+2. 最新の`BrowserChooser3-v0.1.0.zip`ファイルをダウンロード
+3. 希望する場所に展開（例：`C:\Programs\BrowserChooser3\`）
 
 ### オプション2: ソースからビルド
 ソースからビルドしたい場合や最新の開発版が必要な場合：

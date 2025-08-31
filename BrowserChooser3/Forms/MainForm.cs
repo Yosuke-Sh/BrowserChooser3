@@ -1,6 +1,7 @@
 using BrowserChooser3.Classes;
 using BrowserChooser3.Classes.Models;
 using BrowserChooser3.Classes.Services.SystemServices;
+using BrowserChooser3.Classes.Services.UI;
 using BrowserChooser3.Classes.Utilities;
 using BrowserChooser3.CustomControls;
 using System.Drawing.Drawing2D;
@@ -125,8 +126,7 @@ namespace BrowserChooser3.Forms
             catch (Exception ex)
             {
                 Logger.LogError("MainForm.InitializeApplication", "初期化エラー", ex.Message, ex.StackTrace ?? "");
-                MessageBox.Show($"アプリケーションの初期化に失敗しました: {ex.Message}", "エラー", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBoxService.ShowErrorStatic($"アプリケーションの初期化に失敗しました: {ex.Message}", "エラー");
             }
         }
 
@@ -969,8 +969,7 @@ namespace BrowserChooser3.Forms
             catch (Exception ex)
             {
                 Logger.LogError("MainForm.OpenOptionsForm", "オプション画面表示エラー", ex.Message, ex.StackTrace ?? "");
-                MessageBox.Show($"オプション画面の表示に失敗しました: {ex.Message}", "エラー", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBoxService.ShowErrorStatic($"オプション画面の表示に失敗しました: {ex.Message}", "エラー");
             }
         }
 
@@ -1090,8 +1089,7 @@ namespace BrowserChooser3.Forms
                 catch (Exception ex)
                 {
                     Logger.LogError("MainForm.BrowserButton_Click", "ブラウザ起動エラー", browser.Name, ex.Message);
-                    MessageBox.Show($"ブラウザの起動に失敗しました: {ex.Message}", "エラー", 
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBoxService.ShowErrorStatic($"ブラウザの起動に失敗しました: {ex.Message}", "エラー");
                 }
             }
         }
@@ -1519,14 +1517,12 @@ namespace BrowserChooser3.Forms
             try
             {
                 Clipboard.SetText(_currentUrl);
-                MessageBox.Show("URLをクリップボードにコピーしました", "情報", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBoxService.ShowInfoStatic("URLをクリップボードにコピーしました", "情報");
             }
             catch (Exception ex)
             {
                 Logger.LogError("MainForm.btnCopyToClipboard_Click", "クリップボードコピーエラー", ex.Message);
-                MessageBox.Show($"クリップボードへのコピーに失敗しました: {ex.Message}", "エラー", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBoxService.ShowErrorStatic($"クリップボードへのコピーに失敗しました: {ex.Message}", "エラー");
             }
         }
 
@@ -1544,8 +1540,7 @@ namespace BrowserChooser3.Forms
             catch (Exception ex)
             {
                 Logger.LogError("MainForm.btnCopyToClipboardAndClose_Click", "クリップボードコピーエラー", ex.Message);
-                MessageBox.Show($"クリップボードへのコピーに失敗しました: {ex.Message}", "エラー", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBoxService.ShowErrorStatic($"クリップボードへのコピーに失敗しました: {ex.Message}", "エラー");
             }
         }
         
@@ -1954,6 +1949,28 @@ namespace BrowserChooser3.Forms
                     _notifyIcon = null;
                 }
 
+                // タイマーのクリーンアップ
+                if (_countdownTimer != null)
+                {
+                    _countdownTimer.Stop();
+                    _countdownTimer.Dispose();
+                    _countdownTimer = null;
+                }
+
+                // ツールチップのクリーンアップ
+                if (_toolTip != null)
+                {
+                    _toolTip.Dispose();
+                    _toolTip = null;
+                }
+
+                // コンテキストメニューのクリーンアップ
+                if (_cmOptions != null)
+                {
+                    _cmOptions.Dispose();
+                    _cmOptions = null;
+                }
+
                 base.OnFormClosing(e);
             }
             catch (Exception ex)
@@ -2001,5 +2018,7 @@ namespace BrowserChooser3.Forms
                 Logger.LogError("MainForm.InitializeSystemTray", "システムトレイ初期化エラー", ex.Message);
             }
         }
+
+
     }
 }

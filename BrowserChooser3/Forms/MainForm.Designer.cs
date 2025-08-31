@@ -13,9 +13,37 @@ namespace BrowserChooser3.Forms
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing && (components != null))
+            if (disposing)
             {
-                components.Dispose();
+                if (components != null)
+                {
+                    components.Dispose();
+                }
+                
+                // カスタムリソースの破棄
+                if (_notifyIcon != null)
+                {
+                    _notifyIcon.Dispose();
+                    _notifyIcon = null;
+                }
+
+                if (_countdownTimer != null)
+                {
+                    _countdownTimer.Dispose();
+                    _countdownTimer = null;
+                }
+
+                if (_toolTip != null)
+                {
+                    _toolTip.Dispose();
+                    _toolTip = null;
+                }
+
+                if (_cmOptions != null)
+                {
+                    _cmOptions.Dispose();
+                    _cmOptions = null;
+                }
             }
             base.Dispose(disposing);
         }

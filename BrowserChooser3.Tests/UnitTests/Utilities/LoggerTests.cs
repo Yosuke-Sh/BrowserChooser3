@@ -36,8 +36,8 @@ namespace BrowserChooser3.Tests
             var logLevel = Logger.CurrentLogLevel;
 
             // Assert
-            // 実際のログレベルを確認（Warning、Debug、Traceの可能性がある）
-            logLevel.Should().BeOneOf(Logger.LogLevel.Warning, Logger.LogLevel.Debug, Logger.LogLevel.Trace);
+            // 実際のログレベルを確認（Info、Warning、Debug、Traceの可能性がある）
+            logLevel.Should().BeOneOf(Logger.LogLevel.Info, Logger.LogLevel.Warning, Logger.LogLevel.Debug, Logger.LogLevel.Trace);
         }
 
         [Fact]

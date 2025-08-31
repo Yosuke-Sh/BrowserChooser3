@@ -49,4 +49,3 @@ if exist "dist\BrowserChooser3-Setup.exe" (
     )
 )
 
-pause

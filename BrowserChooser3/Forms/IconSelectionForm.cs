@@ -1,6 +1,7 @@
 using BrowserChooser3.Classes;
 using BrowserChooser3.Classes.Models;
 using BrowserChooser3.Classes.Services;
+using BrowserChooser3.Classes.Services.UI;
 using BrowserChooser3.Classes.Utilities;
 using System.Drawing.Imaging;
 
@@ -198,8 +199,7 @@ namespace BrowserChooser3.Forms
             catch (Exception ex)
             {
                 Logger.LogError("IconSelectionForm.BtnChangePath_Click", "アイコンパス変更エラー", ex.Message);
-                MessageBox.Show($"アイコンパスの変更に失敗しました: {ex.Message}", "エラー", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                MessageBoxService.ShowErrorStatic($"アイコンパスの変更に失敗しました: {ex.Message}", "エラー");
             }
         }
 
@@ -298,8 +298,7 @@ namespace BrowserChooser3.Forms
             catch (Exception ex)
             {
                 Logger.LogError("IconSelectionForm.LoadIcons", "アイコン読み込みエラー", ex.Message);
-                MessageBox.Show($"アイコンの読み込みに失敗しました: {ex.Message}", "エラー", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBoxService.ShowErrorStatic($"アイコンの読み込みに失敗しました: {ex.Message}", "エラー");
             }
         }
 

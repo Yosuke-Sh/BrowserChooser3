@@ -1,8 +1,8 @@
-# BrowserChooser3 v1.0.0 リリースノート
+# BrowserChooser3 v0.1.0 リリースノート
 
-## 🎉 初回リリース
+## 🎉 ベータ版リリース
 
-BrowserChooser3の初回リリースです。Browser Chooser 2の後継として、現代的なUIと高度な機能を提供します。
+BrowserChooser3のベータ版リリースです。Browser Chooser 2の後継として、現代的なUIと高度な機能を提供します。
 
 ## ✨ 新機能
 
@@ -10,6 +10,7 @@ BrowserChooser3の初回リリースです。Browser Chooser 2の後継として
 - 複数のブラウザから選択してURLを開く
 - 自動ブラウザ検出機能
 - カスタムブラウザの追加・編集
+- アイコン選択機能（.exe、.ico、画像ファイル対応）
 - デフォルトブラウザの設定
 
 ### 🎨 透明化とカスタマイズ
@@ -18,12 +19,15 @@ BrowserChooser3の初回リリースです。Browser Chooser 2の後継として
 - **角の丸み**: ウィンドウの角を丸くする設定（半径0-50）
 - **タイトルバー**: タイトルバーの表示/非表示切り替え
 - **背景色**: カスタム背景色の設定
+- **背景グラデーション**: 縦方向のグラデーション効果
 
 ### ♿ アクセシビリティ機能
+- **Focusタブ**: 専用のフォーカス設定タブ
 - フォーカス表示機能
 - キーボードナビゲーション対応
 - 視覚的フォーカス表示
 - カスタムフォーカスボックス色と線幅
+- アクセシブルレンダリング対応
 
 ### 📁 ファイルタイプとプロトコル
 - カスタムファイルタイプの登録
@@ -32,18 +36,28 @@ BrowserChooser3の初回リリースです。Browser Chooser 2の後継として
 - 短縮URL展開
 
 ### ⚙️ 高度な設定
+- **ポータブルモード**: インストールパスで自動判定
 - グリッドレイアウトのカスタマイズ
 - アイコンスケール調整
 - カウントダウンタイマー
 - ログ機能
-- ポータブルモード
+- システムトレイ常駐機能
+
+### 🚀 起動設定
+- **Start Minimized**: 最小化で起動
+- **Start in System Tray**: システムトレイで起動
+- **Always Resident in System Tray**: システムトレイに常駐
+- 相互排他設定（Start MinimizedとStart in System Tray）
+- 起動遅延設定
+- 起動メッセージ設定
 
 ## 🔧 技術仕様
 
 - **フレームワーク**: .NET 8.0
 - **UI**: Windows Forms
 - **アーキテクチャ**: x64
-- **ファイルサイズ**: 約1.26MB（ZIP圧縮後）
+- **ファイルサイズ**: 約1.5MB（インストーラー）、約1.26MB（ポータブル版ZIP）
+- **インストーラー**: Inno Setup 6
 
 ## 📋 システム要件
 
@@ -53,7 +67,13 @@ BrowserChooser3の初回リリースです。Browser Chooser 2の後継として
 
 ## 🚀 インストール方法
 
-1. [Releases](https://github.com/Yosuke-Sh/BrowserChooser3/releases)ページから`BrowserChooser3-v1.0.0.zip`をダウンロード
+### インストーラー版（推奨）
+1. [Releases](https://github.com/Yosuke-Sh/BrowserChooser3/releases)ページから`BrowserChooser3-Setup.exe`をダウンロード
+2. インストーラーを実行してインストール
+3. アプリケーションを起動
+
+### ポータブル版
+1. [Releases](https://github.com/Yosuke-Sh/BrowserChooser3/releases)ページから`BrowserChooser3-v0.1.0.zip`をダウンロード
 2. ZIPファイルを展開して任意のフォルダに配置
 3. `.NET 8.0 Runtime`をインストール（未インストールの場合）
    - [.NET 8.0 Runtime ダウンロード](https://dotnet.microsoft.com/download/dotnet/8.0)
@@ -71,9 +91,12 @@ BrowserChooser3.exe https://example.com
 
 ## 📝 変更履歴
 
-### v1.0.0 (2024-XX-XX)
-- 初回リリース
-- 全機能の実装完了
+### v0.1.0 (2024-12-XX)
+- ベータ版リリース
+- 主要機能の実装完了
+- アイコン選択機能の強化
+- テスト環境でのUI制御改善
+- インストーラー対応
 
 ## 🐛 既知の問題
 
@@ -84,6 +107,8 @@ BrowserChooser3.exe https://example.com
 - さらなるUI/UXの改善
 - 追加のカスタマイズオプション
 - パフォーマンスの最適化
+- テストカバレッジの向上
+- 自動化の強化
 
 ## 📞 サポート
 
@@ -96,4 +121,6 @@ MIT License - 詳細は[LICENSE](https://github.com/Yosuke-Sh/BrowserChooser3/bl
 
 ---
 
-**ダウンロード**: [BrowserChooser3-v1.0.0.zip](https://github.com/Yosuke-Sh/BrowserChooser3/releases/download/v1.0.0/BrowserChooser3-v1.0.0.zip)
+**ダウンロード**: 
+- [BrowserChooser3-Setup.exe](https://github.com/Yosuke-Sh/BrowserChooser3/releases/download/v0.1.0/BrowserChooser3-Setup.exe) (インストーラー版)
+- [BrowserChooser3-v0.1.0.zip](https://github.com/Yosuke-Sh/BrowserChooser3/releases/download/v0.1.0/BrowserChooser3-v0.1.0.zip) (ポータブル版)

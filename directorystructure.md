@@ -1,4 +1,4 @@
-# BrowserChooser3 ディレクトリ構造
+# BrowserChooser3 ディレクトリ構造詳細説明
 
 ## プロジェクトルート構造
 
@@ -21,10 +21,14 @@ BrowserChooser3/
 │   ├── Settings.cs                    # 設定管理クラス
 │   └── BrowserChooser3.csproj         # プロジェクトファイル
 ├── BrowserChooser3.Tests/             # テストプロジェクト
-├── dist/                              # 配布ファイル
+├── dist/                              # 配布ファイル（インストーラー出力）
 ├── coverage/                          # カバレッジレポート
+├── coverage-report/                   # カバレッジレポート（HTML）
 ├── TestResults/                       # テスト結果
-└── BrowserChooser3.sln               # ソリューションファイル
+├── BrowserChooser3.sln               # ソリューションファイル
+├── build-inno-setup.bat              # インストーラービルドスクリプト
+├── BrowserChooser3-Setup.iss         # Inno Setup設定ファイル
+└── coverlet.runsettings              # カバレッジ設定
 ```
 
 ## メインプロジェクト詳細構造
@@ -92,6 +96,14 @@ Classes/Services/System/
 └── StartupLauncher.cs                # 起動時処理
 ```
 
+##### UI/ - UIサービス
+```
+Classes/Services/UI/
+├── MessageBoxService.cs              # メッセージボックスサービス（テスト環境対応）
+├── FormService.cs                    # フォームサービス
+└── FileDialogService.cs              # ファイルダイアログサービス
+```
+
 #### Utilities/ - ユーティリティクラス
 ```
 Classes/Utilities/
@@ -100,6 +112,13 @@ Classes/Utilities/
 ├── ImageUtilities.cs                 # 画像処理ユーティリティ
 ├── Logger.cs                         # ログ出力
 └── URLUtilities.cs                   # URL処理ユーティリティ
+```
+
+#### Interfaces/ - インターフェース定義
+```
+Classes/Interfaces/
+├── IFormService.cs                   # フォームサービスインターフェース
+└── IMessageBoxService.cs             # メッセージボックスサービスインターフェース
 ```
 
 ### CustomControls/ - カスタムコントロール

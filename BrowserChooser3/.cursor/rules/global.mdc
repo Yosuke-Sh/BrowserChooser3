@@ -194,6 +194,39 @@ alwaysApply: true
 - **ログレベル**: Debug/Info/Warning/Errorの適切な使い分け
 - **ヘルプページURL**: 正しいGitHubリポジトリ（https://github.com/Yosuke-Sh/BrowserChooser3）を使用
 
+## インストーラー作成方式
+
+### 使用技術
+- **Inno Setup 6**: インストーラー作成ツール
+- **バッチファイル**: `build-inno-setup.bat`でビルドプロセスを自動化
+
+### インストーラー構成
+- **メインファイル**: `BrowserChooser3-Setup.iss`
+- **ビルドスクリプト**: `build-inno-setup.bat`
+- **出力先**: `dist\BrowserChooser3-Setup.exe`
+
+### インストーラー機能
+- **多言語対応**: 英語・日本語
+- **プロトコルハンドラー登録**: http, https, ftp, ftps
+- **ファイル関連付け**: .html, .htm, .xhtml, .mhtml
+- **Windows 11対応**: ブラウザアプリ登録
+- **オプション機能**: 
+  - デスクトップアイコン作成
+  - タスクバーへのピン留め
+  - スタートメニューへの追加
+  - 規定のブラウザとして登録
+
+### ビルド手順
+1. `build-inno-setup.bat`を実行
+2. アプリケーションのリリースビルド
+3. Inno Setupでインストーラー作成
+4. `dist`フォルダに出力
+
+### 必要な環境
+- **Inno Setup 6**: https://jrsoftware.org/isinfo.php
+- **.NET 8.0 SDK**: アプリケーションビルド用
+- **Windows環境**: インストーラー作成用
+
 ## テスト要件
 
 ### カバレッジ目標

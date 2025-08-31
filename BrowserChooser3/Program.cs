@@ -1,6 +1,7 @@
 using BrowserChooser3.Classes;
 using BrowserChooser3.Classes.Models;
 using BrowserChooser3.Classes.Services.SystemServices;
+using BrowserChooser3.Classes.Services.UI;
 using BrowserChooser3.Classes.Utilities;
 using BrowserChooser3.Forms;
 
@@ -79,8 +80,7 @@ namespace BrowserChooser3
             catch (Exception ex)
             {
                 Logger.LogError("Program.Main", "アプリケーション起動エラー", ex.Message, ex.StackTrace ?? "");
-                MessageBox.Show($"アプリケーションの起動に失敗しました: {ex.Message}", "エラー", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                MessageBoxService.ShowErrorStatic($"アプリケーションの起動に失敗しました: {ex.Message}", "エラー");
             }
 
             Logger.LogDebug("Program.Main", "アプリケーション終了");
