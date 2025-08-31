@@ -139,6 +139,7 @@ BrowserChooser3は、Windows Formsベースのブラウザ選択アプリケー�
 - UI操作の抽象化（データバインディング対応）
 - 非同期処理の導入
 - 設定検証の強化
+- 多言語対応の基盤整備
 description:
 globs:
 alwaysApply: true

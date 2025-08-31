@@ -124,4 +124,5 @@ BrowserChooser3でヘルプが必要な場合：
 - GitHub Actionsでの自動リリース
 - コード署名の追加
 - Chocolatey/Scoop対応
+- 多言語対応（日本語、英語、その他言語）
 
