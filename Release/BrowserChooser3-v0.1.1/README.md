@@ -1,4 +1,4 @@
-# BrowserChooser3 v0.1.0 ポータブル版
+# BrowserChooser3 v0.1.1 ポータブル版
 
 Browser Chooser 2の後継として開発された、現代的なUIと高度な機能を提供するブラウザ選択アプリケーションです。
 

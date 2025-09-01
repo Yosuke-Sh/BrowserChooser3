@@ -166,14 +166,31 @@ namespace BrowserChooser3.Classes
         {
             try
             {
+                // 1. ビルド時定数による判定（最優先）
+#if PORTABLE_MODE
+                PortableMode = true;
+                Logger.LogDebug("Settings.DeterminePortableMode", "ビルド時定数PORTABLE_MODEによりポータブルモードと判定");
+                return;
+#endif
+
+                // 2. 実行パスによる判定
                 var appPath = Application.StartupPath;
                 var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+                var programFilesPath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+                var programFilesX86Path = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
                 
-                // アプリケーションフォルダがAppData内にある場合はインストーラー経由でインストールされたと判定
-                if (appPath.StartsWith(appDataPath, StringComparison.OrdinalIgnoreCase))
+                // Program Files以下にある場合はインストーラー経由でインストールされたと判定
+                if (appPath.StartsWith(programFilesPath, StringComparison.OrdinalIgnoreCase) ||
+                    appPath.StartsWith(programFilesX86Path, StringComparison.OrdinalIgnoreCase))
                 {
                     PortableMode = false;
-                    Logger.LogDebug("Settings.DeterminePortableMode", "インストーラー経由でインストールされたと判定", appPath);
+                    Logger.LogDebug("Settings.DeterminePortableMode", "Program Files以下にあるためインストーラー経由でインストールされたと判定", appPath);
+                }
+                // アプリケーションフォルダがAppData内にある場合もインストーラー経由と判定
+                else if (appPath.StartsWith(appDataPath, StringComparison.OrdinalIgnoreCase))
+                {
+                    PortableMode = false;
+                    Logger.LogDebug("Settings.DeterminePortableMode", "AppData内にあるためインストーラー経由でインストールされたと判定", appPath);
                 }
                 else
                 {
@@ -502,14 +519,10 @@ namespace BrowserChooser3.Classes
             Logger.LogDebug("Settings.DoSave", "Start", overrideSafeMode);
             if (SafeMode && !overrideSafeMode) return; // do not save
 
-            if (PortableMode)
-            {
-                IntSave(Application.StartupPath);
-            }
-            else
-            {
-                IntSave(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BrowserChooser3"));
-            }
+            // 設定ファイルは常にユーザーディレクトリに保存
+            var userDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BrowserChooser3");
+            IntSave(userDataPath);
+            
             Logger.LogDebug("Settings.DoSave", "End", overrideSafeMode);
         }
 

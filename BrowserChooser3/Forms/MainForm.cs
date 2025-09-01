@@ -1253,6 +1253,8 @@ namespace BrowserChooser3.Forms
                 {
                     chkAutoClose.Location = new Point(20, ClientSize.Height - 80);
                     chkAutoClose.Size = new Size(400, 24);
+                    // 設定から自動閉じるの状態を読み込み
+                    chkAutoClose.Checked = !(_settings?.AllowStayOpen ?? false);
                 }
 
 
@@ -1552,7 +1554,23 @@ namespace BrowserChooser3.Forms
         private void chkAutoClose_CheckedChanged(object? sender, EventArgs e)
         {
             Logger.LogInfo("MainForm.chkAutoClose_CheckedChanged", "自動クローズ設定変更", chkAutoClose.Checked);
-            // 設定を保存する処理を追加
+            // 設定に反映（AllowStayOpenは逆の値）
+            if (_settings != null)
+            {
+                _settings.AllowStayOpen = !chkAutoClose.Checked;
+                Logger.LogDebug("MainForm.chkAutoClose_CheckedChanged", "AllowStayOpen設定を更新", _settings.AllowStayOpen);
+                
+                // 設定を保存
+                try
+                {
+                    _settings.DoSave();
+                    Logger.LogDebug("MainForm.chkAutoClose_CheckedChanged", "設定を保存しました");
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError("MainForm.chkAutoClose_CheckedChanged", "設定の保存に失敗", ex.Message);
+                }
+            }
         }
 
 
@@ -1790,12 +1808,12 @@ namespace BrowserChooser3.Forms
         }
 
         /// <summary>
-        /// 自動閉じるチェックボックスの変更イベント
+        /// 自動閉じるチェックボックスの変更イベント（重複を削除）
         /// </summary>
         private void ChkAutoClose_CheckedChanged(object? sender, EventArgs e)
         {
-            Logger.LogInfo("MainForm.ChkAutoClose_CheckedChanged", $"自動閉じる: {chkAutoClose?.Checked}");
-            // 設定に反映する処理を追加
+            // このメソッドは重複しているため、chkAutoClose_CheckedChangedを使用
+            chkAutoClose_CheckedChanged(sender, e);
         }
 
 

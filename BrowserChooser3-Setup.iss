@@ -1,6 +1,6 @@
 [Setup]
 AppName=Browser Chooser 3
-AppVersion=0.1.0
+AppVersion=0.1.1
 AppPublisher=Your Company
 AppPublisherURL=https://github.com/Yosuke-Sh/BrowserChooser3
 AppSupportURL=https://github.com/Yosuke-Sh/BrowserChooser3
@@ -9,7 +9,7 @@ DefaultDirName={autopf}\BrowserChooser3
 DefaultGroupName=Browser Chooser 3
 OutputDir=dist
 OutputBaseFilename=BrowserChooser3-Setup
-SetupIconFile=BrowserChooser3\Resources\BrowserChooser3.ico
+SetupIconFile=BrowserChooser3\Resources\BrowserChooser2.ico
 Compression=lzma
 SolidCompression=yes
 PrivilegesRequired=admin

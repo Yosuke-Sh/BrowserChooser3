@@ -2934,7 +2934,7 @@
         </member>
         <member name="M:BrowserChooser3.Forms.MainForm.ChkAutoClose_CheckedChanged(System.Object,System.EventArgs)">
             <summary>
-            自動閉じるチェックボックスの変更イベント
+            自動閉じるチェックボックスの変更イベント（重複を削除）
             </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.MainForm.TmrDelay_Tick(System.Object,System.EventArgs)">

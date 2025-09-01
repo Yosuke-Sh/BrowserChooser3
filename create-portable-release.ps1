@@ -1,5 +1,5 @@
 # BrowserChooser3 ポータブル版リリース作成スクリプト
-# 使用方法: .\create-portable-release.ps1 -Version "0.1.0"
+# 使用方法: .\create-portable-release.ps1 -Version "0.1.1"
 
 param(
     [Parameter(Mandatory=$true)]
@@ -32,15 +32,15 @@ New-Item -ItemType Directory -Path $releaseDir -Force | Out-Null
 New-Item -ItemType Directory -Path $portableDir -Force | Out-Null
 
 # リリースビルドの実行
-Write-Host "リリースビルドを実行中..." -ForegroundColor Yellow
-dotnet build BrowserChooser3\BrowserChooser3.csproj -c Release
+Write-Host "ポータブル版リリースビルドを実行中..." -ForegroundColor Yellow
+dotnet build BrowserChooser3\BrowserChooser3.csproj -c Portable
 
 if ($LASTEXITCODE -ne 0) {
     throw "ビルドに失敗しました。"
 }
 
 # ビルド出力ディレクトリの確認
-$buildOutputDir = "BrowserChooser3\bin\Release\net8.0-windows"
+$buildOutputDir = "BrowserChooser3\bin\Portable\net8.0-windows"
 if (-not (Test-Path $buildOutputDir)) {
     throw "ビルド出力ディレクトリが見つかりません: $buildOutputDir"
 }

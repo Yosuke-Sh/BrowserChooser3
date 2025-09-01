@@ -108,52 +108,26 @@ namespace BrowserChooser3.Classes.Utilities
         {
             get
             {
-                if (IsInstalledViaInstaller())
+                // ログファイルは常にユーザーディレクトリに出力
+                var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                var logDir = Path.Combine(localAppData, "BrowserChooser3", "Logs");
+                
+                // ディレクトリが存在しない場合は作成
+                if (!Directory.Exists(logDir))
                 {
-                    // インストーラー経由でインストールされた場合はLocalApplicationData
-                    var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-                    var logDir = Path.Combine(localAppData, "BrowserChooser3", "Logs");
-                    
-                    // ディレクトリが存在しない場合は作成
-                    if (!Directory.Exists(logDir))
+                    try
                     {
-                        try
-                        {
-                            Directory.CreateDirectory(logDir);
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine($"Failed to create log directory: {ex.Message}");
-                            // 作成に失敗した場合はTempPathにフォールバック
-                            return Path.GetTempPath();
-                        }
+                        Directory.CreateDirectory(logDir);
                     }
-                    
-                    return logDir;
-                }
-                else
-                {
-                    // その他の場合は実行フォルダ
-                    var startupPath = Application.StartupPath;
-                    var logDir = Path.Combine(startupPath, "Logs");
-                    
-                    // ディレクトリが存在しない場合は作成
-                    if (!Directory.Exists(logDir))
+                    catch (Exception ex)
                     {
-                        try
-                        {
-                            Directory.CreateDirectory(logDir);
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine($"Failed to create log directory: {ex.Message}");
-                            // 作成に失敗した場合は実行フォルダにフォールバック
-                            return startupPath;
-                        }
+                        Console.WriteLine($"Failed to create log directory: {ex.Message}");
+                        // 作成に失敗した場合はTempPathにフォールバック
+                        return Path.GetTempPath();
                     }
-                    
-                    return logDir;
                 }
+                
+                return logDir;
             }
         }
         

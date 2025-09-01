@@ -1728,7 +1728,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var chkAllowStayOpen = new CheckBox
             {
                 Name = "chkAllowStayOpen",
-                Text = "Allow Window to Stay Open",
+                Text = "ブラウザ選択後にウィンドウを開いたままにする",
                 Location = new Point(6, currentY),
                 Size = new Size(300, 25),
                 Checked = settings.AllowStayOpen,
@@ -1738,7 +1738,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
 
             var lblAllowStayOpenDesc = new Label
             {
-                Text = "ブラウザ選択後もウィンドウを開いたままにします",
+                Text = "チェックすると、ブラウザ選択後もウィンドウが開いたままになります（デフォルト：オフ）",
                 Location = new Point(310, currentY + 3),
                 Size = new Size(400, 20),
                 Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),

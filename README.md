@@ -63,7 +63,7 @@ BrowserChooser3は、Windows環境で複数のブラウザから選択してURL�
 
 ### 📦 リリース版のダウンロード（推奨）
 1. [Releases](https://github.com/Yosuke-Sh/BrowserChooser3/releases)ページから最新版をダウンロード
-2. `BrowserChooser3-vX.X.X.zip`をダウンロード
+2. `BrowserChooser3-v0.1.1.zip`をダウンロード
 3. ZIPファイルを展開して任意のフォルダに配置
 4. `.NET 8.0 Runtime`をインストール（未インストールの場合）
    - [.NET 8.0 Runtime ダウンロード](https://dotnet.microsoft.com/download/dotnet/8.0)
