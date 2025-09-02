@@ -1523,14 +1523,6 @@
         <member name="P:BrowserChooser3.Classes.Settings.Browsers">
             <summary>ブラウザリスト</summary>
         </member>
-        <member name="P:BrowserChooser3.Classes.Settings.PortableMode">
-            <summary>ポータブルモード</summary>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Settings.DeterminePortableMode">
-            <summary>
-            インストール方法を自動判定してPortableModeを設定します
-            </summary>
-        </member>
         <member name="P:BrowserChooser3.Classes.Settings.ShowURL">
             <summary>URL表示</summary>
         </member>
@@ -1719,7 +1711,7 @@
             <summary>
             設定を読み込む
             </summary>
-            <param name="path">設定ファイルのパス</param>
+            <param name="path">設定ファイルのパス（互換性のため残すが使用されない）</param>
             <returns>設定オブジェクト</returns>
         </member>
         <member name="M:BrowserChooser3.Classes.Settings.CreateDefaultProtocols(BrowserChooser3.Classes.Settings)">
@@ -1937,6 +1929,41 @@
             <param name="format">画像フォーマット</param>
             <returns>メモリストリーム</returns>
         </member>
+        <member name="T:BrowserChooser3.Classes.Utilities.IniFileReader">
+            <summary>
+            INIファイルを読み込むためのユーティリティクラス
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Utilities.IniFileReader.ReadValue(System.String,System.String,System.String,System.String)">
+            <summary>
+            INIファイルから値を読み込む
+            </summary>
+            <param name="filePath">INIファイルのパス</param>
+            <param name="section">セクション名</param>
+            <param name="key">キー名</param>
+            <param name="defaultValue">デフォルト値</param>
+            <returns>読み込まれた値、見つからない場合はデフォルト値</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Utilities.IniFileReader.ReadBoolValue(System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            INIファイルからブール値を読み込む
+            </summary>
+            <param name="filePath">INIファイルのパス</param>
+            <param name="section">セクション名</param>
+            <param name="key">キー名</param>
+            <param name="defaultValue">デフォルト値</param>
+            <returns>読み込まれたブール値、見つからない場合はデフォルト値</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Utilities.IniFileReader.ReadPathValue(System.String,System.String,System.String,System.String)">
+            <summary>
+            INIファイルからパスを読み込み、必要に応じて展開する
+            </summary>
+            <param name="filePath">INIファイルのパス</param>
+            <param name="section">セクション名</param>
+            <param name="key">キー名</param>
+            <param name="defaultValue">デフォルト値</param>
+            <returns>展開されたパス</returns>
+        </member>
         <member name="T:BrowserChooser3.Classes.Utilities.Logger">
             <summary>
             ログ記録を管理するクラス
@@ -2058,6 +2085,58 @@
             設定値からログレベルを初期化する（オーバーロード）
             </summary>
             <param name="logLevelSetting">設定値（0-5）</param>
+        </member>
+        <member name="T:BrowserChooser3.Classes.Utilities.PathManager">
+            <summary>
+            アプリケーションのパスを管理するクラス
+            iniファイルの設定に基づいて、設定ファイルやログファイルの出力先を決定します
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Utilities.PathManager.Initialize">
+            <summary>
+            パス管理を初期化します
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Utilities.PathManager.LoadSettings">
+            <summary>
+            iniファイルから設定を読み込みます
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Utilities.PathManager.SetDefaultSettings">
+            <summary>
+            デフォルト設定を設定します
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Utilities.PathManager.GetConfigDirectory">
+            <summary>
+            設定ファイルの出力先ディレクトリを取得します
+            </summary>
+            <returns>設定ファイルの出力先ディレクトリ</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Utilities.PathManager.GetLogDirectory">
+            <summary>
+            ログファイルの出力先ディレクトリを取得します
+            </summary>
+            <returns>ログファイルの出力先ディレクトリ</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Utilities.PathManager.GetConfigFilePath(System.String)">
+            <summary>
+            設定ファイルの完全パスを取得します
+            </summary>
+            <param name="fileName">ファイル名</param>
+            <returns>設定ファイルの完全パス</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Utilities.PathManager.GetLogFilePath(System.String)">
+            <summary>
+            ログファイルの完全パスを取得します
+            </summary>
+            <param name="fileName">ファイル名</param>
+            <returns>ログファイルの完全パス</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Utilities.PathManager.EnsureDirectoriesExist">
+            <summary>
+            必要なディレクトリを作成します
+            </summary>
         </member>
         <member name="T:BrowserChooser3.Classes.Utilities.TestEnvironmentDetector">
             <summary>

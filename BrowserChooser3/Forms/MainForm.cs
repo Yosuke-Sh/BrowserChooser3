@@ -59,8 +59,8 @@ namespace BrowserChooser3.Forms
             
             try
             {
-                // 設定を読み込み
-                _settings = Settings.Load(Application.StartupPath);
+                // 設定を読み込み（パスは使用されず、常にユーザーディレクトリから読み込み）
+                _settings = Settings.Load("");
                 Settings.Current = _settings;
                 _browsers = _settings?.Browsers ?? new List<Browser>();
 
@@ -982,8 +982,8 @@ namespace BrowserChooser3.Forms
             
             try
             {
-                // 設定を再読み込み（既存の設定を保持）
-                var newSettings = Settings.Load(Application.StartupPath);
+                // 設定を再読み込み（既存の設定を保持、パスは使用されず常にユーザーディレクトリから読み込み）
+                var newSettings = Settings.Load("");
                 if (newSettings != null)
                 {
                     _settings = newSettings;

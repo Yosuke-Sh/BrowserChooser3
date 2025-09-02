@@ -21,6 +21,10 @@ namespace BrowserChooser3
 
             try
             {
+                // パス管理の初期化
+                PathManager.Initialize();
+                Logger.LogDebug("Program.Main", "PathManager初期化完了");
+
                 // ログレベルを初期化
                 Logger.InitializeLogLevel();
                 Logger.LogDebug("Program.Main", "ログレベル初期化完了");

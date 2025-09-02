@@ -108,9 +108,8 @@ namespace BrowserChooser3.Classes.Utilities
         {
             get
             {
-                // ログファイルは常にユーザーディレクトリに出力
-                var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-                var logDir = Path.Combine(localAppData, "BrowserChooser3", "Logs");
+                // PathManagerを使用してログディレクトリを取得
+                var logDir = PathManager.GetLogDirectory();
                 
                 // ディレクトリが存在しない場合は作成
                 if (!Directory.Exists(logDir))

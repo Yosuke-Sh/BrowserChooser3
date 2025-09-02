@@ -27,8 +27,9 @@
 
 #### ポータブル版
 1. [リリースページ](https://github.com/Yosuke-Sh/BrowserChooser3/releases)にアクセス
-2. 最新の`BrowserChooser3-v0.1.0.zip`ファイルをダウンロード
+2. 最新の`BrowserChooser3-v0.1.2.zip`ファイルをダウンロード
 3. 希望する場所に展開（例：`C:\Programs\BrowserChooser3\`）
+4. 展開されたフォルダ内の`BrowserChooser3.ini`ファイルで設定を確認
 
 ### オプション2: ソースからビルド
 ソースからビルドしたい場合や最新の開発版が必要な場合：
@@ -59,6 +60,12 @@ BrowserChooser3の実行には.NET 8.0 Runtimeが必要です。
 2. アプリケーションが設定ファイル（`BrowserChooser3Config.xml`）を作成
 3. `O`キーを押してオプションダイアログを開く
 4. 必要に応じてブラウザと設定を構成
+
+### ステップ4: パス設定の確認（v0.1.2以降）
+BrowserChooser3 v0.1.2以降では、`BrowserChooser3.ini`ファイルで設定ファイルとログファイルの出力先を制御します。
+
+**インストーラー版**: 設定ファイルとログファイルはユーザーディレクトリ（`%APPDATA%`、`%LOCALAPPDATA%`）に保存
+**ポータブル版**: 設定ファイルとログファイルはexe実行フォルダに保存
 
 ## 🔧 インストール方法
 

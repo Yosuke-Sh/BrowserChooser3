@@ -391,7 +391,7 @@ namespace BrowserChooser3.Forms
                 diagnostics.AppendLine($"Tick Count: {Environment.TickCount}");
                 diagnostics.AppendLine();
                 diagnostics.AppendLine("Configuration:");
-                diagnostics.AppendLine($"Portable Mode: {Settings.Current.PortableMode}");
+                diagnostics.AppendLine($"INI File Path: {Path.Combine(Application.StartupPath, "BrowserChooser3.ini")}");
                 diagnostics.AppendLine($"Logging Enabled: {Settings.Current.EnableLogging}");
                 diagnostics.AppendLine($"Browser Count: {Settings.Current.Browsers.Count}");
                 diagnostics.AppendLine($"Protocol Count: {Settings.Current.Protocols.Count}");

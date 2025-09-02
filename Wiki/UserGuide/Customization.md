@@ -11,6 +11,7 @@ BrowserChooser3は、ユーザーの好みに合わせて様々なカスタマ�
 - **プロトコル設定**: プロトコル別のブラウザ指定
 - **起動設定**: 起動時の動作とシステムトレイ常駐
 - **アクセシビリティ**: フォーカス表示とキーボードナビゲーション
+- **パス管理**: 設定ファイルとログファイルの出力先制御（v0.1.2以降）
 
 ## 🎯 外観カスタマイズ
 
@@ -97,6 +98,48 @@ mailto -> Chrome --app={url}
    - **Normal**: 通常起動
    - **Start Minimized**: 最小化で起動
    - **Start in System Tray**: システムトレイで起動
+
+## 📁 パス管理カスタマイズ（v0.1.2以降）
+
+### INIファイルによる設定
+BrowserChooser3 v0.1.2以降では、`BrowserChooser3.ini`ファイルで設定ファイルとログファイルの出力先を制御できます。
+
+#### 設定ファイルの場所
+- **インストーラー版**: `%APPDATA%\BrowserChooser3\BrowserChooser3Config.xml`
+- **ポータブル版**: exe実行フォルダ内の`BrowserChooser3Config.xml`
+
+#### ログファイルの場所
+- **インストーラー版**: `%LOCALAPPDATA%\BrowserChooser3\Logs\`
+- **ポータブル版**: exe実行フォルダ内の`Logs\`フォルダ
+
+### INIファイルの設定項目
+```ini
+[Paths]
+; 出力フォルダの選択
+; true: exe実行フォルダに出力（ポータブル版用）
+; false: ユーザーディレクトリに出力（インストーラー版用）
+UseExeDirectory=true
+
+; ログファイルの出力先
+; 空の場合: UseExeDirectoryの設定に従う
+; 指定した場合: そのフォルダに出力
+LogDirectory=
+
+; 設定ファイルの出力先
+; 空の場合: UseExeDirectoryの設定に従う
+; 指定した場合: そのフォルダに出力
+ConfigDirectory=
+```
+
+### カスタムパスの設定
+特定のフォルダに出力したい場合：
+
+```ini
+[Paths]
+UseExeDirectory=false
+LogDirectory=D:\MyLogs\BrowserChooser3
+ConfigDirectory=D:\MyConfig\BrowserChooser3
+```
 
 ### システムトレイ常駐設定
 1. 「Always Resident in System Tray」をチェック

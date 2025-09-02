@@ -19,7 +19,8 @@ BrowserChooser3/
 │   ├── Tests/                         # テストファイル
 │   ├── Program.cs                     # エントリーポイント
 │   ├── Settings.cs                    # 設定管理クラス
-│   └── BrowserChooser3.csproj         # プロジェクトファイル
+│   ├── BrowserChooser3.csproj         # プロジェクトファイル
+│   └── BrowserChooser3.ini            # パス設定ファイル
 ├── BrowserChooser3.Tests/             # テストプロジェクト
 ├── dist/                              # 配布ファイル（インストーラー出力）
 ├── coverage/                          # カバレッジレポート
@@ -27,6 +28,7 @@ BrowserChooser3/
 ├── TestResults/                       # テスト結果
 ├── BrowserChooser3.sln               # ソリューションファイル
 ├── build-inno-setup.bat              # インストーラービルドスクリプト
+├── create-portable-release.ps1       # ポータブル版作成スクリプト
 ├── BrowserChooser3-Setup.iss         # Inno Setup設定ファイル
 └── coverlet.runsettings              # カバレッジ設定
 ```

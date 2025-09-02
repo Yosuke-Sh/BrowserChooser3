@@ -60,6 +60,12 @@ BrowserChooser3/
 - **場所**: アプリケーションディレクトリ/BrowserChooser3Config.xml
 - **シリアライゼーション**: System.Xml.Serialization.XmlSerializer
 
+### パス管理（v0.1.2以降）
+- **INI設定ファイル**: BrowserChooser3.ini
+- **パス管理クラス**: PathManager
+- **INI読み込み**: IniFileReader
+- **出力先制御**: UseExeDirectory設定による動的制御
+
 ### 設定項目
 - ブラウザ設定（名前、パス、アイコン、表示設定）
 - UI設定（アイコンサイズ、間隔、背景色）

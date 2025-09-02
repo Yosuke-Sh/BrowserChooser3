@@ -28,6 +28,7 @@ BrowserChooser3/
 - **Repository**: データアクセスの抽象化
 - **Factory**: オブジェクト生成の統一
 - **Strategy**: アルゴリズムの動的切り替え
+- **Configuration Pattern**: INIファイルによる設定管理（v0.1.2以降）
 
 ## 📦 主要クラス
 
@@ -97,7 +98,53 @@ public class Settings
     /// 起動設定
     /// </summary>
     public StartupSettings StartupSettings { get; set; }
+}
+
+#### PathManager（v0.1.2以降）
+```csharp
+public static class PathManager
+{
+    /// <summary>
+    /// パス管理の初期化
+    /// </summary>
+    public static void Initialize();
     
+    /// <summary>
+    /// 設定ファイルのディレクトリを取得
+    /// </summary>
+    public static string GetConfigDirectory();
+    
+    /// <summary>
+    /// ログファイルのディレクトリを取得
+    /// </summary>
+    public static string GetLogDirectory();
+    
+    /// <summary>
+    /// 設定ファイルの完全パスを取得
+    /// </summary>
+    public static string GetConfigFilePath(string fileName);
+}
+```
+
+#### IniFileReader（v0.1.2以降）
+```csharp
+public class IniFileReader
+{
+    /// <summary>
+    /// INIファイルから文字列値を読み込み
+    /// </summary>
+    public static string ReadString(string section, string key, string defaultValue = "");
+    
+    /// <summary>
+    /// INIファイルからブール値を読み込み
+    /// </summary>
+    public static bool ReadBoolean(string section, string key, bool defaultValue = false);
+    
+    /// <summary>
+    /// INIファイルからパス値を読み込み（環境変数展開付き）
+    /// </summary>
+    public static string ReadPath(string section, string key, string defaultValue = "");
+}
     /// <summary>
     /// アクセシビリティ設定
     /// </summary>

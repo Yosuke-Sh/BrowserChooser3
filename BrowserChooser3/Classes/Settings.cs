@@ -156,56 +156,6 @@ namespace BrowserChooser3.Classes
         /// <summary>ブラウザリスト</summary>
         public List<Browser> Browsers { get; set; } = new();
         
-        /// <summary>ポータブルモード</summary>
-        public bool PortableMode { get; set; } = true;
-
-        /// <summary>
-        /// インストール方法を自動判定してPortableModeを設定します
-        /// </summary>
-        public void DeterminePortableMode()
-        {
-            try
-            {
-                // 1. ビルド時定数による判定（最優先）
-#if PORTABLE_MODE
-                PortableMode = true;
-                Logger.LogDebug("Settings.DeterminePortableMode", "ビルド時定数PORTABLE_MODEによりポータブルモードと判定");
-                return;
-#endif
-
-                // 2. 実行パスによる判定
-                var appPath = Application.StartupPath;
-                var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-                var programFilesPath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
-                var programFilesX86Path = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
-                
-                // Program Files以下にある場合はインストーラー経由でインストールされたと判定
-                if (appPath.StartsWith(programFilesPath, StringComparison.OrdinalIgnoreCase) ||
-                    appPath.StartsWith(programFilesX86Path, StringComparison.OrdinalIgnoreCase))
-                {
-                    PortableMode = false;
-                    Logger.LogDebug("Settings.DeterminePortableMode", "Program Files以下にあるためインストーラー経由でインストールされたと判定", appPath);
-                }
-                // アプリケーションフォルダがAppData内にある場合もインストーラー経由と判定
-                else if (appPath.StartsWith(appDataPath, StringComparison.OrdinalIgnoreCase))
-                {
-                    PortableMode = false;
-                    Logger.LogDebug("Settings.DeterminePortableMode", "AppData内にあるためインストーラー経由でインストールされたと判定", appPath);
-                }
-                else
-                {
-                    PortableMode = true;
-                    Logger.LogDebug("Settings.DeterminePortableMode", "ポータブルモードと判定", appPath);
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("Settings.DeterminePortableMode", "インストール方法の判定に失敗", ex.Message);
-                // エラーの場合はデフォルトでポータブルモード
-                PortableMode = true;
-            }
-        }
-        
         /// <summary>URL表示</summary>
         public bool ShowURL { get; set; } = true;
         
@@ -450,8 +400,7 @@ namespace BrowserChooser3.Classes
             Width = 8; // default
             Height = 1; // default
             
-            // インストール方法を自動判定
-            DeterminePortableMode();
+            // インストール方法の自動判定は削除（iniファイルで管理）
             
             // 設定ファイルが存在する場合は自動検出をスキップ
             var configPath = Path.Combine(Application.StartupPath, BrowserChooserConfigFileName);
@@ -519,9 +468,9 @@ namespace BrowserChooser3.Classes
             Logger.LogDebug("Settings.DoSave", "Start", overrideSafeMode);
             if (SafeMode && !overrideSafeMode) return; // do not save
 
-            // 設定ファイルは常にユーザーディレクトリに保存
-            var userDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BrowserChooser3");
-            IntSave(userDataPath);
+            // PathManagerを使用して設定ファイルの保存先を決定
+            var configDir = PathManager.GetConfigDirectory();
+            IntSave(configDir);
             
             Logger.LogDebug("Settings.DoSave", "End", overrideSafeMode);
         }
@@ -554,7 +503,7 @@ namespace BrowserChooser3.Classes
         /// <summary>
         /// 設定を読み込む
         /// </summary>
-        /// <param name="path">設定ファイルのパス</param>
+        /// <param name="path">設定ファイルのパス（互換性のため残すが使用されない）</param>
         /// <returns>設定オブジェクト</returns>
         public static Settings Load(string path)
         {
@@ -573,7 +522,8 @@ namespace BrowserChooser3.Classes
             var serializer = new XmlSerializer(typeof(Settings));
             Settings output;
 
-            var configPath = Path.Combine(path, BrowserChooserConfigFileName);
+            // PathManagerを使用して設定ファイルのパスを決定
+            var configPath = PathManager.GetConfigFilePath(BrowserChooserConfigFileName);
             if (File.Exists(configPath))
             {
                 try
@@ -627,17 +577,16 @@ namespace BrowserChooser3.Classes
                         }
                     }
 
-                    Logger.LogDebug("Settings.Load", "設定ファイル読み込み成功", path, output?.Browsers?.Count ?? 0);
+                    Logger.LogDebug("Settings.Load", "設定ファイル読み込み成功", configPath, output?.Browsers?.Count ?? 0);
                     return output!;
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError("Settings.Load", "Exception: Failed to load settings file. Default settings used.", path, ex.Message, ex.StackTrace ?? "");
+                    Logger.LogError("Settings.Load", "Exception: Failed to load settings file. Default settings used.", configPath, ex.Message, ex.StackTrace ?? "");
                 }
             }
 
-
-            Logger.LogDebug("Settings.Load", "設定ファイルが存在しないためデフォルト設定を使用", path);
+            Logger.LogDebug("Settings.Load", "設定ファイルが存在しないためデフォルト設定を使用", configPath);
             var defaultSettings = new Settings(false);
             Logger.LogDebug("Settings.Load", "デフォルト設定作成完了", defaultSettings.Browsers?.Count ?? 0);
             return defaultSettings;

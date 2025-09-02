@@ -99,6 +99,34 @@ dotnet build BrowserChooser3.Tests
 
 # テストの実行
 dotnet test
+```
+
+## 🔄 ビルド設定の変更（v0.1.2以降）
+
+### ポータブルモードの制御
+v0.1.2以降では、ビルド設定によるポータブルモード制御は廃止され、INIファイルによる実行時制御に変更されました。
+
+#### 変更前（v0.1.1以前）
+```xml
+<!-- 条件付きコンパイルによる制御 -->
+<PropertyGroup Condition="'$(Configuration)' == 'Portable'">
+  <DefineConstants>$(DefineConstants);PORTABLE_MODE=true</DefineConstants>
+</PropertyGroup>
+```
+
+#### 変更後（v0.1.2以降）
+```ini
+; BrowserChooser3.iniによる制御
+[Paths]
+UseExeDirectory=true  ; ポータブルモード
+UseExeDirectory=false ; インストーラーモード
+```
+
+### ビルド設定の簡素化
+- **Debug**: デバッグビルド
+- **Release**: リリースビルド
+- **Portable**: 削除（INIファイルで制御）
+dotnet test
 
 # カバレッジレポートの生成
 dotnet test --collect:"XPlat Code Coverage"
