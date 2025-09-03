@@ -1042,6 +1042,71 @@
             プロトコルListViewの更新
             </summary>
         </member>
+        <member name="T:BrowserChooser3.Classes.Services.SystemServices.BrowserRegistrationService">
+            <summary>
+            ブラウザアプリとしての登録を管理するサービス
+            Windowsにアプリケーションをブラウザアプリとして認識させるための機能を提供します
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.SystemServices.BrowserRegistrationService.IsRegisteredAsBrowser">
+            <summary>
+            ブラウザアプリとしての登録状況を確認します
+            </summary>
+            <returns>正しく登録されている場合はtrue</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.SystemServices.BrowserRegistrationService.RegisterAsBrowser">
+            <summary>
+            ブラウザアプリとして登録します
+            </summary>
+            <returns>登録が成功した場合はtrue</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.SystemServices.BrowserRegistrationService.CheckBrowserClientRegistration">
+            <summary>
+            ブラウザクライアントの登録状況を確認します
+            </summary>
+            <returns>登録されている場合はtrue</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.SystemServices.BrowserRegistrationService.CheckProtocolHandlerRegistration(System.String)">
+            <summary>
+            プロトコルハンドラーの登録状況を確認します
+            </summary>
+            <param name="protocol">プロトコル名</param>
+            <returns>登録されている場合はtrue</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.SystemServices.BrowserRegistrationService.CheckUrlFileAssociation">
+            <summary>
+            URLファイル関連付けの登録状況を確認します
+            </summary>
+            <returns>登録されている場合はtrue</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.SystemServices.BrowserRegistrationService.RegisterBrowserClient(System.String)">
+            <summary>
+            ブラウザクライアントを登録します
+            </summary>
+            <param name="appPath">アプリケーションパス</param>
+            <returns>登録が成功した場合はtrue</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.SystemServices.BrowserRegistrationService.RegisterProtocolHandler(System.String,System.String)">
+            <summary>
+            プロトコルハンドラーを登録します
+            </summary>
+            <param name="protocol">プロトコル名</param>
+            <param name="appPath">アプリケーションパス</param>
+            <returns>登録が成功した場合はtrue</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.SystemServices.BrowserRegistrationService.RegisterUrlFileAssociation(System.String)">
+            <summary>
+            URLファイル関連付けを登録します
+            </summary>
+            <param name="appPath">アプリケーションパス</param>
+            <returns>登録が成功した場合はtrue</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.SystemServices.BrowserRegistrationService.GetApplicationPath">
+            <summary>
+            アプリケーションのパスを取得します
+            </summary>
+            <returns>アプリケーションパス</returns>
+        </member>
         <member name="T:BrowserChooser3.Classes.Services.SystemServices.CommandLineProcessor">
             <summary>
             コマンドライン引数処理を管理するクラス

@@ -42,6 +42,33 @@ namespace BrowserChooser3
                     Logger.LogWarning("Program.Main", "起動時初期化に失敗しましたが、アプリケーションを続行します");
                 }
 
+                // ブラウザアプリとしての登録確認・更新
+                Logger.LogDebug("Program.Main", "ブラウザ登録確認開始");
+                try
+                {
+                    if (!BrowserRegistrationService.IsRegisteredAsBrowser())
+                    {
+                        Logger.LogInfo("Program.Main", "ブラウザ登録が不完全です。登録を実行します");
+                        var registrationResult = BrowserRegistrationService.RegisterAsBrowser();
+                        if (registrationResult)
+                        {
+                            Logger.LogInfo("Program.Main", "ブラウザ登録が完了しました");
+                        }
+                        else
+                        {
+                            Logger.LogWarning("Program.Main", "ブラウザ登録に失敗しました");
+                        }
+                    }
+                    else
+                    {
+                        Logger.LogDebug("Program.Main", "ブラウザ登録は正常です");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError("Program.Main", "ブラウザ登録確認・更新エラー", ex.Message);
+                }
+
                 // Windows Forms アプリケーションの設定
                 ApplicationConfiguration.Initialize();
                 Logger.LogDebug("Program.Main", "ApplicationConfiguration初期化完了");
