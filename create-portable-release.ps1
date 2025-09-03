@@ -1,9 +1,9 @@
 # BrowserChooser3 ポータブル版作成スクリプト
 # 使用方法: .\create-portable-release.ps1
-# バージョン: 0.1.2
+# バージョン: 0.1.3
 
 param(
-    [string]$Version = "0.1.2"
+    [string]$Version = "0.1.3"
 )
 
 Write-Host "BrowserChooser3 ポータブル版作成開始 (v$Version)" -ForegroundColor Green
