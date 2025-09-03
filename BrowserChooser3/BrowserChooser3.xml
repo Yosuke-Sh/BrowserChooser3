@@ -983,14 +983,6 @@
             <param name="setModified">変更フラグ設定アクション</param>
             <returns>作成されたTabPage</returns>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormPanels.CreateDefaultBrowserPanel(BrowserChooser3.Classes.Settings,System.Action{System.Boolean})">
-            <summary>
-            デフォルトブラウザパネルの作成
-            </summary>
-            <param name="settings">設定オブジェクト</param>
-            <param name="setModified">変更フラグ設定アクション</param>
-            <returns>作成されたTabPage</returns>
-        </member>
         <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormPanels.CreateDisplayPanel(BrowserChooser3.Classes.Settings,System.Action{System.Boolean})">
             <summary>
             表示パネルの作成
@@ -2254,6 +2246,14 @@
             <param name="target">ターゲットURL</param>
             <returns>マッチする場合はtrue</returns>
         </member>
+        <member name="M:BrowserChooser3.Classes.Utilities.URLUtilities.MatchURLPattern(System.String,System.String)">
+            <summary>
+            URLパターンマッチング（@パターン用）
+            </summary>
+            <param name="source">ソースURL</param>
+            <param name="pattern">マッチングパターン</param>
+            <returns>マッチする場合はtrue</returns>
+        </member>
         <member name="T:BrowserChooser3.CustomControls.FFButton">
             <summary>
             カスタムボタンコントロール（Browser Chooser 2互換）
@@ -2913,6 +2913,58 @@
             <summary>
             URLを更新
             </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.MainForm.ProcessAutoURLsAndProtocols(System.String)">
+            <summary>
+            AutoURLsとProtocolの処理を実行
+            優先順位: AutoURLs > Protocol
+            </summary>
+            <param name="url">処理対象のURL</param>
+            <returns>処理された場合はtrue</returns>
+        </member>
+        <member name="M:BrowserChooser3.Forms.MainForm.ProcessAutoURLsInternal(System.String)">
+            <summary>
+            AutoURLsの内部処理
+            </summary>
+            <param name="url">処理対象のURL</param>
+            <returns>処理された場合はtrue</returns>
+        </member>
+        <member name="M:BrowserChooser3.Forms.MainForm.ProcessProtocols(System.String)">
+            <summary>
+            Protocolの処理
+            </summary>
+            <param name="url">処理対象のURL</param>
+            <returns>処理された場合はtrue</returns>
+        </member>
+        <member name="M:BrowserChooser3.Forms.MainForm.ExtractProtocolFromUrl(System.String)">
+            <summary>
+            URLからプロトコルを抽出
+            </summary>
+            <param name="url">URL</param>
+            <returns>プロトコル（例: "http", "https", "ftp"）</returns>
+        </member>
+        <member name="M:BrowserChooser3.Forms.MainForm.StartAutoURLsCountdown(BrowserChooser3.Classes.Models.Browser,System.String,System.Int32,System.Boolean)">
+            <summary>
+            AutoURLs用のカウントダウンを開始
+            </summary>
+            <param name="browser">起動するブラウザ</param>
+            <param name="url">開くURL</param>
+            <param name="delay">遅延時間（秒）</param>
+            <param name="autoClose">自動終了するか</param>
+        </member>
+        <member name="M:BrowserChooser3.Forms.MainForm.AutoURLsCountdownTimer_Tick(BrowserChooser3.Classes.Models.Browser,System.String,System.Boolean)">
+            <summary>
+            AutoURLsカウントダウンタイマーの処理
+            </summary>
+            <param name="browser">起動するブラウザ</param>
+            <param name="url">開くURL</param>
+            <param name="autoClose">自動終了するか</param>
+        </member>
+        <member name="M:BrowserChooser3.Forms.MainForm.UpdateAutoURLsCountdownDisplay(BrowserChooser3.Classes.Models.Browser)">
+            <summary>
+            AutoURLsカウントダウン表示の更新
+            </summary>
+            <param name="browser">起動するブラウザ</param>
         </member>
         <member name="M:BrowserChooser3.Forms.MainForm.OnURLUpdated(System.String)">
             <summary>

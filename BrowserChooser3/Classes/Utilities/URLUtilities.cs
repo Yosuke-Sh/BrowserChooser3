@@ -189,6 +189,24 @@ namespace BrowserChooser3.Classes.Utilities
 
             Logger.LogInfo("URLUtilities.MatchURLs", "Start", source, target);
             
+            // パターンが@で始まる場合は特別処理
+            if (target.StartsWith("@"))
+            {
+                var pattern = target.Substring(1); // @を除去
+                var result = MatchURLPattern(source, pattern);
+                Logger.LogInfo("URLUtilities.MatchURLs", "End (Pattern)", source, target, result);
+                return result;
+            }
+            
+            // ワイルドカードパターンが含まれている場合は特別処理
+            if (target.Contains("*"))
+            {
+                var result = MatchURLPattern(source, target);
+                Logger.LogInfo("URLUtilities.MatchURLs", "End (Wildcard)", source, target, result);
+                return result;
+            }
+            
+            // 従来の処理（後方互換性のため）
             // http(s)://とwwwを除去
             var lsSource = source.Replace("http://", "").Replace("https://", "").Replace("www.", "");
             var lsTarget = target.Replace("http://", "").Replace("https://", "").Replace("www.", "");
@@ -196,12 +214,57 @@ namespace BrowserChooser3.Classes.Utilities
             // 基本的なワイルドカードマッチング（後で正規表現に変更予定）
             if (lsTarget.Contains(lsSource) || lsSource.Contains(lsTarget))
             {
-                Logger.LogInfo("URLUtilities.MatchURLs", "End", source, target, true);
+                Logger.LogInfo("URLUtilities.MatchURLs", "End (Legacy)", source, target, true);
                 return true;
             }
             else
             {
-                Logger.LogInfo("URLUtilities.MatchURLs", "End", source, target, false);
+                Logger.LogInfo("URLUtilities.MatchURLs", "End (Legacy)", source, target, false);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// URLパターンマッチング（@パターン用）
+        /// </summary>
+        /// <param name="source">ソースURL</param>
+        /// <param name="pattern">マッチングパターン</param>
+        /// <returns>マッチする場合はtrue</returns>
+        private static bool MatchURLPattern(string source, string pattern)
+        {
+            try
+            {
+                Logger.LogDebug("URLUtilities.MatchURLPattern", "Pattern matching", source, pattern);
+
+                // パターンにワイルドカードが含まれている場合
+                if (pattern.Contains("*"))
+                {
+                    // ワイルドカードパターンを正規表現に変換
+                    var regexPattern = pattern
+                        .Replace(".", "\\.")  // ドットをエスケープ
+                        .Replace("*", ".*");  // ワイルドカードを正規表現に変換
+
+                    var regex = new System.Text.RegularExpressions.Regex(regexPattern, 
+                        System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+                    
+                    var result = regex.IsMatch(source);
+                    Logger.LogDebug("URLUtilities.MatchURLPattern", "Wildcard pattern result", pattern, source, result);
+                    return result;
+                }
+                else
+                {
+                    // ワイルドカードがない場合は完全一致または部分一致
+                    var result = source.Equals(pattern, StringComparison.OrdinalIgnoreCase) || 
+                                source.Contains(pattern, StringComparison.OrdinalIgnoreCase) ||
+                                pattern.Contains(source, StringComparison.OrdinalIgnoreCase);
+                    
+                    Logger.LogDebug("URLUtilities.MatchURLPattern", "Exact/partial match result", pattern, source, result);
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("URLUtilities.MatchURLPattern", "Pattern matching error", ex.Message);
                 return false;
             }
         }

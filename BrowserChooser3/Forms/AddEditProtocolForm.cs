@@ -63,10 +63,12 @@ namespace BrowserChooser3.Forms
             Text = _isEditMode ? "Edit Protocol" : "Add Protocol";
             
             var txtName = Controls.Find("txtName", true).FirstOrDefault() as TextBox;
+            var txtHeader = Controls.Find("txtHeader", true).FirstOrDefault() as TextBox;
             var cmbBrowser = Controls.Find("cmbBrowser", true).FirstOrDefault() as ComboBox;
             var chkActive = Controls.Find("chkActive", true).FirstOrDefault() as CheckBox;
 
             if (txtName != null) txtName.Text = _protocol.Name;
+            if (txtHeader != null) txtHeader.Text = _protocol.Header;
             if (chkActive != null) chkActive.Checked = _protocol.IsActive;
 
             // ブラウザコンボボックスの設定
@@ -99,10 +101,12 @@ namespace BrowserChooser3.Forms
         public Protocol GetData()
         {
             var txtName = Controls.Find("txtName", true).FirstOrDefault() as TextBox;
+            var txtHeader = Controls.Find("txtHeader", true).FirstOrDefault() as TextBox;
             var cmbBrowser = Controls.Find("cmbBrowser", true).FirstOrDefault() as ComboBox;
             var chkActive = Controls.Find("chkActive", true).FirstOrDefault() as CheckBox;
 
             if (txtName != null) _protocol.Name = txtName.Text;
+            if (txtHeader != null) _protocol.Header = txtHeader.Text;
             if (chkActive != null) _protocol.IsActive = chkActive.Checked;
             
             if (cmbBrowser != null && cmbBrowser.SelectedItem != null)
@@ -124,7 +128,7 @@ namespace BrowserChooser3.Forms
         private void InitializeComponent()
         {
             Text = "Add/Edit Protocol";
-            Size = new Size(500, 250);
+            Size = new Size(500, 280);
             StartPosition = FormStartPosition.CenterParent;
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
@@ -135,16 +139,19 @@ namespace BrowserChooser3.Forms
 
             // 基本設定
             var lblName = new Label { Text = "Name:", Location = new Point(10, 20), AutoSize = true };
-            var txtName = new TextBox { Name = "txtName", Location = new Point(120, 17), Size = new Size(300, 23) };
+            var txtName = new TextBox { Name = "txtName", Location = new Point(170, 17), Size = new Size(300, 23) };
 
-            var lblBrowser = new Label { Text = "Browser:", Location = new Point(10, 60), AutoSize = true };
-            var cmbBrowser = new ComboBox { Name = "cmbBrowser", Location = new Point(120, 57), Size = new Size(300, 23), DropDownStyle = ComboBoxStyle.DropDownList };
+            var lblHeader = new Label { Text = "Protocol Header:", Location = new Point(10, 50), AutoSize = true };
+            var txtHeader = new TextBox { Name = "txtHeader", Location = new Point(170, 47), Size = new Size(300, 23) };
 
-            var chkActive = new CheckBox { Name = "chkActive", Text = "Active", Location = new Point(120, 95), AutoSize = true, Checked = true };
+            var lblBrowser = new Label { Text = "Browser:", Location = new Point(10, 80), AutoSize = true };
+            var cmbBrowser = new ComboBox { Name = "cmbBrowser", Location = new Point(170, 77), Size = new Size(300, 23), DropDownStyle = ComboBoxStyle.DropDownList };
+
+            var chkActive = new CheckBox { Name = "chkActive", Text = "Active", Location = new Point(170, 115), AutoSize = true, Checked = true };
 
             // ボタン
-            var btnOK = new Button { Text = "OK", DialogResult = DialogResult.OK, Location = new Point(250, 130), Size = new Size(90, 30) };
-            var btnCancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, Location = new Point(350, 130), Size = new Size(90, 30) };
+            var btnOK = new Button { Text = "OK", DialogResult = DialogResult.OK, Location = new Point(250, 160), Size = new Size(90, 30) };
+            var btnCancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, Location = new Point(350, 160), Size = new Size(90, 30) };
             btnOK.FlatStyle = FlatStyle.System;
             btnCancel.FlatStyle = FlatStyle.System;
 
@@ -152,6 +159,7 @@ namespace BrowserChooser3.Forms
             Controls.AddRange(new Control[] 
             {
                 lblName, txtName,
+                lblHeader, txtHeader,
                 lblBrowser, cmbBrowser,
                 chkActive,
                 btnOK, btnCancel
@@ -172,6 +180,14 @@ namespace BrowserChooser3.Forms
                         return;
                     }
 
+                    if (string.IsNullOrWhiteSpace(txtHeader.Text))
+                    {
+                        MessageBox.Show("Protocol Headerを入力してください。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        txtHeader.Focus();
+                        e.Cancel = true; // フォームを閉じない
+                        return;
+                    }
+
                     if (cmbBrowser.SelectedItem == null)
                     {
                         MessageBox.Show("ブラウザを選択してください。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -182,6 +198,7 @@ namespace BrowserChooser3.Forms
 
                     // データの保存
                     _protocol.Name = txtName.Text;
+                    _protocol.Header = txtHeader.Text;
                     _protocol.IsActive = chkActive.Checked;
                     
                     var selectedBrowserName = cmbBrowser.SelectedItem.ToString();

@@ -246,6 +246,17 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             listView.Columns.Add("Browser", 200);
             listView.Columns.Add("Delay", 100);
 
+            // ヘルプテキスト
+            var helpLabel = new Label
+            {
+                Text = "Delay: 数値=秒数, Default=設定画面のデフォルト遅延時間を使用",
+                Location = new Point(97, 430),
+                Size = new Size(630, 20),
+                Font = new Font("Segoe UI", 8F, FontStyle.Italic),
+                ForeColor = Color.Gray,
+                Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom
+            };
+
             // ボタン群
             var addButton = new Button
             {
@@ -304,6 +315,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             panel.Controls.Add(deleteButton);
             panel.Controls.Add(moveUpButton);
             panel.Controls.Add(moveDownButton);
+            panel.Controls.Add(helpLabel);
 
             tabPage.Controls.Add(panel);
             return tabPage;
@@ -349,9 +361,10 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 Font = new Font("Segoe UI", 9.5f, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
 
-            listView.Columns.Add("Protocol", 200);
-            listView.Columns.Add("Browser", 300);
-            listView.Columns.Add("Active", 200);
+            listView.Columns.Add("Protocol", 150);
+            listView.Columns.Add("Header", 150);
+            listView.Columns.Add("Browser", 200);
+            listView.Columns.Add("Active", 100);
 
             // ボタン群
             var addButton = new Button
@@ -392,230 +405,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             return tabPage;
         }
 
-        /// <summary>
-        /// デフォルトブラウザパネルの作成
-        /// </summary>
-        /// <param name="settings">設定オブジェクト</param>
-        /// <param name="setModified">変更フラグ設定アクション</param>
-        /// <returns>作成されたTabPage</returns>
-        public TabPage CreateDefaultBrowserPanel(
-            Settings settings,
-            Action<bool> setModified)
-        {
-            var tabPage = new TabPage("Windows Default");
-            tabPage.Name = "tabDefaultBrowser";
-            
-            var panel = new Panel
-            {
-                Dock = DockStyle.Fill,
-                Padding = new Padding(10),
-                AutoScroll = true
-            };
 
-            int currentY = 10;
-
-            // タイトルラベル
-            var titleLabel = new Label
-            {
-                Text = "Windows Default Browser Settings",
-                Font = new Font("Segoe UI", 12, FontStyle.Bold),
-                Location = new Point(10, currentY),
-                AutoSize = true
-            };
-            panel.Controls.Add(titleLabel);
-            currentY += 40;
-
-            // 説明文
-            var descriptionLabel = new Label
-            {
-                Text = "Windows 11では、デフォルトブラウザの設定はWindowsの設定画面から行う必要があります。\n" +
-                       "以下の手順でデフォルトブラウザを設定してください：",
-                Font = new Font("Segoe UI", 9),
-                Location = new Point(10, currentY),
-                Size = new Size(500, 50),
-                AutoSize = false
-            };
-            panel.Controls.Add(descriptionLabel);
-            currentY += 60;
-
-            // 設定手順
-            var stepsLabel = new Label
-            {
-                Text = "設定手順：\n" +
-                       "1. Windowsキー + I を押して設定を開く\n" +
-                       "2. 「アプリ」をクリック\n" +
-                       "3. 「デフォルトアプリ」をクリック\n" +
-                       "4. 「Webブラウザー」をクリック\n" +
-                       "5. 希望するブラウザを選択",
-                Font = new Font("Segoe UI", 9),
-                Location = new Point(10, currentY),
-                Size = new Size(500, 100),
-                AutoSize = false
-            };
-            panel.Controls.Add(stepsLabel);
-            currentY += 120;
-
-            // Windowsのアプリ設定画面を起動するボタン
-            var openSettingsButton = new Button
-            {
-                Name = "btnOpenDefaultAppsSettings",
-                Text = "Windowsの設定画面を開く",
-                Location = new Point(10, currentY),
-                Size = new Size(250, 35),
-                Font = new Font("Segoe UI", 9, FontStyle.Bold)
-            };
-            openSettingsButton.Click += (sender, e) =>
-            {
-                try
-                {
-                    var success = DefaultBrowserChecker.ShowDefaultAppsSettings();
-                    if (success)
-                    {
-                        MessageBox.Show(
-                            "Windowsの設定画面が開きました。\n\n" +
-                            "「アプリ」→「デフォルトアプリ」→「Webブラウザー」の順で進んでください。",
-                            "設定画面を開きました",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Information);
-                    }
-                    else
-                    {
-                        MessageBox.Show(
-                            "Windowsの設定画面を開けませんでした。\n\n" +
-                            "手動でWindowsキー + I を押して設定を開き、\n" +
-                            "「アプリ」→「デフォルトアプリ」→「Webブラウザー」に進んでください。",
-                            "エラー",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Warning);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError("OptionsFormPanels.CreateDefaultBrowserPanel", "Windows設定画面表示エラー", ex.Message);
-                    MessageBox.Show(
-                        $"設定画面を開く際にエラーが発生しました: {ex.Message}",
-                        "エラー",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
-                }
-            };
-            panel.Controls.Add(openSettingsButton);
-            currentY += 50;
-
-            // BrowserChooser3を既定のブラウザとして設定するボタン
-            var setAsDefaultButton = new Button
-            {
-                Name = "btnSetBrowserChooserAsDefault",
-                Text = "BrowserChooser3を既定のブラウザとして設定",
-                Location = new Point(10, currentY),
-                Size = new Size(250, 35),
-                Font = new Font("Segoe UI", 9, FontStyle.Bold),
-                BackColor = Color.LightGreen
-            };
-            setAsDefaultButton.Click += (sender, e) =>
-            {
-                try
-                {
-                    var browserChooserPath = Application.ExecutablePath;
-                    var success = DefaultBrowserChecker.SetBrowserChooserAsDefault(browserChooserPath);
-                    
-                    if (success)
-                    {
-                        MessageBox.Show(
-                            "BrowserChooser3を既定のブラウザとして設定しました。\n\n" +
-                            "設定が反映されるまで少し時間がかかる場合があります。",
-                            "設定完了",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Information);
-                    }
-                    else
-                    {
-                        MessageBox.Show(
-                            "BrowserChooser3を既定のブラウザとして設定できませんでした。\n\n" +
-                            "管理者権限が必要な場合があります。",
-                            "設定失敗",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Warning);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError("OptionsFormPanels.CreateDefaultBrowserPanel", "BrowserChooser3既定ブラウザ設定エラー", ex.Message);
-                    MessageBox.Show(
-                        $"既定のブラウザ設定中にエラーが発生しました: {ex.Message}",
-                        "エラー",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
-                }
-            };
-            panel.Controls.Add(setAsDefaultButton);
-            currentY += 50;
-
-            // 現在の設定状況を表示するラベル
-            var statusLabel = new Label
-            {
-                Name = "lblDefaultBrowserStatus",
-                Text = "現在の設定状況を確認中...",
-                Font = new Font("Segoe UI", 8),
-                ForeColor = Color.Blue,
-                Location = new Point(10, currentY),
-                Size = new Size(500, 25),
-                AutoSize = false
-            };
-            panel.Controls.Add(statusLabel);
-            currentY += 30;
-
-            // 設定状況を更新する関数
-            void UpdateStatus()
-            {
-                try
-                {
-                    var browserChooserPath = Application.ExecutablePath;
-                    var isDefault = DefaultBrowserChecker.IsBrowserChooserDefault(browserChooserPath);
-                    
-                    if (isDefault)
-                    {
-                        statusLabel.Text = "✓ BrowserChooser3が既定のブラウザとして設定されています";
-                        statusLabel.ForeColor = Color.Green;
-                    }
-                    else
-                    {
-                        statusLabel.Text = "✗ BrowserChooser3が既定のブラウザとして設定されていません";
-                        statusLabel.ForeColor = Color.Red;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError("OptionsFormPanels.CreateDefaultBrowserPanel", "設定状況確認エラー", ex.Message);
-                    statusLabel.Text = "設定状況の確認に失敗しました";
-                    statusLabel.ForeColor = Color.Orange;
-                }
-            }
-
-            // 初期状態を更新
-            UpdateStatus();
-
-            // ボタンクリック後に状況を更新
-            setAsDefaultButton.Click += (sender, e) => UpdateStatus();
-
-            // 注意事項
-            var noteLabel = new Label
-            {
-                Text = "注意：\n" +
-                       "• デフォルトブラウザの変更には管理者権限が必要な場合があります\n" +
-                       "• 一部のブラウザは自動的にデフォルト設定を要求する場合があります\n" +
-                       "• 設定変更後は、ブラウザを再起動することをお勧めします",
-                Font = new Font("Segoe UI", 8),
-                ForeColor = Color.Gray,
-                Location = new Point(10, currentY),
-                Size = new Size(500, 80),
-                AutoSize = false
-            };
-            panel.Controls.Add(noteLabel);
-
-            tabPage.Controls.Add(panel);
-            return tabPage;
-        }
 
 
         

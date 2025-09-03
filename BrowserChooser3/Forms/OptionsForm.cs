@@ -107,18 +107,14 @@ namespace BrowserChooser3.Forms
                 settingsNode.Nodes.Add(new TreeNode("Startup") { Tag = "tabStartup" });
                 settingsNode.Nodes.Add(new TreeNode("Others") { Tag = "tabOthers" });
 
-                var defaultBrowserNode = new TreeNode("Windows Default") { Tag = "tabDefaultBrowser" };
-
                 treeSettings.Nodes.Add(commonNode);
                 treeSettings.Nodes.Add(associationsNode);
                 treeSettings.Nodes.Add(settingsNode);
-                treeSettings.Nodes.Add(defaultBrowserNode);
 
                 // タブページの作成
                 var browsersTab = _panels.CreateBrowsersPanel(_settings, _mBrowser, _mProtocols, _mLastBrowserID, _imBrowserIcons, SetModified, RebuildAutoURLs);
                 var autoUrlsTab = _panels.CreateAutoURLsPanel(_settings, _mURLs, _mBrowser, SetModified, RebuildAutoURLs);
                 var protocolsTab = _panels.CreateProtocolsPanel(_settings, _mProtocols, _mBrowser, SetModified);
-                var defaultBrowserTab = _panels.CreateDefaultBrowserPanel(_settings, SetModified);
                 var displayTab = _panels.CreateDisplayPanel(_settings, SetModified);
                 var focusTab = _panels.CreateFocusPanel(_settings, SetModified);
                 var gridTab = _panels.CreateGridPanel(_settings, SetModified);
@@ -129,7 +125,6 @@ namespace BrowserChooser3.Forms
                 tabSettings.TabPages.Add(browsersTab);
                 tabSettings.TabPages.Add(autoUrlsTab);
                 tabSettings.TabPages.Add(protocolsTab);
-                tabSettings.TabPages.Add(defaultBrowserTab);
                 tabSettings.TabPages.Add(displayTab);
                 tabSettings.TabPages.Add(focusTab);
                 tabSettings.TabPages.Add(gridTab);
@@ -381,7 +376,7 @@ namespace BrowserChooser3.Forms
                     {
                         var item = listView.Items.Add(newURL.URLPattern);
                         item.Tag = newIndex;
-                        item.SubItems.Add(BrowserUtilities.GetBrowserByGUID(newURL.Guid, _mBrowser.Values.ToList())?.Name ?? "");
+                        item.SubItems.Add(BrowserUtilities.GetBrowserByGUID(newURL.BrowserGuid, _mBrowser.Values.ToList())?.Name ?? "");
                         item.SubItems.Add(newURL.Delay < 0 ? "Default" : newURL.Delay.ToString());
 
                         // 追加直後に選択してボタンを有効化
@@ -423,7 +418,7 @@ namespace BrowserChooser3.Forms
                             // ListViewアイテムの更新
                             var selectedItem = listView.SelectedItems[0];
                             selectedItem.Text = updatedURL.URLPattern;
-                            selectedItem.SubItems[1].Text = BrowserUtilities.GetBrowserByGUID(updatedURL.Guid, _mBrowser.Values.ToList())?.Name ?? "";
+                            selectedItem.SubItems[1].Text = BrowserUtilities.GetBrowserByGUID(updatedURL.BrowserGuid, _mBrowser.Values.ToList())?.Name ?? "";
                             selectedItem.SubItems[2].Text = updatedURL.Delay < 0 ? "Default" : updatedURL.Delay.ToString();
                             
                             _isModified = true;
@@ -1141,10 +1136,11 @@ namespace BrowserChooser3.Forms
                 {
                     foreach (var protocol in _mProtocols)
                     {
-                        var item = protocolListView.Items.Add(protocol.Value.Name);
+                        var item = protocolListView.Items.Add(protocol.Value.Name); // Protocol列
                         item.Tag = protocol.Key;
-                        item.SubItems.Add(_mBrowser.Values.FirstOrDefault(b => b.Guid == protocol.Value.BrowserGuid)?.Name ?? "");
-                        item.SubItems.Add("Default");
+                        item.SubItems.Add(protocol.Value.Header); // Header列
+                        item.SubItems.Add(_mBrowser.Values.FirstOrDefault(b => b.Guid == protocol.Value.BrowserGuid)?.Name ?? ""); // Browser列
+                        item.SubItems.Add(protocol.Value.IsActive ? "Yes" : "No"); // Active列
                     }
                 }
 

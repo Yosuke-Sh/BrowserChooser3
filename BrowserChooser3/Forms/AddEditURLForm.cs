@@ -34,7 +34,7 @@ namespace BrowserChooser3.Forms
             _url = new URL
             {
                 URLPattern = "",
-                Guid = Guid.Empty,
+                BrowserGuid = Guid.Empty,
                 Delay = -1
             };
 
@@ -91,9 +91,9 @@ namespace BrowserChooser3.Forms
                     }
                 }
 
-                if (_url.Guid != Guid.Empty)
+                if (_url.BrowserGuid != Guid.Empty)
                 {
-                    var selectedBrowser = _browsers.Values.FirstOrDefault(b => b != null && b.Guid == _url.Guid);
+                    var selectedBrowser = _browsers.Values.FirstOrDefault(b => b != null && b.Guid == _url.BrowserGuid);
                     if (selectedBrowser != null)
                     {
                         cmbBrowser.SelectedItem = selectedBrowser.Name;
@@ -123,7 +123,7 @@ namespace BrowserChooser3.Forms
                 var selectedBrowser = _browsers.Values.FirstOrDefault(b => b.Name == selectedBrowserName);
                 if (selectedBrowser != null)
                 {
-                    _url.Guid = selectedBrowser.Guid;
+                    _url.BrowserGuid = selectedBrowser.Guid;
                 }
             }
             
@@ -161,8 +161,9 @@ namespace BrowserChooser3.Forms
             var lblBrowser = new Label { Text = "Browser:", Location = new Point(10, 60), AutoSize = true };
             var cmbBrowser = new ComboBox { Name = "cmbBrowser", Location = new Point(120, 57), Size = new Size(320, 23), DropDownStyle = ComboBoxStyle.DropDownList };
 
-            var lblDelay = new Label { Text = "Delay (seconds):", Location = new Point(10, 100), AutoSize = true };
+            var lblDelay = new Label { Text = "Delay:", Location = new Point(10, 100), AutoSize = true };
             var txtDelay = new TextBox { Name = "txtDelay", Location = new Point(200, 97), Size = new Size(120, 23) };
+            var lblDelayHelp = new Label { Text = "空欄にすると設定画面のデフォルト遅延時間を使用", Location = new Point(200, 130), AutoSize = true, ForeColor = Color.Gray, Font = new Font("Segoe UI", 8F) };
 
             // ボタン
             var btnOK = new Button { Text = "OK", DialogResult = DialogResult.OK, Location = new Point(300, 170), Size = new Size(90, 30) };
@@ -176,6 +177,7 @@ namespace BrowserChooser3.Forms
                 lblURL, txtURL,
                 lblBrowser, cmbBrowser,
                 lblDelay, txtDelay,
+                lblDelayHelp,
                 btnOK, btnCancel
             });
 
@@ -209,7 +211,7 @@ namespace BrowserChooser3.Forms
                     var selectedBrowser = _browsers.Values.FirstOrDefault(b => b.Name == selectedBrowserName);
                     if (selectedBrowser != null)
                     {
-                        _url.Guid = selectedBrowser.Guid;
+                        _url.BrowserGuid = selectedBrowser.Guid;
                     }
                     
                     if (int.TryParse(txtDelay.Text, out var delay))

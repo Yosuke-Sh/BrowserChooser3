@@ -1137,13 +1137,354 @@ namespace BrowserChooser3.Forms
             Logger.LogDebug("MainForm.UpdateURL", "URL更新", url);
             _currentUrl = url;
             UpdateURLLabel();
-            // StartupLauncherを使用してURLを処理
+            
+            // AutoURLsとProtocolの処理を実行
+            if (ProcessAutoURLsAndProtocols(url))
+            {
+                // AutoURLsまたはProtocolで処理された場合は、StartupLauncherは呼び出さない
+                Logger.LogInfo("MainForm.UpdateURL", "AutoURLsまたはProtocolで処理完了、StartupLauncherはスキップ", url);
+                return;
+            }
+            
+            // AutoURLsとProtocolで処理されなかった場合のみ、StartupLauncherを使用してURLを処理
             StartupLauncher.SetURL(url, _settings?.RevealShortURL ?? false, OnURLUpdated);
             
             // デフォルトブラウザがある場合はカウントダウンを開始
             if (_defaultBrowser != null && (_settings?.DefaultDelay ?? 0) > 0)
             {
                 StartCountdown();
+            }
+        }
+
+        /// <summary>
+        /// AutoURLsとProtocolの処理を実行
+        /// 優先順位: AutoURLs > Protocol
+        /// </summary>
+        /// <param name="url">処理対象のURL</param>
+        /// <returns>処理された場合はtrue</returns>
+        private bool ProcessAutoURLsAndProtocols(string url)
+        {
+            try
+            {
+                // 1. AutoURLsの処理（最優先）
+                if (ProcessAutoURLsInternal(url))
+                {
+                    Logger.LogInfo("MainForm.ProcessAutoURLsAndProtocols", "AutoURLsで処理完了", url);
+                    return true; // AutoURLsで処理された場合は終了
+                }
+
+                // 2. Protocolの処理（AutoURLsがマッチしない場合）
+                if (ProcessProtocols(url))
+                {
+                    Logger.LogInfo("MainForm.ProcessAutoURLsAndProtocols", "Protocolで処理完了", url);
+                    return true; // Protocolで処理された場合は終了
+                }
+
+                Logger.LogDebug("MainForm.ProcessAutoURLsAndProtocols", "AutoURLsとProtocolの両方でマッチするパターンなし", url);
+                return false; // 処理されなかった場合
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("MainForm.ProcessAutoURLsAndProtocols", "AutoURLs/Protocol処理エラー", ex.Message, ex.StackTrace ?? "");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// AutoURLsの内部処理
+        /// </summary>
+        /// <param name="url">処理対象のURL</param>
+        /// <returns>処理された場合はtrue</returns>
+        private bool ProcessAutoURLsInternal(string url)
+        {
+            try
+            {
+                if (_settings?.URLs == null || _settings.URLs.Count == 0)
+                {
+                    Logger.LogDebug("MainForm.ProcessAutoURLsInternal", "AutoURLsが設定されていません");
+                    return false;
+                }
+
+                Logger.LogDebug("MainForm.ProcessAutoURLsInternal", "AutoURLs処理開始", $"URL: {url}, AutoURLs数: {_settings.URLs.Count}");
+
+                // 設定されたAutoURLsとマッチング
+                foreach (var autoUrl in _settings.URLs)
+                {
+                    if (!autoUrl.IsActive)
+                    {
+                        Logger.LogDebug("MainForm.ProcessAutoURLsInternal", "AutoURLが無効", autoUrl.URLPattern);
+                        continue;
+                    }
+
+                    if (string.IsNullOrEmpty(autoUrl.URLPattern))
+                    {
+                        Logger.LogDebug("MainForm.ProcessAutoURLsInternal", "AutoURLパターンが空", autoUrl.Name);
+                        continue;
+                    }
+
+                    // URLパターンマッチング
+                    if (URLUtilities.MatchURLs(url, autoUrl.URLPattern))
+                    {
+                        Logger.LogInfo("MainForm.ProcessAutoURLsInternal", "AutoURLマッチング成功", 
+                            $"URL: {url}, Pattern: {autoUrl.URLPattern}, Browser: {autoUrl.BrowserGuid}");
+
+                        // 対応するブラウザを検索
+                        var browser = _settings.Browsers.FirstOrDefault(b => b.Guid == autoUrl.BrowserGuid);
+                        if (browser != null)
+                        {
+                            Logger.LogInfo("MainForm.ProcessAutoURLsInternal", "ブラウザ起動開始", 
+                                $"Browser: {browser.Name}, Delay: {autoUrl.Delay}");
+
+                            // 遅延時間を設定
+                            var delay = autoUrl.Delay < 0 ? (_settings?.DefaultDelay ?? 5) : autoUrl.Delay;
+                            
+                            // メイン画面のAutoClose設定を使用
+                            var autoClose = chkAutoClose?.Checked ?? true;
+                            
+                            // 遅延起動を実行
+                            if (delay > 0)
+                            {
+                                StartAutoURLsCountdown(browser, url, delay, autoClose);
+                            }
+                            else
+                            {
+                                // 即座に起動
+                                BrowserUtilities.LaunchBrowser(browser, url, autoClose);
+                                if (autoClose)
+                                {
+                                    Logger.LogInfo("MainForm.ProcessAutoURLsInternal", "AutoClose実行", "即座起動後");
+                                    Application.Exit();
+                                }
+                            }
+                            
+                            return true; // 処理完了
+                        }
+                        else
+                        {
+                            Logger.LogWarning("MainForm.ProcessAutoURLsInternal", "対応するブラウザが見つかりません", autoUrl.BrowserGuid);
+                        }
+                    }
+                    else
+                    {
+                        Logger.LogDebug("MainForm.ProcessAutoURLsInternal", "AutoURLマッチング失敗", 
+                            $"URL: {url}, Pattern: {autoUrl.URLPattern}");
+                    }
+                }
+
+                Logger.LogDebug("MainForm.ProcessAutoURLsInternal", "AutoURLs処理完了 - マッチするパターンなし");
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("MainForm.ProcessAutoURLsInternal", "AutoURLs処理エラー", ex.Message, ex.StackTrace ?? "");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Protocolの処理
+        /// </summary>
+        /// <param name="url">処理対象のURL</param>
+        /// <returns>処理された場合はtrue</returns>
+        private bool ProcessProtocols(string url)
+        {
+            try
+            {
+                if (_settings?.Protocols == null || _settings.Protocols.Count == 0)
+                {
+                    Logger.LogDebug("MainForm.ProcessProtocols", "Protocolsが設定されていません");
+                    return false;
+                }
+
+                Logger.LogDebug("MainForm.ProcessProtocols", "Protocols処理開始", $"URL: {url}, Protocols数: {_settings.Protocols.Count}");
+
+                // URLからプロトコルを抽出
+                var protocol = ExtractProtocolFromUrl(url);
+                Logger.LogDebug("MainForm.ProcessProtocols", "プロトコル抽出結果", $"URL: {url}, 抽出されたプロトコル: {protocol}");
+                
+                if (string.IsNullOrEmpty(protocol))
+                {
+                    Logger.LogDebug("MainForm.ProcessProtocols", "プロトコルを抽出できませんでした", url);
+                    return false;
+                }
+
+                // 設定されたProtocolsとマッチング
+                foreach (var protocolSetting in _settings.Protocols)
+                {
+                    if (!protocolSetting.IsActive)
+                    {
+                        Logger.LogDebug("MainForm.ProcessProtocols", "Protocolが無効", protocolSetting.Name);
+                        continue;
+                    }
+
+                    if (string.IsNullOrEmpty(protocolSetting.Header))
+                    {
+                        Logger.LogDebug("MainForm.ProcessProtocols", "Protocolヘッダーが空", protocolSetting.Name);
+                        continue;
+                    }
+
+                    // プロトコルマッチング
+                    if (protocol.Equals(protocolSetting.Header, StringComparison.OrdinalIgnoreCase))
+                    {
+                        Logger.LogInfo("MainForm.ProcessProtocols", "Protocolマッチング成功", 
+                            $"URL: {url}, Protocol: {protocol}, Browser: {protocolSetting.BrowserGuid}");
+
+                        // 対応するブラウザを検索
+                        var browser = _settings.Browsers.FirstOrDefault(b => b.Guid == protocolSetting.BrowserGuid);
+                        if (browser != null)
+                        {
+                            Logger.LogInfo("MainForm.ProcessProtocols", "ブラウザ起動開始", 
+                                $"Browser: {browser.Name}, Protocol: {protocol}");
+
+                            // Protocolの場合は即座に起動（遅延なし）
+                            BrowserUtilities.LaunchBrowser(browser, url, true); // AutoCloseを有効にする
+                            
+                            // Protocol処理後は自動終了
+                            Logger.LogInfo("MainForm.ProcessProtocols", "Protocol処理完了、アプリケーション終了");
+                            Application.Exit();
+                            
+                            return true; // 処理完了
+                        }
+                        else
+                        {
+                            Logger.LogWarning("MainForm.ProcessProtocols", "対応するブラウザが見つかりません", protocolSetting.BrowserGuid);
+                        }
+                    }
+                    else
+                    {
+                        Logger.LogDebug("MainForm.ProcessProtocols", "Protocolマッチング失敗", 
+                            $"URL: {url}, Protocol: {protocol}, Expected: {protocolSetting.Header}");
+                    }
+                }
+
+                Logger.LogDebug("MainForm.ProcessProtocols", "Protocols処理完了 - マッチするプロトコルなし");
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("MainForm.ProcessProtocols", "Protocols処理エラー", ex.Message, ex.StackTrace ?? "");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// URLからプロトコルを抽出
+        /// </summary>
+        /// <param name="url">URL</param>
+        /// <returns>プロトコル（例: "http", "https", "ftp"）</returns>
+        private string ExtractProtocolFromUrl(string url)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(url))
+                    return string.Empty;
+
+                var colonIndex = url.IndexOf(':');
+                if (colonIndex > 0)
+                {
+                    return url.Substring(0, colonIndex);
+                }
+
+                return string.Empty;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("MainForm.ExtractProtocolFromUrl", "プロトコル抽出エラー", ex.Message);
+                return string.Empty;
+            }
+        }
+
+        /// <summary>
+        /// AutoURLs用のカウントダウンを開始
+        /// </summary>
+        /// <param name="browser">起動するブラウザ</param>
+        /// <param name="url">開くURL</param>
+        /// <param name="delay">遅延時間（秒）</param>
+        /// <param name="autoClose">自動終了するか</param>
+        private void StartAutoURLsCountdown(Browser browser, string url, int delay, bool autoClose)
+        {
+            try
+            {
+                Logger.LogInfo("MainForm.StartAutoURLsCountdown", "AutoURLsカウントダウン開始", 
+                    $"Browser: {browser.Name}, Delay: {delay}, AutoClose: {autoClose}");
+
+                // 既存のカウントダウンを停止
+                if (_countdownTimer != null)
+                {
+                    _countdownTimer.Stop();
+                    _countdownTimer.Dispose();
+                }
+
+                _currentDelay = delay;
+                _isPaused = false;
+
+                _countdownTimer = new System.Windows.Forms.Timer
+                {
+                    Interval = 1000
+                };
+                _countdownTimer.Tick += (sender, e) => AutoURLsCountdownTimer_Tick(browser, url, autoClose);
+                _countdownTimer.Start();
+
+                UpdateAutoURLsCountdownDisplay(browser);
+                if (_countdownLabel != null)
+                {
+                    _countdownLabel.Visible = true;
+                }
+
+                Logger.LogDebug("MainForm.StartAutoURLsCountdown", "AutoURLsカウントダウン開始完了");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("MainForm.StartAutoURLsCountdown", "AutoURLsカウントダウン開始エラー", ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// AutoURLsカウントダウンタイマーの処理
+        /// </summary>
+        /// <param name="browser">起動するブラウザ</param>
+        /// <param name="url">開くURL</param>
+        /// <param name="autoClose">自動終了するか</param>
+        private void AutoURLsCountdownTimer_Tick(Browser browser, string url, bool autoClose)
+        {
+            try
+            {
+                if (_isPaused) return;
+
+                _currentDelay--;
+                UpdateAutoURLsCountdownDisplay(browser);
+
+                if (_currentDelay <= 0)
+                {
+                    _countdownTimer?.Stop();
+                    Logger.LogInfo("MainForm.AutoURLsCountdownTimer_Tick", "AutoURLsブラウザ起動", 
+                        $"Browser: {browser.Name}, URL: {url}");
+
+                    BrowserUtilities.LaunchBrowser(browser, url, autoClose);
+                    
+                    if (autoClose)
+                    {
+                        Logger.LogInfo("MainForm.AutoURLsCountdownTimer_Tick", "AutoClose実行", "遅延起動後");
+                        Application.Exit();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("MainForm.AutoURLsCountdownTimer_Tick", "AutoURLsカウントダウン処理エラー", ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// AutoURLsカウントダウン表示の更新
+        /// </summary>
+        /// <param name="browser">起動するブラウザ</param>
+        private void UpdateAutoURLsCountdownDisplay(Browser browser)
+        {
+            if (_countdownLabel != null)
+            {
+                var status = _isPaused ? " (一時停止)" : "";
+                _countdownLabel.Text = $"{browser.Name}で {_currentDelay} 秒後に起動{status}";
             }
         }
 

@@ -1,6 +1,6 @@
 [Setup]
 AppName=Browser Chooser 3
-AppVersion=0.1.2
+AppVersion=0.1.3
 AppPublisher=Your Company
 AppPublisherURL=https://github.com/Yosuke-Sh/BrowserChooser3
 AppSupportURL=https://github.com/Yosuke-Sh/BrowserChooser3
@@ -53,7 +53,7 @@ Root: HKLM; Subkey: "SOFTWARE\Classes\.html\shell\open\command"; ValueType: stri
 
 ; アプリケーションの登録
 Root: HKLM; Subkey: "SOFTWARE\BrowserChooser3"; ValueType: string; ValueName: "InstallPath"; ValueData: "{app}"; Flags: uninsdeletekey
-Root: HKLM; Subkey: "SOFTWARE\BrowserChooser3"; ValueType: string; ValueName: "Version"; ValueData: "0.1.2"; Flags: uninsdeletekey
+Root: HKLM; Subkey: "SOFTWARE\BrowserChooser3"; ValueType: string; ValueName: "Version"; ValueData: "0.1.3"; Flags: uninsdeletekey
 
 ; Windowsの既定アプリ一覧に表示されるための登録
 Root: HKLM; Subkey: "SOFTWARE\RegisteredApplications"; ValueType: string; ValueName: "BrowserChooser3"; ValueData: "SOFTWARE\BrowserChooser3\Capabilities"; Flags: uninsdeletekey; Tasks: set_default_browser
