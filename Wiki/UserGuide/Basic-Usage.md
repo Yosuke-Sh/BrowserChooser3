@@ -70,6 +70,12 @@ BrowserChooser3.exe
 #### Protocols タブ
 - プロトコルハンドラーの設定
 - カスタムプロトコルの追加
+- Protocol Headerの設定
+
+#### AutoURLs タブ
+- URLパターンマッチングの設定
+- 自動起動と遅延起動の設定
+- ワイルドカードパターンの使用
 
 #### Other タブ
 - ログ設定

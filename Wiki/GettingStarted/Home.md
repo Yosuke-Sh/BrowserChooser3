@@ -19,6 +19,7 @@ BrowserChooser3 Wikiへようこそ！この包括的なガイドは、BrowserCh
 
 ### 高度なトピック
 - [コマンドラインオプション](Command-Line-Options)
+- [URL自動起動管理](AutoURLs-Management)
 - [プロトコル管理](Protocol-Management)
 - [カスタマイズ](Customization)
 - [トラブルシューティング](Troubleshooting)

@@ -1,3 +1,110 @@
+# BrowserChooser3 v0.1.3 リリースノート
+
+## 🎉 新機能・改善
+
+### AutoURLsとProtocol機能の完全動作
+- AutoURLsの自動起動と自動終了機能を修正
+- Protocol処理の改善とURL渡し問題を解決
+- メイン画面のAutoClose設定との連携を実装
+
+### AutoURLs機能の改善
+- ワイルドカードパターン（`*`）による柔軟なURLマッチング
+- 遅延起動機能の実装とカウントダウン表示
+- メイン画面のAutoClose設定を使用した自動終了制御
+
+### Protocol機能の実装
+- カスタムプロトコル（ftp、ftps等）のサポート
+- Protocol Header設定のUI追加
+- プロトコル処理後の自動終了機能
+
+## 🐛 バグ修正
+
+### AutoURLsの自動終了問題
+- 遅延起動後にアプリケーションが閉じない問題を解決
+- 個別のAutoClose設定ではなく、メイン画面の設定を使用するように修正
+
+### ProtocolのURL渡し問題
+- Protocol処理でURLが正しく渡されない問題を解決
+- URL処理の競合を防止し、適切な処理順序を実装
+
+### 設定画面の表示問題
+- Protocol設定のリストビュー列のずれを修正
+- Protocol Header列の正しい表示を実装
+
+## 🔧 技術的改善
+
+### 処理優先順位の明確化
+- AutoURLs > Protocol > 通常処理の優先順位を実装
+- 重複処理の防止と効率的なURL処理
+
+### ログ出力の改善
+- AutoClose実行時の詳細ログ出力
+- 遅延起動後の処理状況の可視化
+
+### UI/UXの改善
+- Protocol設定画面にHeader入力フィールドを追加
+- 設定項目の配置とサイズの最適化
+
+## 📦 配布パッケージ
+
+### インストーラー版
+- ファイル名: `BrowserChooser3-Setup.exe`
+- サイズ: 2.5MB
+- 設定: 管理者権限でのインストール、既定のブラウザ設定
+
+### ポータブル版
+- ファイル名: `BrowserChooser3-v0.1.3.zip`
+- サイズ: 1.3MB
+- 設定: `UseExeDirectory=true`（exe実行フォルダに出力）
+
+## 🚀 インストール方法
+
+### インストーラー版
+1. `BrowserChooser3-Setup.exe`をダウンロード
+2. 管理者権限で実行
+3. インストールウィザードに従ってインストール
+4. 設定ファイルは`%APPDATA%\BrowserChooser3`に保存
+
+### ポータブル版
+1. `BrowserChooser3-v0.1.3.zip`をダウンロード
+2. 任意のフォルダに展開
+3. `BrowserChooser3.exe`を実行
+4. 設定ファイルはexe実行フォルダに保存
+
+## 📋 システム要件
+
+- **OS**: Windows 10/11 x64
+- **.NET**: .NET 8.0 Runtime
+- **メモリ**: 512MB以上
+- **ディスク**: 10MB以上の空き容量
+
+## 🔄 アップデート方法
+
+### v0.1.2からのアップデート
+- 設定ファイルは自動的に保持されます
+- AutoURLsとProtocolの設定が新しく利用可能になります
+- メイン画面のAutoClose設定がAutoURLsにも反映されます
+
+## 📝 既知の問題
+
+- なし
+
+## 🙏 謝辞
+
+このリリースに貢献してくださった開発者、テスター、ユーザーの皆様に感謝いたします。
+
+## 📞 サポート
+
+- **GitHub**: https://github.com/Yosuke-Sh/BrowserChooser3
+- **Issues**: https://github.com/Yosuke-Sh/BrowserChooser3/issues
+- **Wiki**: https://github.com/Yosuke-Sh/BrowserChooser3/wiki
+
+---
+
+**BrowserChooser3 v0.1.3** - AutoURLsとProtocol機能の完全動作と改善されたユーザビリティ
+
+---
+
 # BrowserChooser3 v0.1.2 リリースノート
 
 ## 🎉 新機能・改善
