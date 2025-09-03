@@ -288,6 +288,67 @@ namespace BrowserChooser3.Classes.Services.SystemServices
         }
 
         /// <summary>
+        /// BrowserChooser3が既定のブラウザとして設定されているかチェックします
+        /// </summary>
+        private static void CheckBrowserChooserDefaultStatus()
+        {
+            try
+            {
+                var browserChooserPath = Application.ExecutablePath;
+                var isDefault = DefaultBrowserChecker.IsBrowserChooserDefault(browserChooserPath);
+                
+                if (isDefault)
+                {
+                    Logger.LogInfo("StartupLauncher.CheckBrowserChooserDefaultStatus", "BrowserChooser3が既定のブラウザとして設定されています");
+                }
+                else
+                {
+                    Logger.LogWarning("StartupLauncher.CheckBrowserChooserDefaultStatus", "BrowserChooser3が既定のブラウザとして設定されていません");
+                    
+                    // 初回起動時は自動設定を試行
+                    if (IsFirstRun())
+                    {
+                        Logger.LogInfo("StartupLauncher.CheckBrowserChooserDefaultStatus", "初回起動時のため、既定ブラウザ設定を試行");
+                        var success = DefaultBrowserChecker.SetBrowserChooserAsDefault(browserChooserPath);
+                        
+                        if (success)
+                        {
+                            Logger.LogInfo("StartupLauncher.CheckBrowserChooserDefaultStatus", "初回起動時の既定ブラウザ設定が完了しました");
+                        }
+                        else
+                        {
+                            Logger.LogWarning("StartupLauncher.CheckBrowserChooserDefaultStatus", "初回起動時の既定ブラウザ設定に失敗しました");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("StartupLauncher.CheckBrowserChooserDefaultStatus", "BrowserChooser3既定ブラウザ状況チェックエラー", ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// 初回起動かどうかを判定します
+        /// </summary>
+        /// <returns>初回起動の場合はtrue</returns>
+        private static bool IsFirstRun()
+        {
+            try
+            {
+                var appDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BrowserChooser3");
+                var configPath = Path.Combine(appDataPath, "BrowserChooser3Config.xml");
+                
+                // 設定ファイルが存在しない場合は初回起動とみなす
+                return !File.Exists(configPath);
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
         /// 起動時の初期化処理を実行します
         /// </summary>
         /// <param name="args">コマンドライン引数</param>
@@ -323,7 +384,8 @@ namespace BrowserChooser3.Classes.Services.SystemServices
                 // ポリシーの初期化
                 Policy.Initialize();
 
-
+                // BrowserChooser3が既定のブラウザとして設定されているかチェック
+                CheckBrowserChooserDefaultStatus();
 
                 // コマンドライン引数の処理
                 var result = ProcessCommandLineArgs(commandLineArgs);

@@ -355,6 +355,9 @@ namespace BrowserChooser3.Tests
         [InlineData(5, Logger.LogLevel.Trace)]
         public void InitializeLogLevel_WithValidSettings_ShouldSetCorrectLevel(int setting, Logger.LogLevel expectedLevel)
         {
+            // Arrange - テスト開始前にログレベルをリセット
+            Logger.CurrentLogLevel = Logger.LogLevel.Warning;
+
             // Act
             Logger.InitializeLogLevel(setting);
 

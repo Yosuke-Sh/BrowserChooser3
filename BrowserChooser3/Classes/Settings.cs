@@ -402,17 +402,8 @@ namespace BrowserChooser3.Classes
             
             // インストール方法の自動判定は削除（iniファイルで管理）
             
-            // 設定ファイルが存在する場合は自動検出をスキップ
-            var configPath = Path.Combine(Application.StartupPath, BrowserChooserConfigFileName);
-            if (File.Exists(configPath))
-            {
-                Logger.LogDebug("Settings.SharedNew", "設定ファイルが存在するため自動検出をスキップ", configPath);
-            }
-            else
-            {
-                // ブラウザの自動検出（初回のみ）
-                DetectBrowsers();
-            }
+            // ここでは自動検出を行わない
+            // 自動検出は設定ファイルが存在しない場合に限り、Load() 内で実施する
             
             Logger.LogDebug("Settings.SharedNew", "End");
         }
@@ -586,9 +577,14 @@ namespace BrowserChooser3.Classes
                 }
             }
 
-            Logger.LogDebug("Settings.Load", "設定ファイルが存在しないためデフォルト設定を使用", configPath);
+            Logger.LogDebug("Settings.Load", "設定ファイルが存在しないためデフォルト設定を使用し自動検出を実施", configPath);
             var defaultSettings = new Settings(false);
-            Logger.LogDebug("Settings.Load", "デフォルト設定作成完了", defaultSettings.Browsers?.Count ?? 0);
+            // ブラウザが1件もない場合のみ自動検出を実施
+            if (defaultSettings.Browsers.Count == 0)
+            {
+                defaultSettings.DetectBrowsers();
+            }
+            Logger.LogDebug("Settings.Load", "デフォルト設定作成・検出完了", defaultSettings.Browsers?.Count ?? 0);
             return defaultSettings;
         }
 

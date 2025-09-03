@@ -53,7 +53,6 @@ namespace BrowserChooser3.Tests
             // Assert
             settings.Should().NotBeNull();
             settings.FileVersion.Should().Be(Settings.CURRENT_FILE_VERSION);
-            settings.PortableMode.Should().BeTrue();
             settings.ShowURL.Should().BeTrue();
             settings.RevealShortURL.Should().BeFalse();
             settings.Width.Should().Be(8);
@@ -75,7 +74,6 @@ namespace BrowserChooser3.Tests
             // Assert
             settings.Should().NotBeNull();
             settings.FileVersion.Should().Be(Settings.CURRENT_FILE_VERSION);
-            settings.PortableMode.Should().BeTrue();
             settings.ShowURL.Should().BeTrue();
             settings.RevealShortURL.Should().BeFalse();
             // ブラウザ自動検出が実行されることを確認（テスト環境では失敗する可能性があるためコメントアウト）
@@ -91,7 +89,6 @@ namespace BrowserChooser3.Tests
             // Assert
             settings.Should().NotBeNull();
             settings.FileVersion.Should().Be(Settings.CURRENT_FILE_VERSION);
-            settings.PortableMode.Should().BeTrue();
             settings.ShowURL.Should().BeTrue();
             settings.RevealShortURL.Should().BeFalse();
             // ブラウザ自動検出が実行されることを確認（テスト環境では失敗する可能性があるためコメントアウト）
@@ -111,9 +108,6 @@ namespace BrowserChooser3.Tests
             var testBrowser = new Browser { Guid = testGuid, Name = "Test Browser" };
 
             // Act & Assert - 基本プロパティ
-            settings.PortableMode = false;
-            settings.PortableMode.Should().BeFalse();
-
             settings.ShowURL = false;
             settings.ShowURL.Should().BeFalse();
 
@@ -285,7 +279,7 @@ namespace BrowserChooser3.Tests
         #region 保存・読み込みテスト
 
         [Fact]
-        public void DoSave_PortableMode_ShouldSaveToApplicationDirectory()
+        public void DoSave_ShouldSaveSettings()
         {
             // Arrange
             var settings = new Settings();
@@ -299,16 +293,14 @@ namespace BrowserChooser3.Tests
             // Assert
             // テスト環境では実際のファイル保存が行われない可能性があるため、
             // 例外が発生しないことを確認
-            settings.PortableMode.Should().BeTrue();
             settings.ShowURL.Should().BeFalse();
         }
 
         [Fact]
-        public void DoSave_NonPortableMode_ShouldSaveToAppDataDirectory()
+        public void DoSave_WithDifferentSettings_ShouldSaveSettings()
         {
             // Arrange
             var settings = new Settings();
-            settings.PortableMode = false;
             settings.ShowURL = true;
             settings.Width = 8;
             settings.Height = 2;
@@ -319,7 +311,6 @@ namespace BrowserChooser3.Tests
             // Assert
             // テスト環境では実際のファイル保存が行われない可能性があるため、
             // 例外が発生しないことを確認
-            settings.PortableMode.Should().BeFalse();
             settings.ShowURL.Should().BeTrue();
         }
 
@@ -385,7 +376,6 @@ namespace BrowserChooser3.Tests
             // Assert
             settings.Should().NotBeNull();
             settings.FileVersion.Should().Be(Settings.CURRENT_FILE_VERSION);
-            settings.PortableMode.Should().BeTrue();
             settings.ShowURL.Should().BeTrue();
         }
 
@@ -401,7 +391,6 @@ namespace BrowserChooser3.Tests
             // Assert
             settings.Should().NotBeNull();
             settings.FileVersion.Should().Be(Settings.CURRENT_FILE_VERSION);
-            settings.PortableMode.Should().BeTrue();
             settings.ShowURL.Should().BeTrue();
         }
 

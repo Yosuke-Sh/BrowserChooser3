@@ -502,6 +502,102 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             panel.Controls.Add(openSettingsButton);
             currentY += 50;
 
+            // BrowserChooser3を既定のブラウザとして設定するボタン
+            var setAsDefaultButton = new Button
+            {
+                Name = "btnSetBrowserChooserAsDefault",
+                Text = "BrowserChooser3を既定のブラウザとして設定",
+                Location = new Point(10, currentY),
+                Size = new Size(250, 35),
+                Font = new Font("Segoe UI", 9, FontStyle.Bold),
+                BackColor = Color.LightGreen
+            };
+            setAsDefaultButton.Click += (sender, e) =>
+            {
+                try
+                {
+                    var browserChooserPath = Application.ExecutablePath;
+                    var success = DefaultBrowserChecker.SetBrowserChooserAsDefault(browserChooserPath);
+                    
+                    if (success)
+                    {
+                        MessageBox.Show(
+                            "BrowserChooser3を既定のブラウザとして設定しました。\n\n" +
+                            "設定が反映されるまで少し時間がかかる場合があります。",
+                            "設定完了",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
+                    }
+                    else
+                    {
+                        MessageBox.Show(
+                            "BrowserChooser3を既定のブラウザとして設定できませんでした。\n\n" +
+                            "管理者権限が必要な場合があります。",
+                            "設定失敗",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Warning);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError("OptionsFormPanels.CreateDefaultBrowserPanel", "BrowserChooser3既定ブラウザ設定エラー", ex.Message);
+                    MessageBox.Show(
+                        $"既定のブラウザ設定中にエラーが発生しました: {ex.Message}",
+                        "エラー",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                }
+            };
+            panel.Controls.Add(setAsDefaultButton);
+            currentY += 50;
+
+            // 現在の設定状況を表示するラベル
+            var statusLabel = new Label
+            {
+                Name = "lblDefaultBrowserStatus",
+                Text = "現在の設定状況を確認中...",
+                Font = new Font("Segoe UI", 8),
+                ForeColor = Color.Blue,
+                Location = new Point(10, currentY),
+                Size = new Size(500, 25),
+                AutoSize = false
+            };
+            panel.Controls.Add(statusLabel);
+            currentY += 30;
+
+            // 設定状況を更新する関数
+            void UpdateStatus()
+            {
+                try
+                {
+                    var browserChooserPath = Application.ExecutablePath;
+                    var isDefault = DefaultBrowserChecker.IsBrowserChooserDefault(browserChooserPath);
+                    
+                    if (isDefault)
+                    {
+                        statusLabel.Text = "✓ BrowserChooser3が既定のブラウザとして設定されています";
+                        statusLabel.ForeColor = Color.Green;
+                    }
+                    else
+                    {
+                        statusLabel.Text = "✗ BrowserChooser3が既定のブラウザとして設定されていません";
+                        statusLabel.ForeColor = Color.Red;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError("OptionsFormPanels.CreateDefaultBrowserPanel", "設定状況確認エラー", ex.Message);
+                    statusLabel.Text = "設定状況の確認に失敗しました";
+                    statusLabel.ForeColor = Color.Orange;
+                }
+            }
+
+            // 初期状態を更新
+            UpdateStatus();
+
+            // ボタンクリック後に状況を更新
+            setAsDefaultButton.Click += (sender, e) => UpdateStatus();
+
             // 注意事項
             var noteLabel = new Label
             {
