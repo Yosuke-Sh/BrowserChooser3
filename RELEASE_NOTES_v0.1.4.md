@@ -1,4 +1,4 @@
-# BrowserChooser3 v0.1.4 リリースノート
+#　 BrowserChooser3 v0.1.4 リリースノート
 
 ## 🎉 新機能・改善
 
