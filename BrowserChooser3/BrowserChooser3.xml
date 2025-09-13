@@ -1100,9 +1100,6 @@
         <member name="P:BrowserChooser3.Classes.Services.SystemServices.CommandLineProcessor.CommandLineArgs.ExtractDLLs">
             <summary>DLLを抽出するかどうか</summary>
         </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.CommandLineProcessor.CommandLineArgs.PortableMode">
-            <summary>ポータブルモードで起動するかどうか</summary>
-        </member>
         <member name="P:BrowserChooser3.Classes.Services.SystemServices.CommandLineProcessor.CommandLineArgs.IgnoreSettings">
             <summary>設定ファイルを無視するかどうか</summary>
         </member>
@@ -2036,7 +2033,12 @@
         </member>
         <member name="P:BrowserChooser3.Classes.Utilities.Logger.CurrentLogLevel">
             <summary>
-            現在のログレベル
+            現在のログレベル（デフォルトはWarning）
+            </summary>
+        </member>
+        <member name="F:BrowserChooser3.Classes.Utilities.Logger._isLogLevelInitialized">
+            <summary>
+            ログレベルが初期化済みかどうか
             </summary>
         </member>
         <member name="P:BrowserChooser3.Classes.Utilities.Logger.IsTestEnvironment">
@@ -2129,17 +2131,12 @@
         <member name="T:BrowserChooser3.Classes.Utilities.PathManager">
             <summary>
             アプリケーションのパスを管理するクラス
-            iniファイルの設定に基づいて、設定ファイルやログファイルの出力先を決定します
+            設定ファイルやログファイルの出力先を決定します
             </summary>
         </member>
         <member name="M:BrowserChooser3.Classes.Utilities.PathManager.Initialize">
             <summary>
             パス管理を初期化します
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Utilities.PathManager.LoadSettings">
-            <summary>
-            iniファイルから設定を読み込みます
             </summary>
         </member>
         <member name="M:BrowserChooser3.Classes.Utilities.PathManager.SetDefaultSettings">

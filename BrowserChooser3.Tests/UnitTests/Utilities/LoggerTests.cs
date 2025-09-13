@@ -330,7 +330,7 @@ namespace BrowserChooser3.Tests
             Logger.InitializeLogLevel(invalidSetting);
 
             // Assert
-            Logger.CurrentLogLevel.Should().Be(Logger.LogLevel.Info);
+            Logger.CurrentLogLevel.Should().Be(Logger.LogLevel.Warning);
         }
 
         [Fact]
@@ -343,7 +343,7 @@ namespace BrowserChooser3.Tests
             Logger.InitializeLogLevel(invalidSetting);
 
             // Assert
-            Logger.CurrentLogLevel.Should().Be(Logger.LogLevel.Info);
+            Logger.CurrentLogLevel.Should().Be(Logger.LogLevel.Warning);
         }
 
         [Theory]

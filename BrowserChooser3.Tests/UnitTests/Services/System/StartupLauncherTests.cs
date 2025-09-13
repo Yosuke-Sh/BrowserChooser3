@@ -192,21 +192,6 @@ namespace BrowserChooser3.Tests
             result.Should().BeTrue();
         }
 
-        [Fact]
-        public void ProcessCommandLineArgs_WithPortableMode_ShouldEnablePortableMode()
-        {
-            // Arrange
-            var args = new CommandLineProcessor.CommandLineArgs
-            {
-                PortableMode = true
-            };
-
-            // Act
-            var result = StartupLauncher.ProcessCommandLineArgs(args);
-
-            // Assert
-            result.Should().BeTrue();
-        }
 
         [Fact]
         public void ProcessCommandLineArgs_WithIgnoreSettings_ShouldEnableIgnoreSettings()

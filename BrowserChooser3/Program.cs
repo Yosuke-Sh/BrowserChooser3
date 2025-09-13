@@ -15,18 +15,16 @@ namespace BrowserChooser3
         [STAThread]
         static void Main()
         {
-            // アプリケーション起動時のログ初期化
-            Logger.CurrentLogLevel = Logger.LogLevel.Trace;
-            Logger.LogDebug("Program.Main", "アプリケーション開始");
-
+            // 最初にログレベルを初期化（設定ファイルから読み取り）
+            Logger.InitializeLogLevel();
+            
             try
             {
                 // パス管理の初期化
                 PathManager.Initialize();
                 Logger.LogDebug("Program.Main", "PathManager初期化完了");
 
-                // ログレベルを初期化
-                Logger.InitializeLogLevel();
+                Logger.LogDebug("Program.Main", "アプリケーション開始");
                 Logger.LogDebug("Program.Main", "ログレベル初期化完了");
 
                 // コマンドライン引数の処理

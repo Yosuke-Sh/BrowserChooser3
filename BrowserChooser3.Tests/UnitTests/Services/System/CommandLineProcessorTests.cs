@@ -32,7 +32,6 @@ namespace BrowserChooser3.Tests
             result.UnshortenURL.Should().BeFalse();
             result.DebugLog.Should().BeFalse();
             result.ExtractDLLs.Should().BeFalse();
-            result.PortableMode.Should().BeFalse();
             result.IgnoreSettings.Should().BeFalse();
             result.ShowHelp.Should().BeFalse();
             result.ShowVersion.Should().BeFalse();
@@ -284,19 +283,6 @@ namespace BrowserChooser3.Tests
             result.ExtractDLLs.Should().BeTrue();
         }
 
-        [Fact]
-        public void ParseArguments_WithPortableOption_ShouldSetPortableMode()
-        {
-            // Arrange
-            var args = new[] { "--portable" };
-
-            // Act
-            var result = CommandLineProcessor.ParseArguments(args);
-
-            // Assert
-            result.Should().NotBeNull();
-            result.PortableMode.Should().BeTrue();
-        }
 
         [Fact]
         public void ParseArguments_WithIgnoreSettingsOption_ShouldSetIgnoreSettings()
@@ -371,7 +357,6 @@ namespace BrowserChooser3.Tests
             result.Should().NotBeNull();
             result.DebugLog.Should().BeTrue();
             result.URL.Should().Be("https://example.com");
-            result.PortableMode.Should().BeTrue();
         }
 
         [Fact]
@@ -624,7 +609,6 @@ namespace BrowserChooser3.Tests
             result.Delay.Should().Be(30);
             result.BrowserGuid.Should().Be(browserGuid);
             result.DebugLog.Should().BeTrue();
-            result.PortableMode.Should().BeTrue();
             result.SilentMode.Should().BeTrue();
             result.URL.Should().Be("https://example.com/path?param=value");
         }
@@ -661,7 +645,6 @@ namespace BrowserChooser3.Tests
             result.Should().Contain("--unshorten");
             result.Should().Contain("--debug");
             result.Should().Contain("--extract-dlls");
-            result.Should().Contain("--portable");
             result.Should().Contain("--ignore-settings");
             result.Should().Contain("--silent");
             result.Should().Contain("--auto-launch");
@@ -817,7 +800,6 @@ namespace BrowserChooser3.Tests
                 URL = "https://example.com",
                 DebugLog = false,
                 ExtractDLLs = false,
-                PortableMode = false,
                 IgnoreSettings = false
             };
 
@@ -836,7 +818,6 @@ namespace BrowserChooser3.Tests
                 result.Should().BeSameAs(originalArgs);
                 result.DebugLog.Should().BeFalse();
                 result.ExtractDLLs.Should().BeFalse();
-                result.PortableMode.Should().BeFalse();
                 result.IgnoreSettings.Should().BeFalse();
             }
             finally
@@ -905,33 +886,6 @@ namespace BrowserChooser3.Tests
             }
         }
 
-        [Fact]
-        public void LoadFromEnvironment_WithPortableEnvironmentVariable_ShouldSetPortableMode()
-        {
-            // Arrange
-            var originalArgs = new CommandLineProcessor.CommandLineArgs
-            {
-                PortableMode = false
-            };
-
-            // 環境変数を設定（テスト用）
-            Environment.SetEnvironmentVariable("BROWSERCHOOSER_PORTABLE", "true");
-
-            try
-            {
-                // Act
-                var result = CommandLineProcessor.LoadFromEnvironment(originalArgs);
-
-                // Assert
-                result.Should().BeSameAs(originalArgs);
-                result.PortableMode.Should().BeTrue();
-            }
-            finally
-            {
-                // 環境変数をクリア
-                Environment.SetEnvironmentVariable("BROWSERCHOOSER_PORTABLE", null);
-            }
-        }
 
         [Fact]
         public void LoadFromEnvironment_WithIgnoreSettingsEnvironmentVariable_ShouldSetIgnoreSettings()

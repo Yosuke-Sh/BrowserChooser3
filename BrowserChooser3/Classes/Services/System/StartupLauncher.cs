@@ -167,12 +167,6 @@ namespace BrowserChooser3.Classes.Services.SystemServices
                     Logger.LogInfo("StartupLauncher.ProcessCommandLineArgs", "DLL抽出を有効化");
                 }
 
-                // ポータブルモードの設定
-                if (args.PortableMode)
-                {
-                    // 設定ファイルの読み込み時に適用
-                    Logger.LogInfo("StartupLauncher.ProcessCommandLineArgs", "ポータブルモードを有効化");
-                }
 
                 // 設定ファイル無視の設定
                 if (args.IgnoreSettings)

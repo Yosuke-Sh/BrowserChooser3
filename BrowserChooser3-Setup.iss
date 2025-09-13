@@ -1,6 +1,6 @@
 [Setup]
 AppName=Browser Chooser 3
-AppVersion=0.1.3
+AppVersion=0.1.4
 AppPublisher=Your Company
 AppPublisherURL=https://github.com/Yosuke-Sh/BrowserChooser3
 AppSupportURL=https://github.com/Yosuke-Sh/BrowserChooser3
@@ -24,7 +24,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "japanese"; MessagesFile: "compiler:Languages\Japanese.isl"
 
 [Files]
-Source: "BrowserChooser3\bin\Release\net8.0-windows\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "BrowserChooser3\bin\Release\net8.0-windows\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs; Excludes: "*.pdb,*.map,*.ilk,win-x64\*.pdb"
 
 [Icons]
 Name: "{group}\Browser Chooser 3"; Filename: "{app}\BrowserChooser3.exe"

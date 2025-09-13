@@ -28,7 +28,6 @@ BrowserChooser3/
 ├── TestResults/                       # テスト結果
 ├── BrowserChooser3.sln               # ソリューションファイル
 ├── build-inno-setup.bat              # インストーラービルドスクリプト
-├── create-portable-release.ps1       # ポータブル版作成スクリプト
 ├── BrowserChooser3-Setup.iss         # Inno Setup設定ファイル
 └── coverlet.runsettings              # カバレッジ設定
 ```

@@ -35,9 +35,14 @@ namespace BrowserChooser3.Classes.Utilities
     }
 
         /// <summary>
-        /// 現在のログレベル
+        /// 現在のログレベル（デフォルトはWarning）
         /// </summary>
         public static LogLevel CurrentLogLevel { get; set; } = LogLevel.Warning;
+
+        /// <summary>
+        /// ログレベルが初期化済みかどうか
+        /// </summary>
+        private static bool _isLogLevelInitialized = false;
 
         /// <summary>
         /// テスト環境かどうかを判定
@@ -200,11 +205,29 @@ namespace BrowserChooser3.Classes.Utilities
         /// <param name="extraVars">追加情報</param>
         public static void AddToLog(LogLevel level, string caller, string message, params object[] extraVars)
         {
+            // ログレベルが初期化されていない場合は、ErrorとWarningのみ出力
+            if (!_isLogLevelInitialized && level < LogLevel.Error)
+            {
+                // デバッグ用：初期化前のDEBUGログを抑制
+                return;
+            }
+
             if (level > CurrentLogLevel) return;
 
             // テスト環境ではログ出力をスキップ
             if (IsTestEnvironment)
             {
+                return;
+            }
+
+            // ログディレクトリの存在を確認（初回ログ出力時に確実に作成）
+            try
+            {
+                var logDir = LogDirectory; // この呼び出しでディレクトリが作成される
+            }
+            catch (Exception)
+            {
+                // ログディレクトリの作成に失敗した場合は何もしない
                 return;
             }
 
@@ -324,20 +347,26 @@ namespace BrowserChooser3.Classes.Utilities
                         logLevelValue >= 0 && logLevelValue <= 5)
                     {
                         CurrentLogLevel = (LogLevel)logLevelValue;
-                        LogInfo("Logger.InitializeLogLevel", "app.configからログレベルを設定しました", CurrentLogLevel.ToString());
-                        return;
+                    }
+                    else
+                    {
+                        CurrentLogLevel = LogLevel.Info;
                     }
                 }
+                else
+                {
+                    // app.configから読み取れない場合はデフォルト値を使用
+                    CurrentLogLevel = LogLevel.Warning;
+                }
 
-                // app.configから読み取れない場合はデフォルト値を使用
-                CurrentLogLevel = LogLevel.Info;
-                LogInfo("Logger.InitializeLogLevel", "デフォルトログレベルを設定しました", CurrentLogLevel.ToString());
+                // ログレベル初期化完了をマーク
+                _isLogLevelInitialized = true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                // 無効な値の場合はInfoレベルにフォールバック
-                CurrentLogLevel = LogLevel.Info;
-                LogError("Logger.InitializeLogLevel", "ログレベル初期化エラー", ex.Message);
+                // 無効な値の場合はWarningレベルにフォールバック
+                CurrentLogLevel = LogLevel.Warning;
+                _isLogLevelInitialized = true;
             }
         }
 
@@ -350,13 +379,17 @@ namespace BrowserChooser3.Classes.Utilities
             if (logLevelSetting >= 0 && logLevelSetting <= 5)
             {
                 CurrentLogLevel = (LogLevel)logLevelSetting;
-                LogInfo("Logger.InitializeLogLevel", "ログレベルを設定しました", CurrentLogLevel.ToString());
             }
             else
             {
-                CurrentLogLevel = LogLevel.Info;
-                LogWarning("Logger.InitializeLogLevel", "無効なログレベル設定値。デフォルト値を使用します", logLevelSetting);
+                CurrentLogLevel = LogLevel.Warning;
             }
+
+            // ログレベル初期化完了をマーク
+            _isLogLevelInitialized = true;
+
+            // 初期化完了後にログ出力
+            LogInfo("Logger.InitializeLogLevel", "ログレベルを設定しました", CurrentLogLevel.ToString());
         }
     }
 }

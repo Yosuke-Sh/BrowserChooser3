@@ -35,8 +35,6 @@ namespace BrowserChooser3.Classes.Services.SystemServices
             /// <summary>DLLを抽出するかどうか</summary>
             public bool ExtractDLLs { get; set; } = false;
             
-            /// <summary>ポータブルモードで起動するかどうか</summary>
-            public bool PortableMode { get; set; } = false;
             
             /// <summary>設定ファイルを無視するかどうか</summary>
             public bool IgnoreSettings { get; set; } = false;
@@ -122,9 +120,6 @@ namespace BrowserChooser3.Classes.Services.SystemServices
                             result.ExtractDLLs = true;
                             break;
 
-                        case "--portable":
-                            result.PortableMode = true;
-                            break;
 
                         case "--ignore-settings":
                             result.IgnoreSettings = true;
@@ -213,7 +208,6 @@ namespace BrowserChooser3.Classes.Services.SystemServices
   -u, --unshorten       URL短縮解除を実行
   --debug               デバッグログを有効化
   --extract-dlls        DLLファイルを抽出
-  --portable            ポータブルモードで起動
   --ignore-settings     設定ファイルを無視
   --silent              サイレントモードで起動
   --auto-launch         自動起動モード
@@ -222,7 +216,7 @@ namespace BrowserChooser3.Classes.Services.SystemServices
   BrowserChooser3.exe https://example.com
   BrowserChooser3.exe -d 5 https://example.com
   BrowserChooser3.exe -b 12345678-1234-1234-1234-123456789012 file.html
-  BrowserChooser3.exe --portable --debug";
+  BrowserChooser3.exe --debug";
         }
 
         /// <summary>
@@ -288,11 +282,6 @@ namespace BrowserChooser3.Classes.Services.SystemServices
                     args.ExtractDLLs = true;
                 }
 
-                var portableMode = Environment.GetEnvironmentVariable("BROWSERCHOOSER_PORTABLE");
-                if (bool.TryParse(portableMode, out var portable) && portable)
-                {
-                    args.PortableMode = true;
-                }
 
                 var ignoreSettings = Environment.GetEnvironmentVariable("BROWSERCHOOSER_IGNORE_SETTINGS");
                 if (bool.TryParse(ignoreSettings, out var ignore) && ignore)

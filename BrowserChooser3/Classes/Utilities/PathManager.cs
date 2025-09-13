@@ -4,12 +4,10 @@ namespace BrowserChooser3.Classes.Utilities
 {
     /// <summary>
     /// アプリケーションのパスを管理するクラス
-    /// iniファイルの設定に基づいて、設定ファイルやログファイルの出力先を決定します
+    /// 設定ファイルやログファイルの出力先を決定します
     /// </summary>
     public static class PathManager
     {
-        private static string? _iniFilePath;
-        private static bool _useExeDirectory;
         private static string? _logDirectory;
         private static string? _configDirectory;
 
@@ -20,55 +18,28 @@ namespace BrowserChooser3.Classes.Utilities
         {
             try
             {
-                // iniファイルのパスを決定
-                _iniFilePath = Path.Combine(Application.StartupPath, "BrowserChooser3.ini");
-                
-                Logger.LogDebug("PathManager.Initialize", "INIファイルパス", _iniFilePath);
-
-                // iniファイルから設定を読み込み
-                LoadSettings();
+                // デフォルト設定を使用
+                SetDefaultSettings();
 
                 Logger.LogDebug("PathManager.Initialize", "パス管理初期化完了", 
-                    $"UseExeDirectory: {_useExeDirectory}, " +
                     $"LogDirectory: {_logDirectory}, " +
                     $"ConfigDirectory: {_configDirectory}");
             }
             catch (Exception ex)
             {
+                // エラーログは常に出力
                 Logger.LogError("PathManager.Initialize", "パス管理初期化エラー", ex.Message);
                 // エラーが発生した場合はデフォルト設定を使用
                 SetDefaultSettings();
             }
         }
 
-        /// <summary>
-        /// iniファイルから設定を読み込みます
-        /// </summary>
-        private static void LoadSettings()
-        {
-            if (string.IsNullOrEmpty(_iniFilePath) || !File.Exists(_iniFilePath))
-            {
-                Logger.LogDebug("PathManager.LoadSettings", "INIファイルが存在しないためデフォルト設定を使用");
-                SetDefaultSettings();
-                return;
-            }
-
-            // 出力フォルダの選択
-            _useExeDirectory = IniFileReader.ReadBoolValue(_iniFilePath, "Paths", "UseExeDirectory", false);
-
-            // ログディレクトリ
-            _logDirectory = IniFileReader.ReadPathValue(_iniFilePath, "Paths", "LogDirectory", "");
-
-            // 設定ファイルディレクトリ
-            _configDirectory = IniFileReader.ReadPathValue(_iniFilePath, "Paths", "ConfigDirectory", "");
-        }
 
         /// <summary>
         /// デフォルト設定を設定します
         /// </summary>
         private static void SetDefaultSettings()
         {
-            _useExeDirectory = false;
             _logDirectory = "";
             _configDirectory = "";
         }
@@ -84,11 +55,6 @@ namespace BrowserChooser3.Classes.Utilities
                 return _configDirectory;
             }
 
-            if (_useExeDirectory)
-            {
-                return Application.StartupPath;
-            }
-
             return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BrowserChooser3");
         }
 
@@ -101,11 +67,6 @@ namespace BrowserChooser3.Classes.Utilities
             if (!string.IsNullOrEmpty(_logDirectory))
             {
                 return _logDirectory;
-            }
-
-            if (_useExeDirectory)
-            {
-                return Path.Combine(Application.StartupPath, "Logs");
             }
 
             return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "BrowserChooser3", "Logs");

@@ -81,13 +81,6 @@ BrowserChooser3.exe -c "C:\Path\To\Config.xml"
 - カスタム設定ファイルを指定
 - デフォルトの設定ファイルとは別のファイルを使用
 
-### ポータブルモード
-```cmd
-BrowserChooser3.exe --portable
-BrowserChooser3.exe -p
-```
-- ポータブルモードで起動
-- インストールパスで自動判定
 
 ### システムトレイ起動
 ```cmd
@@ -185,8 +178,8 @@ BrowserChooser3.exe --debug --log
 # カスタム設定ファイルで起動
 BrowserChooser3.exe --config "C:\Dev\BrowserChooser3\test-config.xml"
 
-# ポータブルモードでデバッグ
-BrowserChooser3.exe --portable --debug --log
+# デバッグモード
+BrowserChooser3.exe --debug --log
 ```
 
 ### システム管理例
@@ -198,7 +191,7 @@ BrowserChooser3.exe --system-tray
 BrowserChooser3.exe --minimized
 
 # 自動起動用の設定
-BrowserChooser3.exe --system-tray --portable
+BrowserChooser3.exe --system-tray
 ```
 
 ### ブラウザ指定例
@@ -236,13 +229,6 @@ BrowserChooser3.exe --config "C:\Custom\Config.xml"
 # XML形式で保存
 ```
 
-### ポータブルモードオプション
-```cmd
-# ポータブルモード
-BrowserChooser3.exe --portable
-
-# 判定基準
-# インストールパスで自動判定
 ```
 
 ## 🚨 エラーハンドリング

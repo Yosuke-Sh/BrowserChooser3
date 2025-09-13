@@ -27,7 +27,7 @@ namespace BrowserChooser3.Tests
             Logger.InitializeLogLevel();
 
             // Assert
-            Logger.CurrentLogLevel.Should().Be(Logger.LogLevel.Info); // 実際のデフォルト値
+            Logger.CurrentLogLevel.Should().Be(Logger.LogLevel.Warning); // 実際のデフォルト値
         }
 
         [Fact]
