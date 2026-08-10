@@ -584,11 +584,7 @@ namespace BrowserChooser3.Classes
             {
                 defaultSettings.DetectBrowsers();
             }
-            // ログレベルが初期化されている場合のみログ出力
-            if (Logger.CurrentLogLevel >= Logger.LogLevel.Debug)
-            {
-                Logger.LogDebug("Settings.Load", "デフォルト設定作成・検出完了", defaultSettings.Browsers?.Count ?? 0);
-            }
+            Logger.LogDebug("Settings.Load", "デフォルト設定作成・検出完了", defaultSettings.Browsers?.Count ?? 0);
             return defaultSettings;
         }
 

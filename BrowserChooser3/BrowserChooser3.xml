@@ -1220,6 +1220,49 @@
             </summary>
             <returns>ポリシー設定の概要</returns>
         </member>
+        <member name="T:BrowserChooser3.Classes.Services.SystemServices.SingleInstanceManager">
+            <summary>
+            アプリケーションの単一インスタンス化と、既存インスタンスへのURL引き渡しを管理します
+            </summary>
+        </member>
+        <member name="E:BrowserChooser3.Classes.Services.SystemServices.SingleInstanceManager.UrlReceived">
+            <summary>
+            既存インスタンスから新しいURLを受信したときに発火します（UIスレッド外から呼ばれます）
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.SystemServices.SingleInstanceManager.#ctor">
+            <summary>
+            既定のMutex名・パイプ名で初期化します
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.SystemServices.SingleInstanceManager.#ctor(System.String,System.String)">
+            <summary>
+            テストなどで名前を分離したい場合に使用するコンストラクタ
+            </summary>
+            <param name="mutexName">使用するMutex名</param>
+            <param name="pipeName">使用する名前付きパイプ名</param>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.SystemServices.SingleInstanceManager.TryAcquire">
+            <summary>
+            このプロセスが最初のインスタンス（オーナー）かどうかを判定し、
+            オーナーであればパイプサーバーを起動します。
+            オーナーでなければ何もしません（呼び出し側が<see cref="M:BrowserChooser3.Classes.Services.SystemServices.SingleInstanceManager.TrySendUrlToExistingInstance(System.String,System.String)"/>を使うこと）。
+            </summary>
+            <returns>このプロセスが最初のインスタンスの場合はtrue</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.SystemServices.SingleInstanceManager.TrySendUrlToExistingInstance(System.String,System.String)">
+            <summary>
+            既存の常駐インスタンスに対して、名前付きパイプ経由でURLを送信します
+            </summary>
+            <param name="url">送信するURL</param>
+            <param name="pipeName">送信先の名前付きパイプ名（省略時は既定値）</param>
+            <returns>送信に成功した場合はtrue</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.SystemServices.SingleInstanceManager.Dispose">
+            <summary>
+            Mutexとパイプサーバーを解放します
+            </summary>
+        </member>
         <member name="T:BrowserChooser3.Classes.Services.SystemServices.StartupLauncher">
             <summary>
             アプリケーション起動時の初期化とブラウザ起動を管理するクラス
@@ -1893,6 +1936,12 @@
             アイコン抽出、スケーリング、画像変換などの機能を提供します
             </summary>
         </member>
+        <member name="F:BrowserChooser3.Classes.Utilities.ImageUtilities._iconCache">
+            <summary>
+            抽出済みアイコンのキャッシュ（キー: ファイルパス+アイコンインデックス）
+            同じ実行ファイルへの再アクセス・Win32でのアイコン再抽出を避けるため、プロセス生存期間中保持する
+            </summary>
+        </member>
         <member name="M:BrowserChooser3.Classes.Utilities.ImageUtilities.GetImage(BrowserChooser3.Classes.Models.Browser,System.Boolean)">
             <summary>
             ブラウザからアイコンを取得
@@ -2051,6 +2100,16 @@
             ログメッセージのキュー
             </summary>
         </member>
+        <member name="F:BrowserChooser3.Classes.Utilities.Logger.FlushBatchSize">
+            <summary>
+            この件数以上キューに溜まったら即座にファイルへフラッシュする
+            </summary>
+        </member>
+        <member name="F:BrowserChooser3.Classes.Utilities.Logger.FlushInterval">
+            <summary>
+            前回フラッシュしてからこの時間が経過したら次回のログ追加時にフラッシュする
+            </summary>
+        </member>
         <member name="M:BrowserChooser3.Classes.Utilities.Logger.IsInstalledViaInstaller">
             <summary>
             インストーラー経由でインストールされたかどうかを判定
@@ -2086,6 +2145,11 @@
             <param name="caller">呼び出し元</param>
             <param name="message">メッセージ</param>
             <param name="extraVars">追加情報</param>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Utilities.Logger.Flush">
+            <summary>
+            キューに溜まっているログを強制的にファイルへ書き込みます（アプリ終了時などに呼び出します）
+            </summary>
         </member>
         <member name="M:BrowserChooser3.Classes.Utilities.Logger.LogError(System.String,System.String,System.Object[])">
             <summary>
@@ -2790,6 +2854,12 @@
             <summary>
             システムトレイから復元します
             </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.MainForm.ReceiveExternalURL(System.String)">
+            <summary>
+            他プロセスから引き渡されたURLを受け取り、既存ウィンドウに反映します（単一インスタンス化用）
+            </summary>
+            <param name="url">受信したURL</param>
         </member>
         <member name="M:BrowserChooser3.Forms.MainForm.SetupURLUnshortening">
             <summary>

@@ -220,7 +220,11 @@ namespace BrowserChooser3.Forms
                 _notifyIcon.Visible = true;
                 Hide();
                 ShowInTaskbar = false;
-                
+
+                // トレイに隠れている間に勝手にブラウザが起動しないよう、カウントダウンを止める
+                _countdownTimer?.Stop();
+                _isPaused = true;
+
                 Logger.LogDebug("MainForm.MinimizeToTray", "システムトレイに最小化");
             }
         }
@@ -244,8 +248,48 @@ namespace BrowserChooser3.Forms
                 ShowInTaskbar = true;
                 WindowState = FormWindowState.Normal;
                 Activate();
-                
+
+                // トレイ格納中に止めたカウントダウンをリセットして再開する
+                _isPaused = false;
+                if (_countdownTimer != null && _defaultBrowser != null && !string.IsNullOrEmpty(_currentUrl))
+                {
+                    _currentDelay = _settings?.DefaultDelay ?? 5;
+                    UpdateCountdownDisplay();
+                    _countdownTimer.Start();
+                }
+
                 Logger.LogDebug("MainForm.ShowFromTray", "システムトレイから復元");
+            }
+        }
+
+        /// <summary>
+        /// 他プロセスから引き渡されたURLを受け取り、既存ウィンドウに反映します（単一インスタンス化用）
+        /// </summary>
+        /// <param name="url">受信したURL</param>
+        public void ReceiveExternalURL(string url)
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new Action<string>(ReceiveExternalURL), url);
+                return;
+            }
+
+            Logger.LogInfo("MainForm.ReceiveExternalURL", "他プロセスからURLを受信", url);
+
+            if (_isInTray)
+            {
+                ShowFromTray();
+            }
+            else
+            {
+                Show();
+                WindowState = FormWindowState.Normal;
+                Activate();
+            }
+
+            if (!string.IsNullOrEmpty(url))
+            {
+                UpdateURL(url);
             }
         }
 
@@ -2300,6 +2344,16 @@ namespace BrowserChooser3.Forms
         {
             try
             {
+                // ユーザーが×ボタン等で閉じようとした場合、常駐設定が有効ならトレイに格納してキャンセルする
+                if (e.CloseReason == CloseReason.UserClosing && (_settings?.AlwaysResidentInTray ?? false))
+                {
+                    Logger.LogDebug("MainForm.OnFormClosing", "AlwaysResidentInTrayが有効のためトレイに格納します");
+                    e.Cancel = true;
+                    InitializeSystemTray();
+                    MinimizeToTray();
+                    return;
+                }
+
                 // システムトレイアイコンのクリーンアップ
                 if (_notifyIcon != null)
                 {

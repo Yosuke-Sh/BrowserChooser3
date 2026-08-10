@@ -697,5 +697,97 @@ namespace BrowserChooser3.Tests
             // Act & Assert
             mainForm.Validate().Should().BeTrue(); // フォームの検証が成功することを確認
         }
+
+        #region AlwaysResidentInTray / OnFormClosing テスト
+
+        private static void InvokeOnFormClosing(MainForm form, FormClosingEventArgs args)
+        {
+            var method = typeof(MainForm).GetMethod("OnFormClosing",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            method!.Invoke(form, new object[] { args });
+        }
+
+        private static void SetPrivateField(object target, string fieldName, object? value)
+        {
+            var field = target.GetType().GetField(fieldName,
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            field!.SetValue(target, value);
+        }
+
+        private static T? GetPrivateField<T>(object target, string fieldName)
+        {
+            var field = target.GetType().GetField(fieldName,
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            return (T?)field!.GetValue(target);
+        }
+
+        [Fact]
+        public void OnFormClosing_WhenAlwaysResidentInTrayEnabled_ShouldCancelCloseAndMinimizeToTray()
+        {
+            // Arrange
+            var mainForm = new MainForm();
+            var settings = GetPrivateField<Settings>(mainForm, "_settings");
+            settings.Should().NotBeNull();
+            settings!.AlwaysResidentInTray = true;
+
+            var args = new FormClosingEventArgs(CloseReason.UserClosing, false);
+
+            // Act
+            InvokeOnFormClosing(mainForm, args);
+
+            // Assert
+            args.Cancel.Should().BeTrue();
+            mainForm.IsDisposed.Should().BeFalse();
+            GetPrivateField<bool>(mainForm, "_isInTray").Should().BeTrue();
+
+            mainForm.Dispose();
+        }
+
+        [Fact]
+        public void OnFormClosing_WhenAlwaysResidentInTrayDisabled_ShouldCloseNormally()
+        {
+            // Arrange
+            var mainForm = new MainForm();
+            var settings = GetPrivateField<Settings>(mainForm, "_settings");
+            settings.Should().NotBeNull();
+            settings!.AlwaysResidentInTray = false;
+
+            var args = new FormClosingEventArgs(CloseReason.UserClosing, false);
+
+            // Act
+            InvokeOnFormClosing(mainForm, args);
+
+            // Assert
+            args.Cancel.Should().BeFalse();
+
+            mainForm.Dispose();
+        }
+
+        [Fact]
+        public void MinimizeToTray_ShouldStopCountdownTimer()
+        {
+            // Arrange
+            var mainForm = new MainForm();
+            var settings = GetPrivateField<Settings>(mainForm, "_settings");
+            settings.Should().NotBeNull();
+            settings!.AlwaysResidentInTray = true;
+
+            var args = new FormClosingEventArgs(CloseReason.UserClosing, false);
+
+            // Act
+            InvokeOnFormClosing(mainForm, args);
+
+            // Assert
+            var timer = GetPrivateField<System.Windows.Forms.Timer>(mainForm, "_countdownTimer");
+            if (timer != null)
+            {
+                timer.Enabled.Should().BeFalse();
+            }
+            GetPrivateField<bool>(mainForm, "_isPaused").Should().BeTrue();
+
+            mainForm.Dispose();
+        }
+
+        #endregion
     }
 }

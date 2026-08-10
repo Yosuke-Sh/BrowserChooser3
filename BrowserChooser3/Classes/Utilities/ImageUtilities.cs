@@ -19,6 +19,12 @@ namespace BrowserChooser3.Classes.Utilities
         private static extern bool DestroyIcon(IntPtr hIcon);
 
         /// <summary>
+        /// 抽出済みアイコンのキャッシュ（キー: ファイルパス+アイコンインデックス）
+        /// 同じ実行ファイルへの再アクセス・Win32でのアイコン再抽出を避けるため、プロセス生存期間中保持する
+        /// </summary>
+        private static readonly Dictionary<string, Image> _iconCache = new();
+
+        /// <summary>
         /// ブラウザからアイコンを取得
         /// </summary>
         /// <param name="browser">ブラウザオブジェクト</param>
@@ -29,7 +35,7 @@ namespace BrowserChooser3.Classes.Utilities
             try
             {
                             string filePath = useCustomPath && !string.IsNullOrEmpty(browser.ImagePath)
-                ? browser.ImagePath 
+                ? browser.ImagePath
                     : browser.Target;
 
                 Logger.LogInfo("ImageUtilities.GetImage", "アイコン取得開始", browser.Name, filePath, useCustomPath);
@@ -40,12 +46,23 @@ namespace BrowserChooser3.Classes.Utilities
                     return null;
                 }
 
+                var cacheKey = $"{filePath}|{browser.IconIndex}";
+                lock (_iconCache)
+                {
+                    if (_iconCache.TryGetValue(cacheKey, out var cachedImage))
+                    {
+                        return cachedImage;
+                    }
+                }
+
                 // アイコンを抽出
                 var icon = ExtractIconFromFile(filePath, browser.IconIndex);
                 if (icon != null)
                 {
                     Logger.LogInfo("ImageUtilities.GetImage", "アイコン抽出成功", browser.Name, filePath);
-                    return icon.ToBitmap();
+                    var bitmap = icon.ToBitmap();
+                    CacheIcon(cacheKey, bitmap);
+                    return bitmap;
                 }
 
                 // フォールバック: 関連付けられたアイコンを取得
@@ -54,7 +71,9 @@ namespace BrowserChooser3.Classes.Utilities
                     var associatedIcon = Icon.ExtractAssociatedIcon(filePath);
                     if (associatedIcon != null)
                     {
-                        return associatedIcon.ToBitmap();
+                        var bitmap = associatedIcon.ToBitmap();
+                        CacheIcon(cacheKey, bitmap);
+                        return bitmap;
                     }
                 }
                 catch (Exception ex)
@@ -69,6 +88,14 @@ namespace BrowserChooser3.Classes.Utilities
             {
                 Logger.LogError("ImageUtilities.GetImage", "アイコン取得エラー", ex.Message);
                 return SystemIcons.Application.ToBitmap();
+            }
+        }
+
+        private static void CacheIcon(string cacheKey, Image bitmap)
+        {
+            lock (_iconCache)
+            {
+                _iconCache[cacheKey] = bitmap;
             }
         }
 

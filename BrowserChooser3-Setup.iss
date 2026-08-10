@@ -1,6 +1,6 @@
 [Setup]
 AppName=Browser Chooser 3
-AppVersion=0.1.4
+AppVersion=0.1.5
 AppPublisher=Your Company
 AppPublisherURL=https://github.com/Yosuke-Sh/BrowserChooser3
 AppSupportURL=https://github.com/Yosuke-Sh/BrowserChooser3

@@ -556,5 +556,38 @@ namespace BrowserChooser3.Tests
         }
 
         #endregion
+
+        #region Flush（バッチ書き込み）テスト
+
+        [Fact]
+        public void Flush_ShouldNotThrow_WhenQueueIsEmpty()
+        {
+            // Act & Assert
+            var action = () => Logger.Flush();
+            action.Should().NotThrow();
+        }
+
+        [Fact]
+        public void Flush_AfterMultipleLogCalls_ShouldNotThrow()
+        {
+            // Arrange
+            Logger.CurrentLogLevel = Logger.LogLevel.Trace;
+            var caller = "TestCaller";
+
+            // Act & Assert
+            // テスト環境ではAddToLogが早期リターンするため実ファイルI/Oは発生しないが、
+            // バッチ化後もLog呼び出し・Flush呼び出しが例外なく完了することを確認する
+            var action = () =>
+            {
+                for (int i = 0; i < 25; i++)
+                {
+                    Logger.LogDebug(caller, $"Message {i}");
+                }
+                Logger.Flush();
+            };
+            action.Should().NotThrow();
+        }
+
+        #endregion
     }
 }

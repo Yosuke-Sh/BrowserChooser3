@@ -144,6 +144,47 @@ namespace BrowserChooser3.Tests
             result.Should().BeOfType<Bitmap>();
         }
 
+        [Fact]
+        public void GetImage_CalledTwiceWithSamePath_ShouldReturnCachedInstance()
+        {
+            // Arrange
+            // 他テストとキャッシュキーが衝突しないよう専用ファイルを使用する
+            var cacheTestImagePath = Path.Combine(Path.GetTempPath(), $"test_image_cache_{Guid.NewGuid():N}.png");
+            using (var bitmap = new Bitmap(50, 50))
+            using (var graphics = Graphics.FromImage(bitmap))
+            {
+                graphics.Clear(Color.Green);
+                bitmap.Save(cacheTestImagePath, ImageFormat.Png);
+            }
+
+            try
+            {
+                var browser = new Browser
+                {
+                    Name = "Cache Test Browser",
+                    Target = cacheTestImagePath,
+                    IconIndex = 0
+                };
+
+                // Act
+                var first = ImageUtilities.GetImage(browser, false);
+                var second = ImageUtilities.GetImage(browser, false);
+
+                // Assert
+                first.Should().NotBeNull();
+                second.Should().NotBeNull();
+                // 2回目はキャッシュから返るため、同一インスタンスであること
+                ReferenceEquals(first, second).Should().BeTrue();
+            }
+            finally
+            {
+                if (File.Exists(cacheTestImagePath))
+                {
+                    File.Delete(cacheTestImagePath);
+                }
+            }
+        }
+
         #endregion
 
         #region ExtractIconFromFileテスト

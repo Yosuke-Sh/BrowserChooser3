@@ -83,6 +83,18 @@ namespace BrowserChooser3.Classes.Utilities
         private static readonly Queue<string> _logQueue = new Queue<string>();
 
         /// <summary>
+        /// この件数以上キューに溜まったら即座にファイルへフラッシュする
+        /// </summary>
+        private const int FlushBatchSize = 20;
+
+        /// <summary>
+        /// 前回フラッシュしてからこの時間が経過したら次回のログ追加時にフラッシュする
+        /// </summary>
+        private static readonly TimeSpan FlushInterval = TimeSpan.FromSeconds(2);
+
+        private static DateTime _lastFlushTime = DateTime.MinValue;
+
+        /// <summary>
         /// インストーラー経由でインストールされたかどうかを判定
         /// </summary>
         /// <returns>インストーラー経由の場合はtrue</returns>
@@ -245,12 +257,29 @@ namespace BrowserChooser3.Classes.Utilities
                 }
             }
 
+            bool shouldFlush;
             lock (_logQueue)
             {
                 _logQueue.Enqueue(logEntry.ToString());
+
+                // Error/Warningは即座に書き込む（クラッシュ時の情報欠落を防ぐ）。
+                // それ以外は一定件数・一定時間たまるまでファイルI/Oをまとめる。
+                shouldFlush = level <= LogLevel.Warning
+                    || _logQueue.Count >= FlushBatchSize
+                    || (DateTime.Now - _lastFlushTime) >= FlushInterval;
             }
 
-            // ログをファイルに書き込み
+            if (shouldFlush)
+            {
+                WriteLogsToFile();
+            }
+        }
+
+        /// <summary>
+        /// キューに溜まっているログを強制的にファイルへ書き込みます（アプリ終了時などに呼び出します）
+        /// </summary>
+        public static void Flush()
+        {
             WriteLogsToFile();
         }
 
@@ -301,6 +330,14 @@ namespace BrowserChooser3.Classes.Utilities
         {
             try
             {
+                lock (_logQueue)
+                {
+                    if (_logQueue.Count == 0)
+                    {
+                        return;
+                    }
+                }
+
                 var logPath = LogFilePath;
                 var writer = new StreamWriter(logPath, true, Encoding.UTF8);
 
@@ -311,6 +348,7 @@ namespace BrowserChooser3.Classes.Utilities
                         var logEntry = _logQueue.Dequeue();
                         writer.WriteLine(logEntry);
                     }
+                    _lastFlushTime = DateTime.Now;
                 }
 
                 writer.Close();
