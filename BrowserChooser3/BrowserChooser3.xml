@@ -394,6 +394,16 @@
             Vivaldiを検出
             </summary>
         </member>
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.BrowserDetector.DetectByRegistryPaths(System.String,System.String,System.String,System.String[])">
+            <summary>
+            レジストリのApp Pathsキー群を順に確認し、最初に見つかった実行ファイルをブラウザとして登録します
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.BrowserDetector.DetectByFixedPath(System.String,System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            固定インストールパスの実行ファイル存在を確認し、見つかった場合はブラウザとして登録します
+            </summary>
+        </member>
         <member name="M:BrowserChooser3.Classes.Services.BrowserServices.BrowserDetector.AddCustomBrowser(System.String,System.String,System.String)">
             <summary>
             カスタムブラウザを追加
@@ -1880,11 +1890,19 @@
             </summary>
             <param name="form">対象のフォーム</param>
         </member>
-        <member name="M:BrowserChooser3.Classes.Utilities.GeneralUtilities.ApplyDarkMode(System.Windows.Forms.Form)">
+        <member name="M:BrowserChooser3.Classes.Utilities.GeneralUtilities.ApplyDarkMode(System.Windows.Forms.Form,System.Boolean)">
             <summary>
             ダークモードを適用します
             </summary>
             <param name="form">対象のフォーム</param>
+            <param name="enabled">ダークモードを有効にする場合はtrue、無効にする場合はfalse</param>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Utilities.GeneralUtilities.IsSystemDarkModeEnabled">
+            <summary>
+            Windowsのアプリ用ダークモード設定が有効かどうかを判定します
+            （レジストリ AppsUseLightTheme = 0 の場合にダークモードとみなす）
+            </summary>
+            <returns>ダークモードが有効な場合はtrue</returns>
         </member>
         <member name="M:BrowserChooser3.Classes.Utilities.GeneralUtilities.HasScreenReader">
             <summary>
@@ -2354,6 +2372,11 @@
         <member name="P:BrowserChooser3.CustomControls.FFButton.FocusBoxLineWidth">
             <summary>
             フォーカスボックスの線幅
+            </summary>
+        </member>
+        <member name="P:BrowserChooser3.CustomControls.FFButton.FocusBoxWidth">
+            <summary>
+            フォーカスボックスとボタン外枠との間隔（マージン）
             </summary>
         </member>
         <member name="P:BrowserChooser3.CustomControls.FFButton.UseAero">
@@ -3347,9 +3370,13 @@
             現在表示されているパネルの設定をデフォルト値にリセットします
             </summary>
         </member>
-        <member name="M:BrowserChooser3.Forms.OptionsForm.ResetCurrentPanelToDefaults(System.Windows.Forms.TabPage)">
+        <member name="M:BrowserChooser3.Forms.OptionsForm.SetControlValue``1(System.Windows.Forms.TabPage,System.String,System.Action{``0})">
             <summary>
             現在表示されているパネルの設定をデフォルト値にリセットします
+            </summary>
+            <summary>
+            tabPage配下から名前でコントロールを検索し、見つかった場合のみapplyを実行します。
+            Reset*PanelToDefaultsで繰り返される「Controls.Find→nullチェック→値代入」の定型処理を共通化します。
             </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.OptionsForm.ResetDisplayPanelToDefaults(System.Windows.Forms.TabPage)">

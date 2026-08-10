@@ -521,55 +521,53 @@ namespace BrowserChooser3.Classes
                 {
                     Logger.LogDebug("Settings.Load", "Reading Settings", path);
                     using var reader = new StreamReader(configPath);
-                    output = (Settings)serializer.Deserialize(reader)!;
+                    var deserialized = serializer.Deserialize(reader) as Settings;
+
+                    if (deserialized == null)
+                    {
+                        Logger.LogError("Settings.Load", "設定ファイルのデシリアライズ結果がnullです。デフォルト設定を使用します。", configPath);
+                        return new Settings(false);
+                    }
+
+                    output = deserialized;
 
                     if (output.EnableLogging)
                     {
                         LogDebugs = TriState.True;
-                    }
-
-
-
-                    // ログレベルを初期化（ログが有効な場合のみ）
-                    if (output?.EnableLogging == true)
-                    {
                         Logger.InitializeLogLevel(output.LogLevel);
                     }
 
                     // lock width and height to 10 max, 1 min - acts as overflow protection
-                    if (output?.Width > 10)
+                    if (output.Width > 10)
                         output.Width = 10;
-                    else if (output?.Width < 1)
+                    else if (output.Width < 1)
                         output.Width = 1;
 
-                    if (output?.Height > 10)
+                    if (output.Height > 10)
                         output.Height = 10;
-                    else if (output?.Height < 1)
+                    else if (output.Height < 1)
                         output.Height = 1;
 
                     // BackgroundColorValueの初期化（XMLデシリアライゼーション後の処理）
-                    if (output != null)
+                    // BackgroundColorValueが空の場合、BackgroundColorの値を使用して初期化
+                    var currentBackgroundColor = output.BackgroundColor;
+                    Logger.LogDebug("Settings.Load", $"BackgroundColorValue初期化: BackgroundColor={currentBackgroundColor}");
+
+                    // BackgroundColorValueプロパティを正しく設定（XMLデシリアライゼーションの副作用を回避）
+                    if (currentBackgroundColor == -1)
                     {
-                        // BackgroundColorValueが空の場合、BackgroundColorの値を使用して初期化
-                        var currentBackgroundColor = output.BackgroundColor;
-                        Logger.LogDebug("Settings.Load", $"BackgroundColorValue初期化: BackgroundColor={currentBackgroundColor}");
-                        
-                        // BackgroundColorValueプロパティを正しく設定（XMLデシリアライゼーションの副作用を回避）
-                        if (currentBackgroundColor == -1)
-                        {
-                            // BackgroundColorが-1（白）の場合は、BackgroundColorValueを白に設定
-                            Logger.LogDebug("Settings.Load", "BackgroundColorが-1なので、BackgroundColorValueを白に設定");
-                        }
-                        else
-                        {
-                            // その他の値の場合は、BackgroundColorの値を使用
-                            var color = Color.FromArgb(currentBackgroundColor);
-                            Logger.LogDebug("Settings.Load", $"BackgroundColorValueを設定: {color}");
-                        }
+                        // BackgroundColorが-1（白）の場合は、BackgroundColorValueを白に設定
+                        Logger.LogDebug("Settings.Load", "BackgroundColorが-1なので、BackgroundColorValueを白に設定");
+                    }
+                    else
+                    {
+                        // その他の値の場合は、BackgroundColorの値を使用
+                        var color = Color.FromArgb(currentBackgroundColor);
+                        Logger.LogDebug("Settings.Load", $"BackgroundColorValueを設定: {color}");
                     }
 
-                    Logger.LogDebug("Settings.Load", "設定ファイル読み込み成功", configPath, output?.Browsers?.Count ?? 0);
-                    return output!;
+                    Logger.LogDebug("Settings.Load", "設定ファイル読み込み成功", configPath, output.Browsers.Count);
+                    return output;
                 }
                 catch (Exception ex)
                 {

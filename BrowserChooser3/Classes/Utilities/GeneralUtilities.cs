@@ -97,16 +97,38 @@ namespace BrowserChooser3.Classes.Utilities
         /// ダークモードを適用します
         /// </summary>
         /// <param name="form">対象のフォーム</param>
-        public static void ApplyDarkMode(Form form)
+        /// <param name="enabled">ダークモードを有効にする場合はtrue、無効にする場合はfalse</param>
+        public static void ApplyDarkMode(Form form, bool enabled = true)
         {
             try
             {
-                int value = 1;
+                int value = enabled ? 1 : 0;
                 DwmSetWindowAttribute(form.Handle, DWMWA_USE_IMMERSIVE_DARK_MODE, ref value, sizeof(int));
             }
             catch (Exception ex)
             {
                 Logger.LogWarning("GeneralUtilities.ApplyDarkMode", "ダークモードの適用に失敗", ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Windowsのアプリ用ダークモード設定が有効かどうかを判定します
+        /// （レジストリ AppsUseLightTheme = 0 の場合にダークモードとみなす）
+        /// </summary>
+        /// <returns>ダークモードが有効な場合はtrue</returns>
+        public static bool IsSystemDarkModeEnabled()
+        {
+            try
+            {
+                using var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(
+                    @"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize");
+                var value = key?.GetValue("AppsUseLightTheme");
+                return value is int lightThemeValue && lightThemeValue == 0;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWarning("GeneralUtilities.IsSystemDarkModeEnabled", "ダークモード判定に失敗", ex.Message);
+                return false;
             }
         }
 

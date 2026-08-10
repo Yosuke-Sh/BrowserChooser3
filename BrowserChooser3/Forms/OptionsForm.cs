@@ -740,6 +740,19 @@ namespace BrowserChooser3.Forms
         /// <summary>
         /// 現在表示されているパネルの設定をデフォルト値にリセットします
         /// </summary>
+        /// <summary>
+        /// tabPage配下から名前でコントロールを検索し、見つかった場合のみapplyを実行します。
+        /// Reset*PanelToDefaultsで繰り返される「Controls.Find→nullチェック→値代入」の定型処理を共通化します。
+        /// </summary>
+        private static void SetControlValue<TControl>(TabPage tabPage, string controlName, Action<TControl> apply)
+            where TControl : Control
+        {
+            if (tabPage.Controls.Find(controlName, true).FirstOrDefault() is TControl control)
+            {
+                apply(control);
+            }
+        }
+
         private void ResetCurrentPanelToDefaults(TabPage currentTab)
         {
             switch (currentTab.Name)
@@ -797,47 +810,19 @@ namespace BrowserChooser3.Forms
             _settings.FocusBoxWidth = 2; // デフォルト値
 
             // UIに反映
-            var chkEnableTransparency = tabPage.Controls.Find("chkEnableTransparency", true).FirstOrDefault() as CheckBox;
-            if (chkEnableTransparency != null) chkEnableTransparency.Checked = _settings.EnableTransparency;
-
-            var chkHideTitleBar = tabPage.Controls.Find("chkHideTitleBar", true).FirstOrDefault() as CheckBox;
-            if (chkHideTitleBar != null) chkHideTitleBar.Checked = _settings.HideTitleBar;
-
-            var nudOpacity = tabPage.Controls.Find("nudOpacity", true).FirstOrDefault() as NumericUpDown;
-            if (nudOpacity != null) nudOpacity.Value = (decimal)_settings.Opacity;
-
-            var nudRoundedCorners = tabPage.Controls.Find("nudRoundedCorners", true).FirstOrDefault() as NumericUpDown;
-            if (nudRoundedCorners != null) nudRoundedCorners.Value = _settings.RoundedCornersRadius;
-
-            var chkEnableBackgroundGradient = tabPage.Controls.Find("chkEnableBackgroundGradient", true).FirstOrDefault() as CheckBox;
-            if (chkEnableBackgroundGradient != null) chkEnableBackgroundGradient.Checked = _settings.EnableBackgroundGradient;
-
-            var chkShowFocus = tabPage.Controls.Find("chkShowFocus", true).FirstOrDefault() as CheckBox;
-            if (chkShowFocus != null) chkShowFocus.Checked = _settings.ShowFocus;
-
-            var chkShowURLs = tabPage.Controls.Find("chkShowURLs", true).FirstOrDefault() as CheckBox;
-            if (chkShowURLs != null) chkShowURLs.Checked = _settings.ShowURL;
-
-            var chkRevealShortURLs = tabPage.Controls.Find("chkRevealShortURLs", true).FirstOrDefault() as CheckBox;
-            if (chkRevealShortURLs != null) chkRevealShortURLs.Checked = _settings.RevealShortURL;
-
-            // 色設定のリセット
-
-
-            var pbFocusBoxColor = tabPage.Controls.Find("pbFocusBoxColor", true).FirstOrDefault() as PictureBox;
-            if (pbFocusBoxColor != null) pbFocusBoxColor.BackColor = Color.FromArgb(_settings.FocusBoxColor);
-
-            var chkUseAccessibleRendering = tabPage.Controls.Find("chkUseAccessibleRendering", true).FirstOrDefault() as CheckBox;
-            if (chkUseAccessibleRendering != null) chkUseAccessibleRendering.Checked = _settings.UseAccessibleRendering;
-
-            var chkShowVisualFocus = tabPage.Controls.Find("chkShowVisualFocus", true).FirstOrDefault() as CheckBox;
-            if (chkShowVisualFocus != null) chkShowVisualFocus.Checked = _settings.ShowVisualFocus;
-
-            var nudFocusBoxLineWidth = tabPage.Controls.Find("nudFocusBoxLineWidth", true).FirstOrDefault() as NumericUpDown;
-            if (nudFocusBoxLineWidth != null) nudFocusBoxLineWidth.Value = _settings.FocusBoxLineWidth;
-
-            var nudFocusBoxWidth = tabPage.Controls.Find("nudFocusBoxWidth", true).FirstOrDefault() as NumericUpDown;
-            if (nudFocusBoxWidth != null) nudFocusBoxWidth.Value = _settings.FocusBoxWidth;
+            SetControlValue<CheckBox>(tabPage, "chkEnableTransparency", c => c.Checked = _settings.EnableTransparency);
+            SetControlValue<CheckBox>(tabPage, "chkHideTitleBar", c => c.Checked = _settings.HideTitleBar);
+            SetControlValue<NumericUpDown>(tabPage, "nudOpacity", c => c.Value = (decimal)_settings.Opacity);
+            SetControlValue<NumericUpDown>(tabPage, "nudRoundedCorners", c => c.Value = _settings.RoundedCornersRadius);
+            SetControlValue<CheckBox>(tabPage, "chkEnableBackgroundGradient", c => c.Checked = _settings.EnableBackgroundGradient);
+            SetControlValue<CheckBox>(tabPage, "chkShowFocus", c => c.Checked = _settings.ShowFocus);
+            SetControlValue<CheckBox>(tabPage, "chkShowURLs", c => c.Checked = _settings.ShowURL);
+            SetControlValue<CheckBox>(tabPage, "chkRevealShortURLs", c => c.Checked = _settings.RevealShortURL);
+            SetControlValue<PictureBox>(tabPage, "pbFocusBoxColor", c => c.BackColor = Color.FromArgb(_settings.FocusBoxColor));
+            SetControlValue<CheckBox>(tabPage, "chkUseAccessibleRendering", c => c.Checked = _settings.UseAccessibleRendering);
+            SetControlValue<CheckBox>(tabPage, "chkShowVisualFocus", c => c.Checked = _settings.ShowVisualFocus);
+            SetControlValue<NumericUpDown>(tabPage, "nudFocusBoxLineWidth", c => c.Value = _settings.FocusBoxLineWidth);
+            SetControlValue<NumericUpDown>(tabPage, "nudFocusBoxWidth", c => c.Value = _settings.FocusBoxWidth);
         }
 
         /// <summary>
@@ -857,36 +842,17 @@ namespace BrowserChooser3.Forms
             
 
             // UIに反映
-            var nudIconSizeWidth = tabPage.Controls.Find("nudIconSizeWidth", true).FirstOrDefault() as NumericUpDown;
-            if (nudIconSizeWidth != null) nudIconSizeWidth.Value = _settings.IconWidth;
-
-            var nudIconSizeHeight = tabPage.Controls.Find("nudIconSizeHeight", true).FirstOrDefault() as NumericUpDown;
-            if (nudIconSizeHeight != null) nudIconSizeHeight.Value = _settings.IconHeight;
-
-            var nudIconGapWidth = tabPage.Controls.Find("nudIconGapWidth", true).FirstOrDefault() as NumericUpDown;
-            if (nudIconGapWidth != null) nudIconGapWidth.Value = _settings.IconGapWidth;
-
-            var nudIconGapHeight = tabPage.Controls.Find("nudIconGapHeight", true).FirstOrDefault() as NumericUpDown;
-            if (nudIconGapHeight != null) nudIconGapHeight.Value = _settings.IconGapHeight;
-
-            var nudIconScale = tabPage.Controls.Find("nudIconScale", true).FirstOrDefault() as NumericUpDown;
-            if (nudIconScale != null) nudIconScale.Value = (decimal)_settings.IconScale;
-
-            var chkShowGrid = tabPage.Controls.Find("chkShowGrid", true).FirstOrDefault() as CheckBox;
-            if (chkShowGrid != null) chkShowGrid.Checked = _settings.ShowGrid;
-
-            var pbGridColor = tabPage.Controls.Find("pbGridColor", true).FirstOrDefault() as Panel;
-            if (pbGridColor != null) pbGridColor.BackColor = Color.FromArgb(_settings.GridColor);
-
-            var nudGridLineWidth = tabPage.Controls.Find("nudGridLineWidth", true).FirstOrDefault() as NumericUpDown;
-            if (nudGridLineWidth != null) nudGridLineWidth.Value = _settings.GridLineWidth;
-
-                            // Grid SizeのWidth、Height
-            var nudGridWidth = tabPage.Controls.Find("nudGridWidth", true).FirstOrDefault() as NumericUpDown;
-            if (nudGridWidth != null) nudGridWidth.Value = _settings.GridWidth;
-
-            var nudGridHeight = tabPage.Controls.Find("nudGridHeight", true).FirstOrDefault() as NumericUpDown;
-            if (nudGridHeight != null) nudGridHeight.Value = _settings.GridHeight;
+            SetControlValue<NumericUpDown>(tabPage, "nudIconSizeWidth", c => c.Value = _settings.IconWidth);
+            SetControlValue<NumericUpDown>(tabPage, "nudIconSizeHeight", c => c.Value = _settings.IconHeight);
+            SetControlValue<NumericUpDown>(tabPage, "nudIconGapWidth", c => c.Value = _settings.IconGapWidth);
+            SetControlValue<NumericUpDown>(tabPage, "nudIconGapHeight", c => c.Value = _settings.IconGapHeight);
+            SetControlValue<NumericUpDown>(tabPage, "nudIconScale", c => c.Value = (decimal)_settings.IconScale);
+            SetControlValue<CheckBox>(tabPage, "chkShowGrid", c => c.Checked = _settings.ShowGrid);
+            SetControlValue<Panel>(tabPage, "pbGridColor", c => c.BackColor = Color.FromArgb(_settings.GridColor));
+            SetControlValue<NumericUpDown>(tabPage, "nudGridLineWidth", c => c.Value = _settings.GridLineWidth);
+            // Grid SizeのWidth、Height
+            SetControlValue<NumericUpDown>(tabPage, "nudGridWidth", c => c.Value = _settings.GridWidth);
+            SetControlValue<NumericUpDown>(tabPage, "nudGridHeight", c => c.Value = _settings.GridHeight);
         }
 
         /// <summary>

@@ -573,7 +573,16 @@ namespace BrowserChooser3.Forms
             try
             {
                 Logger.LogDebug("MainForm.MainForm_Load", "フォームLoad開始");
-                
+
+                // Windows 11のダークモード設定に自動追従（DWM未対応環境では内部でtry/catchされ実害なし）
+                var isDarkMode = GeneralUtilities.IsSystemDarkModeEnabled();
+                GeneralUtilities.ApplyDarkMode(this, isDarkMode);
+                // Mica効果は独自の透明化設定と競合するため、透明化が無効な場合のみ適用する
+                if (isDarkMode && _settings?.EnableTransparency != true)
+                {
+                    GeneralUtilities.ApplyMicaEffect(this);
+                }
+
                 // 初期URLが設定されている場合は更新
                 if (!string.IsNullOrEmpty(_initialUrl))
                 {
@@ -651,6 +660,14 @@ namespace BrowserChooser3.Forms
             var availableWidth = ClientSize.Width - 120; // 左右マージン（右端ボタンとbtnInfo用のスペース確保）
             var columnsPerRow = Math.Max(1, availableWidth / (buttonWidth + gapWidth));
             
+            // ラベルをフォーム全体から都度検索すると総当たりでO(n^2)になるため、事前に名前で索引化する
+            var overlayLabelsByName = Controls.OfType<Label>()
+                .Where(l => l.Name.StartsWith("lblOverlay_"))
+                .ToDictionary(l => l.Name);
+            var nameLabelsByName = Controls.OfType<Label>()
+                .Where(l => l.Name.StartsWith("lblName_"))
+                .ToDictionary(l => l.Name);
+
             var buttonIndex = 0;
             foreach (Control control in Controls)
             {
@@ -660,12 +677,11 @@ namespace BrowserChooser3.Forms
                     var col = buttonIndex % columnsPerRow;
                     var x = 50 + (col * (buttonWidth + gapWidth)); // btnInfoの右側から開始
                     var y = 30 + (row * (buttonHeight + gapHeight));
-                    
+
                     button.Location = new Point(x, y);
-                    
+
                     // 対応するオーバーレイラベルの位置も調整
-                    var overlayLabel = Controls.OfType<Label>().FirstOrDefault(l => l.Name == $"lblOverlay_{buttonIndex}");
-                    if (overlayLabel != null)
+                    if (overlayLabelsByName.TryGetValue($"lblOverlay_{buttonIndex}", out var overlayLabel))
                     {
                         var labelWidth = TextRenderer.MeasureText(overlayLabel.Text, overlayLabel.Font).Width;
                         overlayLabel.Location = new Point(
@@ -673,9 +689,8 @@ namespace BrowserChooser3.Forms
                             y - 15
                         );
                     }
-                    
-                    var nameLabel = Controls.OfType<Label>().FirstOrDefault(l => l.Name == $"lblName_{buttonIndex}");
-                    if (nameLabel != null)
+
+                    if (nameLabelsByName.TryGetValue($"lblName_{buttonIndex}", out var nameLabel))
                     {
                         var labelWidth = TextRenderer.MeasureText(nameLabel.Text, nameLabel.Font).Width;
                         nameLabel.Location = new Point(
@@ -683,7 +698,7 @@ namespace BrowserChooser3.Forms
                             y + buttonHeight - 20
                         );
                     }
-                    
+
                     buttonIndex++;
                 }
             }
@@ -816,7 +831,10 @@ namespace BrowserChooser3.Forms
                     TextAlign = ContentAlignment.MiddleCenter,
                     ShowFocusBox = _settings?.ShowFocus ?? true,
                     ShowVisualFocus = _settings?.ShowVisualFocus ?? false,
-                    TrapArrowKeys = true
+                    TrapArrowKeys = true,
+                    FocusBoxColor = Color.FromArgb(_settings?.FocusBoxColor ?? Color.Blue.ToArgb()),
+                    FocusBoxLineWidth = _settings?.FocusBoxLineWidth ?? 2,
+                    FocusBoxWidth = _settings?.FocusBoxWidth ?? 2
                 };
                 
                 // ブラウザアイコンの設定
@@ -870,7 +888,15 @@ namespace BrowserChooser3.Forms
                     }
                     _toolTip.SetToolTip(button, tooltipText);
                 }
-                
+
+                // アクセシブルレンダリング設定が有効な場合、スクリーンリーダー向けの情報を付与する
+                if (_settings?.UseAccessibleRendering ?? false)
+                {
+                    button.AccessibleName = browser.Name;
+                    button.AccessibleDescription = $"{browser.Name}でURLを開く";
+                    button.AccessibleRole = AccessibleRole.PushButton;
+                }
+
                 Controls.Add(button);
                 
                 // ホットキーとデフォルトブラウザのオーバーレイラベルを作成
@@ -971,13 +997,16 @@ namespace BrowserChooser3.Forms
             var availableWidth = ClientSize.Width - 80;
             var columnsPerRow = Math.Max(1, availableWidth / (buttonWidth + gapWidth));
             
+            var overlayLabelsByName = Controls.OfType<Label>()
+                .Where(l => l.Name.StartsWith("lblOverlay_"))
+                .ToDictionary(l => l.Name);
+
             var buttonIndex = 0;
             foreach (Control control in Controls)
             {
                 if (control is Button button && button.Tag is Browser)
                 {
-                    var overlayLabel = Controls.OfType<Label>().FirstOrDefault(l => l.Name == $"lblOverlay_{buttonIndex}");
-                    if (overlayLabel != null)
+                    if (overlayLabelsByName.TryGetValue($"lblOverlay_{buttonIndex}", out var overlayLabel))
                     {
                         var labelWidth = TextRenderer.MeasureText(overlayLabel.Text, overlayLabel.Font).Width;
                         overlayLabel.Location = new Point(

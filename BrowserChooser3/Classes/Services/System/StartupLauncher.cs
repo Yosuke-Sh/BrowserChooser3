@@ -402,45 +402,64 @@ namespace BrowserChooser3.Classes.Services.SystemServices
         /// </summary>
         private static async void Worker_DoWork_HTTP()
         {
-            using var httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Add("User-Agent", Settings.Current.UserAgent);
-
+            // async voidはThreadのエントリポイントから呼ばれており、捕捉されない例外は
+            // アプリ全体をクラッシュさせうるため、メソッド全体を確実にtry/catchで囲む
             try
             {
-                // HEADリクエストを試行
-                using var headRequest = new HttpRequestMessage(HttpMethod.Head, _url);
-                using var headResponse = await httpClient.SendAsync(headRequest);
-                
-                if (headResponse.RequestMessage?.RequestUri != null)
-                {
-                    _url = headResponse.RequestMessage.RequestUri.ToString();
-                }
-            }
-            catch (HttpRequestException)
-            {
+                using var httpClient = new HttpClient();
+                httpClient.DefaultRequestHeaders.Add("User-Agent", Settings.Current.UserAgent);
+
                 try
                 {
-                    // GETリクエストを試行
-                    using var getResponse = await httpClient.GetAsync(_url);
-                    
-                    if (getResponse.RequestMessage?.RequestUri != null)
+                    // HEADリクエストを試行
+                    using var headRequest = new HttpRequestMessage(HttpMethod.Head, _url);
+                    using var headResponse = await httpClient.SendAsync(headRequest);
+
+                    if (headResponse.RequestMessage?.RequestUri != null)
                     {
-                        _url = getResponse.RequestMessage.RequestUri.ToString();
+                        _url = headResponse.RequestMessage.RequestUri.ToString();
                     }
                 }
-                catch
+                catch (HttpRequestException)
                 {
-                    // 変換できない場合
+                    try
+                    {
+                        // GETリクエストを試行
+                        using var getResponse = await httpClient.GetAsync(_url);
+
+                        if (getResponse.RequestMessage?.RequestUri != null)
+                        {
+                            _url = getResponse.RequestMessage.RequestUri.ToString();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        // 変換できない場合は元のURLのまま処理を続行する
+                        Logger.LogWarning("StartupLauncher.Worker_DoWork_HTTP", "GETリクエストによる短縮URL展開に失敗", ex.Message);
+                    }
+                }
+
+                // クリーンアップとデリゲート呼び出し
+                if (_delegate != null)
+                {
+                    _delegate.Invoke(_url);
                 }
             }
-
-            // クリーンアップとデリゲート呼び出し
-            if (_delegate != null)
+            catch (Exception ex)
             {
-                _delegate.Invoke(_url);
-            }
+                // 短縮URL展開はベストエフォートのため、想定外の例外もここで握りつぶし、
+                // 元のURLのままアプリの動作を継続させる
+                Logger.LogError("StartupLauncher.Worker_DoWork_HTTP", "短縮URL展開処理で予期しないエラーが発生しました", ex.Message, ex.StackTrace ?? "");
 
-            _worker = null;
+                if (_delegate != null)
+                {
+                    _delegate.Invoke(_url);
+                }
+            }
+            finally
+            {
+                _worker = null;
+            }
         }
         #endregion
     }

@@ -45,6 +45,11 @@ namespace BrowserChooser3.CustomControls
         public int FocusBoxLineWidth { get; set; } = 2;
 
         /// <summary>
+        /// フォーカスボックスとボタン外枠との間隔（マージン）
+        /// </summary>
+        public int FocusBoxWidth { get; set; } = 2;
+
+        /// <summary>
         /// Aero効果の有効/無効
         /// </summary>
         public bool UseAero { get; set; } = true;
@@ -373,10 +378,10 @@ namespace BrowserChooser3.CustomControls
             };
 
             var focusRect = new Rectangle(
-                rect.X + 2,
-                rect.Y + 2,
-                rect.Width - 4,
-                rect.Height - 4);
+                rect.X + FocusBoxWidth,
+                rect.Y + FocusBoxWidth,
+                rect.Width - (FocusBoxWidth * 2),
+                rect.Height - (FocusBoxWidth * 2));
 
             graphics.DrawRectangle(pen, focusRect);
         }

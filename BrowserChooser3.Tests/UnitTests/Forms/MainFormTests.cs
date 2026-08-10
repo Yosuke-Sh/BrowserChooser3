@@ -789,5 +789,114 @@ namespace BrowserChooser3.Tests
         }
 
         #endregion
+
+        #region AutoURLs / Protocol 判定ロジック テスト
+
+        private static bool InvokeProcessAutoURLsAndProtocols(MainForm form, string url)
+        {
+            var method = typeof(MainForm).GetMethod("ProcessAutoURLsAndProtocols",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            return (bool)method!.Invoke(form, new object[] { url })!;
+        }
+
+        [Fact]
+        public void ProcessAutoURLsAndProtocols_WhenNoAutoURLsOrProtocolsConfigured_ShouldReturnFalse()
+        {
+            // Arrange
+            var mainForm = new MainForm();
+            var settings = GetPrivateField<Settings>(mainForm, "_settings");
+            settings.Should().NotBeNull();
+            settings!.URLs.Clear();
+            settings.Protocols.Clear();
+
+            // Act
+            var result = InvokeProcessAutoURLsAndProtocols(mainForm, "https://example.com");
+
+            // Assert
+            result.Should().BeFalse();
+
+            mainForm.Dispose();
+        }
+
+        [Fact]
+        public void ProcessAutoURLsAndProtocols_WhenAutoURLPatternDoesNotMatch_ShouldFallThroughWithoutLaunching()
+        {
+            // Arrange
+            var mainForm = new MainForm();
+            var settings = GetPrivateField<Settings>(mainForm, "_settings");
+            settings.Should().NotBeNull();
+            settings!.URLs.Clear();
+            settings.Protocols.Clear();
+            settings.URLs.Add(new URL
+            {
+                IsActive = true,
+                URLPattern = "https://only-this-domain.example.com/*",
+                BrowserGuid = Guid.NewGuid()
+            });
+
+            // Act
+            var result = InvokeProcessAutoURLsAndProtocols(mainForm, "https://unrelated.example.org/page");
+
+            // Assert
+            // マッチしないパターンのみが設定されている場合、AutoURLs/Protocolいずれの経路にも
+            // 処理が渡されず、ブラウザ起動を伴わずにfalseが返ることを確認する
+            result.Should().BeFalse();
+
+            mainForm.Dispose();
+        }
+
+        [Fact]
+        public void ProcessAutoURLsAndProtocols_WhenAutoURLIsInactive_ShouldSkipAndReturnFalse()
+        {
+            // Arrange
+            var mainForm = new MainForm();
+            var settings = GetPrivateField<Settings>(mainForm, "_settings");
+            settings.Should().NotBeNull();
+            settings!.URLs.Clear();
+            settings.Protocols.Clear();
+            settings.URLs.Add(new URL
+            {
+                IsActive = false, // 無効化されているため、パターンが一致してもスキップされる
+                URLPattern = "*",
+                BrowserGuid = Guid.NewGuid()
+            });
+
+            // Act
+            var result = InvokeProcessAutoURLsAndProtocols(mainForm, "https://example.com");
+
+            // Assert
+            result.Should().BeFalse();
+
+            mainForm.Dispose();
+        }
+
+        [Fact]
+        public void ProcessAutoURLsAndProtocols_WhenProtocolHeaderDoesNotMatchUrlScheme_ShouldReturnFalse()
+        {
+            // Arrange
+            var mainForm = new MainForm();
+            var settings = GetPrivateField<Settings>(mainForm, "_settings");
+            settings.Should().NotBeNull();
+            settings!.URLs.Clear();
+            settings.Protocols.Clear();
+            settings.Protocols.Add(new Protocol
+            {
+                IsActive = true,
+                Header = "ftp",
+                BrowserGuid = Guid.NewGuid()
+            });
+
+            // Act
+            // httpスキームのURLはftpプロトコル設定にマッチしないため、
+            // AutoURLs > Protocolの優先順位を通り抜けてfalseで返ることを確認する
+            var result = InvokeProcessAutoURLsAndProtocols(mainForm, "https://example.com");
+
+            // Assert
+            result.Should().BeFalse();
+
+            mainForm.Dispose();
+        }
+
+        #endregion
     }
 }

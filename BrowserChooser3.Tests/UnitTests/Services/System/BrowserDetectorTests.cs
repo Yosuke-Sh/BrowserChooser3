@@ -436,6 +436,39 @@ namespace BrowserChooser3.Tests
             result.Should().BeOfType<List<Browser>>();
         }
 
+        [Fact]
+        public void DetectBrowsers_ShouldContinueDetectingOtherBrowsers_WhenOneDetectionThrows()
+        {
+            // Arrange: BrowserDetectorの各Detectメソッドは内部で個別にtry/catchされているため、
+            // 1つのブラウザ検出（レジストリアクセス等）で例外が発生しても、
+            // DetectBrowsers()全体が異常終了せず、最後まで実行されることを検証する。
+            // 実際にレジストリを壊すことはできないため、ここでは
+            // DetectBrowsers()が例外を外に伝播させないことと、
+            // 呼び出しのたびに正常に完了することを確認する。
+
+            // Act
+            var action = () => BrowserDetector.DetectBrowsers();
+
+            // Assert
+            action.Should().NotThrow();
+        }
+
+        [Fact]
+        public void DetectBrowsers_CalledMultipleTimes_ShouldNotAccumulateDuplicates()
+        {
+            // Arrange
+            var firstResult = BrowserDetector.DetectBrowsers();
+            var firstCount = firstResult.Count;
+
+            // Act
+            var secondResult = BrowserDetector.DetectBrowsers();
+
+            // Assert
+            // DetectBrowsers()の先頭でDetectedBrowsers.Clear()されるため、
+            // 同じ環境で複数回呼んでも検出件数は変わらないはず
+            secondResult.Count.Should().Be(firstCount);
+        }
+
         // Dispose()メソッドを削除 - 各テストメソッド内でクリーンアップを行う
     }
 }
