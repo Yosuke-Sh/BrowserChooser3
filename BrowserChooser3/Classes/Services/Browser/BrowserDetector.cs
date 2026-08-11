@@ -67,7 +67,11 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
         /// </summary>
         private static void DetectEdge()
         {
-            DetectByFixedPath("DetectEdge", "Microsoft Edge", @"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe", "--new-window", isEdge: true);
+            DetectByRegistryPathsThenFixedPath("DetectEdge", "Microsoft Edge", "--new-window", new[]
+            {
+                @"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\msedge.exe",
+                @"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\App Paths\msedge.exe"
+            }, @"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe", isEdge: true);
         }
 
         /// <summary>
@@ -75,7 +79,11 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
         /// </summary>
         private static void DetectOpera()
         {
-            DetectByFixedPath("DetectOpera", "Opera", @"C:\Program Files\Opera\launcher.exe", "--new-window");
+            DetectByRegistryPathsThenFixedPath("DetectOpera", "Opera", "--new-window", new[]
+            {
+                @"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\opera.exe",
+                @"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\App Paths\opera.exe"
+            }, @"C:\Program Files\Opera\launcher.exe");
         }
 
         /// <summary>
@@ -83,6 +91,7 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
         /// </summary>
         private static void DetectSafari()
         {
+            // Safariは配布終了済みで、レジストリApp Pathsに登録される慣習を持たないため固定パスのみで検出する
             DetectByFixedPath("DetectSafari", "Safari", @"C:\Program Files\Safari\Safari.exe", "");
         }
 
@@ -91,7 +100,11 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
         /// </summary>
         private static void DetectBrave()
         {
-            DetectByFixedPath("DetectBrave", "Brave Browser", @"C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe", "--new-window");
+            DetectByRegistryPathsThenFixedPath("DetectBrave", "Brave Browser", "--new-window", new[]
+            {
+                @"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\brave.exe",
+                @"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\App Paths\brave.exe"
+            }, @"C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe");
         }
 
         /// <summary>
@@ -99,14 +112,30 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
         /// </summary>
         private static void DetectVivaldi()
         {
-            var expandedPath = Environment.ExpandEnvironmentVariables(@"C:\Users\%USERNAME%\AppData\Local\Vivaldi\Application\vivaldi.exe");
-            DetectByFixedPath("DetectVivaldi", "Vivaldi", expandedPath, "--new-window");
+            var fixedPath = System.IO.Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                @"Vivaldi\Application\vivaldi.exe");
+
+            DetectByRegistryPathsThenFixedPath("DetectVivaldi", "Vivaldi", "--new-window", new[]
+            {
+                @"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\vivaldi.exe",
+                @"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\App Paths\vivaldi.exe"
+            }, fixedPath);
         }
 
         /// <summary>
         /// レジストリのApp Pathsキー群を順に確認し、最初に見つかった実行ファイルをブラウザとして登録します
         /// </summary>
         private static void DetectByRegistryPaths(string callerName, string browserName, string arguments, string[] registryPaths)
+        {
+            DetectByRegistryPaths(callerName, browserName, arguments, registryPaths, isEdge: false);
+        }
+
+        /// <summary>
+        /// レジストリのApp Pathsキー群を順に確認し、最初に見つかった実行ファイルをブラウザとして登録します。
+        /// 見つかった場合はtrueを返します。
+        /// </summary>
+        private static bool DetectByRegistryPaths(string callerName, string browserName, string arguments, string[] registryPaths, bool isEdge)
         {
             try
             {
@@ -115,14 +144,28 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
                     var exePath = GeneralUtilities.GetRegistryValue(registryPath, "");
                     if (!string.IsNullOrEmpty(exePath) && System.IO.File.Exists(exePath))
                     {
-                        AddDetectedBrowser(callerName, browserName, exePath, arguments);
-                        break;
+                        AddDetectedBrowser(callerName, browserName, exePath, arguments, isEdge);
+                        return true;
                     }
                 }
             }
             catch (Exception ex)
             {
                 Logger.LogError($"BrowserDetector.{callerName}", $"{browserName}の検出中にエラーが発生しました", ex.Message, ex.StackTrace ?? "");
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// まずレジストリのApp Pathsで検出を試み、見つからない場合は既知の固定インストールパスにフォールバックします
+        /// </summary>
+        private static void DetectByRegistryPathsThenFixedPath(string callerName, string browserName, string arguments, string[] registryPaths, string fallbackFixedPath, bool isEdge = false)
+        {
+            var foundInRegistry = DetectByRegistryPaths(callerName, browserName, arguments, registryPaths, isEdge);
+            if (!foundInRegistry)
+            {
+                DetectByFixedPath(callerName, browserName, fallbackFixedPath, arguments, isEdge);
             }
         }
 

@@ -249,7 +249,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             // ヘルプテキスト
             var helpLabel = new Label
             {
-                Text = "Delay: 数値=秒数, Default=設定画面のデフォルト遅延時間を使用",
+                Text = "Delay: 数値=秒数, Default=設定画面のデフォルト遅延時間を使用 / URL: *=ワイルドカード, re:パターン=正規表現",
                 Location = new Point(97, 430),
                 Size = new Size(630, 20),
                 Font = new Font("Segoe UI", 8F, FontStyle.Italic),

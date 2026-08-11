@@ -399,6 +399,17 @@
             レジストリのApp Pathsキー群を順に確認し、最初に見つかった実行ファイルをブラウザとして登録します
             </summary>
         </member>
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.BrowserDetector.DetectByRegistryPaths(System.String,System.String,System.String,System.String[],System.Boolean)">
+            <summary>
+            レジストリのApp Pathsキー群を順に確認し、最初に見つかった実行ファイルをブラウザとして登録します。
+            見つかった場合はtrueを返します。
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.BrowserDetector.DetectByRegistryPathsThenFixedPath(System.String,System.String,System.String,System.String[],System.String,System.Boolean)">
+            <summary>
+            まずレジストリのApp Pathsで検出を試み、見つからない場合は既知の固定インストールパスにフォールバックします
+            </summary>
+        </member>
         <member name="M:BrowserChooser3.Classes.Services.BrowserServices.BrowserDetector.DetectByFixedPath(System.String,System.String,System.String,System.String,System.Boolean)">
             <summary>
             固定インストールパスの実行ファイル存在を確認し、見つかった場合はブラウザとして登録します
@@ -1968,6 +1979,23 @@
             <param name="useCustomPath">カスタムパスを使用するかどうか</param>
             <returns>アイコン画像</returns>
         </member>
+        <member name="F:BrowserChooser3.Classes.Utilities.ImageUtilities._resizedIconCache">
+            <summary>
+            リサイズ済みアイコンのキャッシュ（キー: ファイルパス+アイコンインデックス+サイズ）
+            ボタン表示のたびに同じサイズへのリサイズ（GDI+描画）を繰り返さないよう、プロセス生存期間中保持する
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Utilities.ImageUtilities.GetResizedImage(BrowserChooser3.Classes.Models.Browser,System.Boolean,System.Int32)">
+            <summary>
+            ブラウザのアイコンを指定サイズにリサイズした画像を取得します。
+            元アイコン（<see cref="M:BrowserChooser3.Classes.Utilities.ImageUtilities.GetImage(BrowserChooser3.Classes.Models.Browser,System.Boolean)"/>）・リサイズ結果ともにキャッシュされ、
+            同一ブラウザ・同一サイズへの再要求はキャッシュから返します。
+            </summary>
+            <param name="browser">ブラウザオブジェクト</param>
+            <param name="useCustomPath">カスタムパスを使用するかどうか</param>
+            <param name="size">リサイズ後のサイズ（正方形）</param>
+            <returns>リサイズ済み画像</returns>
+        </member>
         <member name="M:BrowserChooser3.Classes.Utilities.ImageUtilities.ExtractIconFromFile(System.String,System.Int32)">
             <summary>
             ファイルからアイコンを抽出
@@ -2331,6 +2359,15 @@
             </summary>
             <param name="source">ソースURL</param>
             <param name="pattern">マッチングパターン</param>
+            <returns>マッチする場合はtrue</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Utilities.URLUtilities.MatchRegexPattern(System.String,System.String)">
+            <summary>
+            ユーザーが指定した正規表現でURLをマッチングします（"re:"プレフィックス用）。
+            不正な正規表現の場合はマッチ失敗として扱い、アプリを継続させます。
+            </summary>
+            <param name="source">ソースURL</param>
+            <param name="pattern">ユーザー指定の正規表現パターン</param>
             <returns>マッチする場合はtrue</returns>
         </member>
         <member name="T:BrowserChooser3.CustomControls.FFButton">

@@ -185,6 +185,51 @@ namespace BrowserChooser3.Tests
             }
         }
 
+        [Fact]
+        public void GetResizedImage_CalledTwiceWithSameSize_ShouldReturnCachedInstance()
+        {
+            // Arrange
+            var cacheTestImagePath = Path.Combine(Path.GetTempPath(), $"test_image_resize_{Guid.NewGuid():N}.png");
+            using (var bitmap = new Bitmap(50, 50))
+            using (var graphics = Graphics.FromImage(bitmap))
+            {
+                graphics.Clear(Color.Green);
+                bitmap.Save(cacheTestImagePath, ImageFormat.Png);
+            }
+
+            try
+            {
+                var browser = new Browser
+                {
+                    Name = "Resize Cache Test Browser",
+                    Target = cacheTestImagePath,
+                    IconIndex = 0
+                };
+
+                // Act
+                var first = ImageUtilities.GetResizedImage(browser, false, 32);
+                var second = ImageUtilities.GetResizedImage(browser, false, 32);
+                var differentSize = ImageUtilities.GetResizedImage(browser, false, 64);
+
+                // Assert
+                first.Should().NotBeNull();
+                second.Should().NotBeNull();
+                // 同一サイズの2回目呼び出しはキャッシュから返るため、同一インスタンスであること
+                ReferenceEquals(first, second).Should().BeTrue();
+                // サイズが異なれば別インスタンスであること
+                ReferenceEquals(first, differentSize).Should().BeFalse();
+                first!.Width.Should().Be(32);
+                differentSize!.Width.Should().Be(64);
+            }
+            finally
+            {
+                if (File.Exists(cacheTestImagePath))
+                {
+                    File.Delete(cacheTestImagePath);
+                }
+            }
+        }
+
         #endregion
 
         #region ExtractIconFromFileテスト

@@ -188,7 +188,16 @@ namespace BrowserChooser3.Classes.Utilities
                 return false;
 
             Logger.LogInfo("URLUtilities.MatchURLs", "Start", source, target);
-            
+
+            // パターンがre:で始まる場合は、残りの部分をユーザー指定の正規表現としてそのまま扱う
+            if (target.StartsWith("re:", StringComparison.OrdinalIgnoreCase))
+            {
+                var pattern = target.Substring(3);
+                var regexResult = MatchRegexPattern(source, pattern);
+                Logger.LogInfo("URLUtilities.MatchURLs", "End (Regex)", source, target, regexResult);
+                return regexResult;
+            }
+
             // パターンが@で始まる場合は特別処理
             if (target.StartsWith("@"))
             {
@@ -265,6 +274,35 @@ namespace BrowserChooser3.Classes.Utilities
             catch (Exception ex)
             {
                 Logger.LogError("URLUtilities.MatchURLPattern", "Pattern matching error", ex.Message);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// ユーザーが指定した正規表現でURLをマッチングします（"re:"プレフィックス用）。
+        /// 不正な正規表現の場合はマッチ失敗として扱い、アプリを継続させます。
+        /// </summary>
+        /// <param name="source">ソースURL</param>
+        /// <param name="pattern">ユーザー指定の正規表現パターン</param>
+        /// <returns>マッチする場合はtrue</returns>
+        private static bool MatchRegexPattern(string source, string pattern)
+        {
+            try
+            {
+                var regex = new System.Text.RegularExpressions.Regex(pattern,
+                    System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+                var result = regex.IsMatch(source);
+                Logger.LogDebug("URLUtilities.MatchRegexPattern", "正規表現マッチング結果", pattern, source, result);
+                return result;
+            }
+            catch (System.Text.RegularExpressions.RegexParseException ex)
+            {
+                Logger.LogWarning("URLUtilities.MatchRegexPattern", "不正な正規表現のためマッチ失敗として扱います", pattern, ex.Message);
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("URLUtilities.MatchRegexPattern", "正規表現マッチングエラー", ex.Message);
                 return false;
             }
         }

@@ -14,3 +14,7 @@ bin
 obj
 coverage
 TestResults
+
+# ビルド成果物（リリースのたびに変わるため追跡しない）
+/dist
+/Release

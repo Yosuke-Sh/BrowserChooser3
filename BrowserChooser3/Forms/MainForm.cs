@@ -842,17 +842,15 @@ namespace BrowserChooser3.Forms
                 {
                     Logger.LogDebug("MainForm.CreateBrowserButtons", "アイコン取得開始", browser.Name, browser.Target);
                     
-                    var browserIcon = ImageUtilities.GetImage(browser, true);
-                    if (browserIcon != null)
+                    // アイコンのサイズを調整（ボタンサイズとスケールに合わせる）
+                    var baseIconSize = Math.Min(buttonWidth - 10, buttonHeight - 30); // マージンを確保
+                    var iconScale = _settings?.IconScale ?? 1.0;
+                    var iconSize = (int)(baseIconSize * iconScale);
+                    var resizedIcon = ImageUtilities.GetResizedImage(browser, true, iconSize);
+                    if (resizedIcon != null)
                     {
-                        // アイコンのサイズを調整（ボタンサイズとスケールに合わせる）
-                        var baseIconSize = Math.Min(buttonWidth - 10, buttonHeight - 30); // マージンを確保
-                        var iconScale = _settings?.IconScale ?? 1.0;
-                        var iconSize = (int)(baseIconSize * iconScale);
-                        var resizedIcon = new Bitmap(browserIcon, new Size(iconSize, iconSize));
-                        
                         Logger.LogDebug("MainForm.CreateBrowserButtons", $"Icon size calculation - Base: {baseIconSize}, Scale: {iconScale}, Final: {iconSize}");
-                        
+
                         button.Image = resizedIcon;
                         button.ImageAlign = ContentAlignment.MiddleCenter;
                         button.TextImageRelation = TextImageRelation.Overlay;
@@ -1028,15 +1026,15 @@ namespace BrowserChooser3.Forms
             
             try
             {
-                var optionsForm = new OptionsForm(_settings!);
+                using var optionsForm = new OptionsForm(_settings!);
                 var result = optionsForm.ShowDialog(this);
-                
+
                 if (result == DialogResult.OK)
                 {
                     // 設定が変更された場合、フォームを再構築
                     RefreshForm();
                 }
-                
+
                 Logger.LogDebug("MainForm.OpenOptionsForm", "End", result);
             }
             catch (Exception ex)

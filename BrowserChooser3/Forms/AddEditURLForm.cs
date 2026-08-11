@@ -158,6 +158,11 @@ namespace BrowserChooser3.Forms
             var lblURL = new Label { Text = "URL:", Location = new Point(10, 20), AutoSize = true };
             var txtURL = new TextBox { Name = "txtURL", Location = new Point(120, 17), Size = new Size(320, 23) };
 
+            // URLパターンの記法をツールチップで案内（レイアウトに影響を与えないため）
+            var urlPatternToolTip = new ToolTip();
+            urlPatternToolTip.SetToolTip(txtURL,
+                "通常の文字列: 部分一致\n*を含む: ワイルドカード（例: https://example.com/*)\nre:で始める: 正規表現（例: re:^https://.*\\.example\\.com/.*$）");
+
             var lblBrowser = new Label { Text = "Browser:", Location = new Point(10, 60), AutoSize = true };
             var cmbBrowser = new ComboBox { Name = "cmbBrowser", Location = new Point(120, 57), Size = new Size(320, 23), DropDownStyle = ComboBoxStyle.DropDownList };
 

@@ -139,6 +139,39 @@ namespace BrowserChooser3.Tests
         }
         #endregion
 
+        #region 正規表現マッチング（re:プレフィックス）テスト
+
+        [Theory]
+        [InlineData("https://www.example.com/page", "re:^https://.*\\.example\\.com/.*$", true)]
+        [InlineData("https://other.org/page", "re:^https://.*\\.example\\.com/.*$", false)]
+        [InlineData("https://sub.example.com/path/123", "re:^https://sub\\.example\\.com/path/\\d+$", true)]
+        [InlineData("https://sub.example.com/path/abc", "re:^https://sub\\.example\\.com/path/\\d+$", false)]
+        [InlineData("HTTPS://WWW.EXAMPLE.COM/PAGE", "re:^https://.*\\.example\\.com/.*$", true)] // 大文字小文字を区別しない
+        public void URLUtilities_MatchURLs_WithRegexPrefix_ShouldMatchAsRegex(string url, string pattern, bool expected)
+        {
+            // Act
+            var matches = URLUtilities.MatchURLs(url, pattern);
+
+            // Assert
+            matches.Should().Be(expected);
+        }
+
+        [Fact]
+        public void URLUtilities_MatchURLs_WithInvalidRegexPattern_ShouldReturnFalseWithoutThrowing()
+        {
+            // Arrange: 閉じ括弧のない不正な正規表現
+            var invalidPattern = "re:(unclosed";
+
+            // Act
+            var action = () => URLUtilities.MatchURLs("https://example.com", invalidPattern);
+
+            // Assert
+            action.Should().NotThrow();
+            URLUtilities.MatchURLs("https://example.com", invalidPattern).Should().BeFalse();
+        }
+
+        #endregion
+
         #region エッジケーステスト
 
         [Theory]

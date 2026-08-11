@@ -100,6 +100,56 @@ namespace BrowserChooser3.Classes.Utilities
         }
 
         /// <summary>
+        /// リサイズ済みアイコンのキャッシュ（キー: ファイルパス+アイコンインデックス+サイズ）
+        /// ボタン表示のたびに同じサイズへのリサイズ（GDI+描画）を繰り返さないよう、プロセス生存期間中保持する
+        /// </summary>
+        private static readonly Dictionary<string, Image> _resizedIconCache = new();
+
+        /// <summary>
+        /// ブラウザのアイコンを指定サイズにリサイズした画像を取得します。
+        /// 元アイコン（<see cref="GetImage"/>）・リサイズ結果ともにキャッシュされ、
+        /// 同一ブラウザ・同一サイズへの再要求はキャッシュから返します。
+        /// </summary>
+        /// <param name="browser">ブラウザオブジェクト</param>
+        /// <param name="useCustomPath">カスタムパスを使用するかどうか</param>
+        /// <param name="size">リサイズ後のサイズ（正方形）</param>
+        /// <returns>リサイズ済み画像</returns>
+        public static Image? GetResizedImage(Browser browser, bool useCustomPath, int size)
+        {
+            if (size <= 0)
+            {
+                return GetImage(browser, useCustomPath);
+            }
+
+            string filePath = useCustomPath && !string.IsNullOrEmpty(browser.ImagePath)
+                ? browser.ImagePath
+                : browser.Target;
+
+            var resizedCacheKey = $"{filePath}|{browser.IconIndex}|{size}";
+            lock (_resizedIconCache)
+            {
+                if (_resizedIconCache.TryGetValue(resizedCacheKey, out var cachedResized))
+                {
+                    return cachedResized;
+                }
+            }
+
+            var sourceImage = GetImage(browser, useCustomPath);
+            if (sourceImage == null)
+            {
+                return null;
+            }
+
+            var resized = new Bitmap(sourceImage, new Size(size, size));
+            lock (_resizedIconCache)
+            {
+                _resizedIconCache[resizedCacheKey] = resized;
+            }
+
+            return resized;
+        }
+
+        /// <summary>
         /// ファイルからアイコンを抽出
         /// </summary>
         /// <param name="filePath">ファイルパス</param>
