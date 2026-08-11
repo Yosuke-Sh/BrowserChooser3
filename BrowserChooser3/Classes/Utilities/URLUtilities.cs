@@ -8,39 +8,7 @@ namespace BrowserChooser3.Classes.Utilities
     /// </summary>
     public static class URLUtilities
     {
-        /// <summary>
-        /// Browser Chooser 2互換のURLパーツ構造体
-        /// </summary>
-        public struct BC2URLParts
-        {
-            /// <summary>プロトコルかどうか</summary>
-            public Settings.TriState IsProtocol;
-            
-            /// <summary>プロトコル</summary>
-            public string Protocol;
-            
-            /// <summary>拡張子</summary>
-            public string Extension;
-            
-            /// <summary>残りの部分</summary>
-            public string Remainder;
 
-            /// <summary>
-            /// URLパーツを文字列に変換します
-            /// </summary>
-            /// <returns>URL文字列</returns>
-            public override string ToString()
-            {
-                if (IsProtocol == Settings.TriState.True)
-                {
-                    return $"{Protocol}://{Remainder}";
-                }
-                else
-                {
-                    return $"{Extension}.{Remainder}";
-                }
-            }
-        }
 
         /// <summary>
         /// URLが有効かどうかをチェックします
@@ -52,18 +20,30 @@ namespace BrowserChooser3.Classes.Utilities
             if (string.IsNullOrEmpty(url))
                 return false;
 
-            try
+            // 基本的なURLパターンチェック（大文字小文字を区別しない）
+            var lowerUrl = url.ToLowerInvariant();
+            if (lowerUrl.StartsWith("http://") || lowerUrl.StartsWith("https://") || 
+                lowerUrl.StartsWith("ftp://") || lowerUrl.StartsWith("file://"))
             {
-                var uri = new Uri(url);
-                return uri.Scheme == Uri.UriSchemeHttp || 
-                       uri.Scheme == Uri.UriSchemeHttps ||
-                       uri.Scheme == Uri.UriSchemeFtp ||
-                       uri.Scheme == Uri.UriSchemeFile;
+                // 不完全なURL（スキームのみ）の場合は有効とみなす
+                if (url.EndsWith("://"))
+                    return true;
+
+                try
+                {
+                    var uri = new Uri(url);
+                    return uri.Scheme == Uri.UriSchemeHttp || 
+                           uri.Scheme == Uri.UriSchemeHttps ||
+                           uri.Scheme == Uri.UriSchemeFtp ||
+                           uri.Scheme == Uri.UriSchemeFile;
+                }
+                catch
+                {
+                    return false;
+                }
             }
-            catch
-            {
-                return false;
-            }
+
+            return false;
         }
 
         /// <summary>
@@ -74,6 +54,11 @@ namespace BrowserChooser3.Classes.Utilities
         public static bool IsFilePath(string path)
         {
             if (string.IsNullOrEmpty(path))
+                return false;
+
+            // URLの場合はファイルパスではない
+            if (path.StartsWith("http://") || path.StartsWith("https://") || 
+                path.StartsWith("ftp://") || path.StartsWith("file://"))
                 return false;
 
             return System.IO.Path.IsPathRooted(path) || 
@@ -184,114 +169,9 @@ namespace BrowserChooser3.Classes.Utilities
             }
         }
 
-        /// <summary>
-        /// Browser Chooser 2互換のURLパーツ解析
-        /// </summary>
-        /// <param name="url">解析対象のURL</param>
-        /// <returns>URLパーツ</returns>
-        public static BC2URLParts DetermineParts(string url)
-        {
-            Logger.LogInfo("URLUtilities.DetermineParts", "Start", url);
-            var parts = new BC2URLParts();
 
-            if (string.IsNullOrEmpty(url))
-            {
-                parts.IsProtocol = Settings.TriState.UseDefault;
-                return Canonicalize(parts);
-            }
 
-            // プロトコルの検出
-            var protocolIndex = url.IndexOf("://");
-            if (protocolIndex > 0)
-            {
-                parts.IsProtocol = Settings.TriState.True;
-                parts.Protocol = url.Substring(0, protocolIndex);
-                parts.Remainder = url.Substring(protocolIndex + 3);
-            }
-            else if (url.Contains('.'))
-            {
-                // ファイル拡張子
-                parts.IsProtocol = Settings.TriState.False;
-                var lastDotIndex = url.LastIndexOf('.');
-                parts.Extension = url.Substring(lastDotIndex + 1);
-                parts.Remainder = url.Substring(0, lastDotIndex);
-            }
-            else if (url.Contains('/'))
-            {
-                // ドメインなしのプロトコル
-                parts.IsProtocol = Settings.TriState.True;
-                parts.Protocol = "https";
-                parts.Remainder = url;
-            }
-            else
-            {
-                parts.IsProtocol = Settings.TriState.UseDefault;
-            }
 
-            Logger.LogInfo("URLUtilities.DetermineParts", "End", parts.IsProtocol, parts.Protocol ?? "", parts.Extension ?? "", parts.Remainder ?? "");
-            return Canonicalize(parts);
-        }
-
-        /// <summary>
-        /// Browser Chooser 2互換のURL正規化
-        /// </summary>
-        /// <param name="url">正規化対象のURLパーツ</param>
-        /// <returns>正規化されたURLパーツ</returns>
-        public static BC2URLParts Canonicalize(BC2URLParts url)
-        {
-            var settings = Settings.Current;
-            
-            // 正規化が有効で、プロトコルが設定されている場合
-            if (url.IsProtocol == Settings.TriState.True && settings?.Canonicalize == true)
-            {
-                var firstSlash = url.Remainder.IndexOf('/');
-                var firstQuestion = url.Remainder.IndexOf('?');
-                var firstDot = url.Remainder.IndexOf('.');
-
-                string subIn;
-                
-                if (firstDot == -1 && firstSlash > 0 && (firstQuestion == -1 || firstQuestion > firstSlash))
-                {
-                    // ドットなし、スラッシュが最初の疑問符より前
-                    Logger.LogInfo("URLUtilities.Canonicalize", "Select 1", firstSlash, firstQuestion, firstDot);
-                    subIn = $"{url.Remainder.Substring(0, firstSlash)}{settings.CanonicalizeAppendedText}{url.Remainder.Substring(firstSlash)}";
-                }
-                else if (firstDot == -1 && firstQuestion > 0 && (firstSlash == -1 || firstSlash > firstQuestion))
-                {
-                    // ドットなし、疑問符が最初のスラッシュより前
-                    Logger.LogInfo("URLUtilities.Canonicalize", "Select 2", firstSlash, firstQuestion, firstDot);
-                    subIn = $"{url.Remainder.Substring(0, firstQuestion)}{settings.CanonicalizeAppendedText}{url.Remainder.Substring(firstQuestion)}";
-                }
-                else if (firstDot == -1 && firstSlash == -1 && firstQuestion == -1)
-                {
-                    // ドット、スラッシュ、疑問符なし
-                    Logger.LogInfo("URLUtilities.Canonicalize", "Select 3", firstSlash, firstQuestion, firstDot);
-                    subIn = $"{url.Remainder}.{settings.CanonicalizeAppendedText}";
-                }
-                else if (firstSlash > 0 && firstSlash < firstDot && (firstQuestion == -1 || firstQuestion > firstSlash))
-                {
-                    // ドットがあるが、スラッシュがドットより前で、疑問符より前
-                    Logger.LogInfo("URLUtilities.Canonicalize", "Select 4", firstSlash, firstQuestion, firstDot);
-                    subIn = $"{url.Remainder.Substring(0, firstSlash)}{settings.CanonicalizeAppendedText}{url.Remainder.Substring(firstSlash)}";
-                }
-                else if (firstQuestion > 0 && firstQuestion < firstDot && (firstSlash == -1 || firstSlash > firstQuestion))
-                {
-                    // 疑問符がドットより前で、スラッシュより前
-                    Logger.LogInfo("URLUtilities.Canonicalize", "Select 5", firstSlash, firstQuestion, firstDot);
-                    subIn = $"{url.Remainder.Substring(0, firstQuestion)}{settings.CanonicalizeAppendedText}{url.Remainder.Substring(firstQuestion)}";
-                }
-                else
-                {
-                    // その他の場合（ドットがスラッシュや疑問符より前）
-                    Logger.LogInfo("URLUtilities.Canonicalize", "Select 6", firstSlash, firstQuestion, firstDot);
-                    subIn = url.Remainder;
-                }
-
-                url.Remainder = subIn;
-            }
-
-            return url;
-        }
 
         /// <summary>
         /// URLマッチング（Browser Chooser 2互換）
@@ -301,8 +181,41 @@ namespace BrowserChooser3.Classes.Utilities
         /// <returns>マッチする場合はtrue</returns>
         public static bool MatchURLs(string source, string target)
         {
+            // nullチェック
+            if (source == null && target == null)
+                return true;
+            if (source == null || target == null)
+                return false;
+
             Logger.LogInfo("URLUtilities.MatchURLs", "Start", source, target);
+
+            // パターンがre:で始まる場合は、残りの部分をユーザー指定の正規表現としてそのまま扱う
+            if (target.StartsWith("re:", StringComparison.OrdinalIgnoreCase))
+            {
+                var pattern = target.Substring(3);
+                var regexResult = MatchRegexPattern(source, pattern);
+                Logger.LogInfo("URLUtilities.MatchURLs", "End (Regex)", source, target, regexResult);
+                return regexResult;
+            }
+
+            // パターンが@で始まる場合は特別処理
+            if (target.StartsWith("@"))
+            {
+                var pattern = target.Substring(1); // @を除去
+                var result = MatchURLPattern(source, pattern);
+                Logger.LogInfo("URLUtilities.MatchURLs", "End (Pattern)", source, target, result);
+                return result;
+            }
             
+            // ワイルドカードパターンが含まれている場合は特別処理
+            if (target.Contains("*"))
+            {
+                var result = MatchURLPattern(source, target);
+                Logger.LogInfo("URLUtilities.MatchURLs", "End (Wildcard)", source, target, result);
+                return result;
+            }
+            
+            // 従来の処理（後方互換性のため）
             // http(s)://とwwwを除去
             var lsSource = source.Replace("http://", "").Replace("https://", "").Replace("www.", "");
             var lsTarget = target.Replace("http://", "").Replace("https://", "").Replace("www.", "");
@@ -310,12 +223,86 @@ namespace BrowserChooser3.Classes.Utilities
             // 基本的なワイルドカードマッチング（後で正規表現に変更予定）
             if (lsTarget.Contains(lsSource) || lsSource.Contains(lsTarget))
             {
-                Logger.LogInfo("URLUtilities.MatchURLs", "End", source, target, true);
+                Logger.LogInfo("URLUtilities.MatchURLs", "End (Legacy)", source, target, true);
                 return true;
             }
             else
             {
-                Logger.LogInfo("URLUtilities.MatchURLs", "End", source, target, false);
+                Logger.LogInfo("URLUtilities.MatchURLs", "End (Legacy)", source, target, false);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// URLパターンマッチング（@パターン用）
+        /// </summary>
+        /// <param name="source">ソースURL</param>
+        /// <param name="pattern">マッチングパターン</param>
+        /// <returns>マッチする場合はtrue</returns>
+        private static bool MatchURLPattern(string source, string pattern)
+        {
+            try
+            {
+                Logger.LogDebug("URLUtilities.MatchURLPattern", "Pattern matching", source, pattern);
+
+                // パターンにワイルドカードが含まれている場合
+                if (pattern.Contains("*"))
+                {
+                    // ワイルドカードパターンを正規表現に変換
+                    var regexPattern = pattern
+                        .Replace(".", "\\.")  // ドットをエスケープ
+                        .Replace("*", ".*");  // ワイルドカードを正規表現に変換
+
+                    var regex = new System.Text.RegularExpressions.Regex(regexPattern, 
+                        System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+                    
+                    var result = regex.IsMatch(source);
+                    Logger.LogDebug("URLUtilities.MatchURLPattern", "Wildcard pattern result", pattern, source, result);
+                    return result;
+                }
+                else
+                {
+                    // ワイルドカードがない場合は完全一致または部分一致
+                    var result = source.Equals(pattern, StringComparison.OrdinalIgnoreCase) || 
+                                source.Contains(pattern, StringComparison.OrdinalIgnoreCase) ||
+                                pattern.Contains(source, StringComparison.OrdinalIgnoreCase);
+                    
+                    Logger.LogDebug("URLUtilities.MatchURLPattern", "Exact/partial match result", pattern, source, result);
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("URLUtilities.MatchURLPattern", "Pattern matching error", ex.Message);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// ユーザーが指定した正規表現でURLをマッチングします（"re:"プレフィックス用）。
+        /// 不正な正規表現の場合はマッチ失敗として扱い、アプリを継続させます。
+        /// </summary>
+        /// <param name="source">ソースURL</param>
+        /// <param name="pattern">ユーザー指定の正規表現パターン</param>
+        /// <returns>マッチする場合はtrue</returns>
+        private static bool MatchRegexPattern(string source, string pattern)
+        {
+            try
+            {
+                var regex = new System.Text.RegularExpressions.Regex(pattern,
+                    System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+                var result = regex.IsMatch(source);
+                Logger.LogDebug("URLUtilities.MatchRegexPattern", "正規表現マッチング結果", pattern, source, result);
+                return result;
+            }
+            catch (System.Text.RegularExpressions.RegexParseException ex)
+            {
+                Logger.LogWarning("URLUtilities.MatchRegexPattern", "不正な正規表現のためマッチ失敗として扱います", pattern, ex.Message);
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("URLUtilities.MatchRegexPattern", "正規表現マッチングエラー", ex.Message);
                 return false;
             }
         }

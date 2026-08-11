@@ -25,6 +25,11 @@ namespace BrowserChooser3.CustomControls
         public bool ShowFocusBox { get; set; } = true;
 
         /// <summary>
+        /// 視覚的フォーカス表示の有効/無効
+        /// </summary>
+        public bool ShowVisualFocus { get; set; } = false;
+
+        /// <summary>
         /// 矢印キーのトラップ設定
         /// </summary>
         public bool TrapArrowKeys { get; set; } = true;
@@ -38,6 +43,11 @@ namespace BrowserChooser3.CustomControls
         /// フォーカスボックスの線幅
         /// </summary>
         public int FocusBoxLineWidth { get; set; } = 2;
+
+        /// <summary>
+        /// フォーカスボックスとボタン外枠との間隔（マージン）
+        /// </summary>
+        public int FocusBoxWidth { get; set; } = 2;
 
         /// <summary>
         /// Aero効果の有効/無効
@@ -250,7 +260,7 @@ namespace BrowserChooser3.CustomControls
             DrawText(graphics, rect);
 
             // フォーカスボックスの描画
-            if (ShowFocus && _isFocused)
+            if ((ShowFocus || ShowVisualFocus) && _isFocused)
             {
                 DrawFocusBox(graphics, rect);
             }
@@ -325,24 +335,33 @@ namespace BrowserChooser3.CustomControls
             // アイコンがある場合の処理
             if (Image != null)
             {
+                // アイコンを上寄せに配置（テキストスペースを考慮）
                 var imageRect = new Rectangle(
-                    rect.X + 5,
-                    rect.Y + (rect.Height - Image.Height) / 2,
+                    rect.X + (rect.Width - Image.Width) / 2,
+                    rect.Y + 5, // 上から5ピクセルの余白
                     Image.Width,
                     Image.Height);
 
-                var textRect = new Rectangle(
-                    rect.X + Image.Width + 10,
-                    rect.Y,
-                    rect.Width - Image.Width - 15,
-                    rect.Height);
-
                 graphics.DrawImage(Image, imageRect);
-                graphics.DrawString(Text, font, brush, textRect, format);
+                
+                // テキストがある場合（スペースのみでない場合）はアイコンの下に配置
+                if (!string.IsNullOrEmpty(Text) && Text.Trim() != "" && Text.Trim() != " ")
+                {
+                    var textRect = new Rectangle(
+                        rect.X,
+                        rect.Y + Image.Height + 10, // アイコンの下に10ピクセルの余白
+                        rect.Width,
+                        rect.Height - Image.Height - 15); // 下部に5ピクセルの余白
+                    graphics.DrawString(Text, font, brush, textRect, format);
+                }
             }
             else
             {
-                graphics.DrawString(Text, font, brush, rect, format);
+                // テキストのみの場合
+                if (!string.IsNullOrEmpty(Text) && Text.Trim() != "")
+                {
+                    graphics.DrawString(Text, font, brush, rect, format);
+                }
             }
         }
 
@@ -359,10 +378,10 @@ namespace BrowserChooser3.CustomControls
             };
 
             var focusRect = new Rectangle(
-                rect.X + 2,
-                rect.Y + 2,
-                rect.Width - 4,
-                rect.Height - 4);
+                rect.X + FocusBoxWidth,
+                rect.Y + FocusBoxWidth,
+                rect.Width - (FocusBoxWidth * 2),
+                rect.Height - (FocusBoxWidth * 2));
 
             graphics.DrawRectangle(pen, focusRect);
         }

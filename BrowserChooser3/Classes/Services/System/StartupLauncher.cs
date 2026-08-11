@@ -68,29 +68,35 @@ namespace BrowserChooser3.Classes.Services.SystemServices
         /// <param name="updateDelegate">URL更新デリゲート</param>
         public static void SetURL(string url, bool unShorten, UpdateURL updateDelegate)
         {
+            Logger.LogDebug("StartupLauncher.SetURL", "SetURL開始", $"URL: {url}, 長さ: {url?.Length ?? 0}, Unshorten: {unShorten}");
+            
             _delegate = updateDelegate;
-            var parts = URLUtilities.DetermineParts(url);
-            
-            if (parts.IsProtocol == Settings.TriState.True)
-            {
-                _url = parts.ToString();
-            }
-            else
-            {
-                _url = url; // ファイル名
-            }
-            
-            ProcessParts(parts);
+            _url = url ?? string.Empty;
+            Logger.LogDebug("StartupLauncher.SetURL", "URL設定完了", $"設定されたURL: {_url}");
 
-            if (unShorten && !string.IsNullOrEmpty(_url) && parts.IsProtocol == Settings.TriState.True)
+            if (unShorten && !string.IsNullOrEmpty(_url))
             {
-                if (parts.Protocol == "http" || parts.Protocol == "https")
+                Logger.LogDebug("StartupLauncher.SetURL", "短縮URL展開処理開始");
+                // HTTP/HTTPS URLの場合のみ短縮URL展開を実行
+                if (_url.StartsWith("http://", StringComparison.OrdinalIgnoreCase) || 
+                    _url.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
                 {
+                    Logger.LogDebug("StartupLauncher.SetURL", "HTTP/HTTPS URLを検出、短縮URL展開ワーカーを開始");
                     _worker = new System.Threading.Thread(Worker_DoWork_HTTP);
                     _worker.IsBackground = true;
                     _worker.Start();
                 }
+                else
+                {
+                    Logger.LogDebug("StartupLauncher.SetURL", "HTTP/HTTPS URLではないため短縮URL展開をスキップ");
+                }
             }
+            else
+            {
+                Logger.LogDebug("StartupLauncher.SetURL", "短縮URL展開が無効またはURLが空のためスキップ");
+            }
+            
+            Logger.LogDebug("StartupLauncher.SetURL", "SetURL完了");
         }
 
         /// <summary>
@@ -106,22 +112,13 @@ namespace BrowserChooser3.Classes.Services.SystemServices
             _delay = delay;
             _browser = browser;
             _delegate = updateDelegate;
-            var parts = URLUtilities.DetermineParts(url);
-            
-            if (parts.IsProtocol == Settings.TriState.True)
-            {
-                _url = parts.ToString();
-            }
-            else
-            {
-                _url = url; // ファイル名
-            }
-            
-            ProcessParts(parts);
+            _url = url ?? string.Empty;
 
-            if (unShorten && !string.IsNullOrEmpty(_url) && parts.IsProtocol == Settings.TriState.True)
+            if (unShorten && !string.IsNullOrEmpty(_url))
             {
-                if (parts.Protocol == "http" || parts.Protocol == "https")
+                // HTTP/HTTPS URLの場合のみ短縮URL展開を実行
+                if (_url.StartsWith("http://", StringComparison.OrdinalIgnoreCase) || 
+                    _url.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
                 {
                     _worker = new System.Threading.Thread(Worker_DoWork_HTTP);
                     _worker.IsBackground = true;
@@ -170,12 +167,6 @@ namespace BrowserChooser3.Classes.Services.SystemServices
                     Logger.LogInfo("StartupLauncher.ProcessCommandLineArgs", "DLL抽出を有効化");
                 }
 
-                // ポータブルモードの設定
-                if (args.PortableMode)
-                {
-                    // 設定ファイルの読み込み時に適用
-                    Logger.LogInfo("StartupLauncher.ProcessCommandLineArgs", "ポータブルモードを有効化");
-                }
 
                 // 設定ファイル無視の設定
                 if (args.IgnoreSettings)
@@ -187,25 +178,39 @@ namespace BrowserChooser3.Classes.Services.SystemServices
                 // URLが指定されている場合の処理
                 if (!string.IsNullOrEmpty(args.URL))
                 {
+                    Logger.LogDebug("StartupLauncher.ProcessCommandLineArgs", "URL処理開始", $"URL: {args.URL}, 長さ: {args.URL.Length}");
+                    
                     // 指定されたブラウザの検索
                     Browser? selectedBrowser = null;
                     if (args.BrowserGuid.HasValue)
                     {
+                        Logger.LogDebug("StartupLauncher.ProcessCommandLineArgs", "ブラウザGUID指定", args.BrowserGuid.Value.ToString());
                         selectedBrowser = Settings.Current.Browsers.FirstOrDefault(b => b.Guid == args.BrowserGuid.Value);
                         if (selectedBrowser == null)
                         {
                             Logger.LogWarning("StartupLauncher.ProcessCommandLineArgs", "指定されたブラウザが見つかりません", args.BrowserGuid.Value);
                         }
+                        else
+                        {
+                            Logger.LogDebug("StartupLauncher.ProcessCommandLineArgs", "指定されたブラウザを検出", selectedBrowser.Name);
+                        }
+                    }
+                    else
+                    {
+                        Logger.LogDebug("StartupLauncher.ProcessCommandLineArgs", "ブラウザGUIDが指定されていません");
                     }
 
                     // URL設定
+                    Logger.LogDebug("StartupLauncher.ProcessCommandLineArgs", "SetURL呼び出し前", $"URL: {args.URL}, Unshorten: {args.UnshortenURL}, Delay: {args.Delay}");
                     if (selectedBrowser != null)
                     {
                         SetURL(args.URL, args.UnshortenURL, args.Delay, selectedBrowser, updateDelegate ?? DefaultUpdateDelegate);
+                        Logger.LogDebug("StartupLauncher.ProcessCommandLineArgs", "SetURL呼び出し完了（ブラウザ指定）");
                     }
                     else
                     {
                         SetURL(args.URL, args.UnshortenURL, updateDelegate ?? DefaultUpdateDelegate);
+                        Logger.LogDebug("StartupLauncher.ProcessCommandLineArgs", "SetURL呼び出し完了（デフォルト）");
                     }
 
                     // 自動起動モードの場合
@@ -277,6 +282,67 @@ namespace BrowserChooser3.Classes.Services.SystemServices
         }
 
         /// <summary>
+        /// BrowserChooser3が既定のブラウザとして設定されているかチェックします
+        /// </summary>
+        private static void CheckBrowserChooserDefaultStatus()
+        {
+            try
+            {
+                var browserChooserPath = Application.ExecutablePath;
+                var isDefault = DefaultBrowserChecker.IsBrowserChooserDefault(browserChooserPath);
+                
+                if (isDefault)
+                {
+                    Logger.LogInfo("StartupLauncher.CheckBrowserChooserDefaultStatus", "BrowserChooser3が既定のブラウザとして設定されています");
+                }
+                else
+                {
+                    Logger.LogWarning("StartupLauncher.CheckBrowserChooserDefaultStatus", "BrowserChooser3が既定のブラウザとして設定されていません");
+                    
+                    // 初回起動時は自動設定を試行
+                    if (IsFirstRun())
+                    {
+                        Logger.LogInfo("StartupLauncher.CheckBrowserChooserDefaultStatus", "初回起動時のため、既定ブラウザ設定を試行");
+                        var success = DefaultBrowserChecker.SetBrowserChooserAsDefault(browserChooserPath);
+                        
+                        if (success)
+                        {
+                            Logger.LogInfo("StartupLauncher.CheckBrowserChooserDefaultStatus", "初回起動時の既定ブラウザ設定が完了しました");
+                        }
+                        else
+                        {
+                            Logger.LogWarning("StartupLauncher.CheckBrowserChooserDefaultStatus", "初回起動時の既定ブラウザ設定に失敗しました");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("StartupLauncher.CheckBrowserChooserDefaultStatus", "BrowserChooser3既定ブラウザ状況チェックエラー", ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// 初回起動かどうかを判定します
+        /// </summary>
+        /// <returns>初回起動の場合はtrue</returns>
+        private static bool IsFirstRun()
+        {
+            try
+            {
+                var appDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BrowserChooser3");
+                var configPath = Path.Combine(appDataPath, "BrowserChooser3Config.xml");
+                
+                // 設定ファイルが存在しない場合は初回起動とみなす
+                return !File.Exists(configPath);
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
         /// 起動時の初期化処理を実行します
         /// </summary>
         /// <param name="args">コマンドライン引数</param>
@@ -287,27 +353,33 @@ namespace BrowserChooser3.Classes.Services.SystemServices
 
             try
             {
+                Logger.LogDebug("StartupLauncher.Initialize", "コマンドライン引数解析開始", $"引数数: {args?.Length ?? 0}");
+                if (args != null && args.Length > 0)
+                {
+                    Logger.LogDebug("StartupLauncher.Initialize", "コマンドライン引数内容", string.Join(" ", args));
+                }
+                
                 // コマンドライン引数の解析
-                var commandLineArgs = CommandLineProcessor.ParseArguments(args);
+                var commandLineArgs = CommandLineProcessor.ParseArguments(args ?? Array.Empty<string>());
+                Logger.LogDebug("StartupLauncher.Initialize", "CommandLineProcessor.ParseArguments完了", $"URL: {commandLineArgs.URL}, 長さ: {commandLineArgs.URL?.Length ?? 0}");
                 
                 // 環境変数からのオプション読み込み
                 commandLineArgs = CommandLineProcessor.LoadFromEnvironment(commandLineArgs);
                 
                 // 引数の検証
+                Logger.LogDebug("StartupLauncher.Initialize", "引数検証開始");
                 if (!CommandLineProcessor.ValidateArguments(commandLineArgs))
                 {
                     Logger.LogError("StartupLauncher.Initialize", "無効なコマンドライン引数");
                     return false;
                 }
+                Logger.LogDebug("StartupLauncher.Initialize", "引数検証完了");
 
                 // ポリシーの初期化
                 Policy.Initialize();
 
-                // デフォルトブラウザチェック
-                if (Settings.Current.CheckDefaultOnLaunch)
-                {
-                    CheckDefaultBrowser();
-                }
+                // BrowserChooser3が既定のブラウザとして設定されているかチェック
+                CheckBrowserChooserDefaultStatus();
 
                 // コマンドライン引数の処理
                 var result = ProcessCommandLineArgs(commandLineArgs);
@@ -322,65 +394,7 @@ namespace BrowserChooser3.Classes.Services.SystemServices
             }
         }
 
-        /// <summary>
-        /// URLパーツを処理し、対応ブラウザを検出します
-        /// </summary>
-        /// <param name="parts">URLパーツ</param>
-        private static void ProcessParts(URLUtilities.BC2URLParts parts)
-        {
-            _supportingBrowsers = new List<Guid>();
 
-            if (parts.IsProtocol == Settings.TriState.True)
-            {
-                // プロトコルベースの処理
-                foreach (var protocol in Settings.Current.Protocols)
-                {
-                    if (protocol.Header == parts.Protocol)
-                    {
-                        foreach (var browser in Settings.Current.Browsers)
-                        {
-                            if (protocol.SupportingBrowsers.Contains(browser.Guid))
-                            {
-                                _supportingBrowsers.Add(browser.Guid);
-                            }
-                        }
-                        break; // short circuit
-                    }
-                }
-            }
-            else if (parts.IsProtocol == Settings.TriState.False)
-            {
-                // ファイル拡張子ベースの処理
-                foreach (var fileType in Settings.Current.FileTypes)
-                {
-                    if (fileType.Extension.ToLower() == parts.Extension.ToLower())
-                    {
-                        foreach (var browser in Settings.Current.Browsers)
-                        {
-                            if (fileType.SupportingBrowsers.Contains(browser.Guid))
-                            {
-                                _supportingBrowsers.Add(browser.Guid);
-                            }
-                        }
-                        break; // short circuit
-                    }
-                }
-            }
-            else
-            {
-                // デフォルト処理 - すべてのブラウザを表示
-                foreach (var protocol in Settings.Current.Protocols)
-                {
-                    foreach (var browser in Settings.Current.Browsers)
-                    {
-                        if (protocol.SupportingBrowsers.Contains(browser.Guid))
-                        {
-                            _supportingBrowsers.Add(browser.Guid);
-                        }
-                    }
-                }
-            }
-        }
 
         #region ShortURL deshortening
         /// <summary>
@@ -388,56 +402,64 @@ namespace BrowserChooser3.Classes.Services.SystemServices
         /// </summary>
         private static async void Worker_DoWork_HTTP()
         {
-            using var httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Add("User-Agent", Settings.Current.UserAgent);
-
+            // async voidはThreadのエントリポイントから呼ばれており、捕捉されない例外は
+            // アプリ全体をクラッシュさせうるため、メソッド全体を確実にtry/catchで囲む
             try
             {
-                // HEADリクエストを試行
-                using var headRequest = new HttpRequestMessage(HttpMethod.Head, _url);
-                using var headResponse = await httpClient.SendAsync(headRequest);
-                
-                if (headResponse.RequestMessage?.RequestUri != null)
-                {
-                    _url = headResponse.RequestMessage.RequestUri.ToString();
-                }
-            }
-            catch (HttpRequestException)
-            {
+                using var httpClient = new HttpClient();
+                httpClient.DefaultRequestHeaders.Add("User-Agent", Settings.Current.UserAgent);
+
                 try
                 {
-                    // GETリクエストを試行
-                    using var getResponse = await httpClient.GetAsync(_url);
-                    
-                    if (getResponse.RequestMessage?.RequestUri != null)
+                    // HEADリクエストを試行
+                    using var headRequest = new HttpRequestMessage(HttpMethod.Head, _url);
+                    using var headResponse = await httpClient.SendAsync(headRequest);
+
+                    if (headResponse.RequestMessage?.RequestUri != null)
                     {
-                        _url = getResponse.RequestMessage.RequestUri.ToString();
+                        _url = headResponse.RequestMessage.RequestUri.ToString();
                     }
                 }
-                catch
+                catch (HttpRequestException)
                 {
-                    // 変換できない場合
+                    try
+                    {
+                        // GETリクエストを試行
+                        using var getResponse = await httpClient.GetAsync(_url);
+
+                        if (getResponse.RequestMessage?.RequestUri != null)
+                        {
+                            _url = getResponse.RequestMessage.RequestUri.ToString();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        // 変換できない場合は元のURLのまま処理を続行する
+                        Logger.LogWarning("StartupLauncher.Worker_DoWork_HTTP", "GETリクエストによる短縮URL展開に失敗", ex.Message);
+                    }
+                }
+
+                // クリーンアップとデリゲート呼び出し
+                if (_delegate != null)
+                {
+                    _delegate.Invoke(_url);
                 }
             }
-
-            // クリーンアップとデリゲート呼び出し
-            if (_delegate != null)
+            catch (Exception ex)
             {
-                string finalUrl;
-                var parts = URLUtilities.DetermineParts(_url);
-                if (parts.IsProtocol == Settings.TriState.True)
-                {
-                    finalUrl = parts.ToString();
-                }
-                else
-                {
-                    finalUrl = _url;
-                }
+                // 短縮URL展開はベストエフォートのため、想定外の例外もここで握りつぶし、
+                // 元のURLのままアプリの動作を継続させる
+                Logger.LogError("StartupLauncher.Worker_DoWork_HTTP", "短縮URL展開処理で予期しないエラーが発生しました", ex.Message, ex.StackTrace ?? "");
 
-                _delegate.Invoke(finalUrl);
+                if (_delegate != null)
+                {
+                    _delegate.Invoke(_url);
+                }
             }
-
-            _worker = null;
+            finally
+            {
+                _worker = null;
+            }
         }
         #endregion
     }

@@ -35,8 +35,6 @@ namespace BrowserChooser3.Classes.Services.SystemServices
             /// <summary>DLLを抽出するかどうか</summary>
             public bool ExtractDLLs { get; set; } = false;
             
-            /// <summary>ポータブルモードで起動するかどうか</summary>
-            public bool PortableMode { get; set; } = false;
             
             /// <summary>設定ファイルを無視するかどうか</summary>
             public bool IgnoreSettings { get; set; } = false;
@@ -61,7 +59,14 @@ namespace BrowserChooser3.Classes.Services.SystemServices
         /// <returns>解析結果</returns>
         public static CommandLineArgs ParseArguments(string[] args)
         {
-            Logger.LogInfo("CommandLineProcessor.ParseArguments", "コマンドライン引数解析開始", string.Join(" ", args));
+            // nullチェック
+            if (args == null)
+            {
+                Logger.LogDebug("CommandLineProcessor.ParseArguments", "コマンドライン引数がnull");
+                return new CommandLineArgs();
+            }
+
+            Logger.LogDebug("CommandLineProcessor.ParseArguments", "コマンドライン引数解析開始", string.Join(" ", args));
 
             var result = new CommandLineArgs();
 
@@ -115,9 +120,6 @@ namespace BrowserChooser3.Classes.Services.SystemServices
                             result.ExtractDLLs = true;
                             break;
 
-                        case "--portable":
-                            result.PortableMode = true;
-                            break;
 
                         case "--ignore-settings":
                             result.IgnoreSettings = true;
@@ -135,13 +137,45 @@ namespace BrowserChooser3.Classes.Services.SystemServices
                             // URLとして扱う（最初の非オプション引数）
                             if (!arg.StartsWith("-") && !arg.StartsWith("/") && result.URL == null)
                             {
-                                result.URL = args[i]; // 元の大文字小文字を保持
+                                // 長いURLの場合の処理
+                                var url = args[i];
+                                Logger.LogDebug("CommandLineProcessor.ParseArguments", "URL処理開始", $"元のURL長: {url.Length}");
+                                
+                                // URLの長さ制限チェック（Windowsのコマンドライン制限を考慮）
+                                if (url.Length > 8191) // Windowsのコマンドライン制限
+                                {
+                                    Logger.LogWarning("CommandLineProcessor.ParseArguments", "URLが長すぎます", url.Length);
+                                    // 長すぎる場合は切り詰めるか、エラーとして扱う
+                                    var originalUrl = url;
+                                    url = url.Substring(0, 8191);
+                                    Logger.LogDebug("CommandLineProcessor.ParseArguments", "URLを切り詰めました", $"元の長さ: {originalUrl.Length}, 新しい長さ: {url.Length}");
+                                }
+                                
+                                // URLエンコーディングの問題を修正
+                                try
+                                {
+                                    // 必要に応じてURLデコード
+                                    if (url.Contains("%"))
+                                    {
+                                        var originalUrl = url;
+                                        url = Uri.UnescapeDataString(url);
+                                        Logger.LogDebug("CommandLineProcessor.ParseArguments", "URLデコード完了", $"元のURL: {originalUrl}, デコード後: {url}");
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    Logger.LogWarning("CommandLineProcessor.ParseArguments", "URLデコードエラー", ex.Message);
+                                    // デコードに失敗した場合は元のURLを使用
+                                }
+                                
+                                result.URL = url; // 処理済みのURLを設定
+                                Logger.LogDebug("CommandLineProcessor.ParseArguments", "URL処理完了", $"最終URL長: {url.Length}");
                             }
                             break;
                     }
                 }
 
-                Logger.LogInfo("CommandLineProcessor.ParseArguments", "コマンドライン引数解析完了", 
+                Logger.LogDebug("CommandLineProcessor.ParseArguments", "コマンドライン引数解析完了", 
                     $"URL: {result.URL}, Delay: {result.Delay}, Browser: {result.BrowserGuid}");
             }
             catch (Exception ex)
@@ -174,7 +208,6 @@ namespace BrowserChooser3.Classes.Services.SystemServices
   -u, --unshorten       URL短縮解除を実行
   --debug               デバッグログを有効化
   --extract-dlls        DLLファイルを抽出
-  --portable            ポータブルモードで起動
   --ignore-settings     設定ファイルを無視
   --silent              サイレントモードで起動
   --auto-launch         自動起動モード
@@ -183,7 +216,7 @@ namespace BrowserChooser3.Classes.Services.SystemServices
   BrowserChooser3.exe https://example.com
   BrowserChooser3.exe -d 5 https://example.com
   BrowserChooser3.exe -b 12345678-1234-1234-1234-123456789012 file.html
-  BrowserChooser3.exe --portable --debug";
+  BrowserChooser3.exe --debug";
         }
 
         /// <summary>
@@ -249,11 +282,6 @@ namespace BrowserChooser3.Classes.Services.SystemServices
                     args.ExtractDLLs = true;
                 }
 
-                var portableMode = Environment.GetEnvironmentVariable("BROWSERCHOOSER_PORTABLE");
-                if (bool.TryParse(portableMode, out var portable) && portable)
-                {
-                    args.PortableMode = true;
-                }
 
                 var ignoreSettings = Environment.GetEnvironmentVariable("BROWSERCHOOSER_IGNORE_SETTINGS");
                 if (bool.TryParse(ignoreSettings, out var ignore) && ignore)
@@ -261,7 +289,7 @@ namespace BrowserChooser3.Classes.Services.SystemServices
                     args.IgnoreSettings = true;
                 }
 
-                Logger.LogInfo("CommandLineProcessor.LoadFromEnvironment", "環境変数からオプションを読み込み完了");
+                Logger.LogDebug("CommandLineProcessor.LoadFromEnvironment", "環境変数からオプションを読み込み完了");
             }
             catch (Exception ex)
             {

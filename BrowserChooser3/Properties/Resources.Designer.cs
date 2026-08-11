@@ -61,6 +61,56 @@ namespace BrowserChooser3.Properties {
         }
         
         /// <summary>
+        ///   (アイコン) に類似した型 System.Drawing.Icon のローカライズされたリソースを検索します。
+        /// </summary>
+        internal static System.Drawing.Icon BCLogoIcon {
+            get {
+                object obj = ResourceManager.GetObject("BCLogoIcon", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   (アイコン) に類似した型 System.Drawing.Icon のローカライズされたリソースを検索します。
+        /// </summary>
+        internal static System.Drawing.Icon BrowserChooser2Icon {
+            get {
+                object obj = ResourceManager.GetObject("BrowserChooser2Icon", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
+        /// </summary>
+        internal static System.Drawing.Bitmap BrowserChooser3 {
+            get {
+                object obj = ResourceManager.GetObject("BrowserChooser3", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   (アイコン) に類似した型 System.Drawing.Icon のローカライズされたリソースを検索します。
+        /// </summary>
+        internal static System.Drawing.Icon BrowserChooser3Icon {
+            get {
+                object obj = ResourceManager.GetObject("BrowserChooser3Icon", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
+        /// </summary>
+        internal static System.Drawing.Bitmap BrowserChooserIcon {
+            get {
+                object obj = ResourceManager.GetObject("BrowserChooserIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
         /// </summary>
         internal static System.Drawing.Bitmap Icon122 {
@@ -83,40 +133,10 @@ namespace BrowserChooser3.Properties {
         /// <summary>
         ///   型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
         /// </summary>
-        internal static System.Drawing.Bitmap BrowserChooserIcon {
+        internal static System.Drawing.Bitmap PasteAndCloseIcon {
             get {
-                object obj = ResourceManager.GetObject("BrowserChooserIcon", resourceCulture);
+                object obj = ResourceManager.GetObject("PasteAndCloseIcon", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   型 System.Drawing.Icon のローカライズされたリソースを検索します。
-        /// </summary>
-        internal static System.Drawing.Icon BrowserChooser2Icon {
-            get {
-                object obj = ResourceManager.GetObject("BrowserChooser2Icon", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   型 System.Drawing.Icon のローカライズされたリソースを検索します。
-        /// </summary>
-        internal static System.Drawing.Icon BrowserChooser3Icon {
-            get {
-                object obj = ResourceManager.GetObject("BrowserChooser3Icon", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   型 System.Drawing.Icon のローカライズされたリソースを検索します。
-        /// </summary>
-        internal static System.Drawing.Icon BCLogoIcon {
-            get {
-                object obj = ResourceManager.GetObject("BCLogoIcon", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
             }
         }
         
@@ -126,16 +146,6 @@ namespace BrowserChooser3.Properties {
         internal static System.Drawing.Bitmap PasteIcon {
             get {
                 object obj = ResourceManager.GetObject("PasteIcon", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
-        /// </summary>
-        internal static System.Drawing.Bitmap PasteAndCloseIcon {
-            get {
-                object obj = ResourceManager.GetObject("PasteAndCloseIcon", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

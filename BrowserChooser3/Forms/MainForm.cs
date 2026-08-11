@@ -1,6 +1,7 @@
 using BrowserChooser3.Classes;
 using BrowserChooser3.Classes.Models;
 using BrowserChooser3.Classes.Services.SystemServices;
+using BrowserChooser3.Classes.Services.UI;
 using BrowserChooser3.Classes.Utilities;
 using BrowserChooser3.CustomControls;
 using System.Drawing.Drawing2D;
@@ -16,28 +17,29 @@ namespace BrowserChooser3.Forms
         private Settings? _settings;
         private List<Browser>? _browsers;
         private string _currentUrl = string.Empty;
+        private string _initialUrl = string.Empty;
+        
+        /// <summary>
+        /// URL表示用テキストボックス
+        /// </summary>
+        private TextBox? _urlDisplayTextBox;
+        
         private System.Windows.Forms.Timer? _countdownTimer;
         private int _currentDelay;
         private Browser? _defaultBrowser;
         private Label? _countdownLabel;
         private bool _isPaused = false;
 
-        // Aero効果関連
-        private bool _hasAero = false;
         private string _currentText = string.Empty;
 
-        // Browser Chooser 2互換のUI要素
-        private Button? _btnInfo;
-        private Button? _btnAppStub;
-        private Button? _btnOptions;
-        private Button? _btnCancel;
-        private Button? _btnCopyToClipboard;
-        private Button? _btnCopyToClipboardAndClose;
-        private CheckBox? _chkAutoClose;
-        private CheckBox? _chkAutoOpen;
-        private Label? _lblShortcutMessage;
-        private System.Windows.Forms.Timer? _tmrDelay;
         private ContextMenuStrip? _cmOptions;
+        
+        // ツールチップ
+        private ToolTip? _toolTip;
+
+        // システムトレイ関連
+        private NotifyIcon? _notifyIcon;
+        private bool _isInTray = false;
 
         /// <summary>
         /// MainFormクラスの新しいインスタンスを初期化します
@@ -53,12 +55,12 @@ namespace BrowserChooser3.Forms
         /// </summary>
         private void InitializeApplication()
         {
-            Logger.LogInfo("MainForm.InitializeApplication", "Start");
+            Logger.LogDebug("MainForm.InitializeApplication", "Start");
             
             try
             {
-                // 設定を読み込み
-                _settings = Settings.Load(Application.StartupPath);
+                // 設定を読み込み（パスは使用されず、常にユーザーディレクトリから読み込み）
+                _settings = Settings.Load("");
                 Settings.Current = _settings;
                 _browsers = _settings?.Browsers ?? new List<Browser>();
 
@@ -71,14 +73,26 @@ namespace BrowserChooser3.Forms
                 // フォームの設定
                 ConfigureForm();
                 
+                // StartUp設定の適用
+                ApplyStartupSettings();
+                
+                // ツールチップの初期化
+                InitializeToolTips();
+                
                 // ブラウザボタンの作成
                 CreateBrowserButtons();
+                
+                // URL表示用テキストボックスの作成
+                CreateURLDisplayTextBox();
                 
                 // カウントダウンラベルの作成
                 CreateCountdownLabel();
                 
-                // Browser Chooser 2互換のUI要素を作成
-                CreateCompatibilityUI();
+                // ボタンのツールチップ設定
+                SetupButtonToolTips();
+                
+                // UI要素の位置調整
+                AdjustCompatibilityUILayout();
                 
                 // アイコンの読み込み
                 LoadIcons();
@@ -87,19 +101,195 @@ namespace BrowserChooser3.Forms
                 KeyPreview = true;
                 KeyDown += MainForm_KeyDown;
                 
-                // 初期テキストの設定
-                UpdateAutoOpenTextWithSpaceKey();
+                // フォームリサイズイベントの設定
+                Resize += MainForm_Resize;
+                
+                // フォームLoadイベントの設定
+                Load += MainForm_Load;
+                
+
                 
                 // URL短縮解除の設定
                 SetupURLUnshortening();
                 
-                Logger.LogInfo("MainForm.InitializeApplication", "End");
+                // 初期化完了後にURL表示ラベルを更新（起動時のURLが設定されている場合）
+                if (!string.IsNullOrEmpty(_currentUrl))
+                {
+                    UpdateURLLabel();
+                }
+                
+                // フォームの初期化完了を通知
+                Logger.LogDebug("MainForm.InitializeApplication", "フォーム初期化完了");
+                
+                Logger.LogDebug("MainForm.InitializeApplication", "End");
             }
             catch (Exception ex)
             {
                 Logger.LogError("MainForm.InitializeApplication", "初期化エラー", ex.Message, ex.StackTrace ?? "");
-                MessageBox.Show($"アプリケーションの初期化に失敗しました: {ex.Message}", "エラー", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBoxService.ShowErrorStatic($"アプリケーションの初期化に失敗しました: {ex.Message}", "エラー");
+            }
+        }
+
+        /// <summary>
+        /// StartUp設定を適用します
+        /// </summary>
+        private void ApplyStartupSettings()
+        {
+            Logger.LogDebug("MainForm.ApplyStartupSettings", "Start");
+            
+            try
+            {
+                if (_settings == null) return;
+
+                // 起動遅延の処理
+                if (_settings.StartupDelay > 0)
+                {
+                    Logger.LogDebug("MainForm.ApplyStartupSettings", $"起動遅延を適用: {_settings.StartupDelay}秒");
+                    var startupTimer = new System.Windows.Forms.Timer
+                    {
+                        Interval = _settings.StartupDelay * 1000,
+                        Enabled = true
+                    };
+                    startupTimer.Tick += (sender, e) =>
+                    {
+                        startupTimer.Stop();
+                        startupTimer.Dispose();
+                        ShowForm();
+                    };
+                    
+                    // フォームを非表示にする
+                    this.Hide();
+                    return;
+                }
+
+
+
+                // システムトレイで起動の処理
+                if (_settings.StartInTray)
+                {
+                    Logger.LogDebug("MainForm.ApplyStartupSettings", "システムトレイで起動を適用");
+                    InitializeSystemTray();
+                    MinimizeToTray();
+                }
+
+                Logger.LogDebug("MainForm.ApplyStartupSettings", "End");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("MainForm.ApplyStartupSettings", "StartUp設定適用エラー", ex.Message, ex.StackTrace ?? "");
+            }
+        }
+
+        /// <summary>
+        /// フォームを表示します
+        /// </summary>
+        private void ShowForm()
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new Action(ShowForm));
+                return;
+            }
+
+            if (_isInTray)
+            {
+                ShowFromTray();
+            }
+            else
+            {
+                Show();
+                WindowState = FormWindowState.Normal;
+                Activate();
+            }
+        }
+
+        /// <summary>
+        /// システムトレイに最小化します
+        /// </summary>
+        private void MinimizeToTray()
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new Action(MinimizeToTray));
+                return;
+            }
+
+            if (_notifyIcon != null)
+            {
+                _isInTray = true;
+                _notifyIcon.Visible = true;
+                Hide();
+                ShowInTaskbar = false;
+
+                // トレイに隠れている間に勝手にブラウザが起動しないよう、カウントダウンを止める
+                _countdownTimer?.Stop();
+                _isPaused = true;
+
+                Logger.LogDebug("MainForm.MinimizeToTray", "システムトレイに最小化");
+            }
+        }
+
+        /// <summary>
+        /// システムトレイから復元します
+        /// </summary>
+        private void ShowFromTray()
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new Action(ShowFromTray));
+                return;
+            }
+
+            if (_notifyIcon != null)
+            {
+                _isInTray = false;
+                _notifyIcon.Visible = false;
+                Show();
+                ShowInTaskbar = true;
+                WindowState = FormWindowState.Normal;
+                Activate();
+
+                // トレイ格納中に止めたカウントダウンをリセットして再開する
+                _isPaused = false;
+                if (_countdownTimer != null && _defaultBrowser != null && !string.IsNullOrEmpty(_currentUrl))
+                {
+                    _currentDelay = _settings?.DefaultDelay ?? 5;
+                    UpdateCountdownDisplay();
+                    _countdownTimer.Start();
+                }
+
+                Logger.LogDebug("MainForm.ShowFromTray", "システムトレイから復元");
+            }
+        }
+
+        /// <summary>
+        /// 他プロセスから引き渡されたURLを受け取り、既存ウィンドウに反映します（単一インスタンス化用）
+        /// </summary>
+        /// <param name="url">受信したURL</param>
+        public void ReceiveExternalURL(string url)
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new Action<string>(ReceiveExternalURL), url);
+                return;
+            }
+
+            Logger.LogInfo("MainForm.ReceiveExternalURL", "他プロセスからURLを受信", url);
+
+            if (_isInTray)
+            {
+                ShowFromTray();
+            }
+            else
+            {
+                Show();
+                WindowState = FormWindowState.Normal;
+                Activate();
+            }
+
+            if (!string.IsNullOrEmpty(url))
+            {
+                UpdateURL(url);
             }
         }
 
@@ -110,9 +300,9 @@ namespace BrowserChooser3.Forms
         {
             if (_settings?.RevealShortURL == true && !string.IsNullOrEmpty(_currentUrl))
             {
-                var parts = URLUtilities.DetermineParts(_currentUrl);
-                if (parts.IsProtocol == Settings.TriState.True && 
-                    (parts.Protocol == "http" || parts.Protocol == "https"))
+                // HTTP/HTTPS URLの場合のみ短縮URL展開を実行
+                if (_currentUrl.StartsWith("http://", StringComparison.OrdinalIgnoreCase) || 
+                    _currentUrl.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
                 {
                     var userAgent = _settings.UserAgent ?? "Mozilla/5.0";
                     URLUtilities.UnshortenURLAsync(_currentUrl, userAgent, (expandedUrl) =>
@@ -132,23 +322,20 @@ namespace BrowserChooser3.Forms
 
 
 
+
+
         /// <summary>
         /// フォームの設定
         /// </summary>
         private void ConfigureForm()
         {
-            Logger.LogInfo("MainForm.ConfigureForm", "Start");
+            Logger.LogDebug("MainForm.ConfigureForm", "Start");
             
             // フォームの基本設定（動的サイズ変更対応）
             Text = _settings?.DefaultMessage ?? "Choose a Browser";
-            FormBorderStyle = FormBorderStyle.Sizable;  // サイズ変更可能に変更
-            MaximizeBox = true;   // 最大化ボタンを有効
-            MinimizeBox = true;   // 最小化ボタンを有効
             ShowIcon = false;
-            SizeGripStyle = SizeGripStyle.Show;  // サイズグリップを表示
-            StartPosition = FormStartPosition.CenterScreen;
             TopMost = true;
-            CancelButton = _btnCancel;
+            CancelButton = btnCancel;
             KeyPreview = true;
             
             // フォントの設定（現代的で日本語・英語両対応）
@@ -156,26 +343,259 @@ namespace BrowserChooser3.Forms
             
             // サイズの設定（動的サイズ変更対応）
             MinimumSize = new Size(600, 300);  // 最小サイズを設定
-            ClientSize = new Size(900, 400);   // 初期サイズ
+            
+            // 背景グラデーション設定
+            if (_settings?.EnableBackgroundGradient == true)
+            {
+                this.Paint += MainForm_Paint;
+            }
+            ClientSize = new Size(600, 300);   // 初期サイズ
             
             // サイズ変更イベントの設定
             Resize += MainForm_Resize;
             
-            // Aero効果の適用
-            if (_settings?.UseAero == true && GeneralUtilities.IsAeroEnabled())
+            // 透明化設定の適用（Windows11スタイルも含む）
+            ApplyTransparencySettings();
+            
+            // 透明化が無効な場合の背景色設定
+            if (_settings?.EnableTransparency != true)
             {
-                GeneralUtilities.MakeFormGlassy(this);
-                _hasAero = true; // Aero効果が有効な場合のフラグを立てる
-                Logger.LogInfo("MainForm.ConfigureForm", "Aero効果を適用");
-            }
-            else
-            {
-                // Aero効果が無効の場合の背景色設定
-                BackColor = Color.FromArgb(185, 209, 234);
-                StyleXP(); // Aero効果が無効の場合のスタイル設定
+                Logger.LogDebug("MainForm.ConfigureForm", "背景色設定開始", $"現在の背景色: {BackColor}");
+                
+                // 変更前のブラウザボタン数を記録
+                var browserButtonsBefore = Controls.OfType<Button>().Where(b => b.Tag is Browser).ToList();
+                Logger.LogDebug("MainForm.ConfigureForm", "変更前のブラウザボタン数", browserButtonsBefore.Count);
+                
+                // 設定値をそのまま反映（Settings.BackgroundColorValue は常に不透明で正規化済み）
+                BackColor = _settings?.BackgroundColorValue ?? Color.FromArgb(185, 209, 234);
+                Logger.LogDebug("MainForm.ConfigureForm", $"Applied BackColor: {BackColor}");
+                
+                // 変更後のブラウザボタン数を記録
+                var browserButtonsAfter = Controls.OfType<Button>().Where(b => b.Tag is Browser).ToList();
+                Logger.LogDebug("MainForm.ConfigureForm", "変更後のブラウザボタン数", browserButtonsAfter.Count);
+                
+                StyleXP(); // 透明化が無効の場合のスタイル設定
+                // 子コントロールは既定色に保ち、フォーム背景色の影響を受けにくくする
+                ApplyDefaultBackColorToChildControls();
             }
             
-            Logger.LogInfo("MainForm.ConfigureForm", "End");
+            Logger.LogDebug("MainForm.ConfigureForm", "End");
+        }
+
+        /// <summary>
+        /// 透明化設定を適用
+        /// </summary>
+        private void ApplyTransparencySettings()
+        {
+            try
+            {
+                // フォームの基本スタイル設定（最小化・最大化ボタンを含む）
+                StartPosition = FormStartPosition.CenterScreen;
+                
+                if (_settings?.EnableTransparency == true)
+                {
+                    // 透明化が有効な場合
+                    this.SetStyle(ControlStyles.SupportsTransparentBackColor, true);
+                    this.TransparencyKey = Color.Magenta; // 固定の透明色を使用
+                    this.Opacity = _settings.Opacity;
+                    
+                    // 背景色は通常の背景色を維持（TransparencyKeyで指定した色のみ透明化）
+                    var bg = _settings?.BackgroundColorValue ?? Color.FromArgb(185, 209, 234);
+                    this.BackColor = bg;
+                    
+                    Logger.LogTrace("MainForm.ApplyTransparencySettings", "透明化設定を適用", 
+                        $"EnableTransparency: {_settings?.EnableTransparency}, " +
+                        $"Opacity: {_settings?.Opacity}, " +
+                        $"BackColor: {this.BackColor}, " +
+                        $"TransparencyKey: {this.TransparencyKey}");
+                    
+                    // 角を丸くする設定
+                    if (_settings?.RoundedCornersRadius > 0)
+                    {
+                        ApplyRoundedCorners(_settings.RoundedCornersRadius);
+                    }
+                    
+                    Logger.LogDebug("MainForm.ApplyTransparencySettings", 
+                        $"透明化設定を適用: Opacity={_settings?.Opacity}, TransparencyKey=Magenta, HideTitleBar={_settings?.HideTitleBar}, RoundedCornersRadius={_settings?.RoundedCornersRadius}");
+                }
+                else
+                {
+                    // 透明化が無効な場合
+                    this.SetStyle(ControlStyles.SupportsTransparentBackColor, false);
+                    this.TransparencyKey = Color.Empty;
+                    this.Opacity = 1.0;
+                    // 念のため不透明化してから適用
+                    var bg = _settings?.BackgroundColorValue ?? Color.FromArgb(185, 209, 234);
+                    if (bg.A != 255) bg = Color.FromArgb(255, bg.R, bg.G, bg.B);
+                    this.BackColor = bg;
+                    
+                    Logger.LogTrace("MainForm.ApplyTransparencySettings", "透明化を無効に設定", 
+                        $"EnableTransparency: {_settings?.EnableTransparency}, " +
+                        $"Opacity: {this.Opacity}, " +
+                        $"BackColor: {this.BackColor}");
+                    
+                    // リージョンをクリア（角を丸くする設定を無効化）
+                    this.Region = null;
+                    
+                    // 透明化解除後の描画問題を解決するため、フォームを強制再描画
+                    this.Refresh();
+                    
+                    Logger.LogDebug("MainForm.ApplyTransparencySettings", "透明化を無効にしました");
+                }
+                
+                // Windows 11スタイルの適用
+                ApplyWindows11Style();
+
+                // タイトルバー非表示設定の処理（透明化設定の後に適用）
+                if (_settings?.HideTitleBar == true)
+                {
+                    FormBorderStyle = FormBorderStyle.None;
+                }
+                else
+                {
+                    // タイトルバーが表示される場合は最小化・最大化ボタンを確実に有効化
+                    FormBorderStyle = FormBorderStyle.Sizable;
+                    MaximizeBox = true;
+                    MinimizeBox = true;
+                    SizeGripStyle = SizeGripStyle.Show;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("MainForm.ApplyTransparencySettings", "透明化設定エラー", ex.Message, ex.StackTrace ?? "");
+            }
+        }
+
+        /// <summary>
+        /// Windows 11スタイルを適用
+        /// </summary>
+        private void ApplyWindows11Style()
+        {
+            try
+            {
+                // Windows 11風の最新スタイルを適用
+                if (Environment.OSVersion.Version.Major >= 10)
+                {
+                    // Windows 11の最新スタイルを強制適用
+                    try
+                    {
+                        if (Environment.OSVersion.Version.Build >= 22000) // Windows 11
+                        {
+                            // Windows 11の最新スタイルを適用
+                            this.WindowState = FormWindowState.Normal;
+                            this.FormBorderStyle = FormBorderStyle.Sizable;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError("MainForm.ApplyWindows11Style", "Windows 11スタイル適用エラー", ex.Message);
+                    }
+                }
+                
+                Logger.LogDebug("MainForm.ApplyWindows11Style", "Windows 11スタイル設定を適用しました");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("MainForm.ApplyWindows11Style", "Windows 11スタイル適用エラー", ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// 角を丸くする設定を適用
+        /// </summary>
+        /// <param name="radius">角の半径</param>
+        private void ApplyRoundedCorners(int radius)
+        {
+            try
+            {
+                // Windows APIを使用して角を丸くする
+                var region = CreateRoundedRectangleRegion(0, 0, this.Width, this.Height, radius);
+                this.Region = region;
+                
+                Logger.LogDebug("MainForm.ApplyRoundedCorners", $"角を丸くする設定を適用しました（半径: {radius}）");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("MainForm.ApplyRoundedCorners", "角を丸くする設定エラー", ex.Message, ex.StackTrace ?? "");
+            }
+        }
+
+        /// <summary>
+        /// 角が丸い矩形のリージョンを作成
+        /// </summary>
+        /// <param name="x">X座標</param>
+        /// <param name="y">Y座標</param>
+        /// <param name="width">幅</param>
+        /// <param name="height">高さ</param>
+        /// <param name="radius">角の半径</param>
+        /// <returns>角が丸い矩形のリージョン</returns>
+        private Region CreateRoundedRectangleRegion(int x, int y, int width, int height, int radius)
+        {
+            var path = new System.Drawing.Drawing2D.GraphicsPath();
+            path.AddArc(x, y, radius * 2, radius * 2, 180, 90); // 左上
+            path.AddArc(width - radius * 2, y, radius * 2, radius * 2, 270, 90); // 右上
+            path.AddArc(width - radius * 2, height - radius * 2, radius * 2, radius * 2, 0, 90); // 右下
+            path.AddArc(x, height - radius * 2, radius * 2, radius * 2, 90, 90); // 左下
+            path.CloseFigure();
+            return new Region(path);
+        }
+
+        /// <summary>
+        /// 背景グラデーション描画イベント
+        /// </summary>
+        private void MainForm_Paint(object? sender, PaintEventArgs e)
+        {
+            if (_settings?.EnableBackgroundGradient == true)
+            {
+                try
+                {
+                    var rect = new Rectangle(0, 0, this.Width, this.Height);
+                    var darkerColor = Color.FromArgb(255, 
+                        Math.Max(0, _settings.BackgroundColorValue.R - 50),
+                        Math.Max(0, _settings.BackgroundColorValue.G - 50),
+                        Math.Max(0, _settings.BackgroundColorValue.B - 50));
+                    using var brush = new LinearGradientBrush(rect, _settings.BackgroundColorValue, darkerColor, LinearGradientMode.Vertical);
+                    
+                    e.Graphics.FillRectangle(brush, rect);
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError("MainForm.MainForm_Paint", "背景グラデーション描画エラー", ex.Message);
+                }
+            }
+        }
+
+        /// <summary>
+        /// フォームLoadイベントの処理
+        /// </summary>
+        private void MainForm_Load(object? sender, EventArgs e)
+        {
+            try
+            {
+                Logger.LogDebug("MainForm.MainForm_Load", "フォームLoad開始");
+
+                // Windows 11のダークモード設定に自動追従（DWM未対応環境では内部でtry/catchされ実害なし）
+                var isDarkMode = GeneralUtilities.IsSystemDarkModeEnabled();
+                GeneralUtilities.ApplyDarkMode(this, isDarkMode);
+                // Mica効果は独自の透明化設定と競合するため、透明化が無効な場合のみ適用する
+                if (isDarkMode && _settings?.EnableTransparency != true)
+                {
+                    GeneralUtilities.ApplyMicaEffect(this);
+                }
+
+                // 初期URLが設定されている場合は更新
+                if (!string.IsNullOrEmpty(_initialUrl))
+                {
+                    UpdateURL(_initialUrl);
+                    Logger.LogDebug("MainForm.MainForm_Load", "初期URL更新完了", _initialUrl);
+                }
+                
+                Logger.LogDebug("MainForm.MainForm_Load", "フォームLoad完了");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("MainForm.MainForm_Load", "フォームLoad処理エラー", ex.Message);
+            }
         }
 
         /// <summary>
@@ -185,17 +605,40 @@ namespace BrowserChooser3.Forms
         {
             try
             {
+                // リサイズ中の描画を一時的に無効化（パフォーマンス向上）
+                this.SuspendLayout();
+                
+                // 透明化が有効で角を丸くする設定がある場合、リージョンを更新
+                if (_settings?.EnableTransparency == true && _settings.RoundedCornersRadius > 0)
+                {
+                    ApplyRoundedCorners(_settings.RoundedCornersRadius);
+                }
+                
                 // ブラウザボタンの再配置
                 RecalculateButtonLayout();
                 
                 // 互換性UIコントロールの位置調整
                 AdjustCompatibilityUILayout();
                 
+                // URL表示テキストボックスの位置とサイズを調整
+                if (_urlDisplayTextBox != null)
+                {
+                    _urlDisplayTextBox.Location = new Point(20, ClientSize.Height - 110);
+                    _urlDisplayTextBox.Size = new Size(ClientSize.Width - 60, 20);
+                }
+                
+                // リサイズ処理を再開
+                this.ResumeLayout(false);
+                
+                // フォームの再描画を強制（透明化解除後の描画問題を解決）
+                this.Refresh();
+                
                 Logger.LogTrace("MainForm.MainForm_Resize", "フォームサイズ変更完了", ClientSize.Width, ClientSize.Height);
             }
             catch (Exception ex)
             {
                 Logger.LogError("MainForm.MainForm_Resize", "サイズ変更エラー", ex.Message, ex.StackTrace ?? "");
+                this.ResumeLayout(false);
             }
         }
 
@@ -211,10 +654,20 @@ namespace BrowserChooser3.Forms
             var gapWidth = _settings.IconGapWidth;
             var gapHeight = _settings.IconGapHeight;
             
-            // フォーム幅に基づいて列数を計算
-            var availableWidth = ClientSize.Width - 80; // 左右マージン（右端ボタン用のスペース確保）
+            Logger.LogDebug("MainForm.RecalculateButtonLayout", $"Layout settings - Width: {buttonWidth}, Height: {buttonHeight}, GapWidth: {gapWidth}, GapHeight: {gapHeight}");
+            
+            // フォーム幅に基づいて列数を計算（btnInfoのスペースを確保）
+            var availableWidth = ClientSize.Width - 120; // 左右マージン（右端ボタンとbtnInfo用のスペース確保）
             var columnsPerRow = Math.Max(1, availableWidth / (buttonWidth + gapWidth));
             
+            // ラベルをフォーム全体から都度検索すると総当たりでO(n^2)になるため、事前に名前で索引化する
+            var overlayLabelsByName = Controls.OfType<Label>()
+                .Where(l => l.Name.StartsWith("lblOverlay_"))
+                .ToDictionary(l => l.Name);
+            var nameLabelsByName = Controls.OfType<Label>()
+                .Where(l => l.Name.StartsWith("lblName_"))
+                .ToDictionary(l => l.Name);
+
             var buttonIndex = 0;
             foreach (Control control in Controls)
             {
@@ -222,14 +675,13 @@ namespace BrowserChooser3.Forms
                 {
                     var row = buttonIndex / columnsPerRow;
                     var col = buttonIndex % columnsPerRow;
-                    var x = 30 + (col * (buttonWidth + gapWidth));
+                    var x = 50 + (col * (buttonWidth + gapWidth)); // btnInfoの右側から開始
                     var y = 30 + (row * (buttonHeight + gapHeight));
-                    
+
                     button.Location = new Point(x, y);
-                    
+
                     // 対応するオーバーレイラベルの位置も調整
-                    var overlayLabel = Controls.OfType<Label>().FirstOrDefault(l => l.Name == $"lblOverlay_{buttonIndex}");
-                    if (overlayLabel != null)
+                    if (overlayLabelsByName.TryGetValue($"lblOverlay_{buttonIndex}", out var overlayLabel))
                     {
                         var labelWidth = TextRenderer.MeasureText(overlayLabel.Text, overlayLabel.Font).Width;
                         overlayLabel.Location = new Point(
@@ -237,7 +689,16 @@ namespace BrowserChooser3.Forms
                             y - 15
                         );
                     }
-                    
+
+                    if (nameLabelsByName.TryGetValue($"lblName_{buttonIndex}", out var nameLabel))
+                    {
+                        var labelWidth = TextRenderer.MeasureText(nameLabel.Text, nameLabel.Font).Width;
+                        nameLabel.Location = new Point(
+                            x + (buttonWidth / 2) - (labelWidth / 2),
+                            y + buttonHeight - 20
+                        );
+                    }
+
                     buttonIndex++;
                 }
             }
@@ -250,27 +711,7 @@ namespace BrowserChooser3.Forms
         /// <param name="e">描画イベント引数</param>
         protected override void OnPaint(PaintEventArgs e)
         {
-            if (!_hasAero)
-            {
-                // Aero効果が無効の場合: グラデーション背景を描画
-                using var brush = new LinearGradientBrush(
-                    DisplayRectangle,
-                    Color.FromArgb(185, 209, 234),
-                    Color.FromArgb(132, 151, 173),
-                    LinearGradientMode.Vertical);
-                e.Graphics.FillRectangle(brush, DisplayRectangle);
-            }
-            else if (_hasAero && _settings?.BackgroundColor != Color.Transparent.ToArgb())
-            {
-                // カスタム背景色を使用
-                using var brush = new LinearGradientBrush(
-                    DisplayRectangle,
-                    Color.FromArgb(185, 209, 234),
-                    Color.FromArgb(_settings?.BackgroundColor ?? Color.White.ToArgb()),
-                    LinearGradientMode.Vertical);
-                e.Graphics.FillRectangle(brush, DisplayRectangle);
-            }
-
+            // 標準の背景描画に任せる（BackColorをそのまま反映させる）
             base.OnPaint(e);
         }
 
@@ -280,69 +721,83 @@ namespace BrowserChooser3.Forms
         /// </summary>
         private void StyleXP()
         {
-            FormBorderStyle = FormBorderStyle.FixedDialog;
-            if (_chkAutoClose != null)
-                _chkAutoClose.BackColor = Color.Transparent;
-            if (_chkAutoOpen != null)
-                _chkAutoOpen.BackColor = Color.Transparent;
+            // 透明化が無効な場合はサイズ変更可能にする
+            if (_settings?.EnableTransparency != true)
+            {
+                FormBorderStyle = FormBorderStyle.Sizable;
+                MaximizeBox = true;
+                MinimizeBox = true;
+                SizeGripStyle = SizeGripStyle.Show;
+            }
+            
+            if (chkAutoClose != null)
+                chkAutoClose.BackColor = Color.Transparent;
+
         }
 
         /// <summary>
-        /// 互換性UIコントロールのレイアウトを調整
+        /// 子コントロールの背景色を既定色に戻す（フォームのBackColor変更の影響を抑制）
         /// </summary>
-        private void AdjustCompatibilityUILayout()
+        private void ApplyDefaultBackColorToChildControls()
         {
-            if (_chkAutoClose != null)
+            Logger.LogDebug("MainForm.ApplyDefaultBackColorToChildControls", "子コントロール背景色設定開始");
+            
+            foreach (Control control in Controls)
             {
-                _chkAutoClose.Location = new Point(20, ClientSize.Height - 80);
+                try
+                {
+                    switch (control)
+                    {
+                        case Button:
+                        case Label:
+                        case TextBox:
+                        case CheckBox:
+                        case ListView:
+                        case Panel:
+                            // 透明色を設定（エラーが発生した場合はスキップ）
+                            try
+                            {
+                                control.BackColor = Color.Transparent;
+                                Logger.LogDebug("MainForm.ApplyDefaultBackColorToChildControls", $"コントロール背景色を透明に設定", control.Name);
+                            }
+                            catch (InvalidOperationException)
+                            {
+                                Logger.LogDebug("MainForm.ApplyDefaultBackColorToChildControls", $"コントロールは透明色をサポートしません", control.Name, control.GetType().Name);
+                            }
+                            break;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogWarning("MainForm.ApplyDefaultBackColorToChildControls", $"コントロール背景色設定エラー", control.Name, ex.Message);
+                }
             }
             
-            if (_chkAutoOpen != null)
-            {
-                _chkAutoOpen.Location = new Point(20, ClientSize.Height - 50);
-            }
-            
-            if (_btnOptions != null)
-            {
-                _btnOptions.Location = new Point(ClientSize.Width - 35, 15);
-            }
-            
-            if (_btnCopyToClipboard != null)
-            {
-                _btnCopyToClipboard.Location = new Point(ClientSize.Width - 35, 50);
-            }
-            
-            if (_btnCopyToClipboardAndClose != null)
-            {
-                _btnCopyToClipboardAndClose.Location = new Point(ClientSize.Width - 35, 85);
-            }
-            
-            if (_countdownLabel != null)
-            {
-                _countdownLabel.Location = new Point(20, ClientSize.Height - 20);
-            }
-            
-            // オーバーレイラベルの位置も調整
-            AdjustOverlayLabels();
+            Logger.LogDebug("MainForm.ApplyDefaultBackColorToChildControls", "子コントロール背景色設定完了");
         }
+
+
 
         /// <summary>
         /// ブラウザボタンの作成
         /// </summary>
         private void CreateBrowserButtons()
         {
-            Logger.LogInfo("MainForm.CreateBrowserButtons", "Start", $"ブラウザ数: {_browsers?.Count ?? 0}");
+            Logger.LogDebug("MainForm.CreateBrowserButtons", "Start", $"ブラウザ数: {_browsers?.Count ?? 0}");
+            Logger.LogDebug("MainForm.CreateBrowserButtons", "既存のボタン数", Controls.OfType<Button>().Where(b => b.Tag is Browser).Count().ToString());
             
             var buttonWidth = _settings?.IconWidth ?? 90;
             var buttonHeight = _settings?.IconHeight ?? 100;
             var gapWidth = _settings?.IconGapWidth ?? 0;
             var gapHeight = _settings?.IconGapHeight ?? 0;
             
+            Logger.LogDebug("MainForm.CreateBrowserButtons", $"Icon settings - Width: {buttonWidth}, Height: {buttonHeight}, GapWidth: {gapWidth}, GapHeight: {gapHeight}, Scale: {_settings?.IconScale ?? 1.0}");
+            
             if (_browsers == null) return;
             
             // 既存のブラウザボタンとオーバーレイラベルを削除
             var buttonsToRemove = Controls.OfType<Button>().Where(b => b.Tag is Browser).ToList();
-            var labelsToRemove = Controls.OfType<Label>().Where(l => l.Name.StartsWith("lblOverlay_")).ToList();
+            var labelsToRemove = Controls.OfType<Label>().Where(l => l.Name.StartsWith("lblOverlay_") || l.Name.StartsWith("lblName_")).ToList();
             
             foreach (var btn in buttonsToRemove)
             {
@@ -356,7 +811,7 @@ namespace BrowserChooser3.Forms
                 lbl.Dispose();
             }
             
-            var visibleBrowsers = _browsers.Where(b => b.Visible).ToList();
+            var visibleBrowsers = _browsers.Where(b => b.Visible && b.IsActive).ToList();
             
             for (int i = 0; i < visibleBrowsers.Count; i++)
             {
@@ -365,17 +820,52 @@ namespace BrowserChooser3.Forms
                 var button = new FFButton
                 {
                     Name = $"btnBrowser_{i}",
-                    Text = browser.Name, // テキストはブラウザ名のみ
+                    Text = " ", // スペース1文字を設定してアイコンが表示されるようにする
                     Size = new Size(buttonWidth, buttonHeight),
                     Tag = browser,
                     FlatStyle = FlatStyle.Flat,
                     BackColor = Color.Transparent,
-                    UseVisualStyleBackColor = true,
-                    Font = new Font("Segoe UI", 9.5f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                    ImageAlign = ContentAlignment.MiddleCenter,
+                    UseVisualStyleBackColor = false,
+                    Font = new Font("Segoe UI", 6.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
                     TextAlign = ContentAlignment.MiddleCenter,
                     ShowFocusBox = _settings?.ShowFocus ?? true,
-                    TrapArrowKeys = true
+                    ShowVisualFocus = _settings?.ShowVisualFocus ?? false,
+                    TrapArrowKeys = true,
+                    FocusBoxColor = Color.FromArgb(_settings?.FocusBoxColor ?? Color.Blue.ToArgb()),
+                    FocusBoxLineWidth = _settings?.FocusBoxLineWidth ?? 2,
+                    FocusBoxWidth = _settings?.FocusBoxWidth ?? 2
                 };
+                
+                // ブラウザアイコンの設定
+                try
+                {
+                    Logger.LogDebug("MainForm.CreateBrowserButtons", "アイコン取得開始", browser.Name, browser.Target);
+                    
+                    // アイコンのサイズを調整（ボタンサイズとスケールに合わせる）
+                    var baseIconSize = Math.Min(buttonWidth - 10, buttonHeight - 30); // マージンを確保
+                    var iconScale = _settings?.IconScale ?? 1.0;
+                    var iconSize = (int)(baseIconSize * iconScale);
+                    var resizedIcon = ImageUtilities.GetResizedImage(browser, true, iconSize);
+                    if (resizedIcon != null)
+                    {
+                        Logger.LogDebug("MainForm.CreateBrowserButtons", $"Icon size calculation - Base: {baseIconSize}, Scale: {iconScale}, Final: {iconSize}");
+
+                        button.Image = resizedIcon;
+                        button.ImageAlign = ContentAlignment.MiddleCenter;
+                        button.TextImageRelation = TextImageRelation.Overlay;
+                        
+                        Logger.LogDebug("MainForm.CreateBrowserButtons", "アイコン設定成功", browser.Name, iconSize, browser.Target);
+                    }
+                    else
+                    {
+                        Logger.LogWarning("MainForm.CreateBrowserButtons", "アイコンが取得できませんでした", browser.Name, browser.Target);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogWarning("MainForm.CreateBrowserButtons", "アイコン設定エラー", browser.Name, ex.Message, browser.Target);
+                }
                 
                 // イベントハンドラーの設定
                 button.Click += BrowserButton_Click;
@@ -386,6 +876,25 @@ namespace BrowserChooser3.Forms
                     ffButton.ArrowKeyUp += FFButton_ArrowKeyUp;
                 }
                 
+                // ブラウザボタンにツールチップを設定
+                if (_toolTip != null)
+                {
+                    var tooltipText = $"{browser.Name}\nパス: {browser.Target}";
+                    if (!string.IsNullOrEmpty(browser.Arguments))
+                    {
+                        tooltipText += $"\n引数: {browser.Arguments}";
+                    }
+                    _toolTip.SetToolTip(button, tooltipText);
+                }
+
+                // アクセシブルレンダリング設定が有効な場合、スクリーンリーダー向けの情報を付与する
+                if (_settings?.UseAccessibleRendering ?? false)
+                {
+                    button.AccessibleName = browser.Name;
+                    button.AccessibleDescription = $"{browser.Name}でURLを開く";
+                    button.AccessibleRole = AccessibleRole.PushButton;
+                }
+
                 Controls.Add(button);
                 
                 // ホットキーとデフォルトブラウザのオーバーレイラベルを作成
@@ -397,14 +906,37 @@ namespace BrowserChooser3.Forms
             // レイアウトを再計算
             RecalculateButtonLayout();
             
-            Logger.LogInfo("MainForm.CreateBrowserButtons", "End");
+            Logger.LogDebug("MainForm.CreateBrowserButtons", "End");
         }
 
         /// <summary>
-        /// ホットキーとデフォルトブラウザのオーバーレイラベルを作成
+        /// ブラウザ名のオーバーレイラベルを作成
         /// </summary>
         private void CreateOverlayLabel(Button button, Browser browser, int index)
         {
+            // ブラウザ名のオーバーレイラベルを作成
+            var nameLabel = new Label
+            {
+                Name = $"lblName_{index}",
+                AutoSize = true,
+                BackColor = Color.Transparent, // 背景を透過
+                ForeColor = Color.Black, // 文字色を黒に変更
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Bold, GraphicsUnit.Point, 0),
+                TextAlign = ContentAlignment.MiddleCenter,
+                Text = browser.Name
+            };
+            
+            // 位置の計算（ボタンの中央下部に配置）
+            var labelWidth = TextRenderer.MeasureText(nameLabel.Text, nameLabel.Font).Width;
+            nameLabel.Location = new Point(
+                button.Location.X + (button.Width / 2) - (labelWidth / 2),
+                button.Location.Y + button.Height - 20
+            );
+            
+            Controls.Add(nameLabel);
+            nameLabel.BringToFront();
+            
+            // ホットキーとデフォルトブラウザのオーバーレイラベルを作成
             var defaultIndicator = "";
             if (_settings?.DefaultBrowserGuid == browser.Guid)
             {
@@ -435,9 +967,9 @@ namespace BrowserChooser3.Forms
                 }
                 
                 // 位置の計算（ボタンの中央上部に配置）
-                var labelWidth = TextRenderer.MeasureText(overlayLabel.Text, overlayLabel.Font).Width;
+                var labelWidth2 = TextRenderer.MeasureText(overlayLabel.Text, overlayLabel.Font).Width;
                 overlayLabel.Location = new Point(
-                    button.Location.X + (button.Width / 2) - (labelWidth / 2),
+                    button.Location.X + (button.Width / 2) - (labelWidth2 / 2),
                     button.Location.Y - 15
                 );
                 
@@ -463,13 +995,16 @@ namespace BrowserChooser3.Forms
             var availableWidth = ClientSize.Width - 80;
             var columnsPerRow = Math.Max(1, availableWidth / (buttonWidth + gapWidth));
             
+            var overlayLabelsByName = Controls.OfType<Label>()
+                .Where(l => l.Name.StartsWith("lblOverlay_"))
+                .ToDictionary(l => l.Name);
+
             var buttonIndex = 0;
             foreach (Control control in Controls)
             {
                 if (control is Button button && button.Tag is Browser)
                 {
-                    var overlayLabel = Controls.OfType<Label>().FirstOrDefault(l => l.Name == $"lblOverlay_{buttonIndex}");
-                    if (overlayLabel != null)
+                    if (overlayLabelsByName.TryGetValue($"lblOverlay_{buttonIndex}", out var overlayLabel))
                     {
                         var labelWidth = TextRenderer.MeasureText(overlayLabel.Text, overlayLabel.Font).Width;
                         overlayLabel.Location = new Point(
@@ -487,26 +1022,25 @@ namespace BrowserChooser3.Forms
         /// </summary>
         private void OpenOptionsForm()
         {
-            Logger.LogInfo("MainForm.OpenOptionsForm", "Start");
+            Logger.LogDebug("MainForm.OpenOptionsForm", "Start");
             
             try
             {
-                var optionsForm = new OptionsForm(_settings!);
+                using var optionsForm = new OptionsForm(_settings!);
                 var result = optionsForm.ShowDialog(this);
-                
+
                 if (result == DialogResult.OK)
                 {
                     // 設定が変更された場合、フォームを再構築
                     RefreshForm();
                 }
-                
-                Logger.LogInfo("MainForm.OpenOptionsForm", "End", result);
+
+                Logger.LogDebug("MainForm.OpenOptionsForm", "End", result);
             }
             catch (Exception ex)
             {
                 Logger.LogError("MainForm.OpenOptionsForm", "オプション画面表示エラー", ex.Message, ex.StackTrace ?? "");
-                MessageBox.Show($"オプション画面の表示に失敗しました: {ex.Message}", "エラー", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBoxService.ShowErrorStatic($"オプション画面の表示に失敗しました: {ex.Message}", "エラー");
             }
         }
 
@@ -515,23 +1049,85 @@ namespace BrowserChooser3.Forms
         /// </summary>
         private void RefreshForm()
         {
-            Logger.LogInfo("MainForm.RefreshForm", "Start");
+            Logger.LogDebug("MainForm.RefreshForm", "Start");
             
             try
             {
-                // 既存のコントロールをクリア
-                Controls.Clear();
+                // 設定を再読み込み（既存の設定を保持、パスは使用されず常にユーザーディレクトリから読み込み）
+                var newSettings = Settings.Load("");
+                if (newSettings != null)
+                {
+                    _settings = newSettings;
+                    Settings.Current = _settings;
+                    _browsers = _settings?.Browsers ?? new List<Browser>();
+                    
+                    Logger.LogDebug("MainForm.RefreshForm", "設定再読み込み完了", _browsers?.Count ?? 0);
+                }
+                else
+                {
+                    Logger.LogWarning("MainForm.RefreshForm", "設定の再読み込みに失敗しました");
+                }
                 
-                // フォームを再設定
+                // デフォルトブラウザの再検索
+                _defaultBrowser = _browsers?.FirstOrDefault(b => b.IsDefault);
+                
+                // 既存のブラウザボタンとオーバーレイラベルのみを削除
+                var buttonsToRemove = Controls.OfType<Button>().Where(b => b.Tag is Browser).ToList();
+                var labelsToRemove = Controls.OfType<Label>().Where(l => l.Name.StartsWith("lblOverlay_") || l.Name.StartsWith("lblName_")).ToList();
+                
+                foreach (var btn in buttonsToRemove)
+                {
+                    Controls.Remove(btn);
+                    btn.Dispose();
+                }
+                
+                foreach (var lbl in labelsToRemove)
+                {
+                    Controls.Remove(lbl);
+                    lbl.Dispose();
+                }
+                
+                // リフレッシュ中の描画を一時的に無効化（パフォーマンス向上）
+                this.SuspendLayout();
+                
+                // フォームを再設定（Windows11スタイルも含む）
+                Logger.LogDebug("MainForm.RefreshForm", "ConfigureForm呼び出し前");
                 ConfigureForm();
+                Logger.LogDebug("MainForm.RefreshForm", "ConfigureForm呼び出し完了");
+                
+                // ツールチップの初期化
+                InitializeToolTips();
                 
                 // ブラウザボタンを再作成
+                Logger.LogDebug("MainForm.RefreshForm", "CreateBrowserButtons呼び出し前");
                 CreateBrowserButtons();
+                Logger.LogDebug("MainForm.RefreshForm", "CreateBrowserButtons呼び出し完了");
                 
                 // カウントダウンラベルを再作成
                 CreateCountdownLabel();
                 
-                Logger.LogInfo("MainForm.RefreshForm", "End");
+                // ボタンのツールチップ設定
+                SetupButtonToolTips();
+                
+                // UI要素の位置調整
+                AdjustCompatibilityUILayout();
+                
+                // アイコンの読み込み
+                LoadIcons();
+                
+
+
+                
+                // URL短縮解除の設定
+                SetupURLUnshortening();
+                
+                // リフレッシュ処理を再開
+                this.ResumeLayout(false);
+                
+                // フォームを強制再描画（透明化解除後の描画問題を解決）
+                this.Refresh();
+                
+                Logger.LogDebug("MainForm.RefreshForm", "End");
             }
             catch (Exception ex)
             {
@@ -540,7 +1136,7 @@ namespace BrowserChooser3.Forms
         }
 
         /// <summary>
-        /// ブラウザボタンのクリックイベント（Browser Chooser 2互換）
+        /// ブラウザボタンのクリックイベント
         /// </summary>
         private void BrowserButton_Click(object? sender, EventArgs e)
         {
@@ -550,7 +1146,7 @@ namespace BrowserChooser3.Forms
                 
                 try
                 {
-                    var autoClose = _chkAutoClose?.Checked ?? true;
+                    var autoClose = chkAutoClose?.Checked ?? true;
                     
                     // Ctrl+クリックで自動終了を無効化
                     if (ModifierKeys.HasFlag(Keys.Control))
@@ -564,8 +1160,7 @@ namespace BrowserChooser3.Forms
                 catch (Exception ex)
                 {
                     Logger.LogError("MainForm.BrowserButton_Click", "ブラウザ起動エラー", browser.Name, ex.Message);
-                    MessageBox.Show($"ブラウザの起動に失敗しました: {ex.Message}", "エラー", 
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBoxService.ShowErrorStatic($"ブラウザの起動に失敗しました: {ex.Message}", "エラー");
                 }
             }
         }
@@ -575,7 +1170,7 @@ namespace BrowserChooser3.Forms
         /// </summary>
         private void LaunchBrowser(Browser browser, string url)
         {
-            Logger.LogInfo("MainForm.LaunchBrowser", "Start", browser.Name, url);
+            Logger.LogDebug("MainForm.LaunchBrowser", "Start", browser.Name, url);
             
             var startInfo = new System.Diagnostics.ProcessStartInfo
             {
@@ -586,7 +1181,16 @@ namespace BrowserChooser3.Forms
             
             System.Diagnostics.Process.Start(startInfo);
             
-            Logger.LogInfo("MainForm.LaunchBrowser", "End", browser.Name);
+            Logger.LogDebug("MainForm.LaunchBrowser", "End", browser.Name);
+        }
+
+        /// <summary>
+        /// 初期URLを設定（Loadイベントで使用）
+        /// </summary>
+        public void SetInitialURL(string url)
+        {
+            _initialUrl = url;
+            Logger.LogDebug("MainForm.SetInitialURL", "初期URL設定", url);
         }
 
         /// <summary>
@@ -594,16 +1198,364 @@ namespace BrowserChooser3.Forms
         /// </summary>
         public void UpdateURL(string url)
         {
-            Logger.LogInfo("MainForm.UpdateURL", "URL更新", url);
+            // UIスレッドで実行する必要があるため、InvokeRequiredをチェック
+            if (InvokeRequired)
+            {
+                Invoke(new Action<string>(UpdateURL), url);
+                return;
+            }
+
+            Logger.LogDebug("MainForm.UpdateURL", "URL更新", url);
             _currentUrl = url;
+            UpdateURLLabel();
             
-            // StartupLauncherを使用してURLを処理
+            // AutoURLsとProtocolの処理を実行
+            if (ProcessAutoURLsAndProtocols(url))
+            {
+                // AutoURLsまたはProtocolで処理された場合は、StartupLauncherは呼び出さない
+                Logger.LogInfo("MainForm.UpdateURL", "AutoURLsまたはProtocolで処理完了、StartupLauncherはスキップ", url);
+                return;
+            }
+            
+            // AutoURLsとProtocolで処理されなかった場合のみ、StartupLauncherを使用してURLを処理
             StartupLauncher.SetURL(url, _settings?.RevealShortURL ?? false, OnURLUpdated);
             
             // デフォルトブラウザがある場合はカウントダウンを開始
             if (_defaultBrowser != null && (_settings?.DefaultDelay ?? 0) > 0)
             {
                 StartCountdown();
+            }
+        }
+
+        /// <summary>
+        /// AutoURLsとProtocolの処理を実行
+        /// 優先順位: AutoURLs > Protocol
+        /// </summary>
+        /// <param name="url">処理対象のURL</param>
+        /// <returns>処理された場合はtrue</returns>
+        private bool ProcessAutoURLsAndProtocols(string url)
+        {
+            try
+            {
+                // 1. AutoURLsの処理（最優先）
+                if (ProcessAutoURLsInternal(url))
+                {
+                    Logger.LogInfo("MainForm.ProcessAutoURLsAndProtocols", "AutoURLsで処理完了", url);
+                    return true; // AutoURLsで処理された場合は終了
+                }
+
+                // 2. Protocolの処理（AutoURLsがマッチしない場合）
+                if (ProcessProtocols(url))
+                {
+                    Logger.LogInfo("MainForm.ProcessAutoURLsAndProtocols", "Protocolで処理完了", url);
+                    return true; // Protocolで処理された場合は終了
+                }
+
+                Logger.LogDebug("MainForm.ProcessAutoURLsAndProtocols", "AutoURLsとProtocolの両方でマッチするパターンなし", url);
+                return false; // 処理されなかった場合
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("MainForm.ProcessAutoURLsAndProtocols", "AutoURLs/Protocol処理エラー", ex.Message, ex.StackTrace ?? "");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// AutoURLsの内部処理
+        /// </summary>
+        /// <param name="url">処理対象のURL</param>
+        /// <returns>処理された場合はtrue</returns>
+        private bool ProcessAutoURLsInternal(string url)
+        {
+            try
+            {
+                if (_settings?.URLs == null || _settings.URLs.Count == 0)
+                {
+                    Logger.LogDebug("MainForm.ProcessAutoURLsInternal", "AutoURLsが設定されていません");
+                    return false;
+                }
+
+                Logger.LogDebug("MainForm.ProcessAutoURLsInternal", "AutoURLs処理開始", $"URL: {url}, AutoURLs数: {_settings.URLs.Count}");
+
+                // 設定されたAutoURLsとマッチング
+                foreach (var autoUrl in _settings.URLs)
+                {
+                    if (!autoUrl.IsActive)
+                    {
+                        Logger.LogDebug("MainForm.ProcessAutoURLsInternal", "AutoURLが無効", autoUrl.URLPattern);
+                        continue;
+                    }
+
+                    if (string.IsNullOrEmpty(autoUrl.URLPattern))
+                    {
+                        Logger.LogDebug("MainForm.ProcessAutoURLsInternal", "AutoURLパターンが空", autoUrl.Name);
+                        continue;
+                    }
+
+                    // URLパターンマッチング
+                    if (URLUtilities.MatchURLs(url, autoUrl.URLPattern))
+                    {
+                        Logger.LogInfo("MainForm.ProcessAutoURLsInternal", "AutoURLマッチング成功", 
+                            $"URL: {url}, Pattern: {autoUrl.URLPattern}, Browser: {autoUrl.BrowserGuid}");
+
+                        // 対応するブラウザを検索
+                        var browser = _settings.Browsers.FirstOrDefault(b => b.Guid == autoUrl.BrowserGuid);
+                        if (browser != null)
+                        {
+                            Logger.LogInfo("MainForm.ProcessAutoURLsInternal", "ブラウザ起動開始", 
+                                $"Browser: {browser.Name}, Delay: {autoUrl.Delay}");
+
+                            // 遅延時間を設定
+                            var delay = autoUrl.Delay < 0 ? (_settings?.DefaultDelay ?? 5) : autoUrl.Delay;
+                            
+                            // メイン画面のAutoClose設定を使用
+                            var autoClose = chkAutoClose?.Checked ?? true;
+                            
+                            // 遅延起動を実行
+                            if (delay > 0)
+                            {
+                                StartAutoURLsCountdown(browser, url, delay, autoClose);
+                            }
+                            else
+                            {
+                                // 即座に起動
+                                BrowserUtilities.LaunchBrowser(browser, url, autoClose);
+                                if (autoClose)
+                                {
+                                    Logger.LogInfo("MainForm.ProcessAutoURLsInternal", "AutoClose実行", "即座起動後");
+                                    Application.Exit();
+                                }
+                            }
+                            
+                            return true; // 処理完了
+                        }
+                        else
+                        {
+                            Logger.LogWarning("MainForm.ProcessAutoURLsInternal", "対応するブラウザが見つかりません", autoUrl.BrowserGuid);
+                        }
+                    }
+                    else
+                    {
+                        Logger.LogDebug("MainForm.ProcessAutoURLsInternal", "AutoURLマッチング失敗", 
+                            $"URL: {url}, Pattern: {autoUrl.URLPattern}");
+                    }
+                }
+
+                Logger.LogDebug("MainForm.ProcessAutoURLsInternal", "AutoURLs処理完了 - マッチするパターンなし");
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("MainForm.ProcessAutoURLsInternal", "AutoURLs処理エラー", ex.Message, ex.StackTrace ?? "");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Protocolの処理
+        /// </summary>
+        /// <param name="url">処理対象のURL</param>
+        /// <returns>処理された場合はtrue</returns>
+        private bool ProcessProtocols(string url)
+        {
+            try
+            {
+                if (_settings?.Protocols == null || _settings.Protocols.Count == 0)
+                {
+                    Logger.LogDebug("MainForm.ProcessProtocols", "Protocolsが設定されていません");
+                    return false;
+                }
+
+                Logger.LogDebug("MainForm.ProcessProtocols", "Protocols処理開始", $"URL: {url}, Protocols数: {_settings.Protocols.Count}");
+
+                // URLからプロトコルを抽出
+                var protocol = ExtractProtocolFromUrl(url);
+                Logger.LogDebug("MainForm.ProcessProtocols", "プロトコル抽出結果", $"URL: {url}, 抽出されたプロトコル: {protocol}");
+                
+                if (string.IsNullOrEmpty(protocol))
+                {
+                    Logger.LogDebug("MainForm.ProcessProtocols", "プロトコルを抽出できませんでした", url);
+                    return false;
+                }
+
+                // 設定されたProtocolsとマッチング
+                foreach (var protocolSetting in _settings.Protocols)
+                {
+                    if (!protocolSetting.IsActive)
+                    {
+                        Logger.LogDebug("MainForm.ProcessProtocols", "Protocolが無効", protocolSetting.Name);
+                        continue;
+                    }
+
+                    if (string.IsNullOrEmpty(protocolSetting.Header))
+                    {
+                        Logger.LogDebug("MainForm.ProcessProtocols", "Protocolヘッダーが空", protocolSetting.Name);
+                        continue;
+                    }
+
+                    // プロトコルマッチング
+                    if (protocol.Equals(protocolSetting.Header, StringComparison.OrdinalIgnoreCase))
+                    {
+                        Logger.LogInfo("MainForm.ProcessProtocols", "Protocolマッチング成功", 
+                            $"URL: {url}, Protocol: {protocol}, Browser: {protocolSetting.BrowserGuid}");
+
+                        // 対応するブラウザを検索
+                        var browser = _settings.Browsers.FirstOrDefault(b => b.Guid == protocolSetting.BrowserGuid);
+                        if (browser != null)
+                        {
+                            Logger.LogInfo("MainForm.ProcessProtocols", "ブラウザ起動開始", 
+                                $"Browser: {browser.Name}, Protocol: {protocol}");
+
+                            // Protocolの場合は即座に起動（遅延なし）
+                            BrowserUtilities.LaunchBrowser(browser, url, true); // AutoCloseを有効にする
+                            
+                            // Protocol処理後は自動終了
+                            Logger.LogInfo("MainForm.ProcessProtocols", "Protocol処理完了、アプリケーション終了");
+                            Application.Exit();
+                            
+                            return true; // 処理完了
+                        }
+                        else
+                        {
+                            Logger.LogWarning("MainForm.ProcessProtocols", "対応するブラウザが見つかりません", protocolSetting.BrowserGuid);
+                        }
+                    }
+                    else
+                    {
+                        Logger.LogDebug("MainForm.ProcessProtocols", "Protocolマッチング失敗", 
+                            $"URL: {url}, Protocol: {protocol}, Expected: {protocolSetting.Header}");
+                    }
+                }
+
+                Logger.LogDebug("MainForm.ProcessProtocols", "Protocols処理完了 - マッチするプロトコルなし");
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("MainForm.ProcessProtocols", "Protocols処理エラー", ex.Message, ex.StackTrace ?? "");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// URLからプロトコルを抽出
+        /// </summary>
+        /// <param name="url">URL</param>
+        /// <returns>プロトコル（例: "http", "https", "ftp"）</returns>
+        private string ExtractProtocolFromUrl(string url)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(url))
+                    return string.Empty;
+
+                var colonIndex = url.IndexOf(':');
+                if (colonIndex > 0)
+                {
+                    return url.Substring(0, colonIndex);
+                }
+
+                return string.Empty;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("MainForm.ExtractProtocolFromUrl", "プロトコル抽出エラー", ex.Message);
+                return string.Empty;
+            }
+        }
+
+        /// <summary>
+        /// AutoURLs用のカウントダウンを開始
+        /// </summary>
+        /// <param name="browser">起動するブラウザ</param>
+        /// <param name="url">開くURL</param>
+        /// <param name="delay">遅延時間（秒）</param>
+        /// <param name="autoClose">自動終了するか</param>
+        private void StartAutoURLsCountdown(Browser browser, string url, int delay, bool autoClose)
+        {
+            try
+            {
+                Logger.LogInfo("MainForm.StartAutoURLsCountdown", "AutoURLsカウントダウン開始", 
+                    $"Browser: {browser.Name}, Delay: {delay}, AutoClose: {autoClose}");
+
+                // 既存のカウントダウンを停止
+                if (_countdownTimer != null)
+                {
+                    _countdownTimer.Stop();
+                    _countdownTimer.Dispose();
+                }
+
+                _currentDelay = delay;
+                _isPaused = false;
+
+                _countdownTimer = new System.Windows.Forms.Timer
+                {
+                    Interval = 1000
+                };
+                _countdownTimer.Tick += (sender, e) => AutoURLsCountdownTimer_Tick(browser, url, autoClose);
+                _countdownTimer.Start();
+
+                UpdateAutoURLsCountdownDisplay(browser);
+                if (_countdownLabel != null)
+                {
+                    _countdownLabel.Visible = true;
+                }
+
+                Logger.LogDebug("MainForm.StartAutoURLsCountdown", "AutoURLsカウントダウン開始完了");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("MainForm.StartAutoURLsCountdown", "AutoURLsカウントダウン開始エラー", ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// AutoURLsカウントダウンタイマーの処理
+        /// </summary>
+        /// <param name="browser">起動するブラウザ</param>
+        /// <param name="url">開くURL</param>
+        /// <param name="autoClose">自動終了するか</param>
+        private void AutoURLsCountdownTimer_Tick(Browser browser, string url, bool autoClose)
+        {
+            try
+            {
+                if (_isPaused) return;
+
+                _currentDelay--;
+                UpdateAutoURLsCountdownDisplay(browser);
+
+                if (_currentDelay <= 0)
+                {
+                    _countdownTimer?.Stop();
+                    Logger.LogInfo("MainForm.AutoURLsCountdownTimer_Tick", "AutoURLsブラウザ起動", 
+                        $"Browser: {browser.Name}, URL: {url}");
+
+                    BrowserUtilities.LaunchBrowser(browser, url, autoClose);
+                    
+                    if (autoClose)
+                    {
+                        Logger.LogInfo("MainForm.AutoURLsCountdownTimer_Tick", "AutoClose実行", "遅延起動後");
+                        Application.Exit();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("MainForm.AutoURLsCountdownTimer_Tick", "AutoURLsカウントダウン処理エラー", ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// AutoURLsカウントダウン表示の更新
+        /// </summary>
+        /// <param name="browser">起動するブラウザ</param>
+        private void UpdateAutoURLsCountdownDisplay(Browser browser)
+        {
+            if (_countdownLabel != null)
+            {
+                var status = _isPaused ? " (一時停止)" : "";
+                _countdownLabel.Text = $"{browser.Name}で {_currentDelay} 秒後に起動{status}";
             }
         }
 
@@ -619,213 +1571,121 @@ namespace BrowserChooser3.Forms
             }
             
             _currentUrl = url;
-            Logger.LogInfo("MainForm.OnURLUpdated", "URL更新完了", url);
+            Logger.LogDebug("MainForm.OnURLUpdated", "URL更新完了", url);
+            
+            // URL表示ラベルを更新
+            UpdateURLLabel();
+        }
+        
+        /// <summary>
+        /// URL表示テキストボックスを更新
+        /// </summary>
+        private void UpdateURLLabel()
+        {
+            try
+            {
+                Logger.LogDebug("MainForm.UpdateURLLabel", "URL表示更新開始", $"URL: {_currentUrl}, ShowURL: {_settings?.ShowURL}");
+                
+                if (_urlDisplayTextBox != null)
+                {
+                    if (!string.IsNullOrEmpty(_currentUrl))
+                    {
+                        // URLが長すぎる場合は省略表示
+                        var displayUrl = _currentUrl.Length > 100 ? _currentUrl.Substring(0, 97) + "..." : _currentUrl;
+                        _urlDisplayTextBox.Text = displayUrl;
+                        _urlDisplayTextBox.Visible = _settings?.ShowURL == true;
+                        Logger.LogDebug("MainForm.UpdateURLLabel", "URL表示設定完了", $"DisplayURL: {displayUrl}, Visible: {_urlDisplayTextBox.Visible}");
+                    }
+                    else
+                    {
+                        _urlDisplayTextBox.Text = "";
+                        _urlDisplayTextBox.Visible = false;
+                        Logger.LogDebug("MainForm.UpdateURLLabel", "URL表示を非表示に設定");
+                    }
+                }
+                else
+                {
+                    Logger.LogWarning("MainForm.UpdateURLLabel", "URL表示テキストボックスがnullです");
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("MainForm.UpdateURLLabel", "URL表示テキストボックス更新エラー", ex.Message);
+            }
         }
 
         /// <summary>
-        /// Browser Chooser 2互換のUI要素を作成
+        /// UI要素の位置調整
         /// </summary>
-        private void CreateCompatibilityUI()
+        private void AdjustCompatibilityUILayout()
         {
-            Logger.LogInfo("MainForm.CreateCompatibilityUI", "Start");
+            Logger.LogDebug("MainForm.AdjustCompatibilityUILayout", "Start");
             
             try
             {
-                // Aboutボタン（アイコン付き）
-                _btnInfo = new Button
+                // デザイナーファイルで定義されたUI要素の位置を調整
+                if (btnInfo != null)
                 {
-                    AccessibleName = "About",
-                    AutoSize = true,
-                    BackColor = Color.Transparent,
-                    FlatAppearance = { BorderSize = 0, MouseOverBackColor = Color.Transparent },
-                    FlatStyle = FlatStyle.Flat,
-                    Location = new Point(14, 52),
-                    Margin = new Padding(0),
-                    Name = "btnInfo",
-                    Size = new Size(24, 24),
-                    TabIndex = 1,
-                    UseVisualStyleBackColor = false
-                };
+                    btnInfo.Location = new Point(2, 1);
+                    btnInfo.Size = new Size(24, 24);
+                }
+
+                if (btnOptions != null)
+                {
+                    btnOptions.Location = new Point(ClientSize.Width - 35, 10);
+                    btnOptions.ImageAlign = ContentAlignment.MiddleCenter;
+                    btnOptions.Size = new Size(28, 28);
+                    btnOptions.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+                }
                 
-
-                
-                _btnInfo.Click += BtnInfo_Click;
-                Controls.Add(_btnInfo);
-
-                // アプリケーションスタブボタン（Browser Chooser 2互換）
-                _btnAppStub = new Button
+                if (btnCopyToClipboard != null)
                 {
-                    BackColor = Color.Transparent,
-                    FlatAppearance = { BorderSize = 0 },
-                    FlatStyle = FlatStyle.Flat,
-                    Location = new Point(56, 1),
-                    Name = "btnAppStub",
-                    Size = new Size(75, 80),
-                    TabIndex = 0,
-                    TabStop = false,
-                    UseVisualStyleBackColor = false,
-                    Visible = false
-                };
-                Controls.Add(_btnAppStub);
+                    btnCopyToClipboard.Location = new Point(ClientSize.Width - 35, 50);
+                    btnCopyToClipboard.ImageAlign = ContentAlignment.MiddleCenter;
+                    btnCopyToClipboard.Size = new Size(28, 28);
+                    btnCopyToClipboard.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+                }
 
-                // オプションボタン（アイコン付き）
-                _btnOptions = new Button
+                if (btnCopyToClipboardAndClose != null)
                 {
-                    AccessibleName = "Options",
-                    Anchor = AnchorStyles.Top | AnchorStyles.Right,
-                    AutoSize = true,
-                    BackColor = Color.Transparent,
-                    FlatAppearance = { BorderSize = 0, MouseOverBackColor = Color.Transparent },
-                    FlatStyle = FlatStyle.Flat,
-                    Location = new Point(ClientSize.Width - 35, 15),
-                    Margin = new Padding(0),
-                    Name = "btnOptions",
-                    Size = new Size(28, 28),
-                    TabIndex = 2,
-                    UseVisualStyleBackColor = false,
-                    ImageAlign = ContentAlignment.MiddleCenter
-                };
-                
-
-                
-                _btnOptions.Click += BtnOptions_Click;
-                Controls.Add(_btnOptions);
-
-                // キャンセルボタン
-                _btnCancel = new Button
+                    btnCopyToClipboardAndClose.Location = new Point(ClientSize.Width - 35, 85);
+                    btnCopyToClipboardAndClose.ImageAlign = ContentAlignment.MiddleCenter;
+                    btnCopyToClipboardAndClose.Size = new Size(28, 28);
+                    btnCopyToClipboardAndClose.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+                }
+                if (btnCancel != null)
                 {
-                    BackColor = Color.Transparent,
-                    DialogResult = DialogResult.Cancel,
-                    FlatAppearance = { BorderSize = 0 },
-                    FlatStyle = FlatStyle.Flat,
-                    Location = new Point(370, 12),
-                    Name = "btnCancel",
-                    Size = new Size(0, 0),
-                    TabIndex = 6,
-                    TabStop = false,
-                    Text = "Cancel",
-                    UseVisualStyleBackColor = false
-                };
-                Controls.Add(_btnCancel);
+                    btnCancel.Location = new Point(ClientSize.Width - 35, 120); // btnCopyToClipboardAndCloseの下
+                    btnCancel.ImageAlign = ContentAlignment.MiddleCenter;
+                    btnCancel.Size = new Size(28, 28);
+                    btnCancel.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+                }
 
-                // 自動閉じるチェックボックス（Browser Chooser 2互換）
-                _chkAutoClose = new FFCheckBox
+                if (chkAutoClose != null)
                 {
-                    Anchor = AnchorStyles.Bottom | AnchorStyles.Left,
-                    AutoSize = true,
-                    BackColor = Color.Transparent,
-                    Checked = true,
-                    CheckState = CheckState.Checked,
-                    Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
-                    ForeColor = SystemColors.ActiveCaptionText,
-                    Location = new Point(20, ClientSize.Height - 80),
-                    Name = "chkAutoClose",
-                    Size = new Size(400, 24),
-                    TabIndex = 5,
-                    Text = "ブラウザを選択後に自動的に閉じる",
-                    UseCompatibleTextRendering = true,
-                    UseVisualStyleBackColor = true,
-                    ShowFocusBox = _settings?.ShowFocus ?? true,
-                    UsesAero = _settings?.UseAero ?? true
-                };
-                _chkAutoClose.CheckedChanged += ChkAutoClose_CheckedChanged;
-                Controls.Add(_chkAutoClose);
+                    chkAutoClose.Location = new Point(20, ClientSize.Height - 80);
+                    chkAutoClose.Size = new Size(400, 24);
+                    // 設定から自動閉じるの状態を読み込み
+                    chkAutoClose.Checked = !(_settings?.AllowStayOpen ?? false);
+                }
 
-                // 自動開くチェックボックス（Browser Chooser 2互換）
-                _chkAutoOpen = new FFCheckBox
+
+
+                // 遅延タイマーの設定
+                if (tmrDelay != null)
                 {
-                    Anchor = AnchorStyles.Bottom | AnchorStyles.Left,
-                    AutoSize = true,
-                    BackColor = Color.Transparent,
-                    Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
-                    ForeColor = SystemColors.ActiveCaptionText,
-                    Location = new Point(20, ClientSize.Height - 50),
-                    Name = "chkAutoOpen",
-                    Size = new Size(450, 22),
-                    TabIndex = 6,
-                    Text = "指定秒数後にデフォルトブラウザを開く [space key:Timerの一時停止/再開]",
-                    UseVisualStyleBackColor = false,
-                    ShowFocusBox = _settings?.ShowFocus ?? true,
-                    UsesAero = _settings?.UseAero ?? true
-                };
-                _chkAutoOpen.CheckedChanged += ChkAutoOpen_CheckedChanged;
-                Controls.Add(_chkAutoOpen);
-
-                // クリップボードにコピーボタン（アイコン付き）
-                _btnCopyToClipboard = new Button
-                {
-                    AccessibleName = "Copy URL to clipboard and keep open",
-                    Anchor = AnchorStyles.Top | AnchorStyles.Right,
-                    BackColor = Color.Transparent,
-                    FlatAppearance = { BorderSize = 0, MouseOverBackColor = Color.Transparent },
-                    FlatStyle = FlatStyle.Flat,
-                    Location = new Point(ClientSize.Width - 35, 50),
-                    Margin = new Padding(0),
-                    Name = "btnCopyToClipboard",
-                    Size = new Size(28, 28),
-                    TabIndex = 3,
-                    UseVisualStyleBackColor = false,
-                    ImageAlign = ContentAlignment.MiddleCenter
-                };
-                
-
-                
-                _btnCopyToClipboard.Click += BtnCopyToClipboard_Click;
-                Controls.Add(_btnCopyToClipboard);
-
-                // クリップボードにコピーして閉じるボタン（アイコン付き）
-                _btnCopyToClipboardAndClose = new Button
-                {
-                    AccessibleName = "Copy URL to clipboard and close",
-                    Anchor = AnchorStyles.Top | AnchorStyles.Right,
-                    BackColor = Color.Transparent,
-                    FlatAppearance = { BorderSize = 0, MouseOverBackColor = Color.Transparent },
-                    FlatStyle = FlatStyle.Flat,
-                    Location = new Point(ClientSize.Width - 35, 85),
-                    Margin = new Padding(0),
-                    Name = "btnCopyToClipboardAndClose",
-                    Size = new Size(28, 28),
-                    TabIndex = 4,
-                    UseVisualStyleBackColor = false,
-                    ImageAlign = ContentAlignment.MiddleCenter
-                };
-                
-
-                
-                _btnCopyToClipboardAndClose.Click += BtnCopyToClipboardAndClose_Click;
-                Controls.Add(_btnCopyToClipboardAndClose);
-
-                // ショートカットメッセージラベル
-                _lblShortcutMessage = new Label
-                {
-                    AutoSize = true,
-                    BackColor = Color.Black,
-                    Font = new Font("Segoe UI", 8.5f, FontStyle.Regular, GraphicsUnit.Point, 0),
-                    ForeColor = Color.White,
-                    Location = new Point(2, 1),
-                    Name = "lblShortcutMessage",
-                    Size = new Size(60, 50),
-                    TabIndex = 7,
-                    Text = "Shortcut\r\n/ Default\r\n(if set):",
-                    TextAlign = ContentAlignment.MiddleRight
-                };
-                Controls.Add(_lblShortcutMessage);
-
-                // 遅延タイマー
-                _tmrDelay = new System.Windows.Forms.Timer
-                {
-                    Interval = 1000
-                };
-                _tmrDelay.Tick += TmrDelay_Tick;
+                    tmrDelay.Interval = 1000;
+                    tmrDelay.Tick += TmrDelay_Tick;
+                }
 
                 // コンテキストメニュー
                 CreateContextMenu();
 
-                Logger.LogInfo("MainForm.CreateCompatibilityUI", "End");
+                Logger.LogDebug("MainForm.AdjustCompatibilityUILayout", "End");
             }
             catch (Exception ex)
             {
-                Logger.LogError("MainForm.CreateCompatibilityUI", "UI作成エラー", ex.Message, ex.StackTrace ?? "");
+                Logger.LogError("MainForm.AdjustCompatibilityUILayout", "UI位置調整エラー", ex.Message, ex.StackTrace ?? "");
             }
         }
 
@@ -837,38 +1697,32 @@ namespace BrowserChooser3.Forms
             try
             {
                 // Aboutボタンのアイコン読み込み
-                if (_btnInfo != null)
+                if (btnInfo != null)
                 {
-                    _btnInfo.Image = Properties.Resources.Icon122;
-                }
-                
-                // アプリケーションスタブボタンのアイコン読み込み
-                if (_btnAppStub != null)
-                {
-                    _btnAppStub.Image = Properties.Resources.BrowserChooserIcon;
+                    btnInfo.Image = Properties.Resources.Icon122;
                 }
                 
                 // オプションボタンのアイコン読み込み
-                if (_btnOptions != null)
+                if (btnOptions != null)
                 {
-                    _btnOptions.Image = Properties.Resources.Icon128;
+                    btnOptions.Image = Properties.Resources.Icon128;
                 }
                 
                 // コピーボタンのアイコン読み込み
-                if (_btnCopyToClipboard != null)
+                if (btnCopyToClipboard != null)
                 {
                     var pasteIcon = Properties.Resources.PasteIcon;
-                    _btnCopyToClipboard.Image = ImageUtilities.ResizeImage(pasteIcon, 20, 20);
+                    btnCopyToClipboard.Image = ImageUtilities.ResizeImage(pasteIcon, 28, 28);
                 }
                 
                 // コピー＆クローズボタンのアイコン読み込み
-                if (_btnCopyToClipboardAndClose != null)
+                if (btnCopyToClipboardAndClose != null)
                 {
                     var pasteAndCloseIcon = Properties.Resources.PasteAndCloseIcon;
-                    _btnCopyToClipboardAndClose.Image = ImageUtilities.ResizeImage(pasteAndCloseIcon, 20, 20);
+                    btnCopyToClipboardAndClose.Image = ImageUtilities.ResizeImage(pasteAndCloseIcon, 28, 28);
                 }
                 
-                Logger.LogInfo("MainForm.LoadIcons", "アイコン読み込み完了");
+                Logger.LogDebug("MainForm.LoadIcons", "アイコン読み込み完了");
             }
             catch (Exception ex)
             {
@@ -892,6 +1746,73 @@ namespace BrowserChooser3.Forms
             var toolStripMenuItem3 = new ToolStripMenuItem("ToolStripMenuItem3");
             
             _cmOptions.Items.AddRange(new ToolStripItem[] { miEditMode, toolStripSeparator1, toolStripMenuItem2, toolStripMenuItem3 });
+        }
+
+        /// <summary>
+        /// ツールチップの初期化
+        /// </summary>
+        private void InitializeToolTips()
+        {
+            _toolTip = new ToolTip();
+            _toolTip.IsBalloon = false;
+            _toolTip.ToolTipTitle = "Browser Chooser";
+            _toolTip.ShowAlways = true;
+            _toolTip.AutoPopDelay = 5000;
+            _toolTip.InitialDelay = 1000;
+            _toolTip.ReshowDelay = 500;
+        }
+
+        /// <summary>
+        /// ボタンにツールチップを設定
+        /// </summary>
+        private void SetupButtonToolTips()
+        {
+            if (_toolTip == null) return;
+
+            // 基本ボタンのツールチップ設定
+            if (btnInfo != null)
+                _toolTip.SetToolTip(btnInfo, "アプリケーション情報を表示します");
+
+            if (btnOptions != null)
+                _toolTip.SetToolTip(btnOptions, "設定画面を開きます");
+
+            if (btnCancel != null)
+                _toolTip.SetToolTip(btnCancel, "アプリケーションを終了します");
+
+            if (btnCopyToClipboard != null)
+                _toolTip.SetToolTip(btnCopyToClipboard, "URLをクリップボードにコピーします");
+
+            if (btnCopyToClipboardAndClose != null)
+                _toolTip.SetToolTip(btnCopyToClipboardAndClose, "URLをクリップボードにコピーしてアプリケーションを終了します");
+
+            if (chkAutoClose != null)
+                _toolTip.SetToolTip(chkAutoClose, "ブラウザ起動後にアプリケーションを自動で閉じます");
+
+
+
+        }
+
+        /// <summary>
+        /// URL表示用テキストボックスの作成
+        /// </summary>
+        private void CreateURLDisplayTextBox()
+        {
+            _urlDisplayTextBox = new TextBox
+            {
+                Name = "txtURLDisplay",
+                ReadOnly = true,
+                Location = new Point(20, ClientSize.Height - 110),
+                Size = new Size(ClientSize.Width - 60, 25),
+                Font = new Font("Segoe UI", 7.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                BackColor = Color.LightGray,
+                ForeColor = Color.Black,
+                BorderStyle = BorderStyle.FixedSingle,
+                TextAlign = HorizontalAlignment.Left,
+                Anchor=AnchorStyles.Left | AnchorStyles.Bottom,
+                Visible = true
+            };
+            
+            Controls.Add(_urlDisplayTextBox);
         }
 
         /// <summary>
@@ -934,7 +1855,7 @@ namespace BrowserChooser3.Forms
             UpdateCountdownDisplay();
             _countdownLabel!.Visible = true;
             
-            Logger.LogInfo("MainForm.StartCountdown", "カウントダウン開始", _currentDelay);
+            Logger.LogDebug("MainForm.StartCountdown", "カウントダウン開始", _currentDelay);
         }
 
         /// <summary>
@@ -967,27 +1888,11 @@ namespace BrowserChooser3.Forms
             }
         }
 
-        /// <summary>
-        /// 自動開くテキストの更新（Browser Chooser 2互換）
-        /// </summary>
-        private void UpdateAutoOpenText()
-        {
-            if (_chkAutoOpen != null && _defaultBrowser != null)
-            {
-                var pauseText = _tmrDelay?.Enabled == false ? "un" : "";
-                var browserName = _defaultBrowser.Name ?? "default browser";
-                _chkAutoOpen.Text = $"Open {browserName} after {_currentDelay} seconds.  [Space: ({pauseText}pause) timer]";
-            }
-        }
 
-        /// <summary>
-        /// フォーム読み込み時の処理
-        /// </summary>
-        private void MainForm_Load(object? sender, EventArgs e)
-        {
-            // 既存のInitializeApplication()の内容をここに移動
-            InitializeApplication();
-        }
+
+
+        
+
 
         /// <summary>
         /// 情報ボタンのクリックイベント
@@ -1026,14 +1931,12 @@ namespace BrowserChooser3.Forms
             try
             {
                 Clipboard.SetText(_currentUrl);
-                MessageBox.Show("URLをクリップボードにコピーしました", "情報", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBoxService.ShowInfoStatic("URLをクリップボードにコピーしました", "情報");
             }
             catch (Exception ex)
             {
                 Logger.LogError("MainForm.btnCopyToClipboard_Click", "クリップボードコピーエラー", ex.Message);
-                MessageBox.Show($"クリップボードへのコピーに失敗しました: {ex.Message}", "エラー", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBoxService.ShowErrorStatic($"クリップボードへのコピーに失敗しました: {ex.Message}", "エラー");
             }
         }
 
@@ -1051,10 +1954,11 @@ namespace BrowserChooser3.Forms
             catch (Exception ex)
             {
                 Logger.LogError("MainForm.btnCopyToClipboardAndClose_Click", "クリップボードコピーエラー", ex.Message);
-                MessageBox.Show($"クリップボードへのコピーに失敗しました: {ex.Message}", "エラー", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBoxService.ShowErrorStatic($"クリップボードへのコピーに失敗しました: {ex.Message}", "エラー");
             }
         }
+        
+
 
         /// <summary>
         /// 自動クローズチェックボックスの変更イベント
@@ -1062,17 +1966,26 @@ namespace BrowserChooser3.Forms
         private void chkAutoClose_CheckedChanged(object? sender, EventArgs e)
         {
             Logger.LogInfo("MainForm.chkAutoClose_CheckedChanged", "自動クローズ設定変更", chkAutoClose.Checked);
-            // 設定を保存する処理を追加
+            // 設定に反映（AllowStayOpenは逆の値）
+            if (_settings != null)
+            {
+                _settings.AllowStayOpen = !chkAutoClose.Checked;
+                Logger.LogDebug("MainForm.chkAutoClose_CheckedChanged", "AllowStayOpen設定を更新", _settings.AllowStayOpen);
+                
+                // 設定を保存
+                try
+                {
+                    _settings.DoSave();
+                    Logger.LogDebug("MainForm.chkAutoClose_CheckedChanged", "設定を保存しました");
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError("MainForm.chkAutoClose_CheckedChanged", "設定の保存に失敗", ex.Message);
+                }
+            }
         }
 
-        /// <summary>
-        /// 自動オープンチェックボックスの変更イベント
-        /// </summary>
-        private void chkAutoOpen_CheckedChanged(object? sender, EventArgs e)
-        {
-            Logger.LogInfo("MainForm.chkAutoOpen_CheckedChanged", "自動オープン設定変更", chkAutoOpen.Checked);
-            // 設定を保存する処理を追加
-        }
+
 
         /// <summary>
         /// 遅延タイマーの処理
@@ -1091,8 +2004,10 @@ namespace BrowserChooser3.Forms
             OpenOptionsForm();
         }
 
+
+
         /// <summary>
-        /// キーボードイベントの処理（Browser Chooser 2互換）
+        /// キーボードイベントの処理
         /// </summary>
         private void MainForm_KeyDown(object? sender, KeyEventArgs e)
         {
@@ -1116,15 +2031,7 @@ namespace BrowserChooser3.Forms
                 return;
             }
             
-            // スペースキーでカウントダウンを一時停止/再開
-            if (e.KeyCode == Keys.Space && _tmrDelay != null)
-            {
-                e.Handled = true;
-                e.SuppressKeyPress = true;
-                _isPaused = !_isPaused;
-                UpdateAutoOpenText();
-                return;
-            }
+
             
             // 数字キー（0-9）でホットキー処理
             if (e.KeyCode >= Keys.D0 && e.KeyCode <= Keys.D9)
@@ -1138,7 +2045,7 @@ namespace BrowserChooser3.Forms
                     if (char.IsDigit(browser.Hotkey) && int.Parse(browser.Hotkey.ToString()) == keyNumber)
                     {
                         Logger.LogInfo("MainForm.MainForm_KeyDown", "ホットキー起動", browser.Name, keyNumber);
-                        BrowserUtilities.LaunchBrowser(browser, _currentUrl, _chkAutoClose?.Checked ?? true);
+                        BrowserUtilities.LaunchBrowser(browser, _currentUrl, chkAutoClose?.Checked ?? true);
                         return;
                     }
                 }
@@ -1147,7 +2054,7 @@ namespace BrowserChooser3.Forms
         }
 
         /// <summary>
-        /// 矢印キーによるフォーカス移動（Browser Chooser 2互換）
+        /// 矢印キーによるフォーカス移動
         /// </summary>
         private void HandleArrowKeyUp(Keys keyData)
         {
@@ -1208,7 +2115,7 @@ namespace BrowserChooser3.Forms
         }
 
         /// <summary>
-        /// ループ減算（Browser Chooser 2互換）
+        /// ループ減算
         /// </summary>
         private int MinusLoop(int start, int max)
         {
@@ -1218,7 +2125,7 @@ namespace BrowserChooser3.Forms
         }
 
         /// <summary>
-        /// ループ加算（Browser Chooser 2互換）
+        /// ループ加算
         /// </summary>
         private int AddLoop(int start, int max)
         {
@@ -1313,30 +2220,18 @@ namespace BrowserChooser3.Forms
         }
 
         /// <summary>
-        /// 自動閉じるチェックボックスの変更イベント
+        /// 自動閉じるチェックボックスの変更イベント（重複を削除）
         /// </summary>
         private void ChkAutoClose_CheckedChanged(object? sender, EventArgs e)
         {
-            Logger.LogInfo("MainForm.ChkAutoClose_CheckedChanged", $"自動閉じる: {_chkAutoClose?.Checked}");
-            // 設定に反映する処理を追加
+            // このメソッドは重複しているため、chkAutoClose_CheckedChangedを使用
+            chkAutoClose_CheckedChanged(sender, e);
         }
 
-        /// <summary>
-        /// 自動開くチェックボックスの変更イベント（Browser Chooser 2互換）
-        /// </summary>
-        private void ChkAutoOpen_CheckedChanged(object? sender, EventArgs e)
-        {
-            Logger.LogInfo("MainForm.ChkAutoOpen_CheckedChanged", $"自動開く: {_chkAutoOpen?.Checked}");
-            
-            if (_tmrDelay != null)
-            {
-                _tmrDelay.Enabled = _chkAutoOpen?.Checked ?? false;
-                UpdateAutoOpenText();
-            }
-        }
+
 
         /// <summary>
-        /// 遅延タイマーのティックイベント（Browser Chooser 2互換）
+        /// 遅延タイマーのティックイベント
         /// </summary>
         private void TmrDelay_Tick(object? sender, EventArgs e)
         {
@@ -1350,28 +2245,15 @@ namespace BrowserChooser3.Forms
 
             if (_currentDelay > 0)
             {
-                var text = $"Open {_defaultBrowser?.Name} in {_currentDelay} seconds. [Space: {(_tmrDelay?.Enabled == false ? "un" : "")}pause timer]";
-                
-                if (_chkAutoOpen != null)
-                {
-                    _chkAutoOpen.Text = text;
-                    _chkAutoOpen.Invalidate();
-                }
+                // カウントダウン表示のみ
             }
             else
             {
-                _tmrDelay!.Enabled = false;
-                
-                var text = $"Automatically opening {_defaultBrowser?.Name}.";
-                if (_chkAutoOpen != null)
-                {
-                    _chkAutoOpen.Text = text;
-                    _chkAutoOpen.Invalidate();
-                }
+                tmrDelay!.Enabled = false;
 
                 if (_defaultBrowser != null)
                 {
-                    BrowserUtilities.LaunchBrowser(_defaultBrowser, _currentUrl, _chkAutoClose?.Checked ?? true);
+                    BrowserUtilities.LaunchBrowser(_defaultBrowser, _currentUrl, chkAutoClose?.Checked ?? true);
                 }
             }
         }
@@ -1412,9 +2294,8 @@ namespace BrowserChooser3.Forms
                     title = button.AccessibleName ?? title;
                     _currentText = title;
                 }
-                else if (button.Tag is int index && _browsers != null && index < _browsers.Count)
+                else if (button.Tag is Browser browser)
                 {
-                    var browser = _browsers[index];
                     _currentText = $"Open {browser.Name}";
 
                     if (_settings?.ShowURL == true)
@@ -1479,41 +2360,105 @@ namespace BrowserChooser3.Forms
             return false;
         }
 
+
+
+
+
         /// <summary>
-        /// スペースキーによるタイマー一時停止/再開の処理
+        /// フォームを閉じる際の処理
         /// </summary>
-        /// <param name="e">キーイベント引数</param>
-        private void HandleSpaceKey(KeyEventArgs e)
+        protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            if (e.KeyCode == Keys.Space && _tmrDelay != null && _defaultBrowser != null)
+            try
             {
-                if (_tmrDelay.Enabled)
+                // ユーザーが×ボタン等で閉じようとした場合、常駐設定が有効ならトレイに格納してキャンセルする
+                if (e.CloseReason == CloseReason.UserClosing && (_settings?.AlwaysResidentInTray ?? false))
                 {
-                    _isPaused = true;
-                    _tmrDelay.Stop();
-                }
-                else
-                {
-                    _isPaused = false;
-                    _tmrDelay.Start();
+                    Logger.LogDebug("MainForm.OnFormClosing", "AlwaysResidentInTrayが有効のためトレイに格納します");
+                    e.Cancel = true;
+                    InitializeSystemTray();
+                    MinimizeToTray();
+                    return;
                 }
 
-                UpdateAutoOpenText();
-                e.SuppressKeyPress = true;
-                e.Handled = true;
+                // システムトレイアイコンのクリーンアップ
+                if (_notifyIcon != null)
+                {
+                    _notifyIcon.Visible = false;
+                    _notifyIcon.Dispose();
+                    _notifyIcon = null;
+                }
+
+                // タイマーのクリーンアップ
+                if (_countdownTimer != null)
+                {
+                    _countdownTimer.Stop();
+                    _countdownTimer.Dispose();
+                    _countdownTimer = null;
+                }
+
+                // ツールチップのクリーンアップ
+                if (_toolTip != null)
+                {
+                    _toolTip.Dispose();
+                    _toolTip = null;
+                }
+
+                // コンテキストメニューのクリーンアップ
+                if (_cmOptions != null)
+                {
+                    _cmOptions.Dispose();
+                    _cmOptions = null;
+                }
+
+                base.OnFormClosing(e);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("MainForm.OnFormClosing", "フォーム終了処理エラー", ex.Message);
             }
         }
 
         /// <summary>
-        /// 自動オープンテキストを更新します（スペースキー対応版）
+        /// システムトレイを初期化します
         /// </summary>
-        private void UpdateAutoOpenTextWithSpaceKey()
+        private void InitializeSystemTray()
         {
-            if (_chkAutoOpen != null && _defaultBrowser != null)
+            try
             {
-                var pauseStatus = _tmrDelay?.Enabled == false ? "un" : "";
-                _chkAutoOpen.Text = $"Open {_defaultBrowser.Name} in {_currentDelay} seconds. [Space: {pauseStatus}pause timer]";
+                if (_notifyIcon != null) return;
+
+                _notifyIcon = new NotifyIcon
+                {
+                    Icon = Icon.FromHandle(Properties.Resources.BrowserChooser3.GetHicon()),
+                    Text = "Browser Chooser 3",
+                    Visible = false
+                };
+
+                // コンテキストメニューの作成
+                var contextMenu = new ContextMenuStrip();
+                
+                var showItem = new ToolStripMenuItem("表示(&S)");
+                showItem.Click += (sender, e) => ShowFromTray();
+                contextMenu.Items.Add(showItem);
+                
+                contextMenu.Items.Add(new ToolStripSeparator());
+                
+                var exitItem = new ToolStripMenuItem("終了(&X)");
+                exitItem.Click += (sender, e) => Application.Exit();
+                contextMenu.Items.Add(exitItem);
+
+                _notifyIcon.ContextMenuStrip = contextMenu;
+                _notifyIcon.DoubleClick += (sender, e) => ShowFromTray();
+
+                Logger.LogDebug("MainForm.InitializeSystemTray", "システムトレイ初期化完了");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("MainForm.InitializeSystemTray", "システムトレイ初期化エラー", ex.Message);
             }
         }
+
+
     }
 }

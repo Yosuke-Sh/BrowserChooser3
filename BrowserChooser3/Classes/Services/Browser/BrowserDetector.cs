@@ -20,41 +20,20 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
         /// <returns>検出されたブラウザのリスト</returns>
         public static List<Browser> DetectBrowsers()
         {
-            Logger.LogInfo("BrowserDetector.DetectBrowsers", "Start");
+            Logger.LogDebug("BrowserDetector.DetectBrowsers", "Start");
             DetectedBrowsers.Clear();
 
-            try
-            {
-                // Chrome
-                DetectChrome();
-                
-                // Firefox
-                DetectFirefox();
-                
-                // Edge
-                DetectEdge();
-                
-                // Internet Explorer
-                DetectInternetExplorer();
-                
-                // Opera
-                DetectOpera();
-                
-                // Safari
-                DetectSafari();
-                
-                // Brave
-                DetectBrave();
-                
-                // Vivaldi
-                DetectVivaldi();
-                
-                Logger.LogInfo("BrowserDetector.DetectBrowsers", "End", DetectedBrowsers.Count);
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("BrowserDetector.DetectBrowsers", "ブラウザ検出エラー", ex.Message, ex.StackTrace ?? "");
-            }
+            // 1つのブラウザの検出で例外が発生しても、他のブラウザの検出を継続できるよう
+            // 各Detectメソッド内部で個別にtry/catchする（DetectByRegistryPaths/DetectByFixedPath参照）
+            DetectChrome();
+            DetectFirefox();
+            DetectEdge();
+            DetectOpera();
+            DetectSafari();
+            DetectBrave();
+            DetectVivaldi();
+
+            Logger.LogDebug("BrowserDetector.DetectBrowsers", "End", DetectedBrowsers.Count);
 
             return DetectedBrowsers;
         }
@@ -64,31 +43,11 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
         /// </summary>
         private static void DetectChrome()
         {
-            var paths = new[]
+            DetectByRegistryPaths("DetectChrome", "Google Chrome", "--new-window", new[]
             {
                 @"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\chrome.exe",
                 @"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\App Paths\chrome.exe"
-            };
-
-            foreach (var path in paths)
-            {
-                var chromePath = GeneralUtilities.GetRegistryValue(path, "");
-                if (!string.IsNullOrEmpty(chromePath) && System.IO.File.Exists(chromePath))
-                {
-                    var browser = new Browser
-                    {
-                        Name = "Google Chrome",
-                        Target = chromePath,
-                        Arguments = "--new-window",
-                        Category = "Web Browsers",
-                        IsActive = true,
-                        Visible = true
-                    };
-                    DetectedBrowsers.Add(browser);
-                    Logger.LogInfo("BrowserDetector.DetectChrome", "Chrome検出", chromePath);
-                    break;
-                }
-            }
+            });
         }
 
         /// <summary>
@@ -96,31 +55,11 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
         /// </summary>
         private static void DetectFirefox()
         {
-            var paths = new[]
+            DetectByRegistryPaths("DetectFirefox", "Mozilla Firefox", "-new-window", new[]
             {
                 @"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\firefox.exe",
                 @"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\App Paths\firefox.exe"
-            };
-
-            foreach (var path in paths)
-            {
-                var firefoxPath = GeneralUtilities.GetRegistryValue(path, "");
-                if (!string.IsNullOrEmpty(firefoxPath) && System.IO.File.Exists(firefoxPath))
-                {
-                    var browser = new Browser
-                    {
-                        Name = "Mozilla Firefox",
-                        Target = firefoxPath,
-                        Arguments = "-new-window",
-                        Category = "Web Browsers",
-                        IsActive = true,
-                        Visible = true
-                    };
-                    DetectedBrowsers.Add(browser);
-                    Logger.LogInfo("BrowserDetector.DetectFirefox", "Firefox検出", firefoxPath);
-                    break;
-                }
-            }
+            });
         }
 
         /// <summary>
@@ -128,45 +67,11 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
         /// </summary>
         private static void DetectEdge()
         {
-            var edgePath = @"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe";
-            if (System.IO.File.Exists(edgePath))
+            DetectByRegistryPathsThenFixedPath("DetectEdge", "Microsoft Edge", "--new-window", new[]
             {
-                var browser = new Browser
-                {
-                    Name = "Microsoft Edge",
-                    Target = edgePath,
-                    Arguments = "--new-window",
-                    Category = "Web Browsers",
-                    IsActive = true,
-                    Visible = true,
-                    IsEdge = true
-                };
-                DetectedBrowsers.Add(browser);
-                Logger.LogInfo("BrowserDetector.DetectEdge", "Edge検出", edgePath);
-            }
-        }
-
-        /// <summary>
-        /// Internet Explorerを検出
-        /// </summary>
-        private static void DetectInternetExplorer()
-        {
-            var iePath = @"C:\Program Files\Internet Explorer\iexplore.exe";
-            if (System.IO.File.Exists(iePath))
-            {
-                var browser = new Browser
-                {
-                    Name = "Internet Explorer",
-                    Target = iePath,
-                    Arguments = "-new",
-                    Category = "Web Browsers",
-                    IsActive = true,
-                    Visible = true,
-                    IEBehaviour = true
-                };
-                DetectedBrowsers.Add(browser);
-                Logger.LogInfo("BrowserDetector.DetectInternetExplorer", "IE検出", iePath);
-            }
+                @"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\msedge.exe",
+                @"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\App Paths\msedge.exe"
+            }, @"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe", isEdge: true);
         }
 
         /// <summary>
@@ -174,21 +79,11 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
         /// </summary>
         private static void DetectOpera()
         {
-            var operaPath = @"C:\Program Files\Opera\launcher.exe";
-            if (System.IO.File.Exists(operaPath))
+            DetectByRegistryPathsThenFixedPath("DetectOpera", "Opera", "--new-window", new[]
             {
-                var browser = new Browser
-                {
-                    Name = "Opera",
-                    Target = operaPath,
-                    Arguments = "--new-window",
-                    Category = "Web Browsers",
-                    IsActive = true,
-                    Visible = true
-                };
-                DetectedBrowsers.Add(browser);
-                Logger.LogInfo("BrowserDetector.DetectOpera", "Opera検出", operaPath);
-            }
+                @"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\opera.exe",
+                @"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\App Paths\opera.exe"
+            }, @"C:\Program Files\Opera\launcher.exe");
         }
 
         /// <summary>
@@ -196,21 +91,8 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
         /// </summary>
         private static void DetectSafari()
         {
-            var safariPath = @"C:\Program Files\Safari\Safari.exe";
-            if (System.IO.File.Exists(safariPath))
-            {
-                var browser = new Browser
-                {
-                    Name = "Safari",
-                    Target = safariPath,
-                    Arguments = "",
-                    Category = "Web Browsers",
-                    IsActive = true,
-                    Visible = true
-                };
-                DetectedBrowsers.Add(browser);
-                Logger.LogInfo("BrowserDetector.DetectSafari", "Safari検出", safariPath);
-            }
+            // Safariは配布終了済みで、レジストリApp Pathsに登録される慣習を持たないため固定パスのみで検出する
+            DetectByFixedPath("DetectSafari", "Safari", @"C:\Program Files\Safari\Safari.exe", "");
         }
 
         /// <summary>
@@ -218,21 +100,11 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
         /// </summary>
         private static void DetectBrave()
         {
-            var bravePath = @"C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe";
-            if (System.IO.File.Exists(bravePath))
+            DetectByRegistryPathsThenFixedPath("DetectBrave", "Brave Browser", "--new-window", new[]
             {
-                var browser = new Browser
-                {
-                    Name = "Brave Browser",
-                    Target = bravePath,
-                    Arguments = "--new-window",
-                    Category = "Web Browsers",
-                    IsActive = true,
-                    Visible = true
-                };
-                DetectedBrowsers.Add(browser);
-                Logger.LogInfo("BrowserDetector.DetectBrave", "Brave検出", bravePath);
-            }
+                @"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\brave.exe",
+                @"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\App Paths\brave.exe"
+            }, @"C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe");
         }
 
         /// <summary>
@@ -240,22 +112,100 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
         /// </summary>
         private static void DetectVivaldi()
         {
-            var vivaldiPath = @"C:\Users\%USERNAME%\AppData\Local\Vivaldi\Application\vivaldi.exe";
-            var expandedPath = Environment.ExpandEnvironmentVariables(vivaldiPath);
-            if (System.IO.File.Exists(expandedPath))
+            var fixedPath = System.IO.Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                @"Vivaldi\Application\vivaldi.exe");
+
+            DetectByRegistryPathsThenFixedPath("DetectVivaldi", "Vivaldi", "--new-window", new[]
             {
-                var browser = new Browser
+                @"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\vivaldi.exe",
+                @"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\App Paths\vivaldi.exe"
+            }, fixedPath);
+        }
+
+        /// <summary>
+        /// レジストリのApp Pathsキー群を順に確認し、最初に見つかった実行ファイルをブラウザとして登録します
+        /// </summary>
+        private static void DetectByRegistryPaths(string callerName, string browserName, string arguments, string[] registryPaths)
+        {
+            DetectByRegistryPaths(callerName, browserName, arguments, registryPaths, isEdge: false);
+        }
+
+        /// <summary>
+        /// レジストリのApp Pathsキー群を順に確認し、最初に見つかった実行ファイルをブラウザとして登録します。
+        /// 見つかった場合はtrueを返します。
+        /// </summary>
+        private static bool DetectByRegistryPaths(string callerName, string browserName, string arguments, string[] registryPaths, bool isEdge)
+        {
+            try
+            {
+                foreach (var registryPath in registryPaths)
                 {
-                    Name = "Vivaldi",
-                    Target = expandedPath,
-                    Arguments = "--new-window",
-                    Category = "Web Browsers",
-                    IsActive = true,
-                    Visible = true
-                };
-                DetectedBrowsers.Add(browser);
-                Logger.LogInfo("BrowserDetector.DetectVivaldi", "Vivaldi検出", expandedPath);
+                    var exePath = GeneralUtilities.GetRegistryValue(registryPath, "");
+                    if (!string.IsNullOrEmpty(exePath) && System.IO.File.Exists(exePath))
+                    {
+                        AddDetectedBrowser(callerName, browserName, exePath, arguments, isEdge);
+                        return true;
+                    }
+                }
             }
+            catch (Exception ex)
+            {
+                Logger.LogError($"BrowserDetector.{callerName}", $"{browserName}の検出中にエラーが発生しました", ex.Message, ex.StackTrace ?? "");
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// まずレジストリのApp Pathsで検出を試み、見つからない場合は既知の固定インストールパスにフォールバックします
+        /// </summary>
+        private static void DetectByRegistryPathsThenFixedPath(string callerName, string browserName, string arguments, string[] registryPaths, string fallbackFixedPath, bool isEdge = false)
+        {
+            var foundInRegistry = DetectByRegistryPaths(callerName, browserName, arguments, registryPaths, isEdge);
+            if (!foundInRegistry)
+            {
+                DetectByFixedPath(callerName, browserName, fallbackFixedPath, arguments, isEdge);
+            }
+        }
+
+        /// <summary>
+        /// 固定インストールパスの実行ファイル存在を確認し、見つかった場合はブラウザとして登録します
+        /// </summary>
+        private static void DetectByFixedPath(string callerName, string browserName, string exePath, string arguments, bool isEdge = false)
+        {
+            try
+            {
+                if (System.IO.File.Exists(exePath))
+                {
+                    AddDetectedBrowser(callerName, browserName, exePath, arguments, isEdge);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError($"BrowserDetector.{callerName}", $"{browserName}の検出中にエラーが発生しました", ex.Message, ex.StackTrace ?? "");
+            }
+        }
+
+        private static void AddDetectedBrowser(string callerName, string browserName, string exePath, string arguments, bool isEdge = false)
+        {
+            var browser = new Browser
+            {
+                Name = browserName,
+                Target = exePath,
+                Arguments = arguments,
+                Category = "Web Browsers",
+                IsActive = true,
+                Visible = true,
+                IsEdge = isEdge
+            };
+
+            lock (DetectedBrowsers)
+            {
+                DetectedBrowsers.Add(browser);
+            }
+
+            Logger.LogDebug($"BrowserDetector.{callerName}", $"{browserName}検出", exePath);
         }
 
         /// <summary>
@@ -277,8 +227,14 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
                     IsActive = true,
                     Visible = true
                 };
-                DetectedBrowsers.Add(browser);
-                Logger.LogInfo("BrowserDetector.AddCustomBrowser", "カスタムブラウザ追加", name, path);
+
+                // スレッドセーフな追加
+                lock (DetectedBrowsers)
+                {
+                    DetectedBrowsers.Add(browser);
+                }
+
+                Logger.LogDebug("BrowserDetector.AddCustomBrowser", "カスタムブラウザ追加", name, path);
             }
         }
     }

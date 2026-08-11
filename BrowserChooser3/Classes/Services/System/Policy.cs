@@ -52,7 +52,7 @@ namespace BrowserChooser3.Classes.Services.SystemServices
         /// </summary>
         public static void Initialize()
         {
-            Logger.LogInfo("Policy.Initialize", "ポリシー初期化開始");
+            Logger.LogDebug("Policy.Initialize", "ポリシー初期化開始");
 
             try
             {
@@ -65,7 +65,7 @@ namespace BrowserChooser3.Classes.Services.SystemServices
                 // 環境変数から設定を読み込み
                 LoadEnvironmentPolicies();
 
-                Logger.LogInfo("Policy.Initialize", "ポリシー初期化完了");
+                Logger.LogDebug("Policy.Initialize", "ポリシー初期化完了");
             }
             catch (Exception ex)
             {
@@ -134,7 +134,7 @@ namespace BrowserChooser3.Classes.Services.SystemServices
                         AccessibleRendering = accessible;
                     }
 
-                    Logger.LogInfo("Policy.LoadRegistryPolicies", "レジストリポリシー読み込み完了");
+                    Logger.LogDebug("Policy.LoadRegistryPolicies", "レジストリポリシー読み込み完了");
                 }
             }
             catch (Exception ex)
@@ -159,7 +159,7 @@ namespace BrowserChooser3.Classes.Services.SystemServices
                     // 現在はレジストリポリシーと同じ構造を使用
                     LoadRegistryPolicies();
                     
-                    Logger.LogInfo("Policy.LoadGroupPolicies", "グループポリシー読み込み完了");
+                    Logger.LogDebug("Policy.LoadGroupPolicies", "グループポリシー読み込み完了");
                 }
             }
             catch (Exception ex)
@@ -200,7 +200,7 @@ namespace BrowserChooser3.Classes.Services.SystemServices
                     CanonicalizeAppendedText = appendedText;
                 }
 
-                Logger.LogInfo("Policy.LoadEnvironmentPolicies", "環境変数ポリシー読み込み完了");
+                Logger.LogDebug("Policy.LoadEnvironmentPolicies", "環境変数ポリシー読み込み完了");
             }
             catch (Exception ex)
             {
@@ -221,7 +221,7 @@ namespace BrowserChooser3.Classes.Services.SystemServices
             UseAero = false;
             AccessibleRendering = false;
 
-            Logger.LogInfo("Policy.Reset", "ポリシー設定をリセット");
+            Logger.LogDebug("Policy.Reset", "ポリシー設定をリセット");
         }
 
         /// <summary>

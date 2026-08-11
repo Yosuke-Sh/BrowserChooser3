@@ -19,6 +19,12 @@ namespace BrowserChooser3.Classes.Utilities
         private static extern bool DestroyIcon(IntPtr hIcon);
 
         /// <summary>
+        /// 抽出済みアイコンのキャッシュ（キー: ファイルパス+アイコンインデックス）
+        /// 同じ実行ファイルへの再アクセス・Win32でのアイコン再抽出を避けるため、プロセス生存期間中保持する
+        /// </summary>
+        private static readonly Dictionary<string, Image> _iconCache = new();
+
+        /// <summary>
         /// ブラウザからアイコンを取得
         /// </summary>
         /// <param name="browser">ブラウザオブジェクト</param>
@@ -28,21 +34,35 @@ namespace BrowserChooser3.Classes.Utilities
         {
             try
             {
-                string filePath = useCustomPath && !string.IsNullOrEmpty(browser.CustomImagePath) 
-                    ? browser.CustomImagePath 
+                            string filePath = useCustomPath && !string.IsNullOrEmpty(browser.ImagePath)
+                ? browser.ImagePath
                     : browser.Target;
+
+                Logger.LogInfo("ImageUtilities.GetImage", "アイコン取得開始", browser.Name, filePath, useCustomPath);
 
                 if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath))
                 {
-                    Logger.LogWarning("ImageUtilities.GetImage", "ファイルが存在しません", filePath);
+                    Logger.LogWarning("ImageUtilities.GetImage", "ファイルが存在しません", filePath, browser.Name);
                     return null;
+                }
+
+                var cacheKey = $"{filePath}|{browser.IconIndex}";
+                lock (_iconCache)
+                {
+                    if (_iconCache.TryGetValue(cacheKey, out var cachedImage))
+                    {
+                        return cachedImage;
+                    }
                 }
 
                 // アイコンを抽出
                 var icon = ExtractIconFromFile(filePath, browser.IconIndex);
                 if (icon != null)
                 {
-                    return icon.ToBitmap();
+                    Logger.LogInfo("ImageUtilities.GetImage", "アイコン抽出成功", browser.Name, filePath);
+                    var bitmap = icon.ToBitmap();
+                    CacheIcon(cacheKey, bitmap);
+                    return bitmap;
                 }
 
                 // フォールバック: 関連付けられたアイコンを取得
@@ -51,7 +71,9 @@ namespace BrowserChooser3.Classes.Utilities
                     var associatedIcon = Icon.ExtractAssociatedIcon(filePath);
                     if (associatedIcon != null)
                     {
-                        return associatedIcon.ToBitmap();
+                        var bitmap = associatedIcon.ToBitmap();
+                        CacheIcon(cacheKey, bitmap);
+                        return bitmap;
                     }
                 }
                 catch (Exception ex)
@@ -67,6 +89,64 @@ namespace BrowserChooser3.Classes.Utilities
                 Logger.LogError("ImageUtilities.GetImage", "アイコン取得エラー", ex.Message);
                 return SystemIcons.Application.ToBitmap();
             }
+        }
+
+        private static void CacheIcon(string cacheKey, Image bitmap)
+        {
+            lock (_iconCache)
+            {
+                _iconCache[cacheKey] = bitmap;
+            }
+        }
+
+        /// <summary>
+        /// リサイズ済みアイコンのキャッシュ（キー: ファイルパス+アイコンインデックス+サイズ）
+        /// ボタン表示のたびに同じサイズへのリサイズ（GDI+描画）を繰り返さないよう、プロセス生存期間中保持する
+        /// </summary>
+        private static readonly Dictionary<string, Image> _resizedIconCache = new();
+
+        /// <summary>
+        /// ブラウザのアイコンを指定サイズにリサイズした画像を取得します。
+        /// 元アイコン（<see cref="GetImage"/>）・リサイズ結果ともにキャッシュされ、
+        /// 同一ブラウザ・同一サイズへの再要求はキャッシュから返します。
+        /// </summary>
+        /// <param name="browser">ブラウザオブジェクト</param>
+        /// <param name="useCustomPath">カスタムパスを使用するかどうか</param>
+        /// <param name="size">リサイズ後のサイズ（正方形）</param>
+        /// <returns>リサイズ済み画像</returns>
+        public static Image? GetResizedImage(Browser browser, bool useCustomPath, int size)
+        {
+            if (size <= 0)
+            {
+                return GetImage(browser, useCustomPath);
+            }
+
+            string filePath = useCustomPath && !string.IsNullOrEmpty(browser.ImagePath)
+                ? browser.ImagePath
+                : browser.Target;
+
+            var resizedCacheKey = $"{filePath}|{browser.IconIndex}|{size}";
+            lock (_resizedIconCache)
+            {
+                if (_resizedIconCache.TryGetValue(resizedCacheKey, out var cachedResized))
+                {
+                    return cachedResized;
+                }
+            }
+
+            var sourceImage = GetImage(browser, useCustomPath);
+            if (sourceImage == null)
+            {
+                return null;
+            }
+
+            var resized = new Bitmap(sourceImage, new Size(size, size));
+            lock (_resizedIconCache)
+            {
+                _resizedIconCache[resizedCacheKey] = resized;
+            }
+
+            return resized;
         }
 
         /// <summary>

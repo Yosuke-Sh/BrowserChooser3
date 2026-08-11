@@ -35,9 +35,47 @@ namespace BrowserChooser3.Classes.Utilities
     }
 
         /// <summary>
-        /// 現在のログレベル（デフォルトはInfo）
+        /// 現在のログレベル（デフォルトはWarning）
         /// </summary>
-        public static LogLevel CurrentLogLevel { get; set; } = LogLevel.Info;
+        public static LogLevel CurrentLogLevel { get; set; } = LogLevel.Warning;
+
+        /// <summary>
+        /// ログレベルが初期化済みかどうか
+        /// </summary>
+        private static bool _isLogLevelInitialized = false;
+
+        /// <summary>
+        /// テスト環境かどうかを判定
+        /// </summary>
+        public static bool IsTestEnvironment
+        {
+            get
+            {
+                // テスト実行中かどうかを判定
+                var testAssemblyNames = new[] { "xunit", "nunit", "mstest", "testhost" };
+                var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+                
+                foreach (var assembly in assemblies)
+                {
+                    var assemblyName = assembly.GetName().Name?.ToLowerInvariant();
+                    if (assemblyName != null && testAssemblyNames.Any(testName => assemblyName.Contains(testName)))
+                    {
+                        return true;
+                    }
+                }
+                
+                // 環境変数でテスト環境かどうかを判定
+                var testEnvironment = Environment.GetEnvironmentVariable("TEST_ENVIRONMENT");
+                if (!string.IsNullOrEmpty(testEnvironment) && testEnvironment.ToLowerInvariant() == "true")
+                {
+                    return true;
+                }
+                
+                return false;
+            }
+        }
+
+
 
         /// <summary>
         /// ログメッセージのキュー
@@ -45,11 +83,130 @@ namespace BrowserChooser3.Classes.Utilities
         private static readonly Queue<string> _logQueue = new Queue<string>();
 
         /// <summary>
+        /// この件数以上キューに溜まったら即座にファイルへフラッシュする
+        /// </summary>
+        private const int FlushBatchSize = 20;
+
+        /// <summary>
+        /// 前回フラッシュしてからこの時間が経過したら次回のログ追加時にフラッシュする
+        /// </summary>
+        private static readonly TimeSpan FlushInterval = TimeSpan.FromSeconds(2);
+
+        private static DateTime _lastFlushTime = DateTime.MinValue;
+
+        /// <summary>
+        /// インストーラー経由でインストールされたかどうかを判定
+        /// </summary>
+        /// <returns>インストーラー経由の場合はtrue</returns>
+        private static bool IsInstalledViaInstaller()
+        {
+            try
+            {
+                // 実行ファイルがProgram FilesまたはProgram Files (x86)にある場合はインストーラー経由と判定
+                var executablePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
+                var programFilesPath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+                var programFilesX86Path = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
+                
+                return executablePath.StartsWith(programFilesPath, StringComparison.OrdinalIgnoreCase) ||
+                       executablePath.StartsWith(programFilesX86Path, StringComparison.OrdinalIgnoreCase);
+            }
+            catch (Exception ex)
+            {
+                // エラーが発生した場合は、インストーラー経由ではないと判断
+                Console.WriteLine($"IsInstalledViaInstaller check failed: {ex.Message}");
+                return false;
+            }
+        }
+        
+        /// <summary>
+        /// ログディレクトリのパス
+        /// </summary>
+        private static string LogDirectory
+        {
+            get
+            {
+                // PathManagerを使用してログディレクトリを取得
+                var logDir = PathManager.GetLogDirectory();
+                
+                // ディレクトリが存在しない場合は作成
+                if (!Directory.Exists(logDir))
+                {
+                    try
+                    {
+                        Directory.CreateDirectory(logDir);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Failed to create log directory: {ex.Message}");
+                        // 作成に失敗した場合はTempPathにフォールバック
+                        return Path.GetTempPath();
+                    }
+                }
+                
+                return logDir;
+            }
+        }
+        
+        /// <summary>
+        /// 現在の日付に基づくログファイル名を取得
+        /// </summary>
+        /// <returns>ログファイル名</returns>
+        private static string GetLogFileName()
+        {
+            var today = DateTime.Now.ToString("yyyy-MM-dd");
+            return $"bc3_{today}.log";
+        }
+        
+        /// <summary>
         /// ログファイルのパス
         /// </summary>
-        private static string LogFilePath => Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.Desktop), 
-            "bc3.log");
+        private static string LogFilePath
+        {
+            get
+            {
+                var logDir = LogDirectory;
+                var fileName = GetLogFileName();
+                return Path.Combine(logDir, fileName);
+            }
+        }
+        
+        /// <summary>
+        /// 古いログファイルを削除（30日以上古いファイル）
+        /// </summary>
+        private static void CleanupOldLogFiles()
+        {
+            try
+            {
+                var logDir = LogDirectory;
+                if (!Directory.Exists(logDir))
+                    return;
+                
+                var cutoffDate = DateTime.Now.AddDays(-30); // 30日以上古いファイルを削除
+                var logFiles = Directory.GetFiles(logDir, "bc3_*.log");
+                
+                foreach (var logFile in logFiles)
+                {
+                    try
+                    {
+                        var fileInfo = new FileInfo(logFile);
+                        if (fileInfo.CreationTime < cutoffDate)
+                        {
+                            File.Delete(logFile);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        // 個別ファイルの削除に失敗しても他のファイルの処理を続行
+                        Console.WriteLine($"Failed to delete old log file {logFile}: {ex.Message}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // クリーンアップに失敗してもログ出力は続行
+                Console.WriteLine($"Failed to cleanup old log files: {ex.Message}");
+            }
+        }
 
         /// <summary>
         /// ログを追加する（基本メソッド）
@@ -60,7 +217,31 @@ namespace BrowserChooser3.Classes.Utilities
         /// <param name="extraVars">追加情報</param>
         public static void AddToLog(LogLevel level, string caller, string message, params object[] extraVars)
         {
+            // ログレベルが初期化されていない場合は、ErrorとWarningのみ出力
+            if (!_isLogLevelInitialized && level < LogLevel.Error)
+            {
+                // デバッグ用：初期化前のDEBUGログを抑制
+                return;
+            }
+
             if (level > CurrentLogLevel) return;
+
+            // テスト環境ではログ出力をスキップ
+            if (IsTestEnvironment)
+            {
+                return;
+            }
+
+            // ログディレクトリの存在を確認（初回ログ出力時に確実に作成）
+            try
+            {
+                var logDir = LogDirectory; // この呼び出しでディレクトリが作成される
+            }
+            catch (Exception)
+            {
+                // ログディレクトリの作成に失敗した場合は何もしない
+                return;
+            }
 
             var timestamp = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
             var levelName = level.ToString().ToUpper();
@@ -76,12 +257,29 @@ namespace BrowserChooser3.Classes.Utilities
                 }
             }
 
+            bool shouldFlush;
             lock (_logQueue)
             {
                 _logQueue.Enqueue(logEntry.ToString());
+
+                // Error/Warningは即座に書き込む（クラッシュ時の情報欠落を防ぐ）。
+                // それ以外は一定件数・一定時間たまるまでファイルI/Oをまとめる。
+                shouldFlush = level <= LogLevel.Warning
+                    || _logQueue.Count >= FlushBatchSize
+                    || (DateTime.Now - _lastFlushTime) >= FlushInterval;
             }
 
-            // ログをファイルに書き込み
+            if (shouldFlush)
+            {
+                WriteLogsToFile();
+            }
+        }
+
+        /// <summary>
+        /// キューに溜まっているログを強制的にファイルへ書き込みます（アプリ終了時などに呼び出します）
+        /// </summary>
+        public static void Flush()
+        {
             WriteLogsToFile();
         }
 
@@ -132,16 +330,16 @@ namespace BrowserChooser3.Classes.Utilities
         {
             try
             {
-                TextWriter writer;
-                if (Application.StartupPath == Environment.SystemDirectory)
+                lock (_logQueue)
                 {
-                    writer = new StreamWriter(LogFilePath, true, Encoding.UTF8);
+                    if (_logQueue.Count == 0)
+                    {
+                        return;
+                    }
                 }
-                else
-                {
-                    var logPath = Path.Combine(Application.StartupPath, "bc3.log");
-                    writer = new StreamWriter(logPath, true, Encoding.UTF8);
-                }
+
+                var logPath = LogFilePath;
+                var writer = new StreamWriter(logPath, true, Encoding.UTF8);
 
                 lock (_logQueue)
                 {
@@ -150,9 +348,21 @@ namespace BrowserChooser3.Classes.Utilities
                         var logEntry = _logQueue.Dequeue();
                         writer.WriteLine(logEntry);
                     }
+                    _lastFlushTime = DateTime.Now;
                 }
 
                 writer.Close();
+                
+                // 定期的に古いログファイルをクリーンアップ（1日1回程度）
+                var lastCleanupKey = "LastLogCleanupDate";
+                var lastCleanupDate = Environment.GetEnvironmentVariable(lastCleanupKey);
+                var today = DateTime.Now.ToString("yyyy-MM-dd");
+                
+                if (lastCleanupDate != today)
+                {
+                    CleanupOldLogFiles();
+                    Environment.SetEnvironmentVariable(lastCleanupKey, today);
+                }
             }
             catch (Exception)
             {
@@ -175,20 +385,26 @@ namespace BrowserChooser3.Classes.Utilities
                         logLevelValue >= 0 && logLevelValue <= 5)
                     {
                         CurrentLogLevel = (LogLevel)logLevelValue;
-                        LogInfo("Logger.InitializeLogLevel", "app.configからログレベルを設定しました", CurrentLogLevel.ToString());
-                        return;
+                    }
+                    else
+                    {
+                        CurrentLogLevel = LogLevel.Info;
                     }
                 }
+                else
+                {
+                    // app.configから読み取れない場合はデフォルト値を使用
+                    CurrentLogLevel = LogLevel.Warning;
+                }
 
-                // app.configから読み取れない場合はデフォルト値を使用
-                CurrentLogLevel = LogLevel.Info;
-                LogInfo("Logger.InitializeLogLevel", "デフォルトログレベルを設定しました", CurrentLogLevel.ToString());
+                // ログレベル初期化完了をマーク
+                _isLogLevelInitialized = true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                // 無効な値の場合はInfoレベルにフォールバック
-                CurrentLogLevel = LogLevel.Info;
-                LogError("Logger.InitializeLogLevel", "ログレベル初期化エラー", ex.Message);
+                // 無効な値の場合はWarningレベルにフォールバック
+                CurrentLogLevel = LogLevel.Warning;
+                _isLogLevelInitialized = true;
             }
         }
 
@@ -201,13 +417,17 @@ namespace BrowserChooser3.Classes.Utilities
             if (logLevelSetting >= 0 && logLevelSetting <= 5)
             {
                 CurrentLogLevel = (LogLevel)logLevelSetting;
-                LogInfo("Logger.InitializeLogLevel", "ログレベルを設定しました", CurrentLogLevel.ToString());
             }
             else
             {
-                CurrentLogLevel = LogLevel.Info;
-                LogWarning("Logger.InitializeLogLevel", "無効なログレベル設定値。デフォルト値を使用します", logLevelSetting);
+                CurrentLogLevel = LogLevel.Warning;
             }
+
+            // ログレベル初期化完了をマーク
+            _isLogLevelInitialized = true;
+
+            // 初期化完了後にログ出力
+            LogInfo("Logger.InitializeLogLevel", "ログレベルを設定しました", CurrentLogLevel.ToString());
         }
     }
 }

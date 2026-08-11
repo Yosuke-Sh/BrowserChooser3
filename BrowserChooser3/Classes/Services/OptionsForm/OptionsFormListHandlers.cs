@@ -66,43 +66,77 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
         /// <summary>
         /// Auto URLsリストの選択変更イベント
         /// </summary>
-        public void LstURLs_SelectedIndexChanged(object sender, EventArgs e)
+        public void LstURLs_SelectedIndexChanged(object? sender, EventArgs e)
         {
-            if (sender is not ListView listView) return;
+            Logger.LogInfo("OptionsFormListHandlers.LstURLs_SelectedIndexChanged", "Auto URLs選択変更イベントが呼び出されました");
+            
+            if (sender is not ListView listView) 
+            {
+                Logger.LogWarning("OptionsFormListHandlers.LstURLs_SelectedIndexChanged", "senderがListViewではありません");
+                return;
+            }
+
+            Logger.LogInfo("OptionsFormListHandlers.LstURLs_SelectedIndexChanged", $"選択されたアイテム数: {listView.SelectedIndices.Count}");
 
             if (listView.SelectedIndices.Count > 0)
             {
-                // ボタンを有効化
-                var editButton = _form.Controls.Find("cmdAutoURLEdit", true).FirstOrDefault() as Button;
-                var deleteButton = _form.Controls.Find("cmdAutoURLDelete", true).FirstOrDefault() as Button;
-                var moveUpButton = _form.Controls.Find("cmdMoveUpAutoURL", true).FirstOrDefault() as Button;
-                var moveDownButton = _form.Controls.Find("cmdMoveDownAutoURL", true).FirstOrDefault() as Button;
+                // Auto URLsタブを取得
+                var autoUrlsTab = _form.tabSettings.TabPages["tabAutoURLs"];
+                if (autoUrlsTab != null)
+                {
+                    // ボタンを有効化
+                    var editButton = autoUrlsTab.Controls.Find("btnEdit", true).FirstOrDefault() as Button;
+                    var deleteButton = autoUrlsTab.Controls.Find("btnDelete", true).FirstOrDefault() as Button;
+                    var moveUpButton = autoUrlsTab.Controls.Find("btnMoveUp", true).FirstOrDefault() as Button;
+                    var moveDownButton = autoUrlsTab.Controls.Find("btnMoveDown", true).FirstOrDefault() as Button;
 
-                if (editButton != null) editButton.Enabled = true;
-                if (deleteButton != null) deleteButton.Enabled = true;
-                if (moveUpButton != null) moveUpButton.Enabled = true;
-                if (moveDownButton != null) moveDownButton.Enabled = true;
+                if (editButton != null) 
+                {
+                    editButton.Enabled = true;
+                    Logger.LogInfo("OptionsFormListHandlers.LstURLs_SelectedIndexChanged", "Editボタンを有効化しました");
+                }
+                if (deleteButton != null) 
+                {
+                    deleteButton.Enabled = true;
+                    Logger.LogInfo("OptionsFormListHandlers.LstURLs_SelectedIndexChanged", "Deleteボタンを有効化しました");
+                }
+                if (moveUpButton != null) 
+                {
+                    moveUpButton.Enabled = true;
+                    Logger.LogInfo("OptionsFormListHandlers.LstURLs_SelectedIndexChanged", "MoveUpボタンを有効化しました");
+                }
+                if (moveDownButton != null) 
+                {
+                    moveDownButton.Enabled = true;
+                    Logger.LogInfo("OptionsFormListHandlers.LstURLs_SelectedIndexChanged", "MoveDownボタンを有効化しました");
+                }
 
                 // ダブルクリック注釈を表示
-                var noteLabel = _form.Controls.Find("lblDoubleClickURLsNote", true).FirstOrDefault() as Label;
+                var noteLabel = autoUrlsTab.Controls.Find("lblDoubleClickURLsNote", true).FirstOrDefault() as Label;
                 if (noteLabel != null) noteLabel.Visible = true;
+                }
             }
             else
             {
-                // ボタンを無効化
-                var editButton = _form.Controls.Find("cmdAutoURLEdit", true).FirstOrDefault() as Button;
-                var deleteButton = _form.Controls.Find("cmdAutoURLDelete", true).FirstOrDefault() as Button;
-                var moveUpButton = _form.Controls.Find("cmdMoveUpAutoURL", true).FirstOrDefault() as Button;
-                var moveDownButton = _form.Controls.Find("cmdMoveDownAutoURL", true).FirstOrDefault() as Button;
+                // Auto URLsタブを取得
+                var autoUrlsTab = _form.tabSettings.TabPages["tabAutoURLs"];
+                if (autoUrlsTab != null)
+                {
+                    // ボタンを無効化
+                    var editButton = autoUrlsTab.Controls.Find("btnEdit", true).FirstOrDefault() as Button;
+                    var deleteButton = autoUrlsTab.Controls.Find("btnDelete", true).FirstOrDefault() as Button;
+                    var moveUpButton = autoUrlsTab.Controls.Find("btnMoveUp", true).FirstOrDefault() as Button;
+                    var moveDownButton = autoUrlsTab.Controls.Find("btnMoveDown", true).FirstOrDefault() as Button;
 
-                if (editButton != null) editButton.Enabled = false;
-                if (deleteButton != null) deleteButton.Enabled = false;
-                if (moveUpButton != null) moveUpButton.Enabled = false;
-                if (moveDownButton != null) moveDownButton.Enabled = false;
+                    if (editButton != null) editButton.Enabled = false;
+                    if (deleteButton != null) deleteButton.Enabled = false;
+                    if (moveUpButton != null) moveUpButton.Enabled = false;
+                    if (moveDownButton != null) moveDownButton.Enabled = false;
 
-                // ダブルクリック注釈を非表示
-                var noteLabel = _form.Controls.Find("lblDoubleClickURLsNote", true).FirstOrDefault() as Label;
-                if (noteLabel != null) noteLabel.Visible = false;
+                    // ダブルクリック注釈を非表示
+                    var noteLabel = autoUrlsTab.Controls.Find("lblDoubleClickURLsNote", true).FirstOrDefault() as Label;
+                    if (noteLabel != null) noteLabel.Visible = false;
+                }
             }
         }
 
@@ -116,8 +150,8 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             if (listView.SelectedIndices.Count > 0)
             {
                 // ボタンを有効化
-                var editButton = _form.Controls.Find("cmdEditProtocol", true).FirstOrDefault() as Button;
-                var deleteButton = _form.Controls.Find("cmdDeleteProtocol", true).FirstOrDefault() as Button;
+                var editButton = _form.Controls.Find("btnEdit", true).FirstOrDefault() as Button;
+                var deleteButton = _form.Controls.Find("btnDelete", true).FirstOrDefault() as Button;
 
                 if (editButton != null) editButton.Enabled = true;
                 if (deleteButton != null) deleteButton.Enabled = true;
@@ -129,8 +163,8 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             else
             {
                 // ボタンを無効化
-                var editButton = _form.Controls.Find("cmdEditProtocol", true).FirstOrDefault() as Button;
-                var deleteButton = _form.Controls.Find("cmdDeleteProtocol", true).FirstOrDefault() as Button;
+                var editButton = _form.Controls.Find("btnEdit", true).FirstOrDefault() as Button;
+                var deleteButton = _form.Controls.Find("btnDelete", true).FirstOrDefault() as Button;
 
                 if (editButton != null) editButton.Enabled = false;
                 if (deleteButton != null) deleteButton.Enabled = false;

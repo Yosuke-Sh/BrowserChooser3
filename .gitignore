@@ -10,3 +10,11 @@
 /BrowserChooser3/Resources/*.lnk
 /.vs
 BrowserChooser3/Resources/BrowserChooser3.XmlSerializers.dll
+bin
+obj
+coverage
+TestResults
+
+# ビルド成果物（リリースのたびに変わるため追跡しない）
+/dist
+/Release

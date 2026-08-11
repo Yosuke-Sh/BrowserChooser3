@@ -10,13 +10,7 @@
     <Compile Update="Forms\AboutForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="Forms\AccessibilitySettingsForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Update="Forms\AddEditBrowserForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="Forms\AddEditFileTypeForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="Forms\AddEditProtocolForm.cs">
@@ -26,9 +20,6 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="Forms\IconSelectionForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="Forms\ImportSourceForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="Forms\MainForm.cs">

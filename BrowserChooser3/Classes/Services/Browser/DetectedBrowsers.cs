@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Diagnostics;
 using BrowserChooser3.Classes.Models;
 using BrowserChooser3.Classes.Utilities;
+using System.Linq;
 
 namespace BrowserChooser3.Classes.Services.BrowserServices
 {
@@ -33,23 +34,24 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
         /// <summary>
         /// ブラウザ検出を実行
         /// </summary>
+        /// <param name="webBrowsersOnly">Webブラウザのみを検出するかどうか</param>
         /// <returns>検出されたブラウザのリスト</returns>
-        public static List<Browser> DoBrowserDetection()
+        public static List<Browser> DoBrowserDetection(bool webBrowsersOnly = false)
         {
-            Logger.LogInfo("DetectedBrowsers.DoBrowserDetection", "ブラウザ検出開始");
+            Logger.LogInfo("DetectedBrowsers.DoBrowserDetection", "ブラウザ検出開始", webBrowsersOnly);
 
             try
             {
                 var detectedBrowsers = new List<Browser>();
 
                 // ローカル定義から検出
-                var localBrowsers = DetectFromLocalDefinitions();
+                var localBrowsers = DetectFromLocalDefinitions(webBrowsersOnly);
                 detectedBrowsers.AddRange(localBrowsers);
 
                 // オンライン定義から検出（オプション）
                 if (ShouldCheckOnlineDefinitions())
                 {
-                    var onlineBrowsers = DetectFromOnlineDefinitions();
+                    var onlineBrowsers = DetectFromOnlineDefinitions(webBrowsersOnly);
                     detectedBrowsers.AddRange(onlineBrowsers);
                 }
 
@@ -69,8 +71,9 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
         /// <summary>
         /// ローカル定義からブラウザを検出
         /// </summary>
+        /// <param name="webBrowsersOnly">Webブラウザのみを検出するかどうか</param>
         /// <returns>検出されたブラウザのリスト</returns>
-        private static List<Browser> DetectFromLocalDefinitions()
+        private static List<Browser> DetectFromLocalDefinitions(bool webBrowsersOnly = false)
         {
             var browsers = new List<Browser>();
 
@@ -81,6 +84,12 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
                 
                 foreach (var path in commonPaths)
                 {
+                    // Webブラウザのみの場合は、Webブラウザカテゴリのみを処理
+                    if (webBrowsersOnly && !IsWebBrowser(path.Category))
+                    {
+                        continue;
+                    }
+                    
                     if (File.Exists(path.ExecutablePath))
                     {
                         var browser = CreateBrowserFromPath(path);
@@ -92,7 +101,7 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
                 }
 
                 // レジストリから検出
-                var registryBrowsers = DetectFromRegistry();
+                var registryBrowsers = DetectFromRegistry(webBrowsersOnly);
                 browsers.AddRange(registryBrowsers);
 
                 Logger.LogInfo("DetectedBrowsers.DetectFromLocalDefinitions", "ローカル検出完了", browsers.Count);
@@ -108,8 +117,9 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
         /// <summary>
         /// オンライン定義からブラウザを検出
         /// </summary>
+        /// <param name="webBrowsersOnly">Webブラウザのみを検出するかどうか</param>
         /// <returns>検出されたブラウザのリスト</returns>
-        private static List<Browser> DetectFromOnlineDefinitions()
+        private static List<Browser> DetectFromOnlineDefinitions(bool webBrowsersOnly = false)
         {
             var browsers = new List<Browser>();
 
@@ -125,6 +135,12 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
                 {
                     foreach (var definition in onlineDefinitions)
                     {
+                        // Webブラウザのみの場合は、Webブラウザカテゴリのみを処理
+                        if (webBrowsersOnly && !IsWebBrowser(definition.Category))
+                        {
+                            continue;
+                        }
+                        
                         var browser = CreateBrowserFromOnlineDefinition(definition);
                         if (browser != null)
                         {
@@ -241,6 +257,14 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
                 Category = "Popular"
             });
 
+            paths.Add(new BrowserPathInfo
+            {
+                Name = "Microsoft Edge",
+                ExecutablePath = @"C:\Program Files\Microsoft\Edge\Application\msedge.exe",
+                Arguments = "",
+                Category = "Popular"
+            });
+
             // Opera
             paths.Add(new BrowserPathInfo
             {
@@ -282,8 +306,9 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
         /// <summary>
         /// レジストリからブラウザを検出
         /// </summary>
+        /// <param name="webBrowsersOnly">Webブラウザのみを検出するかどうか</param>
         /// <returns>検出されたブラウザのリスト</returns>
-        private static List<Browser> DetectFromRegistry()
+        private static List<Browser> DetectFromRegistry(bool webBrowsersOnly = false)
         {
             var browsers = new List<Browser>();
 
@@ -303,6 +328,12 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
                                 var defaultValue = subKey.GetValue("") as string;
                                 if (!string.IsNullOrEmpty(defaultValue) && File.Exists(defaultValue))
                                 {
+                                    // Webブラウザのみの場合は、Webブラウザ関連のファイル名のみを処理
+                                    if (webBrowsersOnly && !IsWebBrowserExecutable(subKeyName))
+                                    {
+                                        continue;
+                                    }
+                                    
                                     var browser = CreateBrowserFromPath(new BrowserPathInfo
                                     {
                                         Name = Path.GetFileNameWithoutExtension(subKeyName),
@@ -352,8 +383,8 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
                     Arguments = pathInfo.Arguments,
                     Guid = Guid.NewGuid(),
                     Hotkey = '\0',
-                    PosX = 1,
-                    PosY = 1,
+                                    X = 1,
+                Y = 1,
                     Scale = 1.0,
                     IconIndex = 0,
                     Category = pathInfo.Category,
@@ -390,8 +421,8 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
                     Arguments = definition.Arguments ?? "",
                     Guid = Guid.NewGuid(),
                     Hotkey = !string.IsNullOrEmpty(definition.Hotkey) ? definition.Hotkey[0] : '\0',
-                    PosX = definition.PosX ?? 1,
-                    PosY = definition.PosY ?? 1,
+                                    X = definition.X ?? 1,
+                Y = definition.Y ?? 1,
                     Scale = definition.Scale ?? 1.0,
                     IconIndex = definition.IconIndex ?? 0,
                     Category = definition.Category ?? "Online",
@@ -454,6 +485,39 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
         }
 
         /// <summary>
+        /// 指定されたカテゴリがWebブラウザかどうかを判定
+        /// </summary>
+        /// <param name="category">カテゴリ名</param>
+        /// <returns>Webブラウザの場合はtrue</returns>
+        private static bool IsWebBrowser(string? category)
+        {
+            if (string.IsNullOrEmpty(category))
+                return false;
+                
+            var webBrowserCategories = new[] { "Popular", "Web Browser", "Browser", "Internet" };
+            return webBrowserCategories.Any(cat => 
+                category.Equals(cat, StringComparison.OrdinalIgnoreCase));
+        }
+
+        /// <summary>
+        /// 指定された実行ファイル名がWebブラウザかどうかを判定
+        /// </summary>
+        /// <param name="executableName">実行ファイル名</param>
+        /// <returns>Webブラウザの場合はtrue</returns>
+        private static bool IsWebBrowserExecutable(string executableName)
+        {
+            var webBrowserExecutables = new[] 
+            { 
+                "chrome.exe", "firefox.exe", "msedge.exe", "iexplore.exe", 
+                "opera.exe", "safari.exe", "brave.exe", "vivaldi.exe",
+                "chromium.exe", "waterfox.exe", "pale-moon.exe", "seamonkey.exe"
+            };
+            
+            return webBrowserExecutables.Any(exe => 
+                executableName.Equals(exe, StringComparison.OrdinalIgnoreCase));
+        }
+
+        /// <summary>
         /// ブラウザパス情報
         /// </summary>
         private class BrowserPathInfo
@@ -473,8 +537,8 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
             public string ExecutablePath { get; set; } = "";
             public string? Arguments { get; set; }
             public string? Hotkey { get; set; }
-            public int? PosX { get; set; }
-            public int? PosY { get; set; }
+                    public int? X { get; set; }
+        public int? Y { get; set; }
             public double? Scale { get; set; }
             public int? IconIndex { get; set; }
             public string? Category { get; set; }
