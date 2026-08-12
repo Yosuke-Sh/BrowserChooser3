@@ -77,37 +77,39 @@ namespace BrowserChooser3.Classes.Utilities
         /// </summary>
         /// <param name="browser">起動するブラウザ</param>
         /// <param name="url">開くURL</param>
-        /// <param name="terminate">起動後にアプリケーションを終了するか</param>
-        public static void LaunchBrowser(Browser browser, string url, bool terminate)
+        /// <param name="terminate">起動後にアプリケーションを終了する想定か</param>
+        /// <returns>起動に成功し、かつterminateがtrueだった場合はtrue（呼び出し元での終了処理が必要なことを示す）</returns>
+        public static bool LaunchBrowser(Browser browser, string url, bool terminate)
         {
             // nullチェック
             if (browser == null)
             {
                 Logger.LogDebug("BrowserUtilities.LaunchBrowser", "Browser is null, skipping launch", url ?? "null", terminate);
-                return;
+                return false;
             }
 
 #pragma warning disable CS8602 // null 参照の可能性があるものの逆参照です
             Logger.LogDebug("BrowserUtilities.LaunchBrowser", "Start", browser.Name, browser.Target, url ?? "null", terminate);
 
+            bool shouldTerminate = false;
             try
             {
                 // テスト環境では実際のブラウザ起動をスキップ
                 if (IsTestEnvironment())
                 {
                                                 Logger.LogDebug("BrowserUtilities.LaunchBrowser", "テスト環境のため、ブラウザ起動をスキップしました", browser.Name ?? "null", url ?? "null");
-                    return;
+                    return false;
                 }
 
                 // IE専用処理
                 if (browser.IsIE)
                 {
-                    LaunchIE(browser, url ?? "", terminate);
+                    shouldTerminate = LaunchIE(browser, url ?? "", terminate);
                 }
                 // Edge専用処理
                 else if (browser.IsEdge)
                 {
-                    LaunchEdge(browser, url ?? "", terminate);
+                    shouldTerminate = LaunchEdge(browser, url ?? "", terminate);
                 }
                 // 一般的なブラウザ処理
                 else
@@ -117,7 +119,7 @@ namespace BrowserChooser3.Classes.Utilities
                         if (terminate)
                         {
                             Logger.LogDebug("BrowserUtilities.LaunchBrowser", "Terminate", browser.Name ?? "null", url ?? "null", terminate);
-                            Environment.Exit(0);
+                            shouldTerminate = true;
                         }
                     }
                 }
@@ -127,26 +129,28 @@ namespace BrowserChooser3.Classes.Utilities
                 Logger.LogError("BrowserUtilities.LaunchBrowser", "起動エラー", ex.Message, ex.StackTrace ?? "");
                 if (!IsTestEnvironment() && browser != null)
                 {
-                                    MessageBox.Show($"ブラウザ {browser.Name ?? "Unknown"} の起動に失敗しました。", "起動エラー", 
+                                    MessageBox.Show($"ブラウザ {browser.Name ?? "Unknown"} の起動に失敗しました。", "起動エラー",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
 
             Logger.LogDebug("BrowserUtilities.LaunchBrowser", "End", browser.Name ?? "Unknown", url ?? "null", terminate);
 #pragma warning restore CS8602
+            return shouldTerminate;
         }
 
         /// <summary>
         /// IE専用の起動処理
         /// 既存のIEインスタンスにタブを追加します
         /// </summary>
-        private static void LaunchIE(Browser browser, string url, bool terminate)
+        /// <returns>起動に成功し、かつterminateがtrueだった場合はtrue</returns>
+        private static bool LaunchIE(Browser browser, string url, bool terminate)
         {
             // nullチェック
             if (browser == null)
             {
                 Logger.LogDebug("BrowserUtilities.LaunchIE", "Browser is null, skipping IE launch", url ?? "null", terminate);
-                return;
+                return false;
             }
 
             Logger.LogDebug("BrowserUtilities.LaunchIE", "Start", browser.Name ?? "null", url ?? "null", terminate);
@@ -157,7 +161,7 @@ namespace BrowserChooser3.Classes.Utilities
                 if (IsTestEnvironment())
                 {
                     Logger.LogDebug("BrowserUtilities.LaunchIE", "テスト環境のため、IE起動をスキップしました", browser.Name ?? "null", url ?? "null");
-                    return;
+                    return false;
                 }
 
                 // 一般的な起動処理を使用
@@ -166,9 +170,10 @@ namespace BrowserChooser3.Classes.Utilities
                     if (terminate)
                     {
                         Logger.LogDebug("BrowserUtilities.LaunchIE", "Terminate", browser.Name ?? "null", url ?? "null", terminate);
-                        Environment.Exit(0);
+                        return true;
                     }
                 }
+                return false;
             }
             catch (Exception ex)
             {
@@ -178,9 +183,10 @@ namespace BrowserChooser3.Classes.Utilities
                 {
                     if (terminate)
                     {
-                        Environment.Exit(0);
+                        return true;
                     }
                 }
+                return false;
             }
         }
 
@@ -188,25 +194,27 @@ namespace BrowserChooser3.Classes.Utilities
         /// Edge専用の起動処理
         /// microsoft-edge:プロトコルでの起動をサポートします
         /// </summary>
-        private static void LaunchEdge(Browser browser, string url, bool terminate)
+        /// <returns>起動に成功し、かつterminateがtrueだった場合はtrue</returns>
+        private static bool LaunchEdge(Browser browser, string url, bool terminate)
         {
             // nullチェック
             if (browser == null)
             {
                 Logger.LogDebug("BrowserUtilities.LaunchEdge", "Browser is null, skipping Edge launch", url ?? "null", terminate);
-                return;
+                return false;
             }
 
             Logger.LogDebug("BrowserUtilities.LaunchEdge", "Start", browser.Name ?? "null", url ?? "null", terminate);
 
 #pragma warning disable CS8602 // null 参照の可能性があるものの逆参照です
+            bool shouldTerminate = false;
             try
             {
                 // テスト環境では実際のブラウザ起動をスキップ
                 if (IsTestEnvironment())
                 {
                     Logger.LogDebug("BrowserUtilities.LaunchEdge", "テスト環境のため、Edge起動をスキップしました", browser.Name ?? "null", url ?? "null");
-                    return;
+                    return false;
                 }
 
                 // microsoft-edge:プロトコルを使用した起動
@@ -214,13 +222,13 @@ namespace BrowserChooser3.Classes.Utilities
                 {
                     var edgeUrl = $"microsoft-edge:{url}";
                     Logger.LogDebug("BrowserUtilities.LaunchEdge", "microsoft-edge:プロトコルを使用", edgeUrl);
-                    
+
                     if (DoLaunch(browser, edgeUrl, terminate))
                     {
                         if (terminate)
                         {
                             Logger.LogDebug("BrowserUtilities.LaunchEdge", "Terminate", browser.Name ?? "Unknown", url ?? "null", terminate);
-                            Environment.Exit(0);
+                            shouldTerminate = true;
                         }
                     }
                 }
@@ -232,7 +240,7 @@ namespace BrowserChooser3.Classes.Utilities
                         if (terminate)
                         {
                             Logger.LogDebug("BrowserUtilities.LaunchEdge", "Terminate", browser.Name ?? "Unknown", url ?? "null", terminate);
-                            Environment.Exit(0);
+                            shouldTerminate = true;
                         }
                     }
                 }
@@ -240,12 +248,13 @@ namespace BrowserChooser3.Classes.Utilities
             catch (Exception ex)
             {
                 Logger.LogError("BrowserUtilities.LaunchEdge", "Edge起動エラー", ex.Message, ex.StackTrace ?? "");
-                MessageBox.Show($"Edge {browser.Name ?? "Unknown"} の起動に失敗しました。", "起動エラー", 
+                MessageBox.Show($"Edge {browser.Name ?? "Unknown"} の起動に失敗しました。", "起動エラー",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
             Logger.LogDebug("BrowserUtilities.LaunchEdge", "End", browser.Name ?? "null", url ?? "null", terminate);
 #pragma warning restore CS8602
+            return shouldTerminate;
         }
 
         /// <summary>
@@ -283,8 +292,8 @@ namespace BrowserChooser3.Classes.Utilities
                     Logger.LogError("BrowserUtilities.DoLaunch", "File not found", browserPath);
                     if (string.IsNullOrEmpty(browser.Target))
                     {
-                        Logger.LogDebug("BrowserUtilities.DoLaunch", "Terminate - Empty target", browser.Name ?? "null", url ?? "null", terminate);
-                        Environment.Exit(0);
+                        Logger.LogError("BrowserUtilities.DoLaunch", "Empty target", browser.Name ?? "null", url ?? "null", terminate);
+                        return false;
                     }
                     else
                     {
@@ -392,7 +401,6 @@ namespace BrowserChooser3.Classes.Utilities
                     if (terminate)
                     {
                         Logger.LogInfo("BrowserUtilities.DoLaunch", "Terminate", browser.Name ?? "null", url ?? "null", terminate);
-                        Environment.Exit(0);
                     }
 
                     return true;

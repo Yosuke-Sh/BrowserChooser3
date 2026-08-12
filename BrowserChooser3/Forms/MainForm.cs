@@ -230,6 +230,39 @@ namespace BrowserChooser3.Forms
         }
 
         /// <summary>
+        /// ブラウザ起動後の終了要否を処理します。
+        /// 常駐モードが有効な場合はプロセスを終了せずトレイに格納します。
+        /// </summary>
+        /// <param name="shouldTerminate">呼び出し元がプロセス終了を想定していたか</param>
+        private void HandlePostLaunchTermination(bool shouldTerminate)
+        {
+            if (!shouldTerminate)
+            {
+                return;
+            }
+
+            RequestClose();
+        }
+
+        /// <summary>
+        /// アプリケーションを閉じます。
+        /// 常駐モードが有効な場合は終了せずシステムトレイに格納します。
+        /// タスクトレイメニューの「終了」からのみ、常駐モード中でもプロセスを完全に終了できます。
+        /// </summary>
+        private void RequestClose()
+        {
+            if (_settings?.AlwaysResidentInTray ?? false)
+            {
+                Logger.LogDebug("MainForm.RequestClose", "AlwaysResidentInTrayが有効のためトレイに格納します");
+                InitializeSystemTray();
+                MinimizeToTray();
+                return;
+            }
+
+            Application.Exit();
+        }
+
+        /// <summary>
         /// システムトレイから復元します
         /// </summary>
         private void ShowFromTray()
@@ -1155,7 +1188,8 @@ namespace BrowserChooser3.Forms
                     }
                     
                     // BrowserUtilitiesを使用してブラウザを起動
-                    BrowserUtilities.LaunchBrowser(browser, _currentUrl, autoClose);
+                    var shouldTerminate = BrowserUtilities.LaunchBrowser(browser, _currentUrl, autoClose);
+                    HandlePostLaunchTermination(shouldTerminate);
                 }
                 catch (Exception ex)
                 {
@@ -1320,12 +1354,12 @@ namespace BrowserChooser3.Forms
                             else
                             {
                                 // 即座に起動
-                                BrowserUtilities.LaunchBrowser(browser, url, autoClose);
-                                if (autoClose)
+                                var shouldTerminate = BrowserUtilities.LaunchBrowser(browser, url, autoClose);
+                                if (shouldTerminate)
                                 {
                                     Logger.LogInfo("MainForm.ProcessAutoURLsInternal", "AutoClose実行", "即座起動後");
-                                    Application.Exit();
                                 }
+                                HandlePostLaunchTermination(shouldTerminate);
                             }
                             
                             return true; // 処理完了
@@ -1408,11 +1442,11 @@ namespace BrowserChooser3.Forms
                                 $"Browser: {browser.Name}, Protocol: {protocol}");
 
                             // Protocolの場合は即座に起動（遅延なし）
-                            BrowserUtilities.LaunchBrowser(browser, url, true); // AutoCloseを有効にする
-                            
+                            var shouldTerminate = BrowserUtilities.LaunchBrowser(browser, url, true); // AutoCloseを有効にする
+
                             // Protocol処理後は自動終了
                             Logger.LogInfo("MainForm.ProcessProtocols", "Protocol処理完了、アプリケーション終了");
-                            Application.Exit();
+                            HandlePostLaunchTermination(shouldTerminate);
                             
                             return true; // 処理完了
                         }
@@ -1531,13 +1565,13 @@ namespace BrowserChooser3.Forms
                     Logger.LogInfo("MainForm.AutoURLsCountdownTimer_Tick", "AutoURLsブラウザ起動", 
                         $"Browser: {browser.Name}, URL: {url}");
 
-                    BrowserUtilities.LaunchBrowser(browser, url, autoClose);
-                    
-                    if (autoClose)
+                    var shouldTerminate = BrowserUtilities.LaunchBrowser(browser, url, autoClose);
+
+                    if (shouldTerminate)
                     {
                         Logger.LogInfo("MainForm.AutoURLsCountdownTimer_Tick", "AutoClose実行", "遅延起動後");
-                        Application.Exit();
                     }
+                    HandlePostLaunchTermination(shouldTerminate);
                 }
             }
             catch (Exception ex)
@@ -1872,7 +1906,7 @@ namespace BrowserChooser3.Forms
             {
                 _countdownTimer?.Stop();
                 LaunchBrowser(_defaultBrowser!, _currentUrl);
-                Application.Exit();
+                RequestClose();
             }
         }
 
@@ -1919,7 +1953,7 @@ namespace BrowserChooser3.Forms
         private void btnCancel_Click(object? sender, EventArgs e)
         {
             Logger.LogInfo("MainForm.btnCancel_Click", "アプリケーションを終了");
-            Application.Exit();
+            RequestClose();
         }
 
         /// <summary>
@@ -1949,7 +1983,7 @@ namespace BrowserChooser3.Forms
             try
             {
                 Clipboard.SetText(_currentUrl);
-                Application.Exit();
+                RequestClose();
             }
             catch (Exception ex)
             {
@@ -2045,7 +2079,8 @@ namespace BrowserChooser3.Forms
                     if (char.IsDigit(browser.Hotkey) && int.Parse(browser.Hotkey.ToString()) == keyNumber)
                     {
                         Logger.LogInfo("MainForm.MainForm_KeyDown", "ホットキー起動", browser.Name, keyNumber);
-                        BrowserUtilities.LaunchBrowser(browser, _currentUrl, chkAutoClose?.Checked ?? true);
+                        var shouldTerminate = BrowserUtilities.LaunchBrowser(browser, _currentUrl, chkAutoClose?.Checked ?? true);
+                        HandlePostLaunchTermination(shouldTerminate);
                         return;
                     }
                 }
@@ -2253,7 +2288,8 @@ namespace BrowserChooser3.Forms
 
                 if (_defaultBrowser != null)
                 {
-                    BrowserUtilities.LaunchBrowser(_defaultBrowser, _currentUrl, chkAutoClose?.Checked ?? true);
+                    var shouldTerminate = BrowserUtilities.LaunchBrowser(_defaultBrowser, _currentUrl, chkAutoClose?.Checked ?? true);
+                    HandlePostLaunchTermination(shouldTerminate);
                 }
             }
         }
