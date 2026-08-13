@@ -12,6 +12,14 @@ namespace BrowserChooser3.Classes.Utilities
         private static string? _configDirectory;
 
         /// <summary>
+        /// テスト専用：設定ディレクトリを一時的に上書きします。
+        /// 通常運用では使用されません（nullのままなら%APPDATA%\BrowserChooser3を使用）。
+        /// Settings.Load()の引数pathが無視され常に実際のユーザープロファイルを読む問題があり、
+        /// テストが実ファイルに触れずに済むようにするための最小限のテストシームとして追加。
+        /// </summary>
+        internal static string? ConfigDirectoryOverrideForTests { get; set; }
+
+        /// <summary>
         /// パス管理を初期化します
         /// </summary>
         public static void Initialize()
@@ -50,6 +58,11 @@ namespace BrowserChooser3.Classes.Utilities
         /// <returns>設定ファイルの出力先ディレクトリ</returns>
         public static string GetConfigDirectory()
         {
+            if (!string.IsNullOrEmpty(ConfigDirectoryOverrideForTests))
+            {
+                return ConfigDirectoryOverrideForTests;
+            }
+
             if (!string.IsNullOrEmpty(_configDirectory))
             {
                 return _configDirectory;

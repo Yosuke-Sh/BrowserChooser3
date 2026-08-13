@@ -64,6 +64,18 @@ namespace BrowserChooser3.Forms
                 Settings.Current = _settings;
                 _browsers = _settings?.Browsers ?? new List<Browser>();
 
+                // 設定ファイルが破損していたためSafeModeで起動した場合はユーザーに通知する。
+                // SafeMode中はDoSave/IntSaveが保存を拒否するため、通知しないと
+                // 「変更が保存されない」ことに気づかれないまま操作が続いてしまう。
+                if (_settings?.SafeMode == true)
+                {
+                    MessageBoxService.ShowWarningStatic(
+                        "設定ファイルが読み込めなかったため、初期設定でセーフモード起動しました。\n" +
+                        "破損したファイルはBrowserChooser3Config.corrupt-*.xmlとして退避されています。\n" +
+                        "このまま操作しても設定は保存されません。",
+                        "セーフモード");
+                }
+
                 // デフォルトブラウザの検索
                 _defaultBrowser = _browsers?.FirstOrDefault(b => b.IsDefault);
                 
@@ -106,12 +118,7 @@ namespace BrowserChooser3.Forms
                 
                 // フォームLoadイベントの設定
                 Load += MainForm_Load;
-                
 
-                
-                // URL短縮解除の設定
-                SetupURLUnshortening();
-                
                 // 初期化完了後にURL表示ラベルを更新（起動時のURLが設定されている場合）
                 if (!string.IsNullOrEmpty(_currentUrl))
                 {
@@ -325,36 +332,6 @@ namespace BrowserChooser3.Forms
                 UpdateURL(url);
             }
         }
-
-        /// <summary>
-        /// URL短縮解除の設定
-        /// </summary>
-        private void SetupURLUnshortening()
-        {
-            if (_settings?.RevealShortURL == true && !string.IsNullOrEmpty(_currentUrl))
-            {
-                // HTTP/HTTPS URLの場合のみ短縮URL展開を実行
-                if (_currentUrl.StartsWith("http://", StringComparison.OrdinalIgnoreCase) || 
-                    _currentUrl.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
-                {
-                    var userAgent = _settings.UserAgent ?? "Mozilla/5.0";
-                    URLUtilities.UnshortenURLAsync(_currentUrl, userAgent, (expandedUrl) =>
-                    {
-                        if (InvokeRequired)
-                        {
-                            Invoke(new Action(() => UpdateURL(expandedUrl)));
-                        }
-                        else
-                        {
-                            UpdateURL(expandedUrl);
-                        }
-                    });
-                }
-            }
-        }
-
-
-
 
 
         /// <summary>
@@ -1147,13 +1124,7 @@ namespace BrowserChooser3.Forms
                 
                 // アイコンの読み込み
                 LoadIcons();
-                
 
-
-                
-                // URL短縮解除の設定
-                SetupURLUnshortening();
-                
                 // リフレッシュ処理を再開
                 this.ResumeLayout(false);
                 
@@ -1252,10 +1223,13 @@ namespace BrowserChooser3.Forms
             }
             
             // AutoURLsとProtocolで処理されなかった場合のみ、StartupLauncherを使用してURLを処理
-            StartupLauncher.SetURL(url, _settings?.RevealShortURL ?? false, OnURLUpdated);
-            
-            // デフォルトブラウザがある場合はカウントダウンを開始
-            if (_defaultBrowser != null && (_settings?.DefaultDelay ?? 0) > 0)
+            var isExpandingShortUrl = StartupLauncher.SetURL(url, _settings?.RevealShortURL ?? false, OnURLUpdated);
+
+            // 短縮URL展開がバックグラウンドで進行中の場合はカウントダウンを開始しない。
+            // 展開が完了する前にカウントダウンが0になると、短縮URLのまま
+            // デフォルトブラウザで開いてしまうため。展開完了時はOnURLUpdatedが
+            // カウントダウンを（再）開始する。
+            if (!isExpandingShortUrl && _defaultBrowser != null && (_settings?.DefaultDelay ?? 0) > 0)
             {
                 StartCountdown();
             }
@@ -1606,11 +1580,19 @@ namespace BrowserChooser3.Forms
             
             _currentUrl = url;
             Logger.LogDebug("MainForm.OnURLUpdated", "URL更新完了", url);
-            
+
             // URL表示ラベルを更新
             UpdateURLLabel();
+
+            // 短縮URL展開が完了したタイミングでカウントダウンを開始する。
+            // UpdateURL側では展開中はカウントダウンを開始していないため、
+            // ここで初めてデフォルトブラウザによる自動起動の猶予が始まる。
+            if (_defaultBrowser != null && (_settings?.DefaultDelay ?? 0) > 0 && _countdownTimer == null)
+            {
+                StartCountdown();
+            }
         }
-        
+
         /// <summary>
         /// URL表示テキストボックスを更新
         /// </summary>
@@ -1875,10 +1857,21 @@ namespace BrowserChooser3.Forms
         private void StartCountdown()
         {
             if (_defaultBrowser == null) return;
-            
+
+            // 既存のタイマーが残っていれば破棄してから新規作成する。
+            // 破棄せずに再代入すると旧タイマーのTickイベントが解除されないまま
+            // 動き続け、複数のカウントダウンが同時に進行してしまう。
+            if (_countdownTimer != null)
+            {
+                _countdownTimer.Stop();
+                _countdownTimer.Tick -= CountdownTimer_Tick;
+                _countdownTimer.Dispose();
+                _countdownTimer = null;
+            }
+
             _currentDelay = _settings?.DefaultDelay ?? 5;
             _isPaused = false;
-            
+
             _countdownTimer = new System.Windows.Forms.Timer
             {
                 Interval = 1000

@@ -139,6 +139,63 @@ namespace BrowserChooser3.Tests
         }
         #endregion
 
+        #region URLマッチング誤爆防止テスト（レガシー双方向部分一致の回帰テスト）
+
+        [Theory]
+        // 誤爆ケース: パターン文字列がURLのクエリ等に部分文字列として現れるだけでは
+        // マッチしてはならない（以前は双方向Containsで誤爆していた）
+        [InlineData("github.com", "https://evil.com/?q=github.com", false)]
+        [InlineData("github.com", "https://evil.com/github.com.attacker.net", false)]
+        [InlineData("co", "https://example.com", false)]
+        [InlineData("example.com", "https://notexample.com", false)]
+        [InlineData("example.com", "https://myexample.com", false)]
+        // 正常ケース: ホスト名一致・サブドメイン一致・www除去は維持される
+        [InlineData("github.com", "https://github.com/x", true)]
+        [InlineData("github.com", "https://www.github.com/x", true)]
+        [InlineData("github.com", "https://gist.github.com/x", true)]
+        [InlineData("example.com", "https://example.com", true)]
+        [InlineData("example.com", "http://www.example.com/path", true)]
+        public void URLUtilities_MatchURLs_LegacyHostPattern_ShouldNotMatchAsSubstring(string pattern, string url, bool expected)
+        {
+            // Act
+            var matches = URLUtilities.MatchURLs(url, pattern);
+
+            // Assert
+            matches.Should().Be(expected);
+        }
+
+        [Theory]
+        [InlineData("*.example.com", "https://a.example.com/x", true)]
+        [InlineData("*.example.com", "https://notexample.com/x", false)]
+        [InlineData("*.example.com", "https://example.com/x", false)]
+        public void URLUtilities_MatchURLs_WildcardPattern_ShouldAnchorAndEscape(string pattern, string url, bool expected)
+        {
+            // Act
+            var matches = URLUtilities.MatchURLs(url, pattern);
+
+            // Assert
+            matches.Should().Be(expected);
+        }
+
+        [Fact]
+        public void URLUtilities_MatchURLs_WithMalformedRegexCatastrophicBacktracking_ShouldNotHangAndReturnFalse()
+        {
+            // Arrange: 破局的バックトラッキングを起こしうるパターン
+            var pattern = "re:^(a+)+$";
+            var source = new string('a', 40) + "!";
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+
+            // Act
+            var matches = URLUtilities.MatchURLs(source, pattern);
+            stopwatch.Stop();
+
+            // Assert: タイムアウトで打ち切られ、UIスレッドを固めない
+            matches.Should().BeFalse();
+            stopwatch.ElapsedMilliseconds.Should().BeLessThan(5000);
+        }
+
+        #endregion
+
         #region 正規表現マッチング（re:プレフィックス）テスト
 
         [Theory]

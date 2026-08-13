@@ -341,7 +341,7 @@ namespace BrowserChooser3.Classes
 
 
         /// <summary>セーフモード（ファイルが読み込めない場合のみtrue - 保存を防止）</summary>
-        [field: NonSerialized] public bool SafeMode { get; set; } = false;
+        [XmlIgnore] public bool SafeMode { get; set; } = false;
         /// <summary>ログデバッグ（コマンドラインで指定された場合のみtrue）</summary>
         [field: NonSerialized] public static TriState LogDebugs { get; set; } = TriState.UseDefault;
         
@@ -526,7 +526,7 @@ namespace BrowserChooser3.Classes
                     if (deserialized == null)
                     {
                         Logger.LogError("Settings.Load", "設定ファイルのデシリアライズ結果がnullです。デフォルト設定を使用します。", configPath);
-                        return new Settings(false);
+                        return QuarantineCorruptConfigAndCreateSafeDefaults(configPath);
                     }
 
                     output = deserialized;
@@ -572,6 +572,7 @@ namespace BrowserChooser3.Classes
                 catch (Exception ex)
                 {
                     Logger.LogError("Settings.Load", "Exception: Failed to load settings file. Default settings used.", configPath, ex.Message, ex.StackTrace ?? "");
+                    return QuarantineCorruptConfigAndCreateSafeDefaults(configPath);
                 }
             }
 
@@ -582,8 +583,65 @@ namespace BrowserChooser3.Classes
             {
                 defaultSettings.DetectBrowsers();
             }
+            // 新規プロファイルではプロトコル振り分けが常に無効になっていたため、
+            // 初回起動時のみ既定プロトコル（http/https/ftp/ftps/url）を作成する
+            if (defaultSettings.Protocols.Count == 0)
+            {
+                CreateDefaultProtocols(defaultSettings);
+            }
             Logger.LogDebug("Settings.Load", "デフォルト設定作成・検出完了", defaultSettings.Browsers?.Count ?? 0);
             return defaultSettings;
+        }
+
+        /// <summary>
+        /// 破損した設定ファイルを退避し、SafeModeを有効にしたデフォルト設定を返します。
+        /// SafeModeにより、破損検出直後の保存操作（DoSave/IntSave）が正常な設定を
+        /// 上書きしてしまうことを防ぎます。
+        /// </summary>
+        /// <param name="configPath">破損している設定ファイルのパス</param>
+        /// <returns>SafeModeを有効にしたデフォルト設定</returns>
+        private static Settings QuarantineCorruptConfigAndCreateSafeDefaults(string configPath)
+        {
+            string? quarantinePath = null;
+            try
+            {
+                if (File.Exists(configPath))
+                {
+                    var directory = Path.GetDirectoryName(configPath) ?? string.Empty;
+                    var fileNameWithoutExt = Path.GetFileNameWithoutExtension(configPath);
+                    var extension = Path.GetExtension(configPath);
+                    var timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
+                    var candidatePath = Path.Combine(directory, $"{fileNameWithoutExt}.corrupt-{timestamp}{extension}");
+                    // File.Moveが例外を投げた場合にquarantinePathが非nullのまま残らないよう、
+                    // 実際に移動が成功した後でのみ確定させる
+                    File.Move(configPath, candidatePath, overwrite: true);
+                    quarantinePath = candidatePath;
+                    Logger.LogWarning("Settings.QuarantineCorruptConfigAndCreateSafeDefaults", "破損した設定ファイルを退避しました", configPath, quarantinePath);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("Settings.QuarantineCorruptConfigAndCreateSafeDefaults", "破損した設定ファイルの退避に失敗しました", configPath, ex.Message);
+            }
+
+            var safeSettings = new Settings(false)
+            {
+                // 破損したファイルを退避できた場合のみSafeModeを有効にする。
+                // 退避に失敗した場合は元のファイルがまだ存在する可能性があるため、
+                // 通常どおりの保存を許可する。
+                SafeMode = quarantinePath != null
+            };
+
+            if (safeSettings.Browsers.Count == 0)
+            {
+                safeSettings.DetectBrowsers();
+            }
+            if (safeSettings.Protocols.Count == 0)
+            {
+                CreateDefaultProtocols(safeSettings);
+            }
+
+            return safeSettings;
         }
 
 

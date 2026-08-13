@@ -215,22 +215,128 @@ namespace BrowserChooser3.Classes.Utilities
                 return result;
             }
             
-            // 従来の処理（後方互換性のため）
-            // http(s)://とwwwを除去
-            var lsSource = source.Replace("http://", "").Replace("https://", "").Replace("www.", "");
-            var lsTarget = target.Replace("http://", "").Replace("https://", "").Replace("www.", "");
+            // ホスト（＋パス）ベースのマッチング
+            var hostResult = MatchHostPattern(source, target);
+            Logger.LogInfo("URLUtilities.MatchURLs", "End (Host)", source, target, hostResult);
+            return hostResult;
+        }
 
-            // 基本的なワイルドカードマッチング（後で正規表現に変更予定）
-            if (lsTarget.Contains(lsSource) || lsSource.Contains(lsTarget))
+        /// <summary>
+        /// ホスト名（必要に応じてパス）ベースでURLとパターンを照合します。
+        /// パターンがホスト名のみの場合は完全一致またはサブドメイン一致、
+        /// パスを含む場合は「ホスト＋パス」の前方一致で判定します。
+        /// </summary>
+        /// <remarks>
+        /// 以前は双方向の部分一致（source.Contains(target) || target.Contains(source)）で
+        /// 判定していたため、"github.com" というパターンが
+        /// "https://evil.com/?q=github.com" にマッチしてしまう誤爆があった。
+        /// </remarks>
+        /// <param name="source">ソースURL</param>
+        /// <param name="pattern">マッチングパターン</param>
+        /// <returns>マッチする場合はtrue</returns>
+        private static bool MatchHostPattern(string source, string pattern)
+        {
+            var normalizedPattern = NormalizeForMatching(pattern);
+            var normalizedSourceForEmptyCheck = NormalizeForMatching(source);
+            if (normalizedPattern.Length == 0)
+                return normalizedSourceForEmptyCheck.Length == 0;
+
+            // パターンにパス部分が含まれるかどうかで判定方法を変える
+            var slashIndex = normalizedPattern.IndexOf('/');
+            var patternHost = slashIndex >= 0 ? normalizedPattern[..slashIndex] : normalizedPattern;
+
+            // ソースURLのホストを取得する。スキームが無い場合は補って解析を試みる。
+            string sourceHost;
+            string sourceHostAndPath;
+            if (TryGetHostAndPath(source, out var parsedHost, out var parsedHostAndPath))
             {
-                Logger.LogInfo("URLUtilities.MatchURLs", "End (Legacy)", source, target, true);
-                return true;
+                sourceHost = parsedHost;
+                sourceHostAndPath = parsedHostAndPath;
             }
             else
             {
-                Logger.LogInfo("URLUtilities.MatchURLs", "End (Legacy)", source, target, false);
-                return false;
+                // URIとして解析できない場合は正規化した文字列で代用する
+                var normalizedSource = NormalizeForMatching(source);
+                var sourceSlashIndex = normalizedSource.IndexOf('/');
+                sourceHost = sourceSlashIndex >= 0 ? normalizedSource[..sourceSlashIndex] : normalizedSource;
+                sourceHostAndPath = normalizedSource;
             }
+
+            // ホストは完全一致またはサブドメイン一致のみ許可する
+            var hostMatches = sourceHost.Equals(patternHost, StringComparison.OrdinalIgnoreCase) ||
+                              sourceHost.EndsWith("." + patternHost, StringComparison.OrdinalIgnoreCase);
+
+            if (!hostMatches)
+                return false;
+
+            // パターンがホストのみならここでマッチ確定
+            if (slashIndex < 0)
+                return true;
+
+            // パス付きパターンは「ホスト＋パス」の前方一致で判定する
+            return sourceHostAndPath.StartsWith(normalizedPattern, StringComparison.OrdinalIgnoreCase);
+        }
+
+        /// <summary>
+        /// URLからホストと「ホスト＋パス」を取得します。
+        /// スキームが無いURLにはhttp://を補って解析します。
+        /// </summary>
+        /// <param name="url">対象URL</param>
+        /// <param name="host">取得したホスト（www.は除去済み）</param>
+        /// <param name="hostAndPath">取得したホストとパスの連結</param>
+        /// <returns>解析できた場合はtrue</returns>
+        private static bool TryGetHostAndPath(string url, out string host, out string hostAndPath)
+        {
+            host = string.Empty;
+            hostAndPath = string.Empty;
+
+            var candidate = url.Trim();
+            if (candidate.Length == 0)
+                return false;
+
+            // スキームが無い場合は補完して解析する
+            if (!candidate.Contains("://", StringComparison.Ordinal))
+                candidate = "http://" + candidate;
+
+            if (!Uri.TryCreate(candidate, UriKind.Absolute, out var uri))
+                return false;
+
+            if (string.IsNullOrEmpty(uri.Host))
+                return false;
+
+            host = StripWwwPrefix(uri.Host);
+            hostAndPath = host + uri.AbsolutePath.TrimEnd('/');
+            return true;
+        }
+
+        /// <summary>
+        /// マッチング用にスキームとwwwプレフィックス、末尾のスラッシュを除去します
+        /// </summary>
+        /// <param name="value">正規化対象の文字列</param>
+        /// <returns>正規化された文字列</returns>
+        private static string NormalizeForMatching(string value)
+        {
+            var result = value.Trim();
+
+            // スキームを除去する（先頭のみ）
+            var schemeIndex = result.IndexOf("://", StringComparison.Ordinal);
+            if (schemeIndex >= 0)
+                result = result[(schemeIndex + 3)..];
+
+            result = StripWwwPrefix(result);
+            return result.TrimEnd('/');
+        }
+
+        /// <summary>
+        /// 先頭のwww.のみを除去します（文字列中のwww.は除去しません）
+        /// </summary>
+        /// <param name="value">対象文字列</param>
+        /// <returns>www.を除去した文字列</returns>
+        private static string StripWwwPrefix(string value)
+        {
+            return value.StartsWith("www.", StringComparison.OrdinalIgnoreCase)
+                ? value[4..]
+                : value;
         }
 
         /// <summary>
@@ -248,26 +354,49 @@ namespace BrowserChooser3.Classes.Utilities
                 // パターンにワイルドカードが含まれている場合
                 if (pattern.Contains("*"))
                 {
-                    // ワイルドカードパターンを正規表現に変換
-                    var regexPattern = pattern
-                        .Replace(".", "\\.")  // ドットをエスケープ
-                        .Replace("*", ".*");  // ワイルドカードを正規表現に変換
+                    // ワイルドカードパターンを正規表現に変換。
+                    // Regex.Escapeで全メタ文字を無害化してから*だけを.*に戻すことで、
+                    // ?や+など.以外のメタ文字がパターンに含まれていても誤動作しないようにする。
+                    // さらに前後を^$でアンカーし、部分一致による誤爆を防ぐ。
+                    var escaped = System.Text.RegularExpressions.Regex.Escape(pattern);
+                    var regexPattern = "^" + escaped.Replace("\\*", ".*") + "$";
 
-                    var regex = new System.Text.RegularExpressions.Regex(regexPattern, 
-                        System.Text.RegularExpressions.RegexOptions.IgnoreCase);
-                    
-                    var result = regex.IsMatch(source);
+                    var regex = new System.Text.RegularExpressions.Regex(regexPattern,
+                        System.Text.RegularExpressions.RegexOptions.IgnoreCase,
+                        TimeSpan.FromMilliseconds(200));
+
+                    // パターンにパス区切り（/）が含まれない場合はホスト向けパターンとみなし、
+                    // ソースURLのホスト部分のみに対してマッチさせる（"*.example.com" 等）。
+                    // パスを含む場合は「ホスト＋パス」に対してマッチさせる。
+                    // 生のURL文字列（スキーム込み）に対してアンカーマッチすると、
+                    // ホスト向けパターンが常に不一致になってしまうため生文字列は使わない。
+                    string candidate;
+                    if (pattern.Contains('/'))
+                    {
+                        candidate = NormalizeForMatching(source);
+                    }
+                    else if (TryGetHostAndPath(source, out var host, out _))
+                    {
+                        candidate = host;
+                    }
+                    else
+                    {
+                        var normalized = NormalizeForMatching(source);
+                        var slashIndex = normalized.IndexOf('/');
+                        candidate = slashIndex >= 0 ? normalized[..slashIndex] : normalized;
+                    }
+
+                    var result = regex.IsMatch(candidate);
                     Logger.LogDebug("URLUtilities.MatchURLPattern", "Wildcard pattern result", pattern, source, result);
                     return result;
                 }
                 else
                 {
-                    // ワイルドカードがない場合は完全一致または部分一致
-                    var result = source.Equals(pattern, StringComparison.OrdinalIgnoreCase) || 
-                                source.Contains(pattern, StringComparison.OrdinalIgnoreCase) ||
-                                pattern.Contains(source, StringComparison.OrdinalIgnoreCase);
-                    
-                    Logger.LogDebug("URLUtilities.MatchURLPattern", "Exact/partial match result", pattern, source, result);
+                    // ワイルドカードがない場合はホストベースの一致判定を使う
+                    var result = source.Equals(pattern, StringComparison.OrdinalIgnoreCase) ||
+                                MatchHostPattern(source, pattern);
+
+                    Logger.LogDebug("URLUtilities.MatchURLPattern", "Exact/host match result", pattern, source, result);
                     return result;
                 }
             }
@@ -289,8 +418,11 @@ namespace BrowserChooser3.Classes.Utilities
         {
             try
             {
+                // ユーザー指定の正規表現は破局的バックトラッキング（ReDoS）を起こしうるため、
+                // タイムアウトを設けてUIスレッドが固まらないようにする
                 var regex = new System.Text.RegularExpressions.Regex(pattern,
-                    System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+                    System.Text.RegularExpressions.RegexOptions.IgnoreCase,
+                    TimeSpan.FromMilliseconds(200));
                 var result = regex.IsMatch(source);
                 Logger.LogDebug("URLUtilities.MatchRegexPattern", "正規表現マッチング結果", pattern, source, result);
                 return result;
@@ -298,6 +430,11 @@ namespace BrowserChooser3.Classes.Utilities
             catch (System.Text.RegularExpressions.RegexParseException ex)
             {
                 Logger.LogWarning("URLUtilities.MatchRegexPattern", "不正な正規表現のためマッチ失敗として扱います", pattern, ex.Message);
+                return false;
+            }
+            catch (System.Text.RegularExpressions.RegexMatchTimeoutException ex)
+            {
+                Logger.LogWarning("URLUtilities.MatchRegexPattern", "正規表現マッチングがタイムアウトしたためマッチ失敗として扱います", pattern, ex.Message);
                 return false;
             }
             catch (Exception ex)

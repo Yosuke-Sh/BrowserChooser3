@@ -2,6 +2,8 @@ using FluentAssertions;
 using Xunit;
 using BrowserChooser3.Classes;
 using BrowserChooser3.Classes.Models;
+using BrowserChooser3.Classes.Services.SystemServices;
+using BrowserChooser3.Classes.Utilities;
 using System.IO;
 using System.Xml.Serialization;
 using System.Windows.Forms;
@@ -16,6 +18,16 @@ namespace BrowserChooser3.Tests
     {
         private readonly string _testConfigPath;
         private readonly string _testConfigFile;
+
+        /// <summary>
+        /// 実際の%APPDATA%\BrowserChooser3\BrowserChooser3Config.xmlを操作するテスト同士が
+        /// 他のテストクラス（xUnitは既定でクラス間を並列実行する）と競合しないように
+        /// するための、プロセス間でも通用する名前付きMutex。
+        /// Settings.Load()は引数のpathを無視し常にこの実パスを読むため、
+        /// DoSave()や破損ファイル退避を検証するテストは必ずこれで保護すること。
+        /// </summary>
+        private static readonly System.Threading.Mutex RealConfigFileMutex =
+            new System.Threading.Mutex(false, "Local\\BrowserChooser3Tests_RealConfigFile");
 
         public SettingsTests()
         {
@@ -281,37 +293,53 @@ namespace BrowserChooser3.Tests
         [Fact]
         public void DoSave_ShouldSaveSettings()
         {
-            // Arrange
-            var settings = new Settings();
-            settings.ShowURL = false;
-            settings.Width = 6;
-            settings.Height = 4;
+            RealConfigFileMutex.WaitOne();
+            try
+            {
+                // Arrange
+                var settings = new Settings();
+                settings.ShowURL = false;
+                settings.Width = 6;
+                settings.Height = 4;
 
-            // Act
-            settings.DoSave();
+                // Act
+                settings.DoSave();
 
-            // Assert
-            // テスト環境では実際のファイル保存が行われない可能性があるため、
-            // 例外が発生しないことを確認
-            settings.ShowURL.Should().BeFalse();
+                // Assert
+                // テスト環境では実際のファイル保存が行われない可能性があるため、
+                // 例外が発生しないことを確認
+                settings.ShowURL.Should().BeFalse();
+            }
+            finally
+            {
+                RealConfigFileMutex.ReleaseMutex();
+            }
         }
 
         [Fact]
         public void DoSave_WithDifferentSettings_ShouldSaveSettings()
         {
-            // Arrange
-            var settings = new Settings();
-            settings.ShowURL = true;
-            settings.Width = 8;
-            settings.Height = 2;
+            RealConfigFileMutex.WaitOne();
+            try
+            {
+                // Arrange
+                var settings = new Settings();
+                settings.ShowURL = true;
+                settings.Width = 8;
+                settings.Height = 2;
 
-            // Act
-            settings.DoSave();
+                // Act
+                settings.DoSave();
 
-            // Assert
-            // テスト環境では実際のファイル保存が行われない可能性があるため、
-            // 例外が発生しないことを確認
-            settings.ShowURL.Should().BeTrue();
+                // Assert
+                // テスト環境では実際のファイル保存が行われない可能性があるため、
+                // 例外が発生しないことを確認
+                settings.ShowURL.Should().BeTrue();
+            }
+            finally
+            {
+                RealConfigFileMutex.ReleaseMutex();
+            }
         }
 
         [Fact]
@@ -392,6 +420,116 @@ namespace BrowserChooser3.Tests
             settings.Should().NotBeNull();
             settings.FileVersion.Should().Be(Settings.CURRENT_FILE_VERSION);
             settings.ShowURL.Should().BeTrue();
+        }
+
+        #endregion
+
+        #region 破損設定ファイルの退避・SafeModeテスト
+        //
+        // Settings.Load()は引数のpathを使わず、常にPathManager.GetConfigDirectory()経由で
+        // 設定ディレクトリを決定する。他のテストクラス（MainFormTests等）が並行して
+        // 実際の%APPDATA%\BrowserChooser3を読み書きするため、そこを直接使うテストは
+        // 構造的にフレーキーになる。PathManager.ConfigDirectoryOverrideForTests
+        // （テスト専用のinternalシーム）でテストごとに一意な一時ディレクトリへ
+        // リダイレクトし、他のテストと完全に分離する。
+        //
+        // 注意: ConfigDirectoryOverrideForTestsはプロセス全体で共有されるstaticな値のため、
+        // このテストが値を設定している間に他のテストクラスが並行してSettings.Load()を
+        // 呼ぶと、そちらの呼び出しが誤ってこの一時ディレクトリを見てしまう可能性が
+        // 理論上残る（逆に実ファイルを壊すことはない）。RealConfigFileMutexで
+        // 同一クラス内の競合は排除できるが、他クラスとの競合の完全排除には
+        // Settings.Load全体をテスト用に注入可能にするリファクタが必要で、
+        // これはPhase 4のテスト基盤整備の範囲とする。
+
+        [Fact]
+        public void Load_CorruptedConfigFile_ShouldQuarantineFileAndEnableSafeMode()
+        {
+            RealConfigFileMutex.WaitOne();
+
+            var configDir = Path.Combine(Path.GetTempPath(), "BrowserChooser3Tests_" + Guid.NewGuid());
+            Directory.CreateDirectory(configDir);
+            var configFile = Path.Combine(configDir, Settings.BrowserChooserConfigFileName);
+            File.WriteAllText(configFile, "this is not valid xml <<<");
+
+            var originalOverride = PathManager.ConfigDirectoryOverrideForTests;
+            var originalIgnoreSettingsFile = Policy.IgnoreSettingsFile;
+            PathManager.ConfigDirectoryOverrideForTests = configDir;
+            Policy.IgnoreSettingsFile = false;
+
+            try
+            {
+                // Act
+                var settings = Settings.Load("");
+
+                // Assert: SafeModeが有効になり、保存が拒否される
+                settings.Should().NotBeNull();
+                settings.SafeMode.Should().BeTrue();
+
+                // Assert: 元の破損ファイルは無くなり、*.corrupt-*.xml として退避されている
+                File.Exists(configFile).Should().BeFalse();
+                var quarantineFiles = Directory.GetFiles(configDir, "BrowserChooser3Config.corrupt-*.xml");
+                quarantineFiles.Should().ContainSingle();
+
+                // Assert: SafeMode中はDoSaveが実際には保存しない
+                settings.ShowURL = false;
+                settings.DoSave();
+                File.Exists(configFile).Should().BeFalse();
+            }
+            finally
+            {
+                PathManager.ConfigDirectoryOverrideForTests = originalOverride;
+                Policy.IgnoreSettingsFile = originalIgnoreSettingsFile;
+                if (Directory.Exists(configDir)) Directory.Delete(configDir, true);
+                RealConfigFileMutex.ReleaseMutex();
+            }
+        }
+
+        [Fact]
+        public void Load_NoConfigFile_ShouldCreateDefaultProtocols()
+        {
+            RealConfigFileMutex.WaitOne();
+
+            var configDir = Path.Combine(Path.GetTempPath(), "BrowserChooser3Tests_" + Guid.NewGuid());
+            // ディレクトリ自体を作らない = 設定ファイルが存在しない状態を再現する
+
+            var originalOverride = PathManager.ConfigDirectoryOverrideForTests;
+            var originalIgnoreSettingsFile = Policy.IgnoreSettingsFile;
+            PathManager.ConfigDirectoryOverrideForTests = configDir;
+            Policy.IgnoreSettingsFile = false;
+
+            try
+            {
+                // Act: 設定ファイルが存在しない状態でLoadする
+                var settings = Settings.Load("");
+
+                // Assert: 新規プロファイルでも既定プロトコル（http/https/ftp/ftps/url）が
+                // 作成され、プロトコル振り分けが最初から機能する
+                settings.Protocols.Should().NotBeEmpty();
+                settings.Protocols.Select(p => p.Header).Should().Contain(new[] { "http", "https", "ftp", "ftps", "url" });
+            }
+            finally
+            {
+                PathManager.ConfigDirectoryOverrideForTests = originalOverride;
+                Policy.IgnoreSettingsFile = originalIgnoreSettingsFile;
+                if (Directory.Exists(configDir)) Directory.Delete(configDir, true);
+                RealConfigFileMutex.ReleaseMutex();
+            }
+        }
+
+        [Fact]
+        public void SafeMode_Property_ShouldNotBeSerializedToXml()
+        {
+            // Arrange
+            var settings = new Settings { SafeMode = true };
+            var serializer = new XmlSerializer(typeof(Settings));
+            using var stringWriter = new StringWriter();
+
+            // Act
+            serializer.Serialize(stringWriter, settings);
+            var xml = stringWriter.ToString();
+
+            // Assert: [XmlIgnore]によりSafeModeはXMLに出力されない
+            xml.Should().NotContain("SafeMode");
         }
 
         #endregion

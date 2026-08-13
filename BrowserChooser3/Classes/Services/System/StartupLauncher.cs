@@ -26,6 +26,14 @@ namespace BrowserChooser3.Classes.Services.SystemServices
         private static System.Threading.Thread? _worker = null;
 
         /// <summary>
+        /// 短縮URL展開処理の世代カウンター。
+        /// SetURLが呼ばれるたびにインクリメントし、バックグラウンドワーカー完了時に
+        /// 自分の世代が最新かどうかを確認することで、後から来たURLの展開結果が
+        /// 先に来たURLの展開結果で上書きされる競合を防ぐ。
+        /// </summary>
+        private static int _generation = 0;
+
+        /// <summary>
         /// コンストラクタ
         /// 基本的な初期化処理を実行します
         /// </summary>
@@ -66,10 +74,15 @@ namespace BrowserChooser3.Classes.Services.SystemServices
         /// <param name="url">処理対象のURL</param>
         /// <param name="unShorten">短縮URLを展開するかどうか</param>
         /// <param name="updateDelegate">URL更新デリゲート</param>
-        public static void SetURL(string url, bool unShorten, UpdateURL updateDelegate)
+        /// <returns>バックグラウンドでの短縮URL展開処理を開始した場合はtrue</returns>
+        public static bool SetURL(string url, bool unShorten, UpdateURL updateDelegate)
         {
             Logger.LogDebug("StartupLauncher.SetURL", "SetURL開始", $"URL: {url}, 長さ: {url?.Length ?? 0}, Unshorten: {unShorten}");
-            
+
+            // 新しいURLを設定するたびに世代を進める。
+            // 進行中の展開ワーカーは古い世代の結果をデリゲートへ渡さなくなる。
+            var generation = System.Threading.Interlocked.Increment(ref _generation);
+
             _delegate = updateDelegate;
             _url = url ?? string.Empty;
             Logger.LogDebug("StartupLauncher.SetURL", "URL設定完了", $"設定されたURL: {_url}");
@@ -78,25 +91,23 @@ namespace BrowserChooser3.Classes.Services.SystemServices
             {
                 Logger.LogDebug("StartupLauncher.SetURL", "短縮URL展開処理開始");
                 // HTTP/HTTPS URLの場合のみ短縮URL展開を実行
-                if (_url.StartsWith("http://", StringComparison.OrdinalIgnoreCase) || 
+                if (_url.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
                     _url.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
                 {
                     Logger.LogDebug("StartupLauncher.SetURL", "HTTP/HTTPS URLを検出、短縮URL展開ワーカーを開始");
-                    _worker = new System.Threading.Thread(Worker_DoWork_HTTP);
+                    _worker = new System.Threading.Thread(() => Worker_DoWork_HTTP(generation, _url, _delegate));
                     _worker.IsBackground = true;
                     _worker.Start();
+                    return true;
                 }
-                else
-                {
-                    Logger.LogDebug("StartupLauncher.SetURL", "HTTP/HTTPS URLではないため短縮URL展開をスキップ");
-                }
+
+                Logger.LogDebug("StartupLauncher.SetURL", "HTTP/HTTPS URLではないため短縮URL展開をスキップ");
+                return false;
             }
-            else
-            {
-                Logger.LogDebug("StartupLauncher.SetURL", "短縮URL展開が無効またはURLが空のためスキップ");
-            }
-            
+
+            Logger.LogDebug("StartupLauncher.SetURL", "短縮URL展開が無効またはURLが空のためスキップ");
             Logger.LogDebug("StartupLauncher.SetURL", "SetURL完了");
+            return false;
         }
 
         /// <summary>
@@ -109,6 +120,8 @@ namespace BrowserChooser3.Classes.Services.SystemServices
         /// <param name="updateDelegate">URL更新デリゲート</param>
         public static void SetURL(string url, bool unShorten, int delay, Browser browser, UpdateURL updateDelegate)
         {
+            var generation = System.Threading.Interlocked.Increment(ref _generation);
+
             _delay = delay;
             _browser = browser;
             _delegate = updateDelegate;
@@ -117,10 +130,10 @@ namespace BrowserChooser3.Classes.Services.SystemServices
             if (unShorten && !string.IsNullOrEmpty(_url))
             {
                 // HTTP/HTTPS URLの場合のみ短縮URL展開を実行
-                if (_url.StartsWith("http://", StringComparison.OrdinalIgnoreCase) || 
+                if (_url.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
                     _url.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
                 {
-                    _worker = new System.Threading.Thread(Worker_DoWork_HTTP);
+                    _worker = new System.Threading.Thread(() => Worker_DoWork_HTTP(generation, _url, _delegate));
                     _worker.IsBackground = true;
                     _worker.Start();
                 }
@@ -400,7 +413,10 @@ namespace BrowserChooser3.Classes.Services.SystemServices
         /// <summary>
         /// HTTP/HTTPS短縮URLの展開処理
         /// </summary>
-        private static async void Worker_DoWork_HTTP()
+        /// <param name="generation">呼び出し時点の世代番号。完了時にこれが最新でなければ結果を破棄する</param>
+        /// <param name="url">展開対象のURL（呼び出し時点でキャプチャした値）</param>
+        /// <param name="updateDelegate">結果を通知するデリゲート（呼び出し時点でキャプチャした値）</param>
+        private static async void Worker_DoWork_HTTP(int generation, string url, UpdateURL? updateDelegate)
         {
             // async voidはThreadのエントリポイントから呼ばれており、捕捉されない例外は
             // アプリ全体をクラッシュさせうるため、メソッド全体を確実にtry/catchで囲む
@@ -409,15 +425,17 @@ namespace BrowserChooser3.Classes.Services.SystemServices
                 using var httpClient = new HttpClient();
                 httpClient.DefaultRequestHeaders.Add("User-Agent", Settings.Current.UserAgent);
 
+                var resultUrl = url;
+
                 try
                 {
                     // HEADリクエストを試行
-                    using var headRequest = new HttpRequestMessage(HttpMethod.Head, _url);
+                    using var headRequest = new HttpRequestMessage(HttpMethod.Head, resultUrl);
                     using var headResponse = await httpClient.SendAsync(headRequest);
 
                     if (headResponse.RequestMessage?.RequestUri != null)
                     {
-                        _url = headResponse.RequestMessage.RequestUri.ToString();
+                        resultUrl = headResponse.RequestMessage.RequestUri.ToString();
                     }
                 }
                 catch (HttpRequestException)
@@ -425,11 +443,11 @@ namespace BrowserChooser3.Classes.Services.SystemServices
                     try
                     {
                         // GETリクエストを試行
-                        using var getResponse = await httpClient.GetAsync(_url);
+                        using var getResponse = await httpClient.GetAsync(resultUrl);
 
                         if (getResponse.RequestMessage?.RequestUri != null)
                         {
-                            _url = getResponse.RequestMessage.RequestUri.ToString();
+                            resultUrl = getResponse.RequestMessage.RequestUri.ToString();
                         }
                     }
                     catch (Exception ex)
@@ -439,10 +457,17 @@ namespace BrowserChooser3.Classes.Services.SystemServices
                     }
                 }
 
-                // クリーンアップとデリゲート呼び出し
-                if (_delegate != null)
+                // 自分の世代がまだ最新の場合のみ結果を反映する。
+                // 完了前に新しいURLがSetURLで設定されていた場合は、古い結果で
+                // 新しいURLを上書きしないよう破棄する。
+                if (generation == _generation)
                 {
-                    _delegate.Invoke(_url);
+                    _url = resultUrl;
+                    updateDelegate?.Invoke(resultUrl);
+                }
+                else
+                {
+                    Logger.LogDebug("StartupLauncher.Worker_DoWork_HTTP", "新しいURLが設定されたため展開結果を破棄", url, resultUrl);
                 }
             }
             catch (Exception ex)
@@ -451,9 +476,9 @@ namespace BrowserChooser3.Classes.Services.SystemServices
                 // 元のURLのままアプリの動作を継続させる
                 Logger.LogError("StartupLauncher.Worker_DoWork_HTTP", "短縮URL展開処理で予期しないエラーが発生しました", ex.Message, ex.StackTrace ?? "");
 
-                if (_delegate != null)
+                if (generation == _generation)
                 {
-                    _delegate.Invoke(_url);
+                    updateDelegate?.Invoke(url);
                 }
             }
             finally

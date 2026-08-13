@@ -47,6 +47,11 @@
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="8.0.0" />
   </ItemGroup>
 
+  <!-- テストプロジェクトからinternalメンバー（テスト専用シーム等）を参照可能にする -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="BrowserChooser3.Tests" />
+  </ItemGroup>
+
   <ItemGroup>
     <EmbeddedResource Include="Resources\*.ico" />
     <EmbeddedResource Include="Resources\*.png" />

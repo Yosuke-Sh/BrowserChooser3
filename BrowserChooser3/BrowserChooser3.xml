@@ -1295,6 +1295,14 @@
             URL更新のデリゲート
             </summary>
         </member>
+        <member name="F:BrowserChooser3.Classes.Services.SystemServices.StartupLauncher._generation">
+            <summary>
+            短縮URL展開処理の世代カウンター。
+            SetURLが呼ばれるたびにインクリメントし、バックグラウンドワーカー完了時に
+            自分の世代が最新かどうかを確認することで、後から来たURLの展開結果が
+            先に来たURLの展開結果で上書きされる競合を防ぐ。
+            </summary>
+        </member>
         <member name="M:BrowserChooser3.Classes.Services.SystemServices.StartupLauncher.#ctor">
             <summary>
             コンストラクタ
@@ -1323,6 +1331,7 @@
             <param name="url">処理対象のURL</param>
             <param name="unShorten">短縮URLを展開するかどうか</param>
             <param name="updateDelegate">URL更新デリゲート</param>
+            <returns>バックグラウンドでの短縮URL展開処理を開始した場合はtrue</returns>
         </member>
         <member name="M:BrowserChooser3.Classes.Services.SystemServices.StartupLauncher.SetURL(System.String,System.Boolean,System.Int32,BrowserChooser3.Classes.Models.Browser,BrowserChooser3.Classes.Services.SystemServices.StartupLauncher.UpdateURL)">
             <summary>
@@ -1372,10 +1381,13 @@
             <param name="args">コマンドライン引数</param>
             <returns>初期化が成功した場合はtrue</returns>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.SystemServices.StartupLauncher.Worker_DoWork_HTTP">
+        <member name="M:BrowserChooser3.Classes.Services.SystemServices.StartupLauncher.Worker_DoWork_HTTP(System.Int32,System.String,BrowserChooser3.Classes.Services.SystemServices.StartupLauncher.UpdateURL)">
             <summary>
             HTTP/HTTPS短縮URLの展開処理
             </summary>
+            <param name="generation">呼び出し時点の世代番号。完了時にこれが最新でなければ結果を破棄する</param>
+            <param name="url">展開対象のURL（呼び出し時点でキャプチャした値）</param>
+            <param name="updateDelegate">結果を通知するデリゲート（呼び出し時点でキャプチャした値）</param>
         </member>
         <member name="T:BrowserChooser3.Classes.Services.UI.FileDialogService">
             <summary>
@@ -1815,6 +1827,15 @@
             <param name="path">設定ファイルのパス（互換性のため残すが使用されない）</param>
             <returns>設定オブジェクト</returns>
         </member>
+        <member name="M:BrowserChooser3.Classes.Settings.QuarantineCorruptConfigAndCreateSafeDefaults(System.String)">
+            <summary>
+            破損した設定ファイルを退避し、SafeModeを有効にしたデフォルト設定を返します。
+            SafeModeにより、破損検出直後の保存操作（DoSave/IntSave）が正常な設定を
+            上書きしてしまうことを防ぎます。
+            </summary>
+            <param name="configPath">破損している設定ファイルのパス</param>
+            <returns>SafeModeを有効にしたデフォルト設定</returns>
+        </member>
         <member name="M:BrowserChooser3.Classes.Settings.CreateDefaultProtocols(BrowserChooser3.Classes.Settings)">
             <summary>
             デフォルトプロトコルを作成します
@@ -1839,19 +1860,22 @@
             </summary>
             <param name="browser">起動するブラウザ</param>
             <param name="url">開くURL</param>
-            <param name="terminate">起動後にアプリケーションを終了するか</param>
+            <param name="terminate">起動後にアプリケーションを終了する想定か</param>
+            <returns>起動に成功し、かつterminateがtrueだった場合はtrue（呼び出し元での終了処理が必要なことを示す）</returns>
         </member>
         <member name="M:BrowserChooser3.Classes.Utilities.BrowserUtilities.LaunchIE(BrowserChooser3.Classes.Models.Browser,System.String,System.Boolean)">
             <summary>
             IE専用の起動処理
             既存のIEインスタンスにタブを追加します
             </summary>
+            <returns>起動に成功し、かつterminateがtrueだった場合はtrue</returns>
         </member>
         <member name="M:BrowserChooser3.Classes.Utilities.BrowserUtilities.LaunchEdge(BrowserChooser3.Classes.Models.Browser,System.String,System.Boolean)">
             <summary>
             Edge専用の起動処理
             microsoft-edge:プロトコルでの起動をサポートします
             </summary>
+            <returns>起動に成功し、かつterminateがtrueだった場合はtrue</returns>
         </member>
         <member name="M:BrowserChooser3.Classes.Utilities.BrowserUtilities.DoLaunch(BrowserChooser3.Classes.Models.Browser,System.String,System.Boolean)">
             <summary>
@@ -2244,6 +2268,14 @@
             設定ファイルやログファイルの出力先を決定します
             </summary>
         </member>
+        <member name="P:BrowserChooser3.Classes.Utilities.PathManager.ConfigDirectoryOverrideForTests">
+            <summary>
+            テスト専用：設定ディレクトリを一時的に上書きします。
+            通常運用では使用されません（nullのままなら%APPDATA%\BrowserChooser3を使用）。
+            Settings.Load()の引数pathが無視され常に実際のユーザープロファイルを読む問題があり、
+            テストが実ファイルに触れずに済むようにするための最小限のテストシームとして追加。
+            </summary>
+        </member>
         <member name="M:BrowserChooser3.Classes.Utilities.PathManager.Initialize">
             <summary>
             パス管理を初期化します
@@ -2352,6 +2384,45 @@
             <param name="source">ソースURL</param>
             <param name="target">ターゲットURL</param>
             <returns>マッチする場合はtrue</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Utilities.URLUtilities.MatchHostPattern(System.String,System.String)">
+            <summary>
+            ホスト名（必要に応じてパス）ベースでURLとパターンを照合します。
+            パターンがホスト名のみの場合は完全一致またはサブドメイン一致、
+            パスを含む場合は「ホスト＋パス」の前方一致で判定します。
+            </summary>
+            <remarks>
+            以前は双方向の部分一致（source.Contains(target) || target.Contains(source)）で
+            判定していたため、"github.com" というパターンが
+            "https://evil.com/?q=github.com" にマッチしてしまう誤爆があった。
+            </remarks>
+            <param name="source">ソースURL</param>
+            <param name="pattern">マッチングパターン</param>
+            <returns>マッチする場合はtrue</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Utilities.URLUtilities.TryGetHostAndPath(System.String,System.String@,System.String@)">
+            <summary>
+            URLからホストと「ホスト＋パス」を取得します。
+            スキームが無いURLにはhttp://を補って解析します。
+            </summary>
+            <param name="url">対象URL</param>
+            <param name="host">取得したホスト（www.は除去済み）</param>
+            <param name="hostAndPath">取得したホストとパスの連結</param>
+            <returns>解析できた場合はtrue</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Utilities.URLUtilities.NormalizeForMatching(System.String)">
+            <summary>
+            マッチング用にスキームとwwwプレフィックス、末尾のスラッシュを除去します
+            </summary>
+            <param name="value">正規化対象の文字列</param>
+            <returns>正規化された文字列</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Utilities.URLUtilities.StripWwwPrefix(System.String)">
+            <summary>
+            先頭のwww.のみを除去します（文字列中のwww.は除去しません）
+            </summary>
+            <param name="value">対象文字列</param>
+            <returns>www.を除去した文字列</returns>
         </member>
         <member name="M:BrowserChooser3.Classes.Utilities.URLUtilities.MatchURLPattern(System.String,System.String)">
             <summary>
@@ -2910,6 +2981,20 @@
             システムトレイに最小化します
             </summary>
         </member>
+        <member name="M:BrowserChooser3.Forms.MainForm.HandlePostLaunchTermination(System.Boolean)">
+            <summary>
+            ブラウザ起動後の終了要否を処理します。
+            常駐モードが有効な場合はプロセスを終了せずトレイに格納します。
+            </summary>
+            <param name="shouldTerminate">呼び出し元がプロセス終了を想定していたか</param>
+        </member>
+        <member name="M:BrowserChooser3.Forms.MainForm.RequestClose">
+            <summary>
+            アプリケーションを閉じます。
+            常駐モードが有効な場合は終了せずシステムトレイに格納します。
+            タスクトレイメニューの「終了」からのみ、常駐モード中でもプロセスを完全に終了できます。
+            </summary>
+        </member>
         <member name="M:BrowserChooser3.Forms.MainForm.ShowFromTray">
             <summary>
             システムトレイから復元します
@@ -2920,11 +3005,6 @@
             他プロセスから引き渡されたURLを受け取り、既存ウィンドウに反映します（単一インスタンス化用）
             </summary>
             <param name="url">受信したURL</param>
-        </member>
-        <member name="M:BrowserChooser3.Forms.MainForm.SetupURLUnshortening">
-            <summary>
-            URL短縮解除の設定
-            </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.MainForm.ConfigureForm">
             <summary>
