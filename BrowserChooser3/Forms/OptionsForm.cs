@@ -1742,7 +1742,11 @@ namespace BrowserChooser3.Forms
                 var chkEnableBackgroundGradient = Controls.Find("chkEnableBackgroundGradient", true).FirstOrDefault() as CheckBox;
                 if (chkEnableBackgroundGradient != null) _settings.EnableBackgroundGradient = chkEnableBackgroundGradient.Checked;
 
-                // ショートカット設定
+                // ショートカット設定。
+                // 空入力時にchar.MinValueを設定すると、MainForm_KeyDownの比較対象が
+                // '\0'になりショートカットが恒久的に無効化されてしまう
+                // （設定をクリアしたつもりが「常にキー無効」の状態で固定されてしまう）ため、
+                // 空入力時は既定値へフォールバックする。
                 var txtOptionsShortcut = Controls.Find("txtOptionsShortcut", true).FirstOrDefault() as TextBox;
                 if (txtOptionsShortcut != null && !string.IsNullOrEmpty(txtOptionsShortcut.Text))
                 {
@@ -1750,7 +1754,7 @@ namespace BrowserChooser3.Forms
                 }
                 else
                 {
-                    _settings.OptionsShortcut = char.MinValue;
+                    _settings.OptionsShortcut = (char)_settings.Defaults[Settings.DefaultField.OptionsShortcut];
                 }
 
                 var txtDefaultMessage = Controls.Find("txtDefaultMessage", true).FirstOrDefault() as TextBox;

@@ -290,6 +290,47 @@ namespace BrowserChooser3.Tests
             _form.IsDisposed.Should().BeFalse();
         }
 
+        private static void InvokeSaveSettings(OptionsForm form)
+        {
+            var method = typeof(OptionsForm).GetMethod("SaveSettings",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            method!.Invoke(form, null);
+        }
+
+        [Fact]
+        public void SaveSettings_WithEmptyOptionsShortcutText_ShouldFallBackToDefaultInsteadOfMinValue()
+        {
+            // Arrange: 以前はショートカット欄を空にして保存するとchar.MinValueが設定され、
+            // MainForm_KeyDown側の比較対象が'\0'になってショートカットが恒久的に
+            // 無効化されてしまっていた。空入力時は既定値へフォールバックすることを確認する。
+            var txtOptionsShortcut = _form.Controls.Find("txtOptionsShortcut", true).FirstOrDefault() as TextBox;
+            txtOptionsShortcut.Should().NotBeNull("OptionsFormの初期化でtxtOptionsShortcutが生成されているはず");
+            txtOptionsShortcut!.Text = string.Empty;
+
+            // Act
+            InvokeSaveSettings(_form);
+
+            // Assert
+            var expectedDefault = (char)_settings.Defaults[Settings.DefaultField.OptionsShortcut];
+            _settings.OptionsShortcut.Should().Be(expectedDefault);
+            _settings.OptionsShortcut.Should().NotBe(char.MinValue);
+        }
+
+        [Fact]
+        public void SaveSettings_WithOptionsShortcutText_ShouldUseFirstCharacter()
+        {
+            // Arrange
+            var txtOptionsShortcut = _form.Controls.Find("txtOptionsShortcut", true).FirstOrDefault() as TextBox;
+            txtOptionsShortcut.Should().NotBeNull();
+            txtOptionsShortcut!.Text = "Q";
+
+            // Act
+            InvokeSaveSettings(_form);
+
+            // Assert
+            _settings.OptionsShortcut.Should().Be('Q');
+        }
+
         #endregion
 
         #region 境界値テスト

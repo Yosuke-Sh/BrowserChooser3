@@ -3314,10 +3314,32 @@
             編集モードメニューのクリックイベント
             </summary>
         </member>
+        <member name="M:BrowserChooser3.Forms.MainForm.IsOptionsShortcutKey(System.Windows.Forms.KeyEventArgs)">
+            <summary>
+            Optionsショートカット（Ctrl+指定キー）が押されたかどうかを判定します。
+            以前はe.KeyCode.ToString()（数字キーは"D5"のような文字列になる）と
+            設定文字を直接比較していたため、数字をショートカットに設定すると
+            永久にマッチしなかった。e.KeyValueは押されたキーの仮想キーコードで
+            A-Z・0-9キーではASCIIコードと一致するため、文字として正しく比較できる。
+            また修飾キー無しの単独キーだと入力中の誤爆が起きやすいため、Ctrlを必須化する。
+            </summary>
+            <param name="e">キーイベント引数</param>
+            <returns>Optionsショートカットとして扱う場合はtrue</returns>
+        </member>
         <member name="M:BrowserChooser3.Forms.MainForm.MainForm_KeyDown(System.Object,System.Windows.Forms.KeyEventArgs)">
             <summary>
             キーボードイベントの処理
             </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.MainForm.TryGetHotkeyChar(System.Windows.Forms.KeyEventArgs,System.Char@)">
+            <summary>
+            キーイベントからブラウザホットキーとして扱う文字を取得します。
+            数字キー（0-9）と英字キー（A-Z）のみを対象とし、修飾キーが押されている場合は
+            他のショートカット（Ctrl+Optionsショートカット等）と衝突しないよう対象外とします。
+            </summary>
+            <param name="e">キーイベント引数</param>
+            <param name="pressedChar">ホットキー対象の場合、大文字化された文字</param>
+            <returns>ホットキー対象のキーだった場合はtrue</returns>
         </member>
         <member name="M:BrowserChooser3.Forms.MainForm.HandleArrowKeyUp(System.Windows.Forms.Keys)">
             <summary>

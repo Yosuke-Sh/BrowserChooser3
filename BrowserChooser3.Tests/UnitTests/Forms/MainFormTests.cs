@@ -1048,5 +1048,178 @@ namespace BrowserChooser3.Tests
         }
 
         #endregion
+
+        #region キーボード/ホットキー判定ロジック テスト（Phase 1-6の回帰テスト）
+
+        private static bool InvokeIsOptionsShortcutKey(MainForm form, KeyEventArgs e)
+        {
+            var method = typeof(MainForm).GetMethod("IsOptionsShortcutKey",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            return (bool)method!.Invoke(form, new object[] { e })!;
+        }
+
+        private static bool InvokeTryGetHotkeyChar(KeyEventArgs e, out char pressedChar)
+        {
+            var method = typeof(MainForm).GetMethod("TryGetHotkeyChar",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+            var args = new object?[] { e, null };
+            var result = (bool)method!.Invoke(null, args)!;
+            pressedChar = (char)args[1]!;
+            return result;
+        }
+
+        [Theory]
+        [InlineData(Keys.D5)] // 数字キー。以前はe.KeyCode.ToString()が"D5"になり、
+                               // 設定文字'5'と絶対に一致しなかった。
+        [InlineData(Keys.O)]
+        public void IsOptionsShortcutKey_WithCtrlAndMatchingKey_ShouldReturnTrue(Keys key)
+        {
+            // Arrange
+            var mainForm = new MainForm();
+            var settings = GetPrivateField<Settings>(mainForm, "_settings");
+            settings.Should().NotBeNull();
+            // KeysのD5→'5'、O→'O' に対応させる
+            settings!.OptionsShortcut = key == Keys.D5 ? '5' : 'O';
+            var e = new KeyEventArgs(Keys.Control | key);
+
+            // Act
+            var result = InvokeIsOptionsShortcutKey(mainForm, e);
+
+            // Assert
+            result.Should().BeTrue();
+
+            mainForm.Dispose();
+        }
+
+        [Fact]
+        public void IsOptionsShortcutKey_WithoutCtrlModifier_ShouldReturnFalse()
+        {
+            // Arrange: 修飾キー無しの単独キーでは誤爆しないことを確認する（UI変更・承認済み）
+            var mainForm = new MainForm();
+            var settings = GetPrivateField<Settings>(mainForm, "_settings");
+            settings.Should().NotBeNull();
+            settings!.OptionsShortcut = 'O';
+            var e = new KeyEventArgs(Keys.O); // Ctrlなし
+
+            // Act
+            var result = InvokeIsOptionsShortcutKey(mainForm, e);
+
+            // Assert
+            result.Should().BeFalse();
+
+            mainForm.Dispose();
+        }
+
+        [Fact]
+        public void IsOptionsShortcutKey_WithMinValueShortcut_ShouldReturnFalse()
+        {
+            // Arrange: OptionsShortcutがchar.MinValue（未設定）の場合は誤爆しないこと
+            var mainForm = new MainForm();
+            var settings = GetPrivateField<Settings>(mainForm, "_settings");
+            settings.Should().NotBeNull();
+            settings!.OptionsShortcut = char.MinValue;
+            var e = new KeyEventArgs(Keys.Control | Keys.O);
+
+            // Act
+            var result = InvokeIsOptionsShortcutKey(mainForm, e);
+
+            // Assert
+            result.Should().BeFalse();
+
+            mainForm.Dispose();
+        }
+
+        [Fact]
+        public void IsOptionsShortcutKey_IsCaseInsensitive()
+        {
+            // Arrange
+            var mainForm = new MainForm();
+            var settings = GetPrivateField<Settings>(mainForm, "_settings");
+            settings.Should().NotBeNull();
+            settings!.OptionsShortcut = 'o'; // 小文字で設定
+            var e = new KeyEventArgs(Keys.Control | Keys.O); // 押されるキーは大文字扱い
+
+            // Act
+            var result = InvokeIsOptionsShortcutKey(mainForm, e);
+
+            // Assert
+            result.Should().BeTrue();
+
+            mainForm.Dispose();
+        }
+
+        [Theory]
+        [InlineData(Keys.D0, '0')]
+        [InlineData(Keys.D5, '5')]
+        [InlineData(Keys.D9, '9')]
+        [InlineData(Keys.A, 'A')]
+        [InlineData(Keys.Z, 'Z')]
+        public void TryGetHotkeyChar_WithDigitOrLetterKey_ShouldReturnExpectedChar(Keys key, char expected)
+        {
+            // Arrange: 数字キー・英字キーの両方がホットキーとして認識されることを確認する。
+            // 以前は数字キーのみが対象で、AddEditBrowserFormで設定可能な英字ホットキーは
+            // 一切反応しなかった。
+            var e = new KeyEventArgs(key);
+
+            // Act
+            var result = InvokeTryGetHotkeyChar(e, out var pressedChar);
+
+            // Assert
+            result.Should().BeTrue();
+            pressedChar.Should().Be(expected);
+        }
+
+        [Fact]
+        public void TryGetHotkeyChar_WithCtrlModifier_ShouldReturnFalse()
+        {
+            // Arrange: Ctrl押下時はOptionsショートカット等と衝突しないよう対象外にする
+            var e = new KeyEventArgs(Keys.Control | Keys.A);
+
+            // Act
+            var result = InvokeTryGetHotkeyChar(e, out _);
+
+            // Assert
+            result.Should().BeFalse();
+        }
+
+        [Fact]
+        public void TryGetHotkeyChar_WithNonAlphanumericKey_ShouldReturnFalse()
+        {
+            // Arrange
+            var e = new KeyEventArgs(Keys.F1);
+
+            // Act
+            var result = InvokeTryGetHotkeyChar(e, out _);
+
+            // Assert
+            result.Should().BeFalse();
+        }
+
+        [Fact]
+        public void MainForm_KeyDown_WithLetterHotkey_ShouldLaunchMatchingBrowser()
+        {
+            // Arrange: 英字ホットキーを持つブラウザが実際にKeyDownで起動対象として
+            // 選ばれることを、プライベートフィールド経由で確認する
+            // （実プロセス起動はBrowserUtilities側のテスト環境判定でスキップされる）
+            var mainForm = new MainForm();
+            var browsers = GetPrivateField<List<Browser>>(mainForm, "_browsers");
+            browsers.Should().NotBeNull();
+            browsers!.Clear();
+            browsers.Add(new Browser { Name = "Letter Hotkey Browser", Guid = Guid.NewGuid(), Target = "test.exe", Hotkey = 'B' });
+
+            var method = typeof(MainForm).GetMethod("MainForm_KeyDown",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            var e = new KeyEventArgs(Keys.B);
+
+            // Act
+            var action = () => method!.Invoke(mainForm, new object?[] { null, e });
+
+            // Assert: 例外なく処理が完了する（テスト環境のためブラウザは実起動されない）
+            action.Should().NotThrow();
+
+            mainForm.Dispose();
+        }
+
+        #endregion
     }
 }

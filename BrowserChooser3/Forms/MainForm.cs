@@ -958,8 +958,10 @@ namespace BrowserChooser3.Forms
                 defaultIndicator = " / D";
             }
             
-            // ホットキーまたはデフォルトブラウザがある場合のみオーバーレイラベルを作成
-            if ((browser.Hotkey != '\0' && char.IsDigit(browser.Hotkey)) || !string.IsNullOrEmpty(defaultIndicator))
+            // ホットキーまたはデフォルトブラウザがある場合のみオーバーレイラベルを作成。
+            // 以前は数字ホットキーのみ表示対象としており、AddEditBrowserFormで設定可能な
+            // 英字ホットキーがオーバーレイに表示されなかった。
+            if (browser.Hotkey != '\0' || !string.IsNullOrEmpty(defaultIndicator))
             {
                 var overlayLabel = new Label
                 {
@@ -970,11 +972,11 @@ namespace BrowserChooser3.Forms
                     Font = new Font("Segoe UI", 8.0f, FontStyle.Bold, GraphicsUnit.Point, 0),
                     TextAlign = ContentAlignment.MiddleCenter
                 };
-                
+
                 // テキストの設定
-                if (browser.Hotkey != '\0' && char.IsDigit(browser.Hotkey))
+                if (browser.Hotkey != '\0')
                 {
-                    overlayLabel.Text = browser.Hotkey.ToString() + defaultIndicator;
+                    overlayLabel.Text = char.ToUpperInvariant(browser.Hotkey).ToString() + defaultIndicator;
                 }
                 else if (!string.IsNullOrEmpty(defaultIndicator))
                 {
@@ -2111,12 +2113,30 @@ namespace BrowserChooser3.Forms
 
 
         /// <summary>
+        /// Optionsショートカット（Ctrl+指定キー）が押されたかどうかを判定します。
+        /// 以前はe.KeyCode.ToString()（数字キーは"D5"のような文字列になる）と
+        /// 設定文字を直接比較していたため、数字をショートカットに設定すると
+        /// 永久にマッチしなかった。e.KeyValueは押されたキーの仮想キーコードで
+        /// A-Z・0-9キーではASCIIコードと一致するため、文字として正しく比較できる。
+        /// また修飾キー無しの単独キーだと入力中の誤爆が起きやすいため、Ctrlを必須化する。
+        /// </summary>
+        /// <param name="e">キーイベント引数</param>
+        /// <returns>Optionsショートカットとして扱う場合はtrue</returns>
+        private bool IsOptionsShortcutKey(KeyEventArgs e)
+        {
+            var optionsShortcutChar = _settings?.OptionsShortcut ?? 'O';
+            return e.Control && optionsShortcutChar != char.MinValue &&
+                   e.KeyValue >= 0 && e.KeyValue <= char.MaxValue &&
+                   char.ToUpperInvariant((char)e.KeyValue) == char.ToUpperInvariant(optionsShortcutChar);
+        }
+
+        /// <summary>
         /// キーボードイベントの処理
         /// </summary>
         private void MainForm_KeyDown(object? sender, KeyEventArgs e)
         {
-            // オプションショートカット
-            if (e.KeyCode.ToString().ToLower() == (_settings?.OptionsShortcut ?? 'O').ToString().ToLower())
+            // オプションショートカット（Ctrl+指定キー）
+            if (IsOptionsShortcutKey(e))
             {
                 e.Handled = true;
                 e.SuppressKeyPress = true;
@@ -2137,25 +2157,55 @@ namespace BrowserChooser3.Forms
             
 
             
-            // 数字キー（0-9）でホットキー処理
-            if (e.KeyCode >= Keys.D0 && e.KeyCode <= Keys.D9)
+            // 数字キー（0-9）または英字キー（A-Z）でホットキー処理。
+            // AddEditBrowserFormは任意の1文字をホットキーとして受け付けるが、
+            // 以前はここが数字キーしか判定しておらず、英字ホットキーを設定しても
+            // 一切反応しなかった。
+            if (TryGetHotkeyChar(e, out var pressedChar))
             {
-                e.Handled = true;
-                e.SuppressKeyPress = true;
-                var keyNumber = e.KeyCode == Keys.D0 ? 0 : e.KeyCode - Keys.D1 + 1;
-                
                 foreach (var browser in _browsers ?? new List<Browser>())
                 {
-                    if (char.IsDigit(browser.Hotkey) && int.Parse(browser.Hotkey.ToString()) == keyNumber)
+                    if (browser.Hotkey != '\0' && char.ToUpperInvariant(browser.Hotkey) == pressedChar)
                     {
-                        Logger.LogInfo("MainForm.MainForm_KeyDown", "ホットキー起動", browser.Name, keyNumber);
+                        e.Handled = true;
+                        e.SuppressKeyPress = true;
+                        Logger.LogInfo("MainForm.MainForm_KeyDown", "ホットキー起動", browser.Name, pressedChar);
                         var shouldTerminate = BrowserUtilities.LaunchBrowser(browser, _currentUrl, chkAutoClose?.Checked ?? true);
                         HandlePostLaunchTermination(shouldTerminate);
                         return;
                     }
                 }
-                return;
             }
+        }
+
+        /// <summary>
+        /// キーイベントからブラウザホットキーとして扱う文字を取得します。
+        /// 数字キー（0-9）と英字キー（A-Z）のみを対象とし、修飾キーが押されている場合は
+        /// 他のショートカット（Ctrl+Optionsショートカット等）と衝突しないよう対象外とします。
+        /// </summary>
+        /// <param name="e">キーイベント引数</param>
+        /// <param name="pressedChar">ホットキー対象の場合、大文字化された文字</param>
+        /// <returns>ホットキー対象のキーだった場合はtrue</returns>
+        private static bool TryGetHotkeyChar(KeyEventArgs e, out char pressedChar)
+        {
+            pressedChar = '\0';
+
+            if (e.Control || e.Alt)
+            {
+                return false;
+            }
+
+            var isDigitKey = e.KeyCode >= Keys.D0 && e.KeyCode <= Keys.D9;
+            var isLetterKey = e.KeyCode >= Keys.A && e.KeyCode <= Keys.Z;
+            if (!isDigitKey && !isLetterKey)
+            {
+                return false;
+            }
+
+            pressedChar = isDigitKey
+                ? (char)('0' + (e.KeyCode == Keys.D0 ? 0 : e.KeyCode - Keys.D1 + 1))
+                : char.ToUpperInvariant((char)e.KeyValue);
+            return true;
         }
 
         /// <summary>
