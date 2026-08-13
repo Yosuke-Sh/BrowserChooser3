@@ -14,6 +14,13 @@ namespace BrowserChooser3.Tests
     /// <summary>
     /// サービスクラスのテスト
     /// </summary>
+    /// <remarks>
+    /// StartupLauncher.ProcessCommandLineArgsを多用しており、その静的状態
+    /// （URL/Delay/Browser等）をStartupLauncherTests等と共有するため、
+    /// 同一コレクションに参加し並列実行による競合を避ける
+    /// （コレクション定義自体はStartupLauncherTests.csにある）
+    /// </remarks>
+    [Collection("StartupLauncherSharedState")]
     public class ServiceTests : IDisposable
     {
         public void Dispose()

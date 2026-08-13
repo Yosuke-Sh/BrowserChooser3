@@ -6,6 +6,12 @@ using Xunit;
 
 namespace BrowserChooser3.Tests
 {
+    /// <summary>
+    /// StartupLauncherの静的状態（URL/Delay/Browser等）をStartupLauncherTests等と共有するため、
+    /// 同一コレクションに参加し並列実行による競合を避ける
+    /// （コレクション定義自体はStartupLauncherTests.csにある）
+    /// </summary>
+    [Collection("StartupLauncherSharedState")]
     public class ProgramTests
     {
         [Fact]

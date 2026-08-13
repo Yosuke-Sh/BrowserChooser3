@@ -18,6 +18,11 @@ namespace BrowserChooser3.Forms
         private List<Browser>? _browsers;
         private string _currentUrl = string.Empty;
         private string _initialUrl = string.Empty;
+
+        // コマンドライン引数(-d/-b/--silent)による起動時オーバーライド
+        private int? _startupDelayOverride;
+        private Guid? _startupBrowserGuid;
+        private bool _startupSilentMode;
         
         /// <summary>
         /// URL表示用テキストボックス
@@ -1199,6 +1204,70 @@ namespace BrowserChooser3.Forms
         }
 
         /// <summary>
+        /// コマンドライン引数(-d/--delay、-b/--browser、--silent)による起動時オーバーライドを設定します（Loadイベントで使用）。
+        /// </summary>
+        /// <param name="delayOverride">-d/--delayで指定された遅延秒数。未指定の場合はnull</param>
+        /// <param name="browserGuid">-b/--browserで指定されたブラウザのGUID。未指定の場合はnull</param>
+        /// <param name="silentMode">--silentが指定された場合はtrue</param>
+        public void SetStartupOptions(int? delayOverride, Guid? browserGuid, bool silentMode)
+        {
+            _startupDelayOverride = delayOverride;
+            _startupBrowserGuid = browserGuid;
+            _startupSilentMode = silentMode;
+            Logger.LogDebug("MainForm.SetStartupOptions", "起動時オーバーライド設定",
+                delayOverride?.ToString() ?? "(未指定)", browserGuid?.ToString() ?? "(未指定)", silentMode);
+        }
+
+        /// <summary>
+        /// 実効的なデフォルト遅延秒数。-d/--delayが指定されていればそれを優先する。
+        /// </summary>
+        private int EffectiveDefaultDelay => _startupDelayOverride ?? _settings?.DefaultDelay ?? 0;
+
+        /// <summary>
+        /// -b/--browserまたは--silentによる起動時オーバーライドを処理します。
+        /// 該当する場合は選択画面を出さず即座にブラウザを起動し、trueを返します。
+        /// 他プロセスから後続のURLを受信した場合（ReceiveExternalURL）にまで
+        /// 効果が及ばないよう、一度処理したらオーバーライドをクリアします。
+        /// </summary>
+        /// <param name="url">処理対象のURL</param>
+        /// <returns>起動時オーバーライドとして処理した場合はtrue</returns>
+        private bool TryHandleStartupOverrides(string url)
+        {
+            if (_startupBrowserGuid == null && !_startupSilentMode)
+            {
+                return false;
+            }
+
+            // -bで指定されたブラウザを優先し、無ければ既定ブラウザ、それも無ければ何もしない
+            Browser? targetBrowser = null;
+            if (_startupBrowserGuid.HasValue)
+            {
+                targetBrowser = _browsers?.FirstOrDefault(b => b.Guid == _startupBrowserGuid.Value);
+                if (targetBrowser == null)
+                {
+                    Logger.LogWarning("MainForm.TryHandleStartupOverrides", "-b/--browserで指定されたブラウザが見つかりません", _startupBrowserGuid.Value);
+                }
+            }
+            targetBrowser ??= _defaultBrowser;
+
+            // 一度きりの適用とするため、処理の成否に関わらずここでクリアする
+            var wasSilentMode = _startupSilentMode;
+            _startupBrowserGuid = null;
+            _startupSilentMode = false;
+
+            if (targetBrowser == null)
+            {
+                Logger.LogWarning("MainForm.TryHandleStartupOverrides", "起動時オーバーライド用のブラウザが見つからないため通常の選択画面を表示します");
+                return false;
+            }
+
+            Logger.LogInfo("MainForm.TryHandleStartupOverrides", "起動時オーバーライドでブラウザを起動", targetBrowser.Name, url, wasSilentMode);
+            BrowserUtilities.LaunchBrowser(targetBrowser, url, _settings?.AllowStayOpen != true);
+            RequestClose();
+            return true;
+        }
+
+        /// <summary>
         /// URLを更新
         /// </summary>
         public void UpdateURL(string url)
@@ -1213,7 +1282,14 @@ namespace BrowserChooser3.Forms
             Logger.LogDebug("MainForm.UpdateURL", "URL更新", url);
             _currentUrl = url;
             UpdateURLLabel();
-            
+
+            // -b/--browserまたは--silentがコマンドラインで指定されている場合は、
+            // AutoURLs/Protocolより先に処理し、選択画面を出さず即座に起動する
+            if (TryHandleStartupOverrides(url))
+            {
+                return;
+            }
+
             // AutoURLsとProtocolの処理を実行
             if (ProcessAutoURLsAndProtocols(url))
             {
@@ -1221,7 +1297,7 @@ namespace BrowserChooser3.Forms
                 Logger.LogInfo("MainForm.UpdateURL", "AutoURLsまたはProtocolで処理完了、StartupLauncherはスキップ", url);
                 return;
             }
-            
+
             // AutoURLsとProtocolで処理されなかった場合のみ、StartupLauncherを使用してURLを処理
             var isExpandingShortUrl = StartupLauncher.SetURL(url, _settings?.RevealShortURL ?? false, OnURLUpdated);
 
@@ -1229,7 +1305,7 @@ namespace BrowserChooser3.Forms
             // 展開が完了する前にカウントダウンが0になると、短縮URLのまま
             // デフォルトブラウザで開いてしまうため。展開完了時はOnURLUpdatedが
             // カウントダウンを（再）開始する。
-            if (!isExpandingShortUrl && _defaultBrowser != null && (_settings?.DefaultDelay ?? 0) > 0)
+            if (!isExpandingShortUrl && _defaultBrowser != null && EffectiveDefaultDelay > 0)
             {
                 StartCountdown();
             }
@@ -1587,7 +1663,7 @@ namespace BrowserChooser3.Forms
             // 短縮URL展開が完了したタイミングでカウントダウンを開始する。
             // UpdateURL側では展開中はカウントダウンを開始していないため、
             // ここで初めてデフォルトブラウザによる自動起動の猶予が始まる。
-            if (_defaultBrowser != null && (_settings?.DefaultDelay ?? 0) > 0 && _countdownTimer == null)
+            if (_defaultBrowser != null && EffectiveDefaultDelay > 0 && _countdownTimer == null)
             {
                 StartCountdown();
             }
@@ -1869,7 +1945,8 @@ namespace BrowserChooser3.Forms
                 _countdownTimer = null;
             }
 
-            _currentDelay = _settings?.DefaultDelay ?? 5;
+            // -d/--delayでコマンドラインから明示的に指定された場合はSettings.DefaultDelayより優先する
+            _currentDelay = _startupDelayOverride ?? _settings?.DefaultDelay ?? 5;
             _isPaused = false;
 
             _countdownTimer = new System.Windows.Forms.Timer
@@ -1878,10 +1955,10 @@ namespace BrowserChooser3.Forms
             };
             _countdownTimer.Tick += CountdownTimer_Tick;
             _countdownTimer.Start();
-            
+
             UpdateCountdownDisplay();
             _countdownLabel!.Visible = true;
-            
+
             Logger.LogDebug("MainForm.StartCountdown", "カウントダウン開始", _currentDelay);
         }
 

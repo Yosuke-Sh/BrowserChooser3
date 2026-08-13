@@ -31,11 +31,7 @@ namespace BrowserChooser3.Classes.Services.SystemServices
             
             /// <summary>デバッグログを有効にするかどうか</summary>
             public bool DebugLog { get; set; } = false;
-            
-            /// <summary>DLLを抽出するかどうか</summary>
-            public bool ExtractDLLs { get; set; } = false;
-            
-            
+
             /// <summary>設定ファイルを無視するかどうか</summary>
             public bool IgnoreSettings { get; set; } = false;
             
@@ -115,11 +111,6 @@ namespace BrowserChooser3.Classes.Services.SystemServices
                         case "--debug":
                             result.DebugLog = true;
                             break;
-
-                        case "--extract-dlls":
-                            result.ExtractDLLs = true;
-                            break;
-
 
                         case "--ignore-settings":
                             result.IgnoreSettings = true;
@@ -207,10 +198,9 @@ namespace BrowserChooser3.Classes.Services.SystemServices
   -b, --browser <GUID>  指定したブラウザのGUIDで起動
   -u, --unshorten       URL短縮解除を実行
   --debug               デバッグログを有効化
-  --extract-dlls        DLLファイルを抽出
   --ignore-settings     設定ファイルを無視
-  --silent              サイレントモードで起動
-  --auto-launch         自動起動モード
+  --silent              サイレントモードで起動（UIを表示せず既定ブラウザで開く）
+  --auto-launch         自動起動モード（遅延なしで即座に既定ブラウザを起動）
 
 例:
   BrowserChooser3.exe https://example.com
@@ -275,13 +265,6 @@ namespace BrowserChooser3.Classes.Services.SystemServices
                 {
                     args.DebugLog = true;
                 }
-
-                var extractDlls = Environment.GetEnvironmentVariable("BROWSERCHOOSER_EXTRACT_DLLS");
-                if (bool.TryParse(extractDlls, out var extract) && extract)
-                {
-                    args.ExtractDLLs = true;
-                }
-
 
                 var ignoreSettings = Environment.GetEnvironmentVariable("BROWSERCHOOSER_IGNORE_SETTINGS");
                 if (bool.TryParse(ignoreSettings, out var ignore) && ignore)

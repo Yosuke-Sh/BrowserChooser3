@@ -344,9 +344,6 @@ namespace BrowserChooser3.Classes
         [XmlIgnore] public bool SafeMode { get; set; } = false;
         /// <summary>ログデバッグ（コマンドラインで指定された場合のみtrue）</summary>
         [field: NonSerialized] public static TriState LogDebugs { get; set; } = TriState.UseDefault;
-        
-        /// <summary>DLL抽出（コマンドラインで指定された場合のみtrue）</summary>
-        [field: NonSerialized] public static bool DoExtractDLLs { get; set; } = false;
 
         /// <summary>
         /// 現在の設定インスタンス

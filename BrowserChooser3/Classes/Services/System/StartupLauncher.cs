@@ -1,4 +1,4 @@
-using System.Net;
+using System.Runtime.InteropServices;
 using System.Threading;
 using BrowserChooser3.Classes.Models;
 using BrowserChooser3.Classes.Utilities;
@@ -24,6 +24,10 @@ namespace BrowserChooser3.Classes.Services.SystemServices
         private static UpdateURL? _delegate = null;
         private static List<Guid> _supportingBrowsers = new();
         private static System.Threading.Thread? _worker = null;
+        private static bool _silentMode = false;
+        private static bool _autoLaunch = false;
+        private static bool _delaySpecifiedOnCommandLine = false;
+        private static bool _shouldExitAfterInitialize = false;
 
         /// <summary>
         /// 短縮URL展開処理の世代カウンター。
@@ -66,6 +70,21 @@ namespace BrowserChooser3.Classes.Services.SystemServices
         
         /// <summary>対応ブラウザのGUIDリスト</summary>
         public static List<Guid> SupportingBrowsers => _supportingBrowsers;
+
+        /// <summary>サイレントモード（UIを表示せず既定ブラウザで開く）が指定されたかどうか</summary>
+        public static bool SilentMode => _silentMode;
+
+        /// <summary>自動起動モード（遅延なしで即座に起動）が指定されたかどうか</summary>
+        public static bool AutoLaunch => _autoLaunch;
+
+        /// <summary>コマンドラインで遅延時間(-d/--delay)が明示的に指定されたかどうか</summary>
+        public static bool DelaySpecifiedOnCommandLine => _delaySpecifiedOnCommandLine;
+
+        /// <summary>
+        /// --help / --version が指定され、GUIを起動せず終了すべきかどうか。
+        /// Program.Mainはこのフラグを見てApplication.Run前に処理を打ち切る。
+        /// </summary>
+        public static bool ShouldExitAfterInitialize => _shouldExitAfterInitialize;
         #endregion
 
         /// <summary>
@@ -116,9 +135,9 @@ namespace BrowserChooser3.Classes.Services.SystemServices
         /// <param name="url">処理対象のURL</param>
         /// <param name="unShorten">短縮URLを展開するかどうか</param>
         /// <param name="delay">遅延時間（秒）</param>
-        /// <param name="browser">選択されたブラウザ</param>
+        /// <param name="browser">選択されたブラウザ（未指定の場合はnull）</param>
         /// <param name="updateDelegate">URL更新デリゲート</param>
-        public static void SetURL(string url, bool unShorten, int delay, Browser browser, UpdateURL updateDelegate)
+        public static void SetURL(string url, bool unShorten, int delay, Browser? browser, UpdateURL updateDelegate)
         {
             var generation = System.Threading.Interlocked.Increment(ref _generation);
 
@@ -152,34 +171,32 @@ namespace BrowserChooser3.Classes.Services.SystemServices
 
             try
             {
-                // ヘルプ表示
+                // ヘルプ表示（GUIを起動せずコンソールへ出力して終了する）
                 if (args.ShowHelp)
                 {
-                    Console.WriteLine(CommandLineProcessor.GetHelpMessage());
+                    WriteToConsole(CommandLineProcessor.GetHelpMessage());
+                    _shouldExitAfterInitialize = true;
                     return true;
                 }
 
-                // バージョン表示
+                // バージョン表示（GUIを起動せずコンソールへ出力して終了する）
                 if (args.ShowVersion)
                 {
-                    Console.WriteLine(CommandLineProcessor.GetVersionInfo());
+                    WriteToConsole(CommandLineProcessor.GetVersionInfo());
+                    _shouldExitAfterInitialize = true;
                     return true;
                 }
 
                 // デバッグログの設定
+                // Logger.InitializeLogLevel()はProgram.Mainの起点で本メソッドより先に
+                // 一度呼ばれてしまっているため、Settings.LogDebugsを設定するだけでは
+                // 実際のログレベルに反映されない。ここで直接CurrentLogLevelを引き上げる。
                 if (args.DebugLog)
                 {
                     Settings.LogDebugs = Settings.TriState.True;
+                    Logger.CurrentLogLevel = Logger.LogLevel.Debug;
                     Logger.LogInfo("StartupLauncher.ProcessCommandLineArgs", "デバッグログを有効化");
                 }
-
-                // DLL抽出の設定
-                if (args.ExtractDLLs)
-                {
-                    Settings.DoExtractDLLs = true;
-                    Logger.LogInfo("StartupLauncher.ProcessCommandLineArgs", "DLL抽出を有効化");
-                }
-
 
                 // 設定ファイル無視の設定
                 if (args.IgnoreSettings)
@@ -188,11 +205,16 @@ namespace BrowserChooser3.Classes.Services.SystemServices
                     Logger.LogInfo("StartupLauncher.ProcessCommandLineArgs", "設定ファイル無視を有効化");
                 }
 
+                // サイレントモード・自動起動モードは常にMainForm側から参照できるよう保持する
+                _silentMode = args.SilentMode;
+                _autoLaunch = args.AutoLaunch;
+                _delaySpecifiedOnCommandLine = args.Delay > 0;
+
                 // URLが指定されている場合の処理
                 if (!string.IsNullOrEmpty(args.URL))
                 {
                     Logger.LogDebug("StartupLauncher.ProcessCommandLineArgs", "URL処理開始", $"URL: {args.URL}, 長さ: {args.URL.Length}");
-                    
+
                     // 指定されたブラウザの検索
                     Browser? selectedBrowser = null;
                     if (args.BrowserGuid.HasValue)
@@ -214,33 +236,12 @@ namespace BrowserChooser3.Classes.Services.SystemServices
                     }
 
                     // URL設定
+                    // ブラウザが指定されていない場合も-d/--delayを反映させるため、
+                    // 常に(url, unShorten, delay, browser, delegate)のオーバーロードを使う
                     Logger.LogDebug("StartupLauncher.ProcessCommandLineArgs", "SetURL呼び出し前", $"URL: {args.URL}, Unshorten: {args.UnshortenURL}, Delay: {args.Delay}");
-                    if (selectedBrowser != null)
-                    {
-                        SetURL(args.URL, args.UnshortenURL, args.Delay, selectedBrowser, updateDelegate ?? DefaultUpdateDelegate);
-                        Logger.LogDebug("StartupLauncher.ProcessCommandLineArgs", "SetURL呼び出し完了（ブラウザ指定）");
-                    }
-                    else
-                    {
-                        SetURL(args.URL, args.UnshortenURL, updateDelegate ?? DefaultUpdateDelegate);
-                        Logger.LogDebug("StartupLauncher.ProcessCommandLineArgs", "SetURL呼び出し完了（デフォルト）");
-                    }
+                    SetURL(args.URL, args.UnshortenURL, args.Delay, selectedBrowser, updateDelegate ?? DefaultUpdateDelegate);
+                    Logger.LogDebug("StartupLauncher.ProcessCommandLineArgs", "SetURL呼び出し完了");
 
-                    // 自動起動モードの場合
-                    if (args.AutoLaunch)
-                    {
-                        Logger.LogInfo("StartupLauncher.ProcessCommandLineArgs", "自動起動モードで実行");
-                        // 自動起動の処理をここに追加
-                    }
-
-                    return true;
-                }
-
-                // サイレントモードの場合
-                if (args.SilentMode)
-                {
-                    Logger.LogInfo("StartupLauncher.ProcessCommandLineArgs", "サイレントモードで実行");
-                    // サイレントモードの処理をここに追加
                     return true;
                 }
 
@@ -261,6 +262,38 @@ namespace BrowserChooser3.Classes.Services.SystemServices
         private static void DefaultUpdateDelegate(string url)
         {
             Logger.LogInfo("StartupLauncher.DefaultUpdateDelegate", "URL更新", url);
+        }
+
+        [DllImport("kernel32.dll")]
+        private static extern bool AttachConsole(int dwProcessId);
+
+        private const int ATTACH_PARENT_PROCESS = -1;
+
+        /// <summary>
+        /// --help / --version の出力を親コンソール（起動元のコマンドプロンプト等）へ書き出します。
+        /// WinFormsアプリはコンソールを持たないため、Console.WriteLineだけでは
+        /// 呼び出し元のターミナルに何も表示されない。AttachConsoleで親プロセスの
+        /// コンソールに接続してから出力する。
+        /// </summary>
+        /// <param name="message">出力するメッセージ</param>
+        private static void WriteToConsole(string message)
+        {
+            try
+            {
+                if (AttachConsole(ATTACH_PARENT_PROCESS))
+                {
+                    Console.WriteLine(message);
+                }
+                else
+                {
+                    // 親コンソールが無い場合（エクスプローラー経由の起動等）はログにのみ残す
+                    Logger.LogInfo("StartupLauncher.WriteToConsole", "コンソール未接続のため出力をログに記録", message);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("StartupLauncher.WriteToConsole", "コンソール出力エラー", ex.Message);
+            }
         }
 
         /// <summary>
@@ -363,6 +396,12 @@ namespace BrowserChooser3.Classes.Services.SystemServices
         public static bool Initialize(string[] args)
         {
             Logger.LogInfo("StartupLauncher.Initialize", "起動時初期化開始");
+
+            // テスト等での複数回呼び出しに備えて状態をリセットする
+            _shouldExitAfterInitialize = false;
+            _silentMode = false;
+            _autoLaunch = false;
+            _delaySpecifiedOnCommandLine = false;
 
             try
             {

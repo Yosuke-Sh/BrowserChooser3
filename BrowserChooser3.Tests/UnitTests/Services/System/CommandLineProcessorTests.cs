@@ -31,7 +31,6 @@ namespace BrowserChooser3.Tests
             result.BrowserGuid.Should().BeNull();
             result.UnshortenURL.Should().BeFalse();
             result.DebugLog.Should().BeFalse();
-            result.ExtractDLLs.Should().BeFalse();
             result.IgnoreSettings.Should().BeFalse();
             result.ShowHelp.Should().BeFalse();
             result.ShowVersion.Should().BeFalse();
@@ -268,21 +267,6 @@ namespace BrowserChooser3.Tests
             result.Should().NotBeNull();
             result.DebugLog.Should().BeTrue();
         }
-
-        [Fact]
-        public void ParseArguments_WithExtractDllsOption_ShouldSetExtractDLLs()
-        {
-            // Arrange
-            var args = new[] { "--extract-dlls" };
-
-            // Act
-            var result = CommandLineProcessor.ParseArguments(args);
-
-            // Assert
-            result.Should().NotBeNull();
-            result.ExtractDLLs.Should().BeTrue();
-        }
-
 
         [Fact]
         public void ParseArguments_WithIgnoreSettingsOption_ShouldSetIgnoreSettings()
@@ -644,7 +628,6 @@ namespace BrowserChooser3.Tests
             result.Should().Contain("--browser");
             result.Should().Contain("--unshorten");
             result.Should().Contain("--debug");
-            result.Should().Contain("--extract-dlls");
             result.Should().Contain("--ignore-settings");
             result.Should().Contain("--silent");
             result.Should().Contain("--auto-launch");
@@ -799,13 +782,11 @@ namespace BrowserChooser3.Tests
             {
                 URL = "https://example.com",
                 DebugLog = false,
-                ExtractDLLs = false,
                 IgnoreSettings = false
             };
 
             // 環境変数をクリア（テスト用）
             Environment.SetEnvironmentVariable("BROWSERCHOOSER_DEBUG", null);
-            Environment.SetEnvironmentVariable("BROWSERCHOOSER_EXTRACT_DLLS", null);
             Environment.SetEnvironmentVariable("BROWSERCHOOSER_PORTABLE", null);
             Environment.SetEnvironmentVariable("BROWSERCHOOSER_IGNORE_SETTINGS", null);
 
@@ -817,14 +798,12 @@ namespace BrowserChooser3.Tests
                 // Assert
                 result.Should().BeSameAs(originalArgs);
                 result.DebugLog.Should().BeFalse();
-                result.ExtractDLLs.Should().BeFalse();
                 result.IgnoreSettings.Should().BeFalse();
             }
             finally
             {
                 // 環境変数をクリア
                 Environment.SetEnvironmentVariable("BROWSERCHOOSER_DEBUG", null);
-                Environment.SetEnvironmentVariable("BROWSERCHOOSER_EXTRACT_DLLS", null);
                 Environment.SetEnvironmentVariable("BROWSERCHOOSER_PORTABLE", null);
                 Environment.SetEnvironmentVariable("BROWSERCHOOSER_IGNORE_SETTINGS", null);
             }
@@ -857,35 +836,6 @@ namespace BrowserChooser3.Tests
                 Environment.SetEnvironmentVariable("BROWSERCHOOSER_DEBUG", null);
             }
         }
-
-        [Fact]
-        public void LoadFromEnvironment_WithExtractDllsEnvironmentVariable_ShouldSetExtractDLLs()
-        {
-            // Arrange
-            var originalArgs = new CommandLineProcessor.CommandLineArgs
-            {
-                ExtractDLLs = false
-            };
-
-            // 環境変数を設定（テスト用）
-            Environment.SetEnvironmentVariable("BROWSERCHOOSER_EXTRACT_DLLS", "true");
-
-            try
-            {
-                // Act
-                var result = CommandLineProcessor.LoadFromEnvironment(originalArgs);
-
-                // Assert
-                result.Should().BeSameAs(originalArgs);
-                result.ExtractDLLs.Should().BeTrue();
-            }
-            finally
-            {
-                // 環境変数をクリア
-                Environment.SetEnvironmentVariable("BROWSERCHOOSER_EXTRACT_DLLS", null);
-            }
-        }
-
 
         [Fact]
         public void LoadFromEnvironment_WithIgnoreSettingsEnvironmentVariable_ShouldSetIgnoreSettings()

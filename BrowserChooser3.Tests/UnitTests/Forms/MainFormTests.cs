@@ -898,5 +898,155 @@ namespace BrowserChooser3.Tests
         }
 
         #endregion
+
+        #region 起動時コマンドラインオーバーライド(-d/-b/--silent) テスト
+
+        private static bool InvokeTryHandleStartupOverrides(MainForm form, string url)
+        {
+            var method = typeof(MainForm).GetMethod("TryHandleStartupOverrides",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            return (bool)method!.Invoke(form, new object[] { url })!;
+        }
+
+        private static int InvokeEffectiveDefaultDelay(MainForm form)
+        {
+            var property = typeof(MainForm).GetProperty("EffectiveDefaultDelay",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            return (int)property!.GetValue(form)!;
+        }
+
+        [Fact]
+        public void SetStartupOptions_WithDelayOverride_ShouldTakePrecedenceOverSettingsDefaultDelay()
+        {
+            // Arrange
+            var mainForm = new MainForm();
+            var settings = GetPrivateField<Settings>(mainForm, "_settings");
+            settings.Should().NotBeNull();
+            settings!.DefaultDelay = 5;
+
+            // Act: -d 10 相当のオーバーライドを設定
+            mainForm.SetStartupOptions(10, null, false);
+
+            // Assert: Settings.DefaultDelayではなく-dで指定した値が使われる
+            InvokeEffectiveDefaultDelay(mainForm).Should().Be(10);
+
+            mainForm.Dispose();
+        }
+
+        [Fact]
+        public void SetStartupOptions_WithoutDelayOverride_ShouldFallBackToSettingsDefaultDelay()
+        {
+            // Arrange
+            var mainForm = new MainForm();
+            var settings = GetPrivateField<Settings>(mainForm, "_settings");
+            settings.Should().NotBeNull();
+            settings!.DefaultDelay = 3;
+
+            // Act: -dが指定されなかった場合
+            mainForm.SetStartupOptions(null, null, false);
+
+            // Assert
+            InvokeEffectiveDefaultDelay(mainForm).Should().Be(3);
+
+            mainForm.Dispose();
+        }
+
+        [Fact]
+        public void SetStartupOptions_WithZeroDelay_ShouldResultInImmediateEffectiveDelayOfZero()
+        {
+            // Arrange: -d 0 (--auto-launchと同等) の場合、遅延なしとして扱われる
+            var mainForm = new MainForm();
+            var settings = GetPrivateField<Settings>(mainForm, "_settings");
+            settings.Should().NotBeNull();
+            settings!.DefaultDelay = 5;
+
+            // Act
+            mainForm.SetStartupOptions(0, null, false);
+
+            // Assert
+            InvokeEffectiveDefaultDelay(mainForm).Should().Be(0);
+
+            mainForm.Dispose();
+        }
+
+        [Fact]
+        public void TryHandleStartupOverrides_WithBrowserGuidSpecified_ShouldReturnTrueAndClearOverride()
+        {
+            // Arrange
+            var mainForm = new MainForm();
+            var browserGuid = Guid.NewGuid();
+            var browsers = GetPrivateField<List<Browser>>(mainForm, "_browsers");
+            browsers.Should().NotBeNull();
+            browsers!.Add(new Browser { Name = "Test Browser", Guid = browserGuid, Target = "test.exe" });
+            mainForm.SetStartupOptions(null, browserGuid, false);
+
+            // Act: -bで指定したブラウザがあれば、選択画面を出さず処理済みとしてtrueを返す
+            var result = InvokeTryHandleStartupOverrides(mainForm, "https://example.com");
+
+            // Assert
+            result.Should().BeTrue();
+
+            // Assert: 一度使ったオーバーライドはクリアされ、後続のURL（他プロセスからの受信等）には効かない
+            var result2 = InvokeTryHandleStartupOverrides(mainForm, "https://example.com/second");
+            result2.Should().BeFalse();
+
+            mainForm.Dispose();
+        }
+
+        [Fact]
+        public void TryHandleStartupOverrides_WithUnknownBrowserGuid_ShouldFallBackToDefaultBrowser()
+        {
+            // Arrange: 存在しないGUIDが指定された場合は既定ブラウザにフォールバックする
+            var mainForm = new MainForm();
+            var browsers = GetPrivateField<List<Browser>>(mainForm, "_browsers");
+            browsers.Should().NotBeNull();
+            var defaultBrowser = new Browser { Name = "Default Browser", Guid = Guid.NewGuid(), Target = "default.exe", IsDefault = true };
+            browsers!.Add(defaultBrowser);
+            SetPrivateField(mainForm, "_defaultBrowser", defaultBrowser);
+            mainForm.SetStartupOptions(null, Guid.NewGuid(), false); // 存在しないGUID
+
+            // Act
+            var result = InvokeTryHandleStartupOverrides(mainForm, "https://example.com");
+
+            // Assert: 既定ブラウザへフォールバックして処理される
+            result.Should().BeTrue();
+
+            mainForm.Dispose();
+        }
+
+        [Fact]
+        public void TryHandleStartupOverrides_WithSilentModeAndNoBrowserAvailable_ShouldReturnFalse()
+        {
+            // Arrange: --silentのみでブラウザが1つも無い場合は通常の選択画面にフォールバックする
+            var mainForm = new MainForm();
+            SetPrivateField(mainForm, "_defaultBrowser", null);
+            mainForm.SetStartupOptions(null, null, true);
+
+            // Act
+            var result = InvokeTryHandleStartupOverrides(mainForm, "https://example.com");
+
+            // Assert
+            result.Should().BeFalse();
+
+            mainForm.Dispose();
+        }
+
+        [Fact]
+        public void TryHandleStartupOverrides_WithNeitherBrowserNorSilent_ShouldReturnFalseImmediately()
+        {
+            // Arrange: -b/--silentのいずれも指定されていない通常起動
+            var mainForm = new MainForm();
+            mainForm.SetStartupOptions(null, null, false);
+
+            // Act
+            var result = InvokeTryHandleStartupOverrides(mainForm, "https://example.com");
+
+            // Assert
+            result.Should().BeFalse();
+
+            mainForm.Dispose();
+        }
+
+        #endregion
     }
 }

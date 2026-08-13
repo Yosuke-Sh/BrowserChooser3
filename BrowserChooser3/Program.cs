@@ -47,9 +47,18 @@ namespace BrowserChooser3
                 var args = rawArgs;
                 Logger.LogTrace("Program.Main", "起動パラメータ", $"引数数={args.Length - 1}");
 
-                // 起動時初期化処理
+                // 起動時初期化処理（コマンドライン引数の解析・検証もここで行われ、
+                // StartupLauncherの静的プロパティ(URL/Browser/Delay/SilentMode/AutoLaunch)に反映される）
                 var startupArgs = startupArgsForInstanceCheck;
                 var startupResult = StartupLauncher.Initialize(startupArgs);
+
+                // --help / --version が指定された場合はGUIを起動せずここで終了する
+                if (StartupLauncher.ShouldExitAfterInitialize)
+                {
+                    Logger.LogInfo("Program.Main", "--help/--versionが指定されたためGUIを起動せず終了します");
+                    Logger.Flush();
+                    return;
+                }
 
                 if (!startupResult)
                 {
@@ -70,31 +79,24 @@ namespace BrowserChooser3
                 // 他プロセスからURLを受信したら、既存ウィンドウに反映する
                 singleInstanceManager.UrlReceived += url => mainForm.ReceiveExternalURL(url);
 
-                // コマンドライン引数からURLを取得（従来の処理）
-                string url = string.Empty;
-                if (args.Length > 1)
+                // StartupLauncherが解析した結果を単一の情報源として使う
+                // （以前はここで引数を再パースしていたが、CommandLineProcessorの結果と
+                // 二重管理になり整合性が崩れる原因だったため、StartupLauncher経由に一本化した）
+                if (!string.IsNullOrEmpty(StartupLauncher.URL))
                 {
-                    Logger.LogDebug("Program.Main", "従来のURL処理開始", $"引数数: {startupArgs.Length}");
-
-                    // 最初の非オプション引数をURLとして扱う
-                    var firstNonOptionArg = startupArgs.FirstOrDefault(arg =>
-                        !arg.StartsWith("-") && !arg.StartsWith("/") &&
-                        !arg.StartsWith("--") && !arg.StartsWith("--"));
-
-                    if (!string.IsNullOrEmpty(firstNonOptionArg))
-                    {
-                        url = firstNonOptionArg;
-                        Logger.LogDebug("Program.Main", "従来のURL処理でURLを検出", $"URL: {url}, 長さ: {url.Length}");
-
-                        // フォームのLoadイベントでURLを設定するように設定
-                        mainForm.SetInitialURL(url);
-                        Logger.LogInfo("Program.Main", "初期URL設定", url);
-                    }
-                    else
-                    {
-                        Logger.LogDebug("Program.Main", "従来のURL処理でURLが見つかりませんでした");
-                    }
+                    var url = StartupLauncher.URL;
+                    Logger.LogInfo("Program.Main", "初期URL設定", url);
+                    mainForm.SetInitialURL(url);
                 }
+
+                // -d/--delay、-b/--browser、--silent、--auto-launchをMainFormへ伝達する。
+                // --auto-launchは遅延ゼロでの即時起動として扱う。
+                int? delayOverride = StartupLauncher.DelaySpecifiedOnCommandLine ? StartupLauncher.Delay : null;
+                if (StartupLauncher.AutoLaunch)
+                {
+                    delayOverride = 0;
+                }
+                mainForm.SetStartupOptions(delayOverride, StartupLauncher.Browser?.Guid, StartupLauncher.SilentMode);
 
                 Logger.LogDebug("Program.Main", "Application.Run開始");
                 Application.Run(mainForm);
@@ -108,40 +110,6 @@ namespace BrowserChooser3
 
             Logger.LogDebug("Program.Main", "アプリケーション終了");
             Logger.Flush();
-        }
-
-        /// <summary>
-        /// コマンドライン引数を処理（従来の処理 - 後方互換性のため保持）
-        /// </summary>
-        /// <param name="args">コマンドライン引数</param>
-        private static void ProcessCommandLineArgs(string[] args)
-        {
-            Logger.LogDebug("Program.ProcessCommandLineArgs", "Start", $"引数数={args.Length}");
-
-            foreach (var arg in args)
-            {
-                Logger.LogTrace("Program.ProcessCommandLineArgs", "引数処理", arg);
-
-                if (arg.StartsWith("--"))
-                {
-                    switch (arg.ToLower())
-                    {
-                        case "--logging-enabled":
-                            Logger.LogInfo("Program.ProcessCommandLineArgs", "ログ出力を有効化");
-                            Settings.LogDebugs = Settings.TriState.True;
-                            break;
-                        case "--extract-dlls":
-                            Logger.LogInfo("Program.ProcessCommandLineArgs", "DLL抽出を有効化");
-                            Settings.DoExtractDLLs = true;
-                            break;
-                        default:
-                            Logger.LogWarning("Program.ProcessCommandLineArgs", "未知のコマンドライン引数", arg);
-                            break;
-                    }
-                }
-            }
-
-            Logger.LogDebug("Program.ProcessCommandLineArgs", "End");
         }
     }
 }

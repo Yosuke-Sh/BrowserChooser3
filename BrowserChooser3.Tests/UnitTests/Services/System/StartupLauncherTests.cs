@@ -10,9 +10,21 @@ using Xunit;
 namespace BrowserChooser3.Tests
 {
     /// <summary>
+    /// StartupLauncher.URL/.Delay/.Browser/.SilentMode等の静的状態を共有するテストクラス群を
+    /// 同一コレクションにまとめ、xUnitの既定のクラス間並列実行から除外するための定義。
+    /// これにより、あるクラスのテストが実行中に別クラスが同じ静的フィールドを書き換えて
+    /// アサーションが不安定化する競合を防ぐ。
+    /// </summary>
+    [CollectionDefinition("StartupLauncherSharedState", DisableParallelization = true)]
+    public class StartupLauncherSharedStateCollection
+    {
+    }
+
+    /// <summary>
     /// StartupLauncherクラスのテスト
     /// ガバレッジ100%を目指して全メソッドをテストします
     /// </summary>
+    [Collection("StartupLauncherSharedState")]
     public class StartupLauncherTests
     {
         #region 正常系テスト
@@ -176,22 +188,150 @@ namespace BrowserChooser3.Tests
             result.Should().BeTrue();
         }
 
+        #endregion
+
+        #region --help / --version / --silent / --auto-launch / -d が実際に効くことのテスト
+
         [Fact]
-        public void ProcessCommandLineArgs_WithExtractDlls_ShouldEnableExtractDlls()
+        public void ProcessCommandLineArgs_WithShowHelp_ShouldSetShouldExitAfterInitializeAndReturnTrue()
         {
             // Arrange
             var args = new CommandLineProcessor.CommandLineArgs
             {
-                ExtractDLLs = true
+                ShowHelp = true
+            };
+
+            try
+            {
+                // Act
+                var result = StartupLauncher.ProcessCommandLineArgs(args);
+
+                // Assert: GUIを起動せず終了すべきことを示すフラグが立つ
+                result.Should().BeTrue();
+                StartupLauncher.ShouldExitAfterInitialize.Should().BeTrue();
+            }
+            finally
+            {
+                // 状態リセット。StartupLauncher.Initialize()はPolicy.Initialize()や
+                // レジストリアクセスを伴い重く、他クラスとの並列実行時に競合の窓を
+                // 広げてしまうため、ProcessCommandLineArgsを空の引数で呼ぶ軽量な方法でリセットする
+                StartupLauncher.ProcessCommandLineArgs(new CommandLineProcessor.CommandLineArgs());
+            }
+        }
+
+        [Fact]
+        public void ProcessCommandLineArgs_WithShowVersion_ShouldSetShouldExitAfterInitializeAndReturnTrue()
+        {
+            // Arrange
+            var args = new CommandLineProcessor.CommandLineArgs
+            {
+                ShowVersion = true
+            };
+
+            try
+            {
+                // Act
+                var result = StartupLauncher.ProcessCommandLineArgs(args);
+
+                // Assert
+                result.Should().BeTrue();
+                StartupLauncher.ShouldExitAfterInitialize.Should().BeTrue();
+            }
+            finally
+            {
+                StartupLauncher.ProcessCommandLineArgs(new CommandLineProcessor.CommandLineArgs());
+            }
+        }
+
+        [Fact]
+        public void ProcessCommandLineArgs_WithoutHelpOrVersion_ShouldNotSetShouldExitAfterInitialize()
+        {
+            // Arrange: ProcessCommandLineArgsを空の引数で呼ぶことでShouldExitAfterInitializeを
+            // falseにリセットする（Initialize()より軽量で他テストとの競合を避けられる）
+            StartupLauncher.ProcessCommandLineArgs(new CommandLineProcessor.CommandLineArgs());
+            var args = new CommandLineProcessor.CommandLineArgs
+            {
+                URL = "https://example.com"
             };
 
             // Act
-            var result = StartupLauncher.ProcessCommandLineArgs(args);
+            StartupLauncher.ProcessCommandLineArgs(args);
 
             // Assert
-            result.Should().BeTrue();
+            StartupLauncher.ShouldExitAfterInitialize.Should().BeFalse();
         }
 
+        [Fact]
+        public void ProcessCommandLineArgs_WithSilentMode_ShouldExposeSilentModeAsTrue()
+        {
+            // Arrange
+            var args = new CommandLineProcessor.CommandLineArgs
+            {
+                SilentMode = true
+            };
+
+            // Act
+            StartupLauncher.ProcessCommandLineArgs(args);
+
+            // Assert
+            StartupLauncher.SilentMode.Should().BeTrue();
+        }
+
+        [Fact]
+        public void ProcessCommandLineArgs_WithAutoLaunch_ShouldExposeAutoLaunchAsTrue()
+        {
+            // Arrange
+            var args = new CommandLineProcessor.CommandLineArgs
+            {
+                AutoLaunch = true
+            };
+
+            // Act
+            StartupLauncher.ProcessCommandLineArgs(args);
+
+            // Assert
+            StartupLauncher.AutoLaunch.Should().BeTrue();
+        }
+
+        [Fact]
+        public void ProcessCommandLineArgs_WithDelayButNoBrowser_ShouldStillSetDelay()
+        {
+            // Arrange: -bを指定せず-dのみ指定した場合でも遅延が反映されること
+            // （以前はブラウザ未指定の場合に別オーバーロードへ分岐し、Delayが
+            // 反映されないバグがあった）
+            var args = new CommandLineProcessor.CommandLineArgs
+            {
+                URL = "https://example.com",
+                Delay = 7
+            };
+
+            // Act
+            StartupLauncher.ProcessCommandLineArgs(args);
+
+            // Assert
+            StartupLauncher.Delay.Should().Be(7);
+            StartupLauncher.DelaySpecifiedOnCommandLine.Should().BeTrue();
+        }
+
+        [Fact]
+        public void ProcessCommandLineArgs_WithoutDelay_ShouldNotMarkDelayAsSpecified()
+        {
+            // Arrange
+            var args = new CommandLineProcessor.CommandLineArgs
+            {
+                URL = "https://example.com"
+            };
+
+            // Act
+            StartupLauncher.ProcessCommandLineArgs(args);
+
+            // Assert
+            StartupLauncher.DelaySpecifiedOnCommandLine.Should().BeFalse();
+        }
+
+        #endregion
+
+        #region その他のコマンドライン引数テスト
 
         [Fact]
         public void ProcessCommandLineArgs_WithIgnoreSettings_ShouldEnableIgnoreSettings()

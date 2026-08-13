@@ -1118,9 +1118,6 @@
         <member name="P:BrowserChooser3.Classes.Services.SystemServices.CommandLineProcessor.CommandLineArgs.DebugLog">
             <summary>デバッグログを有効にするかどうか</summary>
         </member>
-        <member name="P:BrowserChooser3.Classes.Services.SystemServices.CommandLineProcessor.CommandLineArgs.ExtractDLLs">
-            <summary>DLLを抽出するかどうか</summary>
-        </member>
         <member name="P:BrowserChooser3.Classes.Services.SystemServices.CommandLineProcessor.CommandLineArgs.IgnoreSettings">
             <summary>設定ファイルを無視するかどうか</summary>
         </member>
@@ -1324,6 +1321,21 @@
         <member name="P:BrowserChooser3.Classes.Services.SystemServices.StartupLauncher.SupportingBrowsers">
             <summary>対応ブラウザのGUIDリスト</summary>
         </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.StartupLauncher.SilentMode">
+            <summary>サイレントモード（UIを表示せず既定ブラウザで開く）が指定されたかどうか</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.StartupLauncher.AutoLaunch">
+            <summary>自動起動モード（遅延なしで即座に起動）が指定されたかどうか</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.StartupLauncher.DelaySpecifiedOnCommandLine">
+            <summary>コマンドラインで遅延時間(-d/--delay)が明示的に指定されたかどうか</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.SystemServices.StartupLauncher.ShouldExitAfterInitialize">
+            <summary>
+            --help / --version が指定され、GUIを起動せず終了すべきかどうか。
+            Program.Mainはこのフラグを見てApplication.Run前に処理を打ち切る。
+            </summary>
+        </member>
         <member name="M:BrowserChooser3.Classes.Services.SystemServices.StartupLauncher.SetURL(System.String,System.Boolean,BrowserChooser3.Classes.Services.SystemServices.StartupLauncher.UpdateURL)">
             <summary>
             URLを設定し、対応ブラウザを検出します
@@ -1340,7 +1352,7 @@
             <param name="url">処理対象のURL</param>
             <param name="unShorten">短縮URLを展開するかどうか</param>
             <param name="delay">遅延時間（秒）</param>
-            <param name="browser">選択されたブラウザ</param>
+            <param name="browser">選択されたブラウザ（未指定の場合はnull）</param>
             <param name="updateDelegate">URL更新デリゲート</param>
         </member>
         <member name="M:BrowserChooser3.Classes.Services.SystemServices.StartupLauncher.ProcessCommandLineArgs(BrowserChooser3.Classes.Services.SystemServices.CommandLineProcessor.CommandLineArgs,BrowserChooser3.Classes.Services.SystemServices.StartupLauncher.UpdateURL)">
@@ -1356,6 +1368,15 @@
             デフォルトのURL更新デリゲート
             </summary>
             <param name="url">更新されたURL</param>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.SystemServices.StartupLauncher.WriteToConsole(System.String)">
+            <summary>
+            --help / --version の出力を親コンソール（起動元のコマンドプロンプト等）へ書き出します。
+            WinFormsアプリはコンソールを持たないため、Console.WriteLineだけでは
+            呼び出し元のターミナルに何も表示されない。AttachConsoleで親プロセスの
+            コンソールに接続してから出力する。
+            </summary>
+            <param name="message">出力するメッセージ</param>
         </member>
         <member name="M:BrowserChooser3.Classes.Services.SystemServices.StartupLauncher.CheckDefaultBrowser">
             <summary>
@@ -1774,9 +1795,6 @@
         </member>
         <member name="P:BrowserChooser3.Classes.Settings.LogDebugs">
             <summary>ログデバッグ（コマンドラインで指定された場合のみtrue）</summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Settings.DoExtractDLLs">
-            <summary>DLL抽出（コマンドラインで指定された場合のみtrue）</summary>
         </member>
         <member name="P:BrowserChooser3.Classes.Settings.Current">
             <summary>
@@ -3116,6 +3134,29 @@
             初期URLを設定（Loadイベントで使用）
             </summary>
         </member>
+        <member name="M:BrowserChooser3.Forms.MainForm.SetStartupOptions(System.Nullable{System.Int32},System.Nullable{System.Guid},System.Boolean)">
+            <summary>
+            コマンドライン引数(-d/--delay、-b/--browser、--silent)による起動時オーバーライドを設定します（Loadイベントで使用）。
+            </summary>
+            <param name="delayOverride">-d/--delayで指定された遅延秒数。未指定の場合はnull</param>
+            <param name="browserGuid">-b/--browserで指定されたブラウザのGUID。未指定の場合はnull</param>
+            <param name="silentMode">--silentが指定された場合はtrue</param>
+        </member>
+        <member name="P:BrowserChooser3.Forms.MainForm.EffectiveDefaultDelay">
+            <summary>
+            実効的なデフォルト遅延秒数。-d/--delayが指定されていればそれを優先する。
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.MainForm.TryHandleStartupOverrides(System.String)">
+            <summary>
+            -b/--browserまたは--silentによる起動時オーバーライドを処理します。
+            該当する場合は選択画面を出さず即座にブラウザを起動し、trueを返します。
+            他プロセスから後続のURLを受信した場合（ReceiveExternalURL）にまで
+            効果が及ばないよう、一度処理したらオーバーライドをクリアします。
+            </summary>
+            <param name="url">処理対象のURL</param>
+            <returns>起動時オーバーライドとして処理した場合はtrue</returns>
+        </member>
         <member name="M:BrowserChooser3.Forms.MainForm.UpdateURL(System.String)">
             <summary>
             URLを更新
@@ -3614,12 +3655,6 @@
             <summary>
              The main entry point for the application.
             </summary>
-        </member>
-        <member name="M:BrowserChooser3.Program.ProcessCommandLineArgs(System.String[])">
-            <summary>
-            コマンドライン引数を処理（従来の処理 - 後方互換性のため保持）
-            </summary>
-            <param name="args">コマンドライン引数</param>
         </member>
         <member name="T:BrowserChooser3.Properties.Resources">
             <summary>
