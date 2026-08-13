@@ -658,6 +658,28 @@ namespace BrowserChooser3.Forms
         }
 
         /// <summary>
+        /// マージン込みの列数計算で使う左右マージン幅（右端ボタンとbtnInfo用のスペース確保）
+        /// </summary>
+        private const int ColumnLayoutMargin = 120;
+
+        /// <summary>
+        /// フォーム幅とアイコン設定から1行あたりのボタン列数を計算します。
+        /// ボタン配置・オーバーレイラベル配置・矢印キー移動の3箇所で個別に
+        /// 計算されておりマージン定数（120 vs 80）が食い違っていたため、
+        /// このメソッドに集約して常に同じ列数を使うようにする。
+        /// </summary>
+        /// <returns>1行あたりの列数（最低1）</returns>
+        private int CalculateColumnsPerRow()
+        {
+            if (_settings == null) return 1;
+
+            var buttonWidth = _settings.IconWidth;
+            var gapWidth = _settings.IconGapWidth;
+            var availableWidth = ClientSize.Width - ColumnLayoutMargin;
+            return Math.Max(1, availableWidth / (buttonWidth + gapWidth));
+        }
+
+        /// <summary>
         /// ブラウザボタンのレイアウトを再計算
         /// </summary>
         private void RecalculateButtonLayout()
@@ -668,13 +690,12 @@ namespace BrowserChooser3.Forms
             var buttonHeight = _settings.IconHeight;
             var gapWidth = _settings.IconGapWidth;
             var gapHeight = _settings.IconGapHeight;
-            
+
             Logger.LogDebug("MainForm.RecalculateButtonLayout", $"Layout settings - Width: {buttonWidth}, Height: {buttonHeight}, GapWidth: {gapWidth}, GapHeight: {gapHeight}");
-            
+
             // フォーム幅に基づいて列数を計算（btnInfoのスペースを確保）
-            var availableWidth = ClientSize.Width - 120; // 左右マージン（右端ボタンとbtnInfo用のスペース確保）
-            var columnsPerRow = Math.Max(1, availableWidth / (buttonWidth + gapWidth));
-            
+            var columnsPerRow = CalculateColumnsPerRow();
+
             // ラベルをフォーム全体から都度検索すると総当たりでO(n^2)になるため、事前に名前で索引化する
             var overlayLabelsByName = Controls.OfType<Label>()
                 .Where(l => l.Name.StartsWith("lblOverlay_"))
@@ -994,43 +1015,6 @@ namespace BrowserChooser3.Forms
                 overlayLabel.BringToFront();
                 
                 Logger.LogTrace("MainForm.CreateOverlayLabel", "オーバーレイラベル作成", $"{browser.Name}: {overlayLabel.Text}");
-            }
-        }
-
-        /// <summary>
-        /// オーバーレイラベルの位置を調整
-        /// </summary>
-        private void AdjustOverlayLabels()
-        {
-            if (_browsers == null || _settings == null) return;
-            
-            var buttonWidth = _settings.IconWidth;
-            var gapWidth = _settings.IconGapWidth;
-            var gapHeight = _settings.IconGapHeight;
-            
-            // フォーム幅に基づいて列数を計算
-            var availableWidth = ClientSize.Width - 80;
-            var columnsPerRow = Math.Max(1, availableWidth / (buttonWidth + gapWidth));
-            
-            var overlayLabelsByName = Controls.OfType<Label>()
-                .Where(l => l.Name.StartsWith("lblOverlay_"))
-                .ToDictionary(l => l.Name);
-
-            var buttonIndex = 0;
-            foreach (Control control in Controls)
-            {
-                if (control is Button button && button.Tag is Browser)
-                {
-                    if (overlayLabelsByName.TryGetValue($"lblOverlay_{buttonIndex}", out var overlayLabel))
-                    {
-                        var labelWidth = TextRenderer.MeasureText(overlayLabel.Text, overlayLabel.Font).Width;
-                        overlayLabel.Location = new Point(
-                            button.Location.X + (buttonWidth / 2) - (labelWidth / 2),
-                            button.Location.Y - 15
-                        );
-                    }
-                    buttonIndex++;
-                }
             }
         }
 
@@ -2222,14 +2206,8 @@ namespace BrowserChooser3.Forms
             var currentIndex = _browsers.IndexOf(currentBrowser);
             if (currentIndex == -1) return;
 
-            var buttonWidth = _settings.IconWidth;
-            var buttonHeight = _settings.IconHeight;
-            var gapWidth = _settings.IconGapWidth;
-            var gapHeight = _settings.IconGapHeight;
-            
-            // フォーム幅に基づいて列数を計算
-            var availableWidth = ClientSize.Width - 80;
-            var columnsPerRow = Math.Max(1, availableWidth / (buttonWidth + gapWidth));
+            // フォーム幅に基づいて列数を計算（ボタン配置・オーバーレイ配置と同じ計算に統一）
+            var columnsPerRow = CalculateColumnsPerRow();
             var rows = (_browsers.Count + columnsPerRow - 1) / columnsPerRow;
 
             var currentRow = currentIndex / columnsPerRow;

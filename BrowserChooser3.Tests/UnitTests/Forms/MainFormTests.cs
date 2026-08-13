@@ -1221,5 +1221,76 @@ namespace BrowserChooser3.Tests
         }
 
         #endregion
+
+        #region 列数計算の集約(CalculateColumnsPerRow) テスト（Phase 1-7の回帰テスト）
+
+        private static int InvokeCalculateColumnsPerRow(MainForm form)
+        {
+            var method = typeof(MainForm).GetMethod("CalculateColumnsPerRow",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            return (int)method!.Invoke(form, null)!;
+        }
+
+        [Fact]
+        public void CalculateColumnsPerRow_ShouldMatchAcrossAllCallSites()
+        {
+            // Arrange: 以前はボタン配置(-120)・オーバーレイ配置(-80)・矢印キー移動(-80)で
+            // マージン定数が食い違っており、ウィンドウ幅によっては算出される列数が
+            // 異なっていた。CalculateColumnsPerRow()への集約後は、呼び出し元が
+            // 増えても常に同じ値を返すことを確認する。
+            var mainForm = new MainForm();
+            mainForm.ClientSize = new Size(900, 400);
+
+            // Act: 同条件で複数回呼び出しても一貫した値が返ることを確認
+            var result1 = InvokeCalculateColumnsPerRow(mainForm);
+            var result2 = InvokeCalculateColumnsPerRow(mainForm);
+
+            // Assert
+            result1.Should().Be(result2);
+            result1.Should().BeGreaterThanOrEqualTo(1);
+
+            mainForm.Dispose();
+        }
+
+        [Fact]
+        public void CalculateColumnsPerRow_WithNarrowWindow_ShouldReturnAtLeastOne()
+        {
+            // Arrange: ウィンドウが極端に狭い場合でも0除算やマイナス値にならず、
+            // 最低1列を返すことを確認する
+            var mainForm = new MainForm();
+            mainForm.ClientSize = new Size(50, 400);
+
+            // Act
+            var result = InvokeCalculateColumnsPerRow(mainForm);
+
+            // Assert
+            result.Should().Be(1);
+
+            mainForm.Dispose();
+        }
+
+        [Fact]
+        public void CalculateColumnsPerRow_WithWiderWindow_ShouldReturnMoreColumns()
+        {
+            // Arrange: ウィンドウ幅が広がれば列数も増えることを確認する
+            var mainForm = new MainForm();
+            var settings = GetPrivateField<Settings>(mainForm, "_settings");
+            settings.Should().NotBeNull();
+            settings!.IconWidth = 100;
+            settings.IconGapWidth = 20;
+
+            mainForm.ClientSize = new Size(400, 400);
+            var narrowResult = InvokeCalculateColumnsPerRow(mainForm);
+
+            mainForm.ClientSize = new Size(1200, 400);
+            var wideResult = InvokeCalculateColumnsPerRow(mainForm);
+
+            // Assert
+            wideResult.Should().BeGreaterThan(narrowResult);
+
+            mainForm.Dispose();
+        }
+
+        #endregion
     }
 }

@@ -3071,6 +3071,20 @@
             フォームサイズ変更時の処理
             </summary>
         </member>
+        <member name="F:BrowserChooser3.Forms.MainForm.ColumnLayoutMargin">
+            <summary>
+            マージン込みの列数計算で使う左右マージン幅（右端ボタンとbtnInfo用のスペース確保）
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.MainForm.CalculateColumnsPerRow">
+            <summary>
+            フォーム幅とアイコン設定から1行あたりのボタン列数を計算します。
+            ボタン配置・オーバーレイラベル配置・矢印キー移動の3箇所で個別に
+            計算されておりマージン定数（120 vs 80）が食い違っていたため、
+            このメソッドに集約して常に同じ列数を使うようにする。
+            </summary>
+            <returns>1行あたりの列数（最低1）</returns>
+        </member>
         <member name="M:BrowserChooser3.Forms.MainForm.RecalculateButtonLayout">
             <summary>
             ブラウザボタンのレイアウトを再計算
@@ -3102,11 +3116,6 @@
         <member name="M:BrowserChooser3.Forms.MainForm.CreateOverlayLabel(System.Windows.Forms.Button,BrowserChooser3.Classes.Models.Browser,System.Int32)">
             <summary>
             ブラウザ名のオーバーレイラベルを作成
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.MainForm.AdjustOverlayLabels">
-            <summary>
-            オーバーレイラベルの位置を調整
             </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.MainForm.OpenOptionsForm">
