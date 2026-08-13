@@ -2716,6 +2716,16 @@
             アイコンの読み込み
             </summary>
         </member>
+        <member name="M:BrowserChooser3.Forms.AboutForm.OpenExternalLink(System.String,System.String)">
+            <summary>
+            外部URLを既定のブラウザで開きます。
+            テスト環境では実際にブラウザを起動しません。
+            4つのリンクラベルハンドラーがそれぞれ個別に同じtry/catch +
+            IsTestEnvironment()チェックを実装していたため、ここに統合した。
+            </summary>
+            <param name="url">開くURL</param>
+            <param name="logContext">ログ出力に使う呼び出し元の識別名（例: "llHome_LinkClicked"）</param>
+        </member>
         <member name="M:BrowserChooser3.Forms.AboutForm.llHome_LinkClicked(System.Object,System.Windows.Forms.LinkLabelLinkClickedEventArgs)">
             <summary>
             ホームリンクのクリックイベント
@@ -2733,17 +2743,23 @@
         </member>
         <member name="M:BrowserChooser3.Forms.AboutForm.cmdSaveLogs_Click(System.Object,System.EventArgs)">
             <summary>
-            ログ保存ボタンのクリックイベント
+            ログ有効化ボタン(cmdSaveLogs、表示テキスト"Enable Logging")のクリックイベント。
+            実際にログファイルを保存する機能ではなく、EnableLogging/LogLevelを
+            変更するだけのため、変数・イベントハンドラー名(cmdSaveLogs)は
+            レガシーな名残だが、表示テキストは実態に即して"Enable Logging"となっている。
             </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.AboutForm.lblOriginalVersion_LinkClicked(System.Object,System.Windows.Forms.LinkLabelLinkClickedEventArgs)">
             <summary>
-            元バージョンリンクのクリックイベント
+            元バージョン（Browser Chooser 2）リンクのクリックイベント。
+            Bitbucketのリンクは本プロジェクトのフォーク元であるBrowser Chooser 2
+            オリジナルプロジェクトへの意図的な参照であり、GitHubリポジトリの
+            リンク先とは異なる（誤りではない）。
             </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.AboutForm.llSebCboLb_LinkClicked(System.Object,System.Windows.Forms.LinkLabelLinkClickedEventArgs)">
             <summary>
-            SebCboLbリンクのクリックイベント
+            SebCboLb（GitHub Contributors）リンクのクリックイベント
             </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.AboutForm.IsTestEnvironment">

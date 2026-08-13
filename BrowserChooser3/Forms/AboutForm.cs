@@ -429,11 +429,16 @@ namespace BrowserChooser3.Forms
         }
 
         /// <summary>
-        /// ホームリンクのクリックイベント
+        /// 外部URLを既定のブラウザで開きます。
+        /// テスト環境では実際にブラウザを起動しません。
+        /// 4つのリンクラベルハンドラーがそれぞれ個別に同じtry/catch +
+        /// IsTestEnvironment()チェックを実装していたため、ここに統合した。
         /// </summary>
-        private void llHome_LinkClicked(object? sender, System.Windows.Forms.LinkLabelLinkClickedEventArgs e)
+        /// <param name="url">開くURL</param>
+        /// <param name="logContext">ログ出力に使う呼び出し元の識別名（例: "llHome_LinkClicked"）</param>
+        private void OpenExternalLink(string url, string logContext)
         {
-            Logger.LogInfo("AboutForm.llHome_LinkClicked", "ホームページを開く");
+            Logger.LogInfo($"AboutForm.{logContext}", "外部リンクを開く", url);
             try
             {
                 // テスト環境ではブラウザを開かない
@@ -444,14 +449,22 @@ namespace BrowserChooser3.Forms
 
                 System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
                 {
-                    FileName = "https://github.com/BrowserChooser/BrowserChooser3",
+                    FileName = url,
                     UseShellExecute = true
                 });
             }
             catch (Exception ex)
             {
-                Logger.LogError("AboutForm.llHome_LinkClicked", "ホームページを開けませんでした", ex.Message);
+                Logger.LogError($"AboutForm.{logContext}", "外部リンクを開けませんでした", ex.Message);
             }
+        }
+
+        /// <summary>
+        /// ホームリンクのクリックイベント
+        /// </summary>
+        private void llHome_LinkClicked(object? sender, System.Windows.Forms.LinkLabelLinkClickedEventArgs e)
+        {
+            OpenExternalLink("https://github.com/Yosuke-Sh/BrowserChooser3", nameof(llHome_LinkClicked));
         }
 
         /// <summary>
@@ -459,25 +472,7 @@ namespace BrowserChooser3.Forms
         /// </summary>
         private void llLicense_LinkClicked(object? sender, System.Windows.Forms.LinkLabelLinkClickedEventArgs e)
         {
-            Logger.LogInfo("AboutForm.llLicense_LinkClicked", "ライセンスページを開く");
-            try
-            {
-                // テスト環境ではブラウザを開かない
-                if (IsTestEnvironment())
-                {
-                    return;
-                }
-
-                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
-                {
-                    FileName = "https://github.com/BrowserChooser/BrowserChooser3/blob/main/LICENSE",
-                    UseShellExecute = true
-                });
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("AboutForm.llLicense_LinkClicked", "ライセンスページを開けませんでした", ex.Message);
-            }
+            OpenExternalLink("https://github.com/Yosuke-Sh/BrowserChooser3/blob/main/LICENSE", nameof(llLicense_LinkClicked));
         }
 
         /// <summary>
@@ -501,7 +496,10 @@ namespace BrowserChooser3.Forms
         }
 
         /// <summary>
-        /// ログ保存ボタンのクリックイベント
+        /// ログ有効化ボタン(cmdSaveLogs、表示テキスト"Enable Logging")のクリックイベント。
+        /// 実際にログファイルを保存する機能ではなく、EnableLogging/LogLevelを
+        /// 変更するだけのため、変数・イベントハンドラー名(cmdSaveLogs)は
+        /// レガシーな名残だが、表示テキストは実態に即して"Enable Logging"となっている。
         /// </summary>
         private void cmdSaveLogs_Click(object? sender, EventArgs e)
         {
@@ -524,55 +522,22 @@ namespace BrowserChooser3.Forms
         }
 
         /// <summary>
-        /// 元バージョンリンクのクリックイベント
+        /// 元バージョン（Browser Chooser 2）リンクのクリックイベント。
+        /// Bitbucketのリンクは本プロジェクトのフォーク元であるBrowser Chooser 2
+        /// オリジナルプロジェクトへの意図的な参照であり、GitHubリポジトリの
+        /// リンク先とは異なる（誤りではない）。
         /// </summary>
         private void lblOriginalVersion_LinkClicked(object? sender, System.Windows.Forms.LinkLabelLinkClickedEventArgs e)
         {
-            Logger.LogInfo("AboutForm.lblOriginalVersion_LinkClicked", "元バージョンのページを開く");
-            try
-            {
-                // テスト環境ではブラウザを開かない
-                if (IsTestEnvironment())
-                {
-                    return;
-                }
-
-                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
-                {
-                    FileName = "https://bitbucket.org/Verbail/browserchooser2rrfork",
-                    UseShellExecute = true
-                });
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("AboutForm.lblOriginalVersion_LinkClicked", "元バージョンのページを開けませんでした", ex.Message);
-            }
+            OpenExternalLink("https://bitbucket.org/Verbail/browserchooser2rrfork", nameof(lblOriginalVersion_LinkClicked));
         }
 
         /// <summary>
-        /// SebCboLbリンクのクリックイベント
+        /// SebCboLb（GitHub Contributors）リンクのクリックイベント
         /// </summary>
         private void llSebCboLb_LinkClicked(object? sender, System.Windows.Forms.LinkLabelLinkClickedEventArgs e)
         {
-            Logger.LogInfo("AboutForm.llSebCboLb_LinkClicked", "SebCboLbのページを開く");
-            try
-            {
-                // テスト環境ではブラウザを開かない
-                if (IsTestEnvironment())
-                {
-                    return;
-                }
-
-                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
-                {
-                    FileName = "https://github.com/BrowserChooser/BrowserChooser3/contributors",
-                    UseShellExecute = true
-                });
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("AboutForm.llSebCboLb_LinkClicked", "SebCboLbのページを開けませんでした", ex.Message);
-            }
+            OpenExternalLink("https://github.com/Yosuke-Sh/BrowserChooser3/graphs/contributors", nameof(llSebCboLb_LinkClicked));
         }
 
         /// <summary>

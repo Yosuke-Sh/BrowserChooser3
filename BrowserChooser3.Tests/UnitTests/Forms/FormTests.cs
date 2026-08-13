@@ -287,6 +287,77 @@ namespace BrowserChooser3.Tests
             // Cleanup
             form.Dispose();
         }
+
+        [Fact]
+        public void AboutForm_LinkClickHandlers_ShouldNotThrowInTestEnvironment()
+        {
+            // Arrange: llHome/llLicense/llSebCboLb/lblOriginalVersionの各リンクを
+            // クリックしても（テスト環境ではブラウザ起動がスキップされるため）
+            // 例外なく完了することを確認する
+            using var form = new AboutForm();
+            var linkArgs = new LinkLabelLinkClickedEventArgs(null);
+
+            var handlerNames = new[]
+            {
+                "llHome_LinkClicked",
+                "llLicense_LinkClicked",
+                "lblOriginalVersion_LinkClicked",
+                "llSebCboLb_LinkClicked"
+            };
+
+            foreach (var handlerName in handlerNames)
+            {
+                var method = typeof(AboutForm).GetMethod(handlerName,
+                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                method.Should().NotBeNull($"{handlerName}が存在するはず");
+
+                // Act
+                var action = () => method!.Invoke(form, new object?[] { null, linkArgs });
+
+                // Assert
+                action.Should().NotThrow();
+            }
+        }
+
+        [Theory]
+        [InlineData("llHome_LinkClicked", "https://github.com/Yosuke-Sh/BrowserChooser3")]
+        [InlineData("llLicense_LinkClicked", "https://github.com/Yosuke-Sh/BrowserChooser3/blob/main/LICENSE")]
+        [InlineData("llSebCboLb_LinkClicked", "https://github.com/Yosuke-Sh/BrowserChooser3/graphs/contributors")]
+        public void AboutForm_LinkClickHandlers_ShouldPointToCorrectGitHubRepository(string handlerName, string expectedUrl)
+        {
+            // Arrange: CLAUDE.mdの制約「ヘルプ/Aboutのリンクはhttps://github.com/Yosuke-Sh/BrowserChooser3を
+            // 指すこと」の回帰テスト。以前はhttps://github.com/BrowserChooser/BrowserChooser3という
+            // 誤ったリポジトリを指していた。ソースコードを直接検証することで、
+            // ハンドラー内にハードコードされたURLが正しいリポジトリを指すことを保証する。
+            var sourcePath = FindAboutFormSourceFile();
+            sourcePath.Should().NotBeNull("AboutForm.csのソースファイルが見つかるはず");
+            var sourceText = File.ReadAllText(sourcePath!);
+
+            // Act: 対象ハンドラーメソッドの本体部分のみを抽出する
+            var methodStartIndex = sourceText.IndexOf($"void {handlerName}(");
+            methodStartIndex.Should().BeGreaterThan(-1, $"{handlerName}の定義が見つかるはず");
+            var methodBody = sourceText.Substring(methodStartIndex, Math.Min(500, sourceText.Length - methodStartIndex));
+
+            // Assert
+            methodBody.Should().Contain(expectedUrl);
+            methodBody.Should().NotContain("github.com/BrowserChooser/BrowserChooser3",
+                "誤ったリポジトリ（BrowserChooser/BrowserChooser3）を指してはならない");
+        }
+
+        private static string? FindAboutFormSourceFile()
+        {
+            var dir = new DirectoryInfo(AppContext.BaseDirectory);
+            while (dir != null)
+            {
+                var candidate = Path.Combine(dir.FullName, "BrowserChooser3", "Forms", "AboutForm.cs");
+                if (File.Exists(candidate))
+                {
+                    return candidate;
+                }
+                dir = dir.Parent;
+            }
+            return null;
+        }
         #endregion
 
         #region 境界値テスト
