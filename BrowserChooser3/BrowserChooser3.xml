@@ -773,6 +773,126 @@
             オンライン定義
             </summary>
         </member>
+        <member name="T:BrowserChooser3.Classes.Services.BrowserServices.URLRoutingKind">
+            <summary>
+            URLルーティングの判定結果の種類
+            </summary>
+        </member>
+        <member name="F:BrowserChooser3.Classes.Services.BrowserServices.URLRoutingKind.NoMatch">
+            <summary>どのルールにもマッチせず、ブラウザ選択画面が表示される</summary>
+        </member>
+        <member name="F:BrowserChooser3.Classes.Services.BrowserServices.URLRoutingKind.AutoUrl">
+            <summary>AutoURLのルールにマッチした</summary>
+        </member>
+        <member name="F:BrowserChooser3.Classes.Services.BrowserServices.URLRoutingKind.Protocol">
+            <summary>プロトコルのルールにマッチした</summary>
+        </member>
+        <member name="F:BrowserChooser3.Classes.Services.BrowserServices.URLRoutingKind.MatchedButBrowserMissing">
+            <summary>
+            ルールにはマッチしたが、指定されたブラウザが設定に存在しない。
+            実行時はこのルールが読み飛ばされ、以降のルール評価が続く。
+            </summary>
+        </member>
+        <member name="T:BrowserChooser3.Classes.Services.BrowserServices.URLRoutingResult">
+            <summary>
+            URLルーティングの判定結果
+            </summary>
+            <param name="Kind">判定の種類</param>
+            <param name="MatchedPattern">マッチしたパターン（AutoURLのパターンまたはプロトコルヘッダー）</param>
+            <param name="RuleName">マッチしたルールの名前</param>
+            <param name="Browser">起動されるブラウザ（該当しない場合はnull）</param>
+            <param name="DelaySeconds">起動までの遅延秒数（AutoURL以外は0）</param>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.URLRoutingResult.#ctor(BrowserChooser3.Classes.Services.BrowserServices.URLRoutingKind,System.String,System.String,BrowserChooser3.Classes.Models.Browser,System.Int32)">
+            <summary>
+            URLルーティングの判定結果
+            </summary>
+            <param name="Kind">判定の種類</param>
+            <param name="MatchedPattern">マッチしたパターン（AutoURLのパターンまたはプロトコルヘッダー）</param>
+            <param name="RuleName">マッチしたルールの名前</param>
+            <param name="Browser">起動されるブラウザ（該当しない場合はnull）</param>
+            <param name="DelaySeconds">起動までの遅延秒数（AutoURL以外は0）</param>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.BrowserServices.URLRoutingResult.Kind">
+            <summary>判定の種類</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.BrowserServices.URLRoutingResult.MatchedPattern">
+            <summary>マッチしたパターン（AutoURLのパターンまたはプロトコルヘッダー）</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.BrowserServices.URLRoutingResult.RuleName">
+            <summary>マッチしたルールの名前</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.BrowserServices.URLRoutingResult.Browser">
+            <summary>起動されるブラウザ（該当しない場合はnull）</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.BrowserServices.URLRoutingResult.DelaySeconds">
+            <summary>起動までの遅延秒数（AutoURL以外は0）</summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.URLRoutingResult.NoMatch">
+            <summary>どのルールにもマッチしなかったことを表す結果を生成します。</summary>
+        </member>
+        <member name="T:BrowserChooser3.Classes.Services.BrowserServices.URLRoutingResolver">
+             <summary>
+             入力されたURLがどのルール（AutoURL / プロトコル）にマッチし、
+             どのブラウザで開かれるかを判定します。
+            
+             MainForm の実際の起動処理（ProcessAutoURLsInternal / ProcessProtocols）と
+             Options の URL テスト欄（3-8）がこの1つの実装を共有することで、
+             「プレビューでは選択画面が出ると表示されたのに実際は自動起動した」という
+             食い違いが起きないようにしている。誤爆事故の再発防止が目的のため、
+             プレビューが実挙動と一致していることが最も重要。
+             </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.URLRoutingResolver.Resolve(BrowserChooser3.Classes.Settings,System.String)">
+            <summary>
+            URLに対して適用されるルーティングを判定します。
+            優先順位は AutoURLs → プロトコル で、MainForm の実処理と同じ順序です。
+            </summary>
+            <param name="settings">判定に使用する設定</param>
+            <param name="url">判定対象のURL</param>
+            <returns>判定結果</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.URLRoutingResolver.ResolveAutoUrl(BrowserChooser3.Classes.Settings,System.String)">
+            <summary>
+            AutoURLのルールを評価します。
+            </summary>
+            <param name="settings">判定に使用する設定</param>
+            <param name="url">判定対象のURL</param>
+            <returns>マッチした場合は結果、しなかった場合はnull</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.URLRoutingResolver.ResolveProtocol(BrowserChooser3.Classes.Settings,System.String)">
+            <summary>
+            プロトコルのルールを評価します。
+            </summary>
+            <param name="settings">判定に使用する設定</param>
+            <param name="url">判定対象のURL</param>
+            <returns>マッチした場合は結果、しなかった場合はnull</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.URLRoutingResolver.ExtractProtocol(System.String)">
+             <summary>
+             URLからプロトコル（スキーム）部分を抽出します。
+            
+             "://" ではなく最初の ':' までを見るため、mailto: のように
+             スラッシュを伴わないスキームも抽出できます（従来の
+             MainForm.ExtractProtocolFromUrl と同じ挙動）。
+             </summary>
+             <param name="url">対象のURL</param>
+             <returns>抽出されたプロトコル。抽出できない場合は空文字</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.URLRoutingResolver.DescribeResult(BrowserChooser3.Classes.Services.BrowserServices.URLRoutingResult)">
+            <summary>
+            判定結果を、Options の URL テスト欄に表示する説明文へ整形します。
+            </summary>
+            <param name="result">判定結果</param>
+            <returns>ユーザー向けの説明文</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.URLRoutingResolver.DescribeRuleName(BrowserChooser3.Classes.Services.BrowserServices.URLRoutingResult)">
+            <summary>
+            名前が未設定のルールでも表示が空にならないようにします。
+            </summary>
+            <param name="result">判定結果</param>
+            <returns>表示用のルール名</returns>
+        </member>
         <member name="T:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormBrowserHandlers">
             <summary>
             OptionsFormのブラウザ管理イベントハンドラーを管理するクラス
@@ -3539,27 +3659,6 @@
             </summary>
             <param name="url">処理対象のURL</param>
             <returns>処理された場合はtrue</returns>
-        </member>
-        <member name="M:BrowserChooser3.Forms.MainForm.ProcessAutoURLsInternal(System.String)">
-            <summary>
-            AutoURLsの内部処理
-            </summary>
-            <param name="url">処理対象のURL</param>
-            <returns>処理された場合はtrue</returns>
-        </member>
-        <member name="M:BrowserChooser3.Forms.MainForm.ProcessProtocols(System.String)">
-            <summary>
-            Protocolの処理
-            </summary>
-            <param name="url">処理対象のURL</param>
-            <returns>処理された場合はtrue</returns>
-        </member>
-        <member name="M:BrowserChooser3.Forms.MainForm.ExtractProtocolFromUrl(System.String)">
-            <summary>
-            URLからプロトコルを抽出
-            </summary>
-            <param name="url">URL</param>
-            <returns>プロトコル（例: "http", "https", "ftp"）</returns>
         </member>
         <member name="M:BrowserChooser3.Forms.MainForm.StartAutoURLsCountdown(BrowserChooser3.Classes.Models.Browser,System.String,System.Int32,System.Boolean)">
             <summary>

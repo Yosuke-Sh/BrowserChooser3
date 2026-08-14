@@ -233,7 +233,8 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 FullRowSelect = true,
                 GridLines = true,
                 Location = new Point(97, 6),
-                Size = new Size(630, 420),
+                // 下部にURLテスト欄（3-8）を置くぶん縦を詰めている
+                Size = new Size(630, 350),
                 Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom,
                 AllowDrop = !IsTestEnvironment(), // テスト環境ではDragDropを無効化
                 MultiSelect = false,
@@ -250,11 +251,96 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             var helpLabel = new Label
             {
                 Text = "Delay: 数値=秒数, Default=設定画面のデフォルト遅延時間を使用 / URL: *=ワイルドカード, re:パターン=正規表現",
-                Location = new Point(97, 430),
+                Location = new Point(97, 360),
                 Size = new Size(630, 20),
                 Font = new Font("Segoe UI", 8F, FontStyle.Italic),
                 ForeColor = Color.Gray,
                 Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom
+            };
+
+            // === URLルーティングのテスト欄（3-8）===
+            // 入力したURLがどのルールにマッチしてどのブラウザで開かれるかを、
+            // 実際の起動処理と同じ URLRoutingResolver で判定して表示する。
+            // 誤爆（意図しないパターンにマッチして自動起動する）の再発防止が目的。
+            var lblTestTitle = new Label
+            {
+                Text = "ルーティングのテスト",
+                Location = new Point(97, 388),
+                Size = new Size(200, 22),
+                Font = new Font("Segoe UI", 9.5f, FontStyle.Bold, GraphicsUnit.Point, 0),
+                ForeColor = Color.DarkBlue,
+                Anchor = AnchorStyles.Left | AnchorStyles.Bottom
+            };
+
+            var txtTestUrl = new TextBox
+            {
+                Name = "txtTestUrl",
+                Location = new Point(97, 412),
+                Size = new Size(480, 23),
+                PlaceholderText = "https://example.com/ を入力して「テスト」を押してください",
+                Font = new Font("Segoe UI", 9.5f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom
+            };
+
+            var btnTestUrl = new Button
+            {
+                Name = "btnTestUrl",
+                Text = "テスト",
+                Location = new Point(587, 410),
+                Size = new Size(85, 27),
+                Font = new Font("Segoe UI", 9.5f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                Anchor = AnchorStyles.Right | AnchorStyles.Bottom
+            };
+
+            var lblTestResult = new Label
+            {
+                Name = "lblTestResult",
+                Text = string.Empty,
+                Location = new Point(97, 441),
+                Size = new Size(630, 36),
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom
+            };
+
+            void RunRoutingTest()
+            {
+                var testUrl = txtTestUrl.Text.Trim();
+                if (string.IsNullOrEmpty(testUrl))
+                {
+                    lblTestResult.Text = "テストするURLを入力してください。";
+                    lblTestResult.ForeColor = Color.Gray;
+                    return;
+                }
+
+                // Options で編集中の内容で判定するため、リストの現在値を反映した
+                // 一時的な設定を組み立ててから判定する（保存前でもテストできる）
+                var preview = new Settings
+                {
+                    DefaultDelay = settings.DefaultDelay,
+                    Browsers = mBrowser.Values.ToList(),
+                    URLs = mURLs.Values.ToList(),
+                    Protocols = settings.Protocols
+                };
+
+                var result = URLRoutingResolver.Resolve(preview, testUrl);
+                lblTestResult.Text = URLRoutingResolver.DescribeResult(result);
+                lblTestResult.ForeColor = result.Kind switch
+                {
+                    // 自動起動する＝意図しないなら誤爆。目立つ色で知らせる。
+                    URLRoutingKind.AutoUrl or URLRoutingKind.Protocol => Color.DarkRed,
+                    URLRoutingKind.MatchedButBrowserMissing => Color.DarkOrange,
+                    _ => Color.DarkGreen
+                };
+            }
+
+            btnTestUrl.Click += (s, e) => RunRoutingTest();
+            txtTestUrl.KeyDown += (s, e) =>
+            {
+                if (e.KeyCode != Keys.Enter) return;
+                // Enterでフォームの既定ボタン（OK）が押されて閉じてしまうのを防ぐ
+                e.SuppressKeyPress = true;
+                e.Handled = true;
+                RunRoutingTest();
             };
 
             // ボタン群
@@ -316,6 +402,10 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             panel.Controls.Add(moveUpButton);
             panel.Controls.Add(moveDownButton);
             panel.Controls.Add(helpLabel);
+            panel.Controls.Add(lblTestTitle);
+            panel.Controls.Add(txtTestUrl);
+            panel.Controls.Add(btnTestUrl);
+            panel.Controls.Add(lblTestResult);
 
             tabPage.Controls.Add(panel);
             return tabPage;
