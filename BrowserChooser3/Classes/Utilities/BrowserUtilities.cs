@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using BrowserChooser3.Classes.Models;
+using BrowserChooser3.Classes.Services.BrowserServices;
 
 namespace BrowserChooser3.Classes.Utilities
 {
@@ -48,6 +49,23 @@ namespace BrowserChooser3.Classes.Utilities
         /// <param name="terminate">起動後にアプリケーションを終了する想定か</param>
         /// <returns>起動に成功し、かつterminateがtrueだった場合はtrue（呼び出し元での終了処理が必要なことを示す）</returns>
         public static bool LaunchBrowser(Browser browser, string url, bool terminate)
+            => LaunchBrowser(browser, url, terminate, forcePrivateMode: false, profileOverride: null);
+
+        /// <summary>
+        /// プロファイル指定・シークレット起動に対応したブラウザ起動処理です。
+        ///
+        /// forcePrivateMode または profileOverride が指定された場合は、
+        /// IE/Edge の専用プロトコル経路（これらは追加の引数を受け付けない）ではなく
+        /// 実行ファイルを直接起動する経路を使用します。
+        /// </summary>
+        /// <param name="browser">起動するブラウザ</param>
+        /// <param name="url">開くURL</param>
+        /// <param name="terminate">起動後にアプリケーションを終了する想定か</param>
+        /// <param name="forcePrivateMode">ブラウザ設定に関わらずシークレット起動する場合はtrue</param>
+        /// <param name="profileOverride">使用するプロファイル名（nullならブラウザ設定に従う）</param>
+        /// <returns>起動に成功し、かつterminateがtrueだった場合はtrue（呼び出し元での終了処理が必要なことを示す）</returns>
+        public static bool LaunchBrowser(Browser browser, string url, bool terminate,
+            bool forcePrivateMode, string? profileOverride)
         {
             // nullチェック
             if (browser == null)
@@ -55,6 +73,15 @@ namespace BrowserChooser3.Classes.Utilities
                 Logger.LogDebug("BrowserUtilities.LaunchBrowser", "Browser is null, skipping launch", url ?? "null", terminate);
                 return false;
             }
+
+            // プロファイル/シークレットの明示指定がある場合は、追加引数を渡せる
+            // DoLaunch経路を使う（IE/Edgeの専用プロトコル経路では指定を反映できないため）
+            // ブラウザ設定側でプロファイル/シークレットが指定されている場合も同様に直接起動する
+            var requiresDirectLaunch =
+                forcePrivateMode ||
+                browser.UsePrivateMode ||
+                !string.IsNullOrWhiteSpace(profileOverride) ||
+                !string.IsNullOrWhiteSpace(browser.ProfileName);
 
             Logger.LogDebug("BrowserUtilities.LaunchBrowser", "Start", browser.Name, browser.Target, url ?? "null", terminate);
 
@@ -69,19 +96,19 @@ namespace BrowserChooser3.Classes.Utilities
                 }
 
                 // IE専用処理
-                if (browser.IsIE)
+                if (browser.IsIE && !requiresDirectLaunch)
                 {
                     shouldTerminate = LaunchIE(browser, url ?? "", terminate);
                 }
                 // Edge専用処理
-                else if (browser.IsEdge)
+                else if (browser.IsEdge && !requiresDirectLaunch)
                 {
                     shouldTerminate = LaunchEdge(browser, url ?? "", terminate);
                 }
                 // 一般的なブラウザ処理
                 else
                 {
-                    if (DoLaunch(browser, url ?? "", terminate))
+                    if (DoLaunch(browser, url ?? "", terminate, forcePrivateMode, profileOverride))
                     {
                         if (terminate)
                         {
@@ -218,9 +245,78 @@ namespace BrowserChooser3.Classes.Utilities
         }
 
         /// <summary>
+        /// ブラウザ起動時に渡す引数リストを組み立てます。
+        ///
+        /// 順序は「ユーザー定義の引数（{0}/{1}テンプレート対応）→ プロファイル指定
+        /// → シークレット指定 → URL」。URLは常に独立した最後の1引数になるため、
+        /// URLに空白や引用符が含まれていても他の引数として解釈されません。
+        /// </summary>
+        /// <param name="browser">対象のブラウザ</param>
+        /// <param name="browserPath">正規化済みの実行ファイルパス</param>
+        /// <param name="url">開くURL</param>
+        /// <param name="forcePrivateMode">ブラウザ設定に関わらずシークレット起動する場合はtrue</param>
+        /// <param name="profileOverride">使用するプロファイル名（nullならブラウザ設定に従う）</param>
+        /// <returns>ProcessStartInfo.ArgumentListへ渡す引数リスト</returns>
+        internal static List<string> BuildLaunchArguments(
+            Browser browser,
+            string browserPath,
+            string? url,
+            bool forcePrivateMode = false,
+            string? profileOverride = null)
+        {
+            var userArguments = browser.Arguments ?? string.Empty;
+
+            // {0}=プロトコル / {1}=プロトコルを除いた残り のテンプレート指定
+            // （既存設定との互換のため維持する）。展開後はURLを重複して付けない。
+            if (!string.IsNullOrEmpty(url) &&
+                (userArguments.Contains("{0}") || userArguments.Contains("{1}")))
+            {
+                var protocol = string.Empty;
+                var remainder = url;
+                var protocolIndex = url.IndexOf("://", StringComparison.Ordinal);
+                if (protocolIndex > 0)
+                {
+                    protocol = url.Substring(0, protocolIndex);
+                    remainder = url.Substring(protocolIndex + 3);
+                }
+
+                var expanded = string.Format(userArguments, protocol, remainder);
+                var templateArguments = BrowserLaunchProfiles.SplitUserArguments(expanded).ToList();
+
+                var family = BrowserLaunchProfiles.DetectFamily(browser);
+                templateArguments.AddRange(
+                    BrowserLaunchProfiles.GetProfileArguments(family, profileOverride ?? browser.ProfileName));
+                if (forcePrivateMode || browser.UsePrivateMode)
+                {
+                    templateArguments.AddRange(BrowserLaunchProfiles.GetPrivateModeArguments(family));
+                }
+
+                return templateArguments;
+            }
+
+            // Chromeは引数が未指定のとき、既存ウィンドウのタブではなく新規ウィンドウで開く
+            var effectiveBrowser = browser;
+            var isChrome = browser.Name?.Contains("chrome", StringComparison.OrdinalIgnoreCase) == true ||
+                           browserPath.Contains("chrome", StringComparison.OrdinalIgnoreCase);
+            if (isChrome && string.IsNullOrWhiteSpace(userArguments))
+            {
+                effectiveBrowser = browser.Clone();
+                effectiveBrowser.Arguments = "--new-window";
+            }
+
+            return BrowserLaunchProfiles.BuildArgumentList(effectiveBrowser, url, forcePrivateMode, profileOverride);
+        }
+
+        /// <summary>
         /// 一般的なブラウザ起動処理
         /// </summary>
-        private static bool DoLaunch(Browser browser, string url, bool terminate)
+        /// <param name="browser">起動するブラウザ</param>
+        /// <param name="url">開くURL</param>
+        /// <param name="terminate">起動後にアプリケーションを終了するかどうか</param>
+        /// <param name="forcePrivateMode">ブラウザ設定に関わらずシークレット起動する場合はtrue</param>
+        /// <param name="profileOverride">使用するプロファイル名（nullならブラウザ設定に従う）</param>
+        private static bool DoLaunch(Browser browser, string url, bool terminate,
+            bool forcePrivateMode = false, string? profileOverride = null)
         {
             // nullチェック
             if (browser == null)
@@ -266,63 +362,20 @@ namespace BrowserChooser3.Classes.Utilities
                     }
                 }
 
-                Process? process = null;
-                string arguments = browser.Arguments;
+                // 引数はProcessStartInfo.ArgumentListへ1要素=1引数で渡す。
+                // 従来は文字列連結でコマンドラインを組んでいたため、URLに引用符が
+                // 含まれていると後続を別の引数として解釈させられる余地があった。
+                var argumentList = BuildLaunchArguments(browser, browserPath, url, forcePrivateMode, profileOverride);
 
-                // Chrome専用の処理
-                if ((browser.Name?.ToLower().Contains("chrome") == true) || browserPath.ToLower().Contains("chrome"))
+                var startInfo = new ProcessStartInfo(browserPath) { UseShellExecute = false };
+                foreach (var argument in argumentList)
                 {
-                    Logger.LogDebug("BrowserUtilities.DoLaunch", "Chrome detected", browser.Name ?? "null");
-                    
-                    // Chromeの標準的な起動引数を設定
-                    if (string.IsNullOrEmpty(arguments) || arguments.Trim() == "")
-                    {
-                        arguments = "--new-window";
-                    }
-                    
-                    // URLがある場合は追加
-                    if (!string.IsNullOrEmpty(url))
-                    {
-                        arguments += $" \"{url}\"";
-                    }
-                    
-                    Logger.LogInfo("BrowserUtilities.DoLaunch", "Chrome arguments", arguments);
-                }
-                else
-                {
-                    // 他のブラウザの処理
-                    if (!string.IsNullOrEmpty(url))
-                    {
-                        if (browser.Arguments.Contains("{0}") || browser.Arguments.Contains("{1}"))
-                        {
-                            // 置換パラメータを使用（簡易版）
-                            var protocol = "";
-                            var remainder = url;
-                            
-                            // プロトコルの抽出
-                            var protocolIndex = url.IndexOf("://");
-                            if (protocolIndex > 0)
-                            {
-                                protocol = url.Substring(0, protocolIndex);
-                                remainder = url.Substring(protocolIndex + 3);
-                            }
-                            
-                            arguments = string.Format(browser.Arguments, protocol, remainder);
-                        }
-                        else
-                        {
-                            // 従来の起動方法
-                            arguments = browser.Arguments + " \"" + url + "\"";
-                        }
-                    }
-                    else
-                    {
-                        arguments = browser.Arguments;
-                    }
+                    startInfo.ArgumentList.Add(argument);
                 }
 
-                Logger.LogInfo("BrowserUtilities.DoLaunch", "Starting process", browserPath, arguments);
-                process = Process.Start(browserPath, arguments);
+                Logger.LogInfo("BrowserUtilities.DoLaunch", "Starting process", browserPath,
+                    BrowserLaunchProfiles.FormatForLog(argumentList));
+                Process? process = Process.Start(startInfo);
 
                 if (process != null)
                 {

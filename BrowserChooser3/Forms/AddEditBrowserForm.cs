@@ -1,6 +1,7 @@
 using BrowserChooser3.Classes;
 using BrowserChooser3.Classes.Models;
 using BrowserChooser3.Classes.Services;
+using BrowserChooser3.Classes.Services.BrowserServices;
 using BrowserChooser3.Classes.Utilities;
 
 namespace BrowserChooser3.Forms
@@ -105,6 +106,22 @@ namespace BrowserChooser3.Forms
             if (txtHotkey != null) txtHotkey.Text = _browser.Hotkey != '\0' ? _browser.Hotkey.ToString() : "";
             if (nudRow != null) nudRow.Value = _browser.Y;
             if (nudCol != null) nudCol.Value = _browser.X;
+
+            // プロファイル欄には実際に存在するプロファイルを候補として並べつつ、
+            // 手入力もできるようDropDownStyleはDropDownのままにしている
+            var cmbProfile = Controls.Find("cmbProfile", true).FirstOrDefault() as ComboBox;
+            if (cmbProfile != null)
+            {
+                cmbProfile.Items.Clear();
+                foreach (var profile in BrowserLaunchProfiles.DiscoverProfiles(_browser))
+                {
+                    cmbProfile.Items.Add(profile);
+                }
+                cmbProfile.Text = _browser.ProfileName ?? "";
+            }
+
+            var chkUsePrivateMode = Controls.Find("chkUsePrivateMode", true).FirstOrDefault() as CheckBox;
+            if (chkUsePrivateMode != null) chkUsePrivateMode.Checked = _browser.UsePrivateMode;
 
             // アイコン表示を更新
             UpdateIconDisplay();
@@ -270,6 +287,12 @@ namespace BrowserChooser3.Forms
                 _browser.Hotkey = '\0';
             }
 
+            var cmbProfile = Controls.Find("cmbProfile", true).FirstOrDefault() as ComboBox;
+            if (cmbProfile != null) _browser.ProfileName = cmbProfile.Text.Trim();
+
+            var chkUsePrivateMode = Controls.Find("chkUsePrivateMode", true).FirstOrDefault() as CheckBox;
+            if (chkUsePrivateMode != null) _browser.UsePrivateMode = chkUsePrivateMode.Checked;
+
             return _browser;
         }
 
@@ -289,7 +312,8 @@ namespace BrowserChooser3.Forms
         private void InitializeComponent()
         {
             Text = "Add/Edit Browser";
-            Size = new Size(600, 480);
+            // Profile / Private mode の2行ぶん縦に拡張している
+            Size = new Size(600, 545);
             StartPosition = FormStartPosition.CenterParent;
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
@@ -313,20 +337,38 @@ namespace BrowserChooser3.Forms
             var lblHotkey = new Label { Text = "Hotkey:", Location = new Point(10, 140), AutoSize = true };
             var txtHotkey = new TextBox { Name = "txtHotkey", Location = new Point(120, 137), Size = new Size(50, 23), MaxLength = 1 };
 
+            // プロファイル指定（Chromium系は --profile-directory=、Firefoxは -P へ変換される）
+            var lblProfile = new Label { Text = "Profile:", Location = new Point(10, 180), AutoSize = true };
+            var cmbProfile = new ComboBox
+            {
+                Name = "cmbProfile",
+                Location = new Point(120, 177),
+                Size = new Size(300, 23),
+                DropDownStyle = ComboBoxStyle.DropDown
+            };
+
+            var chkUsePrivateMode = new CheckBox
+            {
+                Name = "chkUsePrivateMode",
+                Text = "常にシークレット/プライベートウィンドウで開く",
+                Location = new Point(120, 210),
+                Size = new Size(340, 23)
+            };
+
             // アイコン表示用PictureBox
-            var lblIcon = new Label { Text = "Icon:", Location = new Point(10, 180), AutoSize = true };
-            var picIcon = new PictureBox { Name = "picIcon", Location = new Point(120, 177), Size = new Size(64, 64), SizeMode = PictureBoxSizeMode.Zoom, BorderStyle = BorderStyle.FixedSingle };
-            var btnEditIcon = new Button { Text = "Edit Icon", Location = new Point(200, 177), Size = new Size(85, 35) };
+            var lblIcon = new Label { Text = "Icon:", Location = new Point(10, 245), AutoSize = true };
+            var picIcon = new PictureBox { Name = "picIcon", Location = new Point(120, 242), Size = new Size(64, 64), SizeMode = PictureBoxSizeMode.Zoom, BorderStyle = BorderStyle.FixedSingle };
+            var btnEditIcon = new Button { Text = "Edit Icon", Location = new Point(200, 242), Size = new Size(85, 35) };
 
-            var lblRow = new Label { Text = "Row:", Location = new Point(10, 250), AutoSize = true };
-            var nudRow = new NumericUpDown { Name = "nudRow", Location = new Point(120, 247), Size = new Size(80, 23), Minimum = 0, Maximum = 100 };
+            var lblRow = new Label { Text = "Row:", Location = new Point(10, 315), AutoSize = true };
+            var nudRow = new NumericUpDown { Name = "nudRow", Location = new Point(120, 312), Size = new Size(80, 23), Minimum = 0, Maximum = 100 };
 
-            var lblCol = new Label { Text = "Column:", Location = new Point(220, 250), AutoSize = true };
-            var nudCol = new NumericUpDown { Name = "nudCol", Location = new Point(320, 247), Size = new Size(80, 23), Minimum = 0, Maximum = 100 };
+            var lblCol = new Label { Text = "Column:", Location = new Point(220, 315), AutoSize = true };
+            var nudCol = new NumericUpDown { Name = "nudCol", Location = new Point(320, 312), Size = new Size(80, 23), Minimum = 0, Maximum = 100 };
 
             // ボタン
-            var btnOK = new Button { Text = "OK", DialogResult = DialogResult.OK, Location = new Point(300, 350), Size = new Size(90, 30) };
-            var btnCancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, Location = new Point(400, 350), Size = new Size(90, 30) };
+            var btnOK = new Button { Text = "OK", DialogResult = DialogResult.OK, Location = new Point(300, 415), Size = new Size(90, 30) };
+            var btnCancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, Location = new Point(400, 415), Size = new Size(90, 30) };
             btnOK.FlatStyle = FlatStyle.System;
             btnCancel.FlatStyle = FlatStyle.System;
 
@@ -337,6 +379,7 @@ namespace BrowserChooser3.Forms
                 lblTarget, txtTarget, btnBrowse,
                 lblArguments, txtArguments,
                 lblHotkey, txtHotkey,
+                lblProfile, cmbProfile, chkUsePrivateMode,
                 lblIcon, picIcon, btnEditIcon,
                 lblRow, nudRow,
                 lblCol, nudCol,
@@ -376,7 +419,18 @@ namespace BrowserChooser3.Forms
                         // バージョン情報が取得できない場合はファイル名を使用
                         txtName.Text = Path.GetFileNameWithoutExtension(openFileDialog.FileName);
                     }
-                    
+
+                    // 実行ファイルが変わるとプロファイルの所在も変わるため候補を取り直す
+                    var probe = new Browser { Name = txtName.Text, Target = txtTarget.Text };
+                    var selectedProfile = cmbProfile.Text;
+                    cmbProfile.Items.Clear();
+                    foreach (var profile in BrowserLaunchProfiles.DiscoverProfiles(probe))
+                    {
+                        cmbProfile.Items.Add(profile);
+                    }
+                    cmbProfile.Text = selectedProfile;
+
+
                     // アイコン選択ダイアログを表示
                     try
                     {
@@ -464,8 +518,9 @@ namespace BrowserChooser3.Forms
                     _browser.Name = txtName.Text;
                     _browser.Target = txtTarget.Text;
                     _browser.Arguments = txtArguments.Text;
+                    _browser.ProfileName = cmbProfile.Text.Trim();
+                    _browser.UsePrivateMode = chkUsePrivateMode.Checked;
 
-                    
                     if (txtHotkey != null && txtHotkey.Text.Length > 0)
                     {
                         _browser.Hotkey = txtHotkey.Text[0];

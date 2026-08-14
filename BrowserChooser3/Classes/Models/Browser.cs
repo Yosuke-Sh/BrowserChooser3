@@ -60,9 +60,22 @@ namespace BrowserChooser3.Classes.Models
         
         /// <summary>カテゴリ</summary>
         public string Category { get; set; } = string.Empty;
-        
+
         /// <summary>デフォルトブラウザフラグ</summary>
         public bool IsDefault { get; set; } = false;
+
+        /// <summary>
+        /// 使用するブラウザプロファイル名。空の場合はブラウザの既定プロファイルで起動します。
+        /// 実際のコマンドライン引数への変換は BrowserLaunchProfiles が
+        /// ブラウザの種別（BrowserFamily）に応じて行います。
+        /// </summary>
+        public string ProfileName { get; set; } = string.Empty;
+
+        /// <summary>
+        /// このブラウザを常にシークレット/プライベートウィンドウで起動するかどうか。
+        /// MainFormのボタン右クリックからは、この設定に関わらず一時的にシークレット起動できます。
+        /// </summary>
+        public bool UsePrivateMode { get; set; } = false;
         
 
         
@@ -90,7 +103,9 @@ namespace BrowserChooser3.Classes.Models
                 Standard = this.Standard,
                 Hotkey = this.Hotkey,
                 Category = this.Category,
-                IsDefault = this.IsDefault
+                IsDefault = this.IsDefault,
+                ProfileName = this.ProfileName,
+                UsePrivateMode = this.UsePrivateMode
             };
         }
     }

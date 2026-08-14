@@ -172,6 +172,19 @@
         <member name="P:BrowserChooser3.Classes.Models.Browser.IsDefault">
             <summary>デフォルトブラウザフラグ</summary>
         </member>
+        <member name="P:BrowserChooser3.Classes.Models.Browser.ProfileName">
+            <summary>
+            使用するブラウザプロファイル名。空の場合はブラウザの既定プロファイルで起動します。
+            実際のコマンドライン引数への変換は BrowserLaunchProfiles が
+            ブラウザの種別（BrowserFamily）に応じて行います。
+            </summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Models.Browser.UsePrivateMode">
+            <summary>
+            このブラウザを常にシークレット/プライベートウィンドウで起動するかどうか。
+            MainFormのボタン右クリックからは、この設定に関わらず一時的にシークレット起動できます。
+            </summary>
+        </member>
         <member name="M:BrowserChooser3.Classes.Models.Browser.Clone">
             <summary>
             ブラウザのクローンを作成
@@ -363,6 +376,122 @@
             <param name="name">ブラウザ名</param>
             <param name="path">実行ファイルパス</param>
             <param name="arguments">起動引数</param>
+        </member>
+        <member name="T:BrowserChooser3.Classes.Services.BrowserServices.BrowserFamily">
+            <summary>
+            ブラウザの種別（ファミリ）
+            </summary>
+        </member>
+        <member name="F:BrowserChooser3.Classes.Services.BrowserServices.BrowserFamily.Unknown">
+            <summary>判別できないブラウザ。プロファイル・シークレット指定は無視されます。</summary>
+        </member>
+        <member name="F:BrowserChooser3.Classes.Services.BrowserServices.BrowserFamily.Chromium">
+            <summary>Chromium系（Chrome / Edge / Brave / Vivaldi / Opera など）</summary>
+        </member>
+        <member name="F:BrowserChooser3.Classes.Services.BrowserServices.BrowserFamily.Edge">
+            <summary>Microsoft Edge（Chromium系だがシークレットの引数名が異なる）</summary>
+        </member>
+        <member name="F:BrowserChooser3.Classes.Services.BrowserServices.BrowserFamily.Firefox">
+            <summary>Firefox系</summary>
+        </member>
+        <member name="T:BrowserChooser3.Classes.Services.BrowserServices.BrowserLaunchProfiles">
+             <summary>
+             ブラウザのプロファイル指定・シークレット起動に必要なコマンドライン引数を、
+             ブラウザの種別ごとに解決します。
+            
+             引数は必ず「1要素=1引数」のリストとして組み立て、呼び出し側が
+             <see cref="P:System.Diagnostics.ProcessStartInfo.ArgumentList"/> へ渡すことを前提とします。
+             文字列連結でコマンドラインを組まないことで、URLやプロファイル名に含まれる
+             引用符・空白による引数注入を防ぎます。
+             </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.BrowserLaunchProfiles.DetectFamily(BrowserChooser3.Classes.Models.Browser)">
+            <summary>
+            ブラウザ名・実行ファイルパスから種別を判定します。
+            </summary>
+            <param name="browser">対象のブラウザ</param>
+            <returns>判定された種別</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.BrowserLaunchProfiles.GetProfileArguments(BrowserChooser3.Classes.Services.BrowserServices.BrowserFamily,System.String)">
+            <summary>
+            指定されたプロファイルで起動するための引数を返します。
+            種別が判別できない場合やプロファイル名が空の場合は空のリストを返します。
+            </summary>
+            <param name="family">ブラウザの種別</param>
+            <param name="profileName">プロファイル名</param>
+            <returns>追加する引数（1要素=1引数）</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.BrowserLaunchProfiles.GetPrivateModeArguments(BrowserChooser3.Classes.Services.BrowserServices.BrowserFamily)">
+            <summary>
+            シークレット/プライベートウィンドウで起動するための引数を返します。
+            </summary>
+            <param name="family">ブラウザの種別</param>
+            <returns>追加する引数（1要素=1引数）</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.BrowserLaunchProfiles.SupportsProfilesOrPrivateMode(BrowserChooser3.Classes.Models.Browser)">
+            <summary>
+            このブラウザがプロファイル指定・シークレット起動に対応しているかどうか。
+            対応していない場合、MainFormはコンテキストメニューの該当項目を無効化します。
+            </summary>
+            <param name="browser">対象のブラウザ</param>
+            <returns>対応している場合はtrue</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.BrowserLaunchProfiles.BuildArgumentList(BrowserChooser3.Classes.Models.Browser,System.String,System.Boolean,System.String)">
+             <summary>
+             ブラウザ起動用の引数リストを組み立てます。
+            
+             順序は「ユーザー定義の引数 → プロファイル指定 → シークレット指定 → URL」。
+             URLは必ず最後の独立した1引数として追加されるため、URLに空白や引用符が
+             含まれていても他の引数として解釈されることはありません。
+             </summary>
+             <param name="browser">対象のブラウザ</param>
+             <param name="url">開くURL（空の場合はURLを付けない）</param>
+             <param name="forcePrivateMode">
+             ブラウザ設定に関わらずシークレット起動する場合はtrue
+             （MainFormの右クリックメニューからの一時的な指定）
+             </param>
+             <param name="profileOverride">
+             ブラウザ設定のプロファイルではなく指定のプロファイルで起動する場合に設定します。
+             nullの場合は <see cref="P:BrowserChooser3.Classes.Models.Browser.ProfileName"/> を使用します。
+             </param>
+             <returns>ProcessStartInfo.ArgumentListへそのまま渡せる引数リスト</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.BrowserLaunchProfiles.SplitUserArguments(System.String)">
+            <summary>
+            ユーザーが1つの文字列として入力した引数を、個々の引数へ分割します。
+            引用符で囲まれた部分は空白を含んでいても1つの引数として扱います。
+            </summary>
+            <param name="userArguments">ユーザー定義の引数文字列</param>
+            <returns>分割された引数</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.BrowserLaunchProfiles.DiscoverProfiles(BrowserChooser3.Classes.Models.Browser)">
+            <summary>
+            ブラウザのユーザーデータディレクトリを走査し、選択可能なプロファイル名を列挙します。
+            検出に失敗した場合や対応していないブラウザの場合は空のリストを返します。
+            </summary>
+            <param name="browser">対象のブラウザ</param>
+            <returns>プロファイル名の一覧（表示順）</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.BrowserLaunchProfiles.DiscoverChromiumProfiles(BrowserChooser3.Classes.Models.Browser)">
+            <summary>
+            Chromium系ブラウザのユーザーデータディレクトリからプロファイルディレクトリを列挙します。
+            Chromiumは "Default" と "Profile N" という名前でプロファイルを保持します。
+            </summary>
+            <param name="browser">対象のブラウザ</param>
+            <returns>プロファイルディレクトリ名の一覧</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.BrowserLaunchProfiles.DiscoverFirefoxProfiles">
+            <summary>
+            Firefoxの profiles.ini からプロファイル名を列挙します。
+            </summary>
+            <returns>プロファイル名の一覧</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.BrowserLaunchProfiles.FormatForLog(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            引数リストをログ出力用の1行文字列へ整形します（実際の起動には使用しません）。
+            </summary>
+            <param name="arguments">引数リスト</param>
+            <returns>ログ用の文字列</returns>
         </member>
         <member name="T:BrowserChooser3.Classes.Services.BrowserServices.DefaultBrowserChecker">
             <summary>
@@ -1896,6 +2025,21 @@
             <param name="terminate">起動後にアプリケーションを終了する想定か</param>
             <returns>起動に成功し、かつterminateがtrueだった場合はtrue（呼び出し元での終了処理が必要なことを示す）</returns>
         </member>
+        <member name="M:BrowserChooser3.Classes.Utilities.BrowserUtilities.LaunchBrowser(BrowserChooser3.Classes.Models.Browser,System.String,System.Boolean,System.Boolean,System.String)">
+             <summary>
+             プロファイル指定・シークレット起動に対応したブラウザ起動処理です。
+            
+             forcePrivateMode または profileOverride が指定された場合は、
+             IE/Edge の専用プロトコル経路（これらは追加の引数を受け付けない）ではなく
+             実行ファイルを直接起動する経路を使用します。
+             </summary>
+             <param name="browser">起動するブラウザ</param>
+             <param name="url">開くURL</param>
+             <param name="terminate">起動後にアプリケーションを終了する想定か</param>
+             <param name="forcePrivateMode">ブラウザ設定に関わらずシークレット起動する場合はtrue</param>
+             <param name="profileOverride">使用するプロファイル名（nullならブラウザ設定に従う）</param>
+             <returns>起動に成功し、かつterminateがtrueだった場合はtrue（呼び出し元での終了処理が必要なことを示す）</returns>
+        </member>
         <member name="M:BrowserChooser3.Classes.Utilities.BrowserUtilities.LaunchIE(BrowserChooser3.Classes.Models.Browser,System.String,System.Boolean)">
             <summary>
             IE専用の起動処理
@@ -1910,10 +2054,30 @@
             </summary>
             <returns>起動に成功し、かつterminateがtrueだった場合はtrue</returns>
         </member>
-        <member name="M:BrowserChooser3.Classes.Utilities.BrowserUtilities.DoLaunch(BrowserChooser3.Classes.Models.Browser,System.String,System.Boolean)">
+        <member name="M:BrowserChooser3.Classes.Utilities.BrowserUtilities.BuildLaunchArguments(BrowserChooser3.Classes.Models.Browser,System.String,System.String,System.Boolean,System.String)">
+             <summary>
+             ブラウザ起動時に渡す引数リストを組み立てます。
+            
+             順序は「ユーザー定義の引数（{0}/{1}テンプレート対応）→ プロファイル指定
+             → シークレット指定 → URL」。URLは常に独立した最後の1引数になるため、
+             URLに空白や引用符が含まれていても他の引数として解釈されません。
+             </summary>
+             <param name="browser">対象のブラウザ</param>
+             <param name="browserPath">正規化済みの実行ファイルパス</param>
+             <param name="url">開くURL</param>
+             <param name="forcePrivateMode">ブラウザ設定に関わらずシークレット起動する場合はtrue</param>
+             <param name="profileOverride">使用するプロファイル名（nullならブラウザ設定に従う）</param>
+             <returns>ProcessStartInfo.ArgumentListへ渡す引数リスト</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Utilities.BrowserUtilities.DoLaunch(BrowserChooser3.Classes.Models.Browser,System.String,System.Boolean,System.Boolean,System.String)">
             <summary>
             一般的なブラウザ起動処理
             </summary>
+            <param name="browser">起動するブラウザ</param>
+            <param name="url">開くURL</param>
+            <param name="terminate">起動後にアプリケーションを終了するかどうか</param>
+            <param name="forcePrivateMode">ブラウザ設定に関わらずシークレット起動する場合はtrue</param>
+            <param name="profileOverride">使用するプロファイル名（nullならブラウザ設定に従う）</param>
         </member>
         <member name="M:BrowserChooser3.Classes.Utilities.BrowserUtilities.TryToBringToFront(System.String)">
             <summary>
@@ -3222,6 +3386,21 @@
             <summary>
             ブラウザボタンのクリックイベント
             </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.MainForm.BrowserButton_MouseUp(System.Object,System.Windows.Forms.MouseEventArgs)">
+            <summary>
+            ブラウザボタンの右クリック処理。
+            シークレットウィンドウ・プロファイル指定での起動メニューを表示します。
+            左クリック（BrowserButton_Click）の既定動作は変更しません。
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.MainForm.LaunchBrowserWithOptions(BrowserChooser3.Classes.Models.Browser,System.Boolean,System.String)">
+            <summary>
+            シークレット/プロファイル指定でブラウザを起動し、起動後の終了処理を行います。
+            </summary>
+            <param name="browser">対象のブラウザ</param>
+            <param name="forcePrivateMode">シークレット起動する場合はtrue</param>
+            <param name="profileOverride">使用するプロファイル名（nullならブラウザ設定に従う）</param>
         </member>
         <member name="M:BrowserChooser3.Forms.MainForm.SetInitialURL(System.String)">
             <summary>

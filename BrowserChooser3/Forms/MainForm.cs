@@ -1,5 +1,6 @@
 using BrowserChooser3.Classes;
 using BrowserChooser3.Classes.Models;
+using BrowserChooser3.Classes.Services.BrowserServices;
 using BrowserChooser3.Classes.Services.SystemServices;
 using BrowserChooser3.Classes.Services.UI;
 using BrowserChooser3.Classes.Utilities;
@@ -979,6 +980,10 @@ namespace BrowserChooser3.Forms
                 
                 // イベントハンドラーの設定
                 button.Click += BrowserButton_Click;
+
+                // 右クリックでシークレット/プロファイル起動のメニューを出す
+                // （左クリックの既定動作は変更しない）
+                button.MouseUp += BrowserButton_MouseUp;
                 
                 // FFButtonの矢印キーイベントハンドラーを設定
                 if (button is FFButton ffButton)
@@ -1225,6 +1230,82 @@ namespace BrowserChooser3.Forms
                     Logger.LogError("MainForm.BrowserButton_Click", "ブラウザ起動エラー", browser.Name, ex.Message);
                     MessageBoxService.ShowErrorStatic($"ブラウザの起動に失敗しました: {ex.Message}", "エラー");
                 }
+            }
+        }
+
+        /// <summary>
+        /// ブラウザボタンの右クリック処理。
+        /// シークレットウィンドウ・プロファイル指定での起動メニューを表示します。
+        /// 左クリック（BrowserButton_Click）の既定動作は変更しません。
+        /// </summary>
+        private void BrowserButton_MouseUp(object? sender, MouseEventArgs e)
+        {
+            if (e.Button != MouseButtons.Right) return;
+            if (sender is not Button button || button.Tag is not Browser browser) return;
+
+            // プロファイル・シークレットに対応していないブラウザではメニューを出さない
+            if (!BrowserLaunchProfiles.SupportsProfilesOrPrivateMode(browser))
+            {
+                Logger.LogDebug("MainForm.BrowserButton_MouseUp",
+                    "プロファイル/シークレット非対応のためメニューを表示しません", browser.Name);
+                return;
+            }
+
+            // 前回のメニューが残らないよう、都度生成して閉じたら破棄する
+            var menu = new ContextMenuStrip();
+
+            var privateItem = new ToolStripMenuItem("シークレットウィンドウで開く(&P)");
+            privateItem.Click += (s, _) => LaunchBrowserWithOptions(browser, forcePrivateMode: true, profileOverride: null);
+            menu.Items.Add(privateItem);
+
+            // 実際に存在するプロファイルを列挙してサブメニューに並べる。
+            // 検出できなかった場合はこの項目自体を出さない（空メニューを見せない）。
+            var profiles = BrowserLaunchProfiles.DiscoverProfiles(browser);
+            if (profiles.Count > 0)
+            {
+                var profileItem = new ToolStripMenuItem("プロファイルを選んで開く(&F)");
+                foreach (var profile in profiles)
+                {
+                    var capturedProfile = profile;
+                    var item = new ToolStripMenuItem(capturedProfile);
+                    item.Click += (s, _) =>
+                        LaunchBrowserWithOptions(browser, forcePrivateMode: false, profileOverride: capturedProfile);
+                    profileItem.DropDownItems.Add(item);
+                }
+                menu.Items.Add(profileItem);
+            }
+
+            menu.Closed += (s, _) => menu.Dispose();
+            menu.Show(button, e.Location);
+        }
+
+        /// <summary>
+        /// シークレット/プロファイル指定でブラウザを起動し、起動後の終了処理を行います。
+        /// </summary>
+        /// <param name="browser">対象のブラウザ</param>
+        /// <param name="forcePrivateMode">シークレット起動する場合はtrue</param>
+        /// <param name="profileOverride">使用するプロファイル名（nullならブラウザ設定に従う）</param>
+        private void LaunchBrowserWithOptions(Browser browser, bool forcePrivateMode, string? profileOverride)
+        {
+            Logger.LogInfo("MainForm.LaunchBrowserWithOptions", "ブラウザ選択（オプション指定）",
+                browser.Name, _currentUrl, $"private={forcePrivateMode}, profile={profileOverride ?? "(既定)"}");
+
+            try
+            {
+                var autoClose = chkAutoClose?.Checked ?? true;
+                if (ModifierKeys.HasFlag(Keys.Control))
+                {
+                    autoClose = false;
+                }
+
+                var shouldTerminate = BrowserUtilities.LaunchBrowser(
+                    browser, _currentUrl, autoClose, forcePrivateMode, profileOverride);
+                HandlePostLaunchTermination(shouldTerminate);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("MainForm.LaunchBrowserWithOptions", "ブラウザ起動エラー", browser.Name, ex.Message);
+                MessageBoxService.ShowErrorStatic($"ブラウザの起動に失敗しました: {ex.Message}", "エラー");
             }
         }
 
