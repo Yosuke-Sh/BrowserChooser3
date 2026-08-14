@@ -1635,10 +1635,40 @@
             <summary>URLリスト</summary>
         </member>
         <member name="P:BrowserChooser3.Classes.Settings.Width">
-            <summary>幅</summary>
+            <summary>
+            メイン画面の初期ウィンドウ幅（ピクセル）。
+            旧バージョンではグリッドの列数（既定8）として書き出されていた名残があるため、
+            <see cref="F:BrowserChooser3.Classes.Settings.MinimumWindowWidth"/> 未満の値は「未設定」とみなして
+            <see cref="P:BrowserChooser3.Classes.Settings.EffectiveWindowWidth"/> が既定値へフォールバックする。
+            </summary>
         </member>
         <member name="P:BrowserChooser3.Classes.Settings.Height">
-            <summary>高さ</summary>
+            <summary>
+            メイン画面の初期ウィンドウ高さ（ピクセル）。<see cref="P:BrowserChooser3.Classes.Settings.Width"/> と同様に
+            旧値（既定1）は未設定として扱う。
+            </summary>
+        </member>
+        <member name="F:BrowserChooser3.Classes.Settings.MinimumWindowWidth">
+            <summary>メイン画面の最小ウィンドウ幅（ピクセル）</summary>
+        </member>
+        <member name="F:BrowserChooser3.Classes.Settings.MinimumWindowHeight">
+            <summary>メイン画面の最小ウィンドウ高さ（ピクセル）</summary>
+        </member>
+        <member name="F:BrowserChooser3.Classes.Settings.DefaultWindowWidth">
+            <summary>メイン画面の既定ウィンドウ幅（ピクセル）</summary>
+        </member>
+        <member name="F:BrowserChooser3.Classes.Settings.DefaultWindowHeight">
+            <summary>メイン画面の既定ウィンドウ高さ（ピクセル）</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Settings.EffectiveWindowWidth">
+            <summary>
+            実際に適用するウィンドウ幅。旧形式の値（列数など最小幅未満）は既定値へフォールバックする。
+            </summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Settings.EffectiveWindowHeight">
+            <summary>
+            実際に適用するウィンドウ高さ。旧形式の値（行数など最小高さ未満）は既定値へフォールバックする。
+            </summary>
         </member>
         <member name="P:BrowserChooser3.Classes.Settings.IconWidth">
             <summary>アイコン幅</summary>
@@ -1735,7 +1765,24 @@
             <summary>起動遅延</summary>
         </member>
         <member name="P:BrowserChooser3.Classes.Settings.StartupMessage">
-            <summary>起動メッセージ</summary>
+            <summary>
+            起動メッセージ。非空のときだけMainFormの上部にラベル表示される。
+            既定は空（表示しない）。旧既定値の "BrowserChooser3 Started" は
+            実際には一度も表示されていなかったプレースホルダのため、
+            既存設定ファイルにこの値が残っている場合も未設定として扱う
+            （<see cref="P:BrowserChooser3.Classes.Settings.IsStartupMessageVisible"/>）。
+            </summary>
+        </member>
+        <member name="F:BrowserChooser3.Classes.Settings.LegacyDefaultStartupMessage">
+            <summary>
+            旧既定値のプレースホルダ。既存設定ファイルからこの値が読み込まれても
+            起動メッセージは表示しない。
+            </summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Settings.IsStartupMessageVisible">
+            <summary>
+            起動メッセージを表示すべきかどうかを返します。
+            </summary>
         </member>
         <member name="P:BrowserChooser3.Classes.Settings.EnableTransparency">
             <summary>透明化有効</summary>
@@ -2976,6 +3023,11 @@
             URL表示用テキストボックス
             </summary>
         </member>
+        <member name="F:BrowserChooser3.Forms.MainForm._startupMessageLabel">
+            <summary>
+            起動メッセージ（Settings.StartupMessage）表示用ラベル
+            </summary>
+        </member>
         <member name="M:BrowserChooser3.Forms.MainForm.#ctor">
             <summary>
             MainFormクラスの新しいインスタンスを初期化します
@@ -3060,8 +3112,16 @@
         </member>
         <member name="M:BrowserChooser3.Forms.MainForm.MainForm_Paint(System.Object,System.Windows.Forms.PaintEventArgs)">
             <summary>
-            背景グラデーション描画イベント
+            背景グラデーション・配置グリッドの描画イベント
             </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.MainForm.DrawLayoutGrid(System.Drawing.Graphics)">
+            <summary>
+            ブラウザボタンの配置グリッドに沿った罫線を描画します。
+            Settings.ShowGrid（既定OFF）が有効な場合のみ描画し、色と線幅は
+            Settings.GridColor / Settings.GridLineWidth に従います。
+            </summary>
+            <param name="graphics">描画先</param>
         </member>
         <member name="M:BrowserChooser3.Forms.MainForm.MainForm_Load(System.Object,System.EventArgs)">
             <summary>
@@ -3076,6 +3136,16 @@
         <member name="F:BrowserChooser3.Forms.MainForm.ColumnLayoutMargin">
             <summary>
             マージン込みの列数計算で使う左右マージン幅（右端ボタンとbtnInfo用のスペース確保）
+            </summary>
+        </member>
+        <member name="F:BrowserChooser3.Forms.MainForm.GridOriginX">
+            <summary>
+            ブラウザボタン配置の原点X（btnInfoの右側から開始）。グリッド描画もこの原点に合わせる。
+            </summary>
+        </member>
+        <member name="F:BrowserChooser3.Forms.MainForm.GridOriginY">
+            <summary>
+            ブラウザボタン配置の原点Y。グリッド描画もこの原点に合わせる。
             </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.MainForm.CalculateColumnsPerRow">
@@ -3258,6 +3328,13 @@
         <member name="M:BrowserChooser3.Forms.MainForm.CreateURLDisplayTextBox">
             <summary>
             URL表示用テキストボックスの作成
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.MainForm.CreateStartupMessageLabel">
+            <summary>
+            起動メッセージラベルの作成。
+            Settings.StartupMessage が非空のときだけフォーム上部に表示します。
+            RefreshFormから再度呼ばれた場合は旧ラベルを除去・破棄してから作り直します。
             </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.MainForm.CreateCountdownLabel">

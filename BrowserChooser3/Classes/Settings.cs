@@ -180,11 +180,43 @@ namespace BrowserChooser3.Classes
         /// <summary>URLリスト</summary>
         public List<URL> URLs { get; set; } = new();
         
-        /// <summary>幅</summary>
-        public int Width { get; set; } = 8;
-        
-        /// <summary>高さ</summary>
-        public int Height { get; set; } = 1;
+        /// <summary>
+        /// メイン画面の初期ウィンドウ幅（ピクセル）。
+        /// 旧バージョンではグリッドの列数（既定8）として書き出されていた名残があるため、
+        /// <see cref="MinimumWindowWidth"/> 未満の値は「未設定」とみなして
+        /// <see cref="EffectiveWindowWidth"/> が既定値へフォールバックする。
+        /// </summary>
+        public int Width { get; set; } = DefaultWindowWidth;
+
+        /// <summary>
+        /// メイン画面の初期ウィンドウ高さ（ピクセル）。<see cref="Width"/> と同様に
+        /// 旧値（既定1）は未設定として扱う。
+        /// </summary>
+        public int Height { get; set; } = DefaultWindowHeight;
+
+        /// <summary>メイン画面の最小ウィンドウ幅（ピクセル）</summary>
+        public const int MinimumWindowWidth = 600;
+
+        /// <summary>メイン画面の最小ウィンドウ高さ（ピクセル）</summary>
+        public const int MinimumWindowHeight = 300;
+
+        /// <summary>メイン画面の既定ウィンドウ幅（ピクセル）</summary>
+        public const int DefaultWindowWidth = 600;
+
+        /// <summary>メイン画面の既定ウィンドウ高さ（ピクセル）</summary>
+        public const int DefaultWindowHeight = 300;
+
+        /// <summary>
+        /// 実際に適用するウィンドウ幅。旧形式の値（列数など最小幅未満）は既定値へフォールバックする。
+        /// </summary>
+        [XmlIgnore]
+        public int EffectiveWindowWidth => Width >= MinimumWindowWidth ? Width : DefaultWindowWidth;
+
+        /// <summary>
+        /// 実際に適用するウィンドウ高さ。旧形式の値（行数など最小高さ未満）は既定値へフォールバックする。
+        /// </summary>
+        [XmlIgnore]
+        public int EffectiveWindowHeight => Height >= MinimumWindowHeight ? Height : DefaultWindowHeight;
         
 
         
@@ -325,8 +357,28 @@ namespace BrowserChooser3.Classes
         /// <summary>起動遅延</summary>
         public int StartupDelay { get; set; } = 0;
 
-        /// <summary>起動メッセージ</summary>
-        public string StartupMessage { get; set; } = "BrowserChooser3 Started";
+        /// <summary>
+        /// 起動メッセージ。非空のときだけMainFormの上部にラベル表示される。
+        /// 既定は空（表示しない）。旧既定値の "BrowserChooser3 Started" は
+        /// 実際には一度も表示されていなかったプレースホルダのため、
+        /// 既存設定ファイルにこの値が残っている場合も未設定として扱う
+        /// （<see cref="IsStartupMessageVisible"/>）。
+        /// </summary>
+        public string StartupMessage { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 旧既定値のプレースホルダ。既存設定ファイルからこの値が読み込まれても
+        /// 起動メッセージは表示しない。
+        /// </summary>
+        internal const string LegacyDefaultStartupMessage = "BrowserChooser3 Started";
+
+        /// <summary>
+        /// 起動メッセージを表示すべきかどうかを返します。
+        /// </summary>
+        [XmlIgnore]
+        public bool IsStartupMessageVisible =>
+            !string.IsNullOrWhiteSpace(StartupMessage) &&
+            StartupMessage != LegacyDefaultStartupMessage;
 
         /// <summary>透明化有効</summary>
         public bool EnableTransparency { get; set; } = false;

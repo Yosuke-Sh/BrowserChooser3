@@ -899,7 +899,7 @@ namespace BrowserChooser3.Forms
             // 設定をデフォルト値に更新
             _settings.StartInTray = false; // デフォルト値
             _settings.StartupDelay = 0; // デフォルト値
-            _settings.StartupMessage = "BrowserChooser3 Started"; // デフォルト値
+            _settings.StartupMessage = string.Empty; // デフォルト値（空＝起動メッセージを表示しない）
 
             // UIに反映
 
@@ -1198,11 +1198,12 @@ namespace BrowserChooser3.Forms
 
                 
 
+                // ウィンドウサイズ（旧形式の値はEffective*でフォールバックされる）
                 var nudHeight = Controls.Find("nudHeight", true).FirstOrDefault() as NumericUpDown;
-                if (nudHeight != null) nudHeight.Value = _settings.Height;
+                if (nudHeight != null) nudHeight.Value = Math.Clamp(_settings.EffectiveWindowHeight, (int)nudHeight.Minimum, (int)nudHeight.Maximum);
 
                 var nudWidth = Controls.Find("nudWidth", true).FirstOrDefault() as NumericUpDown;
-                if (nudWidth != null) nudWidth.Value = _settings.Width;
+                if (nudWidth != null) nudWidth.Value = Math.Clamp(_settings.EffectiveWindowWidth, (int)nudWidth.Minimum, (int)nudWidth.Maximum);
 
                 // 背景色の表示用PictureBoxを設定値で初期化（保存時との不整合防止）
                 var pbBackgroundColorLoad = Controls.Find("pbBackgroundColor", true).FirstOrDefault() as PictureBox;
@@ -1212,8 +1213,10 @@ namespace BrowserChooser3.Forms
                     Logger.LogInfo("OptionsForm.LoadSettingsToControls", $"BackgroundColor loaded: {_settings.BackgroundColorValue} (to control: {pbBackgroundColorLoad.BackColor})");
                 }
 
-                var nudDelayBeforeAutoload = Controls.Find("nudDelayBeforeAutoload", true).FirstOrDefault() as NumericUpDown;
-                if (nudDelayBeforeAutoload != null) nudDelayBeforeAutoload.Value = _settings.DefaultDelay;
+                // 既定遅延（従来 nudDelayBeforeAutoload という存在しないコントロール名でも
+                // 読み書きしていたが、nudDefaultDelay と同一設定の重複エイリアスのため削除した）
+                var nudDefaultDelay = Controls.Find("nudDefaultDelay", true).FirstOrDefault() as NumericUpDown;
+                if (nudDefaultDelay != null) nudDefaultDelay.Value = _settings.DefaultDelay;
 
                 var txtSeparator = Controls.Find("txtSeparator", true).FirstOrDefault() as TextBox;
                 if (txtSeparator != null) txtSeparator.Text = _settings.Separator;
@@ -1394,22 +1397,8 @@ namespace BrowserChooser3.Forms
                 var txtDefaultMessage = Controls.Find("txtDefaultMessage", true).FirstOrDefault() as TextBox;
                 if (txtDefaultMessage != null) txtDefaultMessage.Text = _settings.DefaultMessage;
 
-                // その他の設定項目の読み込み
-
-
-
-
-                var txtUserAgentLoad = Controls.Find("txtUserAgent", true).FirstOrDefault() as TextBox;
-                if (txtUserAgentLoad != null) txtUserAgentLoad.Text = _settings.UserAgent;
-
-                var nudDefaultDelayLoad = Controls.Find("nudDefaultDelay", true).FirstOrDefault() as NumericUpDown;
-                if (nudDefaultDelayLoad != null) nudDefaultDelayLoad.Value = _settings.DefaultDelay;
-
-                var txtSeparatorLoad = Controls.Find("txtSeparator", true).FirstOrDefault() as TextBox;
-                if (txtSeparatorLoad != null) txtSeparatorLoad.Text = _settings.Separator;
-
-                var chkAllowStayOpenLoad = Controls.Find("chkAllowStayOpen", true).FirstOrDefault() as CheckBox;
-                if (chkAllowStayOpenLoad != null) chkAllowStayOpenLoad.Checked = _settings.AllowStayOpen;
+                // UserAgent / Separator / AllowStayOpen / DefaultDelay は上部で一度だけ読み込む
+                // （従来ここに同じControls.Findの二重書き込みがあったため削除した）
             }
             catch (Exception ex)
             {
@@ -1494,8 +1483,10 @@ namespace BrowserChooser3.Forms
                 var nudWidth = Controls.Find("nudWidth", true).FirstOrDefault() as NumericUpDown;
                 if (nudWidth != null) _settings.Width = (int)nudWidth.Value;
 
-                var nudDelayBeforeAutoload = Controls.Find("nudDelayBeforeAutoload", true).FirstOrDefault() as NumericUpDown;
-                if (nudDelayBeforeAutoload != null) _settings.DefaultDelay = (int)nudDelayBeforeAutoload.Value;
+                // 既定遅延（nudDelayBeforeAutoload という存在しないコントロールへの重複エイリアスを削除し、
+                // nudDefaultDelay の1経路に統一した）
+                var nudDefaultDelay = Controls.Find("nudDefaultDelay", true).FirstOrDefault() as NumericUpDown;
+                if (nudDefaultDelay != null) _settings.DefaultDelay = (int)nudDefaultDelay.Value;
 
                 var txtSeparator = Controls.Find("txtSeparator", true).FirstOrDefault() as TextBox;
                 if (txtSeparator != null) _settings.Separator = txtSeparator.Text;
@@ -1757,22 +1748,8 @@ namespace BrowserChooser3.Forms
                 var txtDefaultMessage = Controls.Find("txtDefaultMessage", true).FirstOrDefault() as TextBox;
                 if (txtDefaultMessage != null) _settings.DefaultMessage = txtDefaultMessage.Text;
 
-                // その他の設定項目の保存
-
-
-
-
-                var txtUserAgentSave = Controls.Find("txtUserAgent", true).FirstOrDefault() as TextBox;
-                if (txtUserAgentSave != null) _settings.UserAgent = txtUserAgentSave.Text;
-
-                var nudDefaultDelaySave = Controls.Find("nudDefaultDelay", true).FirstOrDefault() as NumericUpDown;
-                if (nudDefaultDelaySave != null) _settings.DefaultDelay = (int)nudDefaultDelaySave.Value;
-
-                var txtSeparatorSave = Controls.Find("txtSeparator", true).FirstOrDefault() as TextBox;
-                if (txtSeparatorSave != null) _settings.Separator = txtSeparatorSave.Text;
-
-                var chkAllowStayOpenSave = Controls.Find("chkAllowStayOpen", true).FirstOrDefault() as CheckBox;
-                if (chkAllowStayOpenSave != null) _settings.AllowStayOpen = chkAllowStayOpenSave.Checked;
+                // UserAgent / DefaultDelay / Separator / AllowStayOpen は上部で一度だけ保存する
+                // （従来ここに同じControls.Findの二重書き込みがあったため削除した）
 
                 // Enable Logging設定
                 var chkEnableLoggingSave = Controls.Find("chkEnableLogging", true).FirstOrDefault() as CheckBox;

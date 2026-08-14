@@ -1297,11 +1297,77 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 ForeColor = Color.Gray
             };
 
+            // ウィンドウサイズ設定（Settings.Width / Settings.Height）。
+            // 従来 OptionsForm 側は "nudWidth"/"nudHeight" を Controls.Find で
+            // 読み書きしていたが、そのコントロールが一度も生成されていなかったため
+            // 設定が空回りしていた。ここで実際に生成して配線する。
+            var groupBox4 = new GroupBox
+            {
+                Text = "Window Size",
+                Location = new Point(baseX, baseY + groupSpacing * 3 + 100),
+                Size = new Size(400, 70),
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+
+            var lblWindowWidth = new Label
+            {
+                Text = "Width:",
+                Location = new Point(controlSpacing, contentOffset),
+                Size = new Size(labelWidth, 23),
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+
+            var nudWidth = new NumericUpDown
+            {
+                Name = "nudWidth",
+                Location = new Point(controlSpacing + labelWidth, contentOffset - 3),
+                Size = new Size(60, 23),
+                Minimum = Settings.MinimumWindowWidth,
+                Maximum = 4000,
+                Value = Math.Clamp(settings.EffectiveWindowWidth, Settings.MinimumWindowWidth, 4000),
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+            nudWidth.ValueChanged += (s, e) => setModified(true);
+
+            var lblWindowHeight = new Label
+            {
+                Text = "Height:",
+                Location = new Point(controlSpacing + labelWidth + 80, contentOffset),
+                Size = new Size(labelWidth, 23),
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+
+            var nudHeight = new NumericUpDown
+            {
+                Name = "nudHeight",
+                Location = new Point(controlSpacing + labelWidth + 80 + labelWidth, contentOffset - 3),
+                Size = new Size(60, 23),
+                Minimum = Settings.MinimumWindowHeight,
+                Maximum = 4000,
+                Value = Math.Clamp(settings.EffectiveWindowHeight, Settings.MinimumWindowHeight, 4000),
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+            nudHeight.ValueChanged += (s, e) => setModified(true);
+
+            var lblWindowSizeDesc = new Label
+            {
+                Text = "メイン画面の初期ウィンドウサイズを設定します",
+                Location = new Point(baseX, baseY + groupSpacing * 3 + 175),
+                Size = new Size(550, 20),
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                ForeColor = Color.Gray
+            };
+
             // コントロールの追加
             groupBox1.Controls.Add(lblGridWidth);
             groupBox1.Controls.Add(nudGridWidth);
             groupBox1.Controls.Add(lblGridHeight);
             groupBox1.Controls.Add(nudGridHeight);
+
+            groupBox4.Controls.Add(lblWindowWidth);
+            groupBox4.Controls.Add(nudWidth);
+            groupBox4.Controls.Add(lblWindowHeight);
+            groupBox4.Controls.Add(nudHeight);
 
             groupBox2.Controls.Add(lblIconWidth);
             groupBox2.Controls.Add(nudIconWidth);
@@ -1318,6 +1384,8 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             panel.Controls.Add(groupBox1);
             panel.Controls.Add(groupBox2);
             panel.Controls.Add(groupBox3);
+            panel.Controls.Add(groupBox4);
+            panel.Controls.Add(lblWindowSizeDesc);
             panel.Controls.Add(chkShowGrid);
             panel.Controls.Add(lblGridColor);
             panel.Controls.Add(pbGridColor);

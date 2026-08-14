@@ -35,6 +35,11 @@ namespace BrowserChooser3.Forms
         private Label? _countdownLabel;
         private bool _isPaused = false;
 
+        /// <summary>
+        /// 起動メッセージ（Settings.StartupMessage）表示用ラベル
+        /// </summary>
+        private Label? _startupMessageLabel;
+
         private string _currentText = string.Empty;
 
         private ContextMenuStrip? _cmOptions;
@@ -52,6 +57,7 @@ namespace BrowserChooser3.Forms
         private static readonly Font OverlayBoldFont = new("Segoe UI", 8.0f, FontStyle.Bold, GraphicsUnit.Point, 0);
         private static readonly Font UrlDisplayFont = new("Segoe UI", 7.0f, FontStyle.Regular, GraphicsUnit.Point, 0);
         private static readonly Font CountdownLabelFont = new("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0);
+        private static readonly Font StartupMessageFont = new("Segoe UI", 9.0f, FontStyle.Bold, GraphicsUnit.Point, 0);
 
         /// <summary>
         /// MainFormクラスの新しいインスタンスを初期化します
@@ -111,7 +117,10 @@ namespace BrowserChooser3.Forms
                 
                 // カウントダウンラベルの作成
                 CreateCountdownLabel();
-                
+
+                // 起動メッセージラベルの作成
+                CreateStartupMessageLabel();
+
                 // ボタンのツールチップ設定
                 SetupButtonToolTips();
                 
@@ -365,16 +374,19 @@ namespace BrowserChooser3.Forms
             Font = FormFont;
             
             // サイズの設定（動的サイズ変更対応）
-            MinimumSize = new Size(600, 300);  // 最小サイズを設定
+            MinimumSize = new Size(Settings.MinimumWindowWidth, Settings.MinimumWindowHeight);
             
-            // 背景グラデーション設定（RefreshFormから複数回呼ばれても購読が積み上がらないよう、
+            // 背景グラデーション・グリッド描画設定（RefreshFormから複数回呼ばれても購読が積み上がらないよう、
             // 一旦解除してから必要な場合のみ再購読する）
             this.Paint -= MainForm_Paint;
-            if (_settings?.EnableBackgroundGradient == true)
+            if (_settings?.EnableBackgroundGradient == true || _settings?.ShowGrid == true)
             {
                 this.Paint += MainForm_Paint;
             }
-            ClientSize = new Size(600, 300);   // 初期サイズ
+            // 初期サイズ（Settings.Width/Heightを反映。旧形式の値はEffective*が既定値へフォールバックする）
+            ClientSize = new Size(
+                _settings?.EffectiveWindowWidth ?? Settings.DefaultWindowWidth,
+                _settings?.EffectiveWindowHeight ?? Settings.DefaultWindowHeight);
 
             // サイズ変更イベントの設定（同上の理由で解除してから再購読する）
             Resize -= MainForm_Resize;
@@ -559,7 +571,7 @@ namespace BrowserChooser3.Forms
         }
 
         /// <summary>
-        /// 背景グラデーション描画イベント
+        /// 背景グラデーション・配置グリッドの描画イベント
         /// </summary>
         private void MainForm_Paint(object? sender, PaintEventArgs e)
         {
@@ -568,18 +580,67 @@ namespace BrowserChooser3.Forms
                 try
                 {
                     var rect = new Rectangle(0, 0, this.Width, this.Height);
-                    var darkerColor = Color.FromArgb(255, 
+                    var darkerColor = Color.FromArgb(255,
                         Math.Max(0, _settings.BackgroundColorValue.R - 50),
                         Math.Max(0, _settings.BackgroundColorValue.G - 50),
                         Math.Max(0, _settings.BackgroundColorValue.B - 50));
                     using var brush = new LinearGradientBrush(rect, _settings.BackgroundColorValue, darkerColor, LinearGradientMode.Vertical);
-                    
+
                     e.Graphics.FillRectangle(brush, rect);
                 }
                 catch (Exception ex)
                 {
                     Logger.LogError("MainForm.MainForm_Paint", "背景グラデーション描画エラー", ex.Message);
                 }
+            }
+
+            DrawLayoutGrid(e.Graphics);
+        }
+
+        /// <summary>
+        /// ブラウザボタンの配置グリッドに沿った罫線を描画します。
+        /// Settings.ShowGrid（既定OFF）が有効な場合のみ描画し、色と線幅は
+        /// Settings.GridColor / Settings.GridLineWidth に従います。
+        /// </summary>
+        /// <param name="graphics">描画先</param>
+        private void DrawLayoutGrid(Graphics graphics)
+        {
+            if (_settings?.ShowGrid != true) return;
+
+            try
+            {
+                var cellWidth = _settings.IconWidth + _settings.IconGapWidth;
+                var cellHeight = _settings.IconHeight + _settings.IconGapHeight;
+                if (cellWidth <= 0 || cellHeight <= 0) return;
+
+                var columns = CalculateColumnsPerRow();
+                var visibleCount = _browsers?.Count(b => b.Visible && b.IsActive) ?? 0;
+                // ボタンが1つも無い場合でも配置枠が分かるよう、最低1行は描画する
+                var rows = Math.Max(1, (int)Math.Ceiling(visibleCount / (double)columns));
+
+                var gridWidth = columns * cellWidth;
+                var gridHeight = rows * cellHeight;
+                var lineWidth = Math.Max(1, _settings.GridLineWidth);
+
+                using var pen = new Pen(Color.FromArgb(_settings.GridColor), lineWidth);
+
+                // 縦線（列の境界）
+                for (var col = 0; col <= columns; col++)
+                {
+                    var x = GridOriginX + (col * cellWidth);
+                    graphics.DrawLine(pen, x, GridOriginY, x, GridOriginY + gridHeight);
+                }
+
+                // 横線（行の境界）
+                for (var row = 0; row <= rows; row++)
+                {
+                    var y = GridOriginY + (row * cellHeight);
+                    graphics.DrawLine(pen, GridOriginX, y, GridOriginX + gridWidth, y);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("MainForm.DrawLayoutGrid", "グリッド描画エラー", ex.Message);
             }
         }
 
@@ -666,6 +727,16 @@ namespace BrowserChooser3.Forms
         private const int ColumnLayoutMargin = 120;
 
         /// <summary>
+        /// ブラウザボタン配置の原点X（btnInfoの右側から開始）。グリッド描画もこの原点に合わせる。
+        /// </summary>
+        private const int GridOriginX = 50;
+
+        /// <summary>
+        /// ブラウザボタン配置の原点Y。グリッド描画もこの原点に合わせる。
+        /// </summary>
+        private const int GridOriginY = 30;
+
+        /// <summary>
         /// フォーム幅とアイコン設定から1行あたりのボタン列数を計算します。
         /// ボタン配置・オーバーレイラベル配置・矢印キー移動の3箇所で個別に
         /// 計算されておりマージン定数（120 vs 80）が食い違っていたため、
@@ -714,8 +785,8 @@ namespace BrowserChooser3.Forms
                 {
                     var row = buttonIndex / columnsPerRow;
                     var col = buttonIndex % columnsPerRow;
-                    var x = 50 + (col * (buttonWidth + gapWidth)); // btnInfoの右側から開始
-                    var y = 30 + (row * (buttonHeight + gapHeight));
+                    var x = GridOriginX + (col * (buttonWidth + gapWidth)); // btnInfoの右側から開始
+                    var y = GridOriginY + (row * (buttonHeight + gapHeight));
 
                     button.Location = new Point(x, y);
 
@@ -1099,7 +1170,10 @@ namespace BrowserChooser3.Forms
                 
                 // カウントダウンラベルを再作成
                 CreateCountdownLabel();
-                
+
+                // 起動メッセージラベルを再作成（Optionsでの変更を反映）
+                CreateStartupMessageLabel();
+
                 // ボタンのツールチップ設定
                 SetupButtonToolTips();
                 
@@ -1877,6 +1951,37 @@ namespace BrowserChooser3.Forms
             };
             
             Controls.Add(_urlDisplayTextBox);
+        }
+
+        /// <summary>
+        /// 起動メッセージラベルの作成。
+        /// Settings.StartupMessage が非空のときだけフォーム上部に表示します。
+        /// RefreshFormから再度呼ばれた場合は旧ラベルを除去・破棄してから作り直します。
+        /// </summary>
+        private void CreateStartupMessageLabel()
+        {
+            if (_startupMessageLabel != null)
+            {
+                Controls.Remove(_startupMessageLabel);
+                _startupMessageLabel.Dispose();
+                _startupMessageLabel = null;
+            }
+
+            if (_settings?.IsStartupMessageVisible != true) return;
+
+            _startupMessageLabel = new Label
+            {
+                Name = "lblStartupMessage",
+                Text = _settings.StartupMessage,
+                AutoSize = true,
+                Location = new Point(GridOriginX, 6),
+                Font = StartupMessageFont,
+                BackColor = Color.Transparent,
+                ForeColor = Color.DarkSlateGray
+            };
+
+            Controls.Add(_startupMessageLabel);
+            _startupMessageLabel.BringToFront();
         }
 
         /// <summary>
