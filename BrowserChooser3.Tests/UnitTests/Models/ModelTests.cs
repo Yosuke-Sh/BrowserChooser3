@@ -261,41 +261,6 @@ namespace BrowserChooser3.Tests
         }
         #endregion
 
-        #region FocusSettingsテスト
-
-        [Fact]
-        public void FocusSettings_Constructor_ShouldInitializeCorrectly()
-        {
-            // Act
-            var focusSettings = new FocusSettings();
-
-            // Assert
-            focusSettings.Should().NotBeNull();
-            focusSettings.ShowFocus.Should().BeFalse();
-            focusSettings.BoxColor.Should().Be(System.Drawing.Color.Red);
-            focusSettings.BoxWidth.Should().Be(2);
-        }
-
-        [Fact]
-        public void FocusSettings_Properties_ShouldBeSettable()
-        {
-            // Arrange
-            var focusSettings = new FocusSettings();
-            var showFocus = true;
-            var boxColor = System.Drawing.Color.Blue;
-            var boxWidth = 5;
-
-            // Act
-            focusSettings.ShowFocus = showFocus;
-            focusSettings.BoxColor = boxColor;
-            focusSettings.BoxWidth = boxWidth;
-
-            // Assert
-            focusSettings.ShowFocus.Should().Be(showFocus);
-            focusSettings.BoxColor.Should().Be(boxColor);
-            focusSettings.BoxWidth.Should().Be(boxWidth);
-        }
-        #endregion
 
         #region BrowserDefinitionテスト
 
@@ -349,11 +314,6 @@ namespace BrowserChooser3.Tests
         }
         #endregion
 
-        #region DisplayDictionaryテスト
-
-
-        #endregion
-
         #region 境界値テスト
 
         [Fact]
@@ -375,19 +335,6 @@ namespace BrowserChooser3.Tests
             browser.Hotkey.Should().Be(maxChar);
         }
 
-        [Fact]
-        public void FocusSettings_WithMaxValues_ShouldHandleGracefully()
-        {
-            // Arrange
-            var focusSettings = new FocusSettings();
-            var maxInt = int.MaxValue;
-
-            // Act
-            focusSettings.BoxWidth = maxInt;
-
-            // Assert
-            focusSettings.BoxWidth.Should().Be(maxInt);
-        }
         #endregion
 
         #region 例外処理テスト

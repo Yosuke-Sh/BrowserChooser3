@@ -8,22 +8,36 @@ namespace BrowserChooser3.Classes.Utilities
     public static class TestEnvironmentDetector
     {
         /// <summary>
-        /// 現在の実行環境がテスト環境かどうかを判定します
+        /// テスト環境判定結果のキャッシュ（プロセス起動中に一度だけ評価する）
+        /// </summary>
+        private static readonly Lazy<bool> _isTestEnvironment = new(DetectTestEnvironment);
+
+        /// <summary>
+        /// 現在の実行環境がテスト環境かどうかを判定します。
+        /// 判定結果はプロセス起動中一度だけ評価してキャッシュされます。
         /// </summary>
         /// <returns>テスト環境の場合はtrue、それ以外はfalse</returns>
         public static bool IsTestEnvironment()
+        {
+            return _isTestEnvironment.Value;
+        }
+
+        private static bool DetectTestEnvironment()
         {
             try
             {
                 // 現在のアセンブリを取得
                 var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-                
+
                 // テスト関連のアセンブリが存在するかチェック
                 foreach (var assembly in assemblies)
                 {
                     var assemblyName = assembly.GetName().Name;
-                    if (assemblyName != null && 
-                        (assemblyName.Contains("xunit") || 
+                    if (assemblyName != null &&
+                        (assemblyName.Contains("xunit") ||
+                         assemblyName.Contains("nunit") ||
+                         assemblyName.Contains("mstest") ||
+                         assemblyName.Contains("testhost") ||
                          assemblyName.Contains("test") ||
                          assemblyName.Contains("Test") ||
                          assemblyName.Contains("BrowserChooser3.Tests")))
@@ -39,9 +53,16 @@ namespace BrowserChooser3.Classes.Utilities
                     return true;
                 }
 
+                // 環境変数でダイアログ無効化が設定されている場合
+                var disableDialogs = Environment.GetEnvironmentVariable("DISABLE_DIALOGS");
+                if (!string.IsNullOrEmpty(disableDialogs) && disableDialogs.Equals("true", StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+
                 // プロセス名でテスト環境かどうかをチェック
                 var processName = System.Diagnostics.Process.GetCurrentProcess().ProcessName.ToLower();
-                if (processName.Contains("test") || processName.Contains("dotnet"))
+                if (processName.Contains("test") || processName.Contains("dotnet") || processName.Contains("vstest"))
                 {
                     return true;
                 }

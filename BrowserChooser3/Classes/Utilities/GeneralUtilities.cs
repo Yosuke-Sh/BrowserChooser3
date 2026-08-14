@@ -223,7 +223,17 @@ namespace BrowserChooser3.Classes.Utilities
             try
             {
                 var processes = System.Diagnostics.Process.GetProcessesByName(processName);
-                return processes.Length > 0;
+                try
+                {
+                    return processes.Length > 0;
+                }
+                finally
+                {
+                    foreach (var proc in processes)
+                    {
+                        proc.Dispose();
+                    }
+                }
             }
             catch
             {

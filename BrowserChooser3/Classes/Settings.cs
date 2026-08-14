@@ -18,6 +18,11 @@ namespace BrowserChooser3.Classes
         /// </summary>
         public const int CURRENT_FILE_VERSION = 1;
 
+        /// <summary>
+        /// XMLシリアライザ（生成コストが高いため使い回す）
+        /// </summary>
+        private static readonly XmlSerializer _xmlSerializer = new(typeof(Settings));
+
 
 
         /// <summary>
@@ -479,12 +484,11 @@ namespace BrowserChooser3.Classes
                 Directory.CreateDirectory(path);
             }
 
-            var xmlSerializer = new XmlSerializer(typeof(Settings));
             var filePath = Path.Combine(path, BrowserChooserConfigFileName);
 
             using var writer = new StreamWriter(filePath);
             Logger.LogDebug("Settings.IntSave", "Writing", path);
-            xmlSerializer.Serialize(writer, this);
+            _xmlSerializer.Serialize(writer, this);
             Logger.LogDebug("Settings.IntSave", "End", path);
         }
 
@@ -507,7 +511,7 @@ namespace BrowserChooser3.Classes
                 return new Settings(false);
             }
 
-            var serializer = new XmlSerializer(typeof(Settings));
+            var serializer = _xmlSerializer;
             Settings output;
 
             // PathManagerを使用して設定ファイルのパスを決定

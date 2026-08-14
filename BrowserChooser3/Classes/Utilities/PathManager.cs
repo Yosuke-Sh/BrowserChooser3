@@ -86,6 +86,15 @@ namespace BrowserChooser3.Classes.Utilities
         }
 
         /// <summary>
+        /// アイコンのディスクキャッシュの出力先ディレクトリを取得します
+        /// </summary>
+        /// <returns>アイコンキャッシュの出力先ディレクトリ</returns>
+        public static string GetIconCacheDirectory()
+        {
+            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "BrowserChooser3", "iconcache");
+        }
+
+        /// <summary>
         /// 設定ファイルの完全パスを取得します
         /// </summary>
         /// <param name="fileName">ファイル名</param>

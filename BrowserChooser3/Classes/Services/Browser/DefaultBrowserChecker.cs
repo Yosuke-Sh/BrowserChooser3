@@ -261,7 +261,26 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
         /// <returns>成功した場合はtrue</returns>
         public static bool ShowDefaultAppsSettings()
         {
-            Logger.LogDebug("DefaultBrowserChecker.ShowDefaultAppsSettings", "Windows 11デフォルトアプリ設定画面表示開始");
+            return ShowDefaultAppsSettingsInternal("DefaultBrowserChecker.ShowDefaultAppsSettings");
+        }
+
+        /// <summary>
+        /// HTTP/HTTPSプロトコルのデフォルトアプリ設定画面を表示します
+        /// </summary>
+        /// <returns>成功した場合はtrue</returns>
+        public static bool ShowHttpProtocolSettings()
+        {
+            return ShowDefaultAppsSettingsInternal("DefaultBrowserChecker.ShowHttpProtocolSettings");
+        }
+
+        /// <summary>
+        /// デフォルトアプリ設定画面を表示する実処理。
+        /// ShowDefaultAppsSettings/ShowHttpProtocolSettingsはログの呼び出し元名以外は同一の処理のため、
+        /// ここに集約している（Windows 11では実際には同じms-settings:defaultapps画面を開く）。
+        /// </summary>
+        private static bool ShowDefaultAppsSettingsInternal(string logCaller)
+        {
+            Logger.LogDebug(logCaller, "デフォルトアプリ設定画面表示開始");
 
             try
             {
@@ -273,8 +292,8 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
                         FileName = "ms-settings:defaultapps",
                         UseShellExecute = true
                     });
-                    
-                    Logger.LogDebug("DefaultBrowserChecker.ShowDefaultAppsSettings", "Windows 11デフォルトアプリ設定画面表示完了");
+
+                    Logger.LogDebug(logCaller, "Windows 11デフォルトアプリ設定画面表示完了");
                     return result != null;
                 }
                 else
@@ -286,57 +305,14 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
                         Arguments = "/name Microsoft.DefaultPrograms /page pageDefaultProgram\\pageAdvancedSettings?pszAppName=Microsoft.Windows.Shell.RunDialog",
                         UseShellExecute = true
                     });
-                    
-                    Logger.LogDebug("DefaultBrowserChecker.ShowDefaultAppsSettings", "Windows 10以前デフォルトアプリ設定画面表示完了");
+
+                    Logger.LogDebug(logCaller, "Windows 10以前デフォルトアプリ設定画面表示完了");
                     return result != null;
                 }
             }
             catch (Exception ex)
             {
-                Logger.LogError("DefaultBrowserChecker.ShowDefaultAppsSettings", "デフォルトアプリ設定画面表示エラー", ex.Message);
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// HTTP/HTTPSプロトコルのデフォルトアプリ設定画面を表示します
-        /// </summary>
-        /// <returns>成功した場合はtrue</returns>
-        public static bool ShowHttpProtocolSettings()
-        {
-            Logger.LogDebug("DefaultBrowserChecker.ShowHttpProtocolSettings", "HTTP/HTTPSプロトコル設定画面表示開始");
-
-            try
-            {
-                if (IsWindows11())
-                {
-                    // Windows 11用のHTTP/HTTPSプロトコル設定画面を表示
-                    var result = Process.Start(new ProcessStartInfo
-                    {
-                        FileName = "ms-settings:defaultapps",
-                        UseShellExecute = true
-                    });
-                    
-                    Logger.LogDebug("DefaultBrowserChecker.ShowHttpProtocolSettings", "Windows 11 HTTP/HTTPSプロトコル設定画面表示完了");
-                    return result != null;
-                }
-                else
-                {
-                    // Windows 10以前用の設定画面を表示
-                    var result = Process.Start(new ProcessStartInfo
-                    {
-                        FileName = "control",
-                        Arguments = "/name Microsoft.DefaultPrograms /page pageDefaultProgram\\pageAdvancedSettings?pszAppName=Microsoft.Windows.Shell.RunDialog",
-                        UseShellExecute = true
-                    });
-                    
-                    Logger.LogDebug("DefaultBrowserChecker.ShowHttpProtocolSettings", "Windows 10以前 HTTP/HTTPSプロトコル設定画面表示完了");
-                    return result != null;
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("DefaultBrowserChecker.ShowHttpProtocolSettings", "HTTP/HTTPSプロトコル設定画面表示エラー", ex.Message);
+                Logger.LogError(logCaller, "デフォルトアプリ設定画面表示エラー", ex.Message);
                 return false;
             }
         }
@@ -424,42 +400,6 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
             }
         }
         
-        /// <summary>
-        /// パスからAppIdを取得
-        /// </summary>
-        /// <param name="browserPath">ブラウザのパス</param>
-        /// <returns>AppId</returns>
-        private static string GetAppIdFromPath(string browserPath)
-        {
-            try
-            {
-                var fileName = Path.GetFileNameWithoutExtension(browserPath);
-                
-                // 主要ブラウザのAppId
-                switch (fileName.ToLower())
-                {
-                    case "chrome":
-                        return "ChromeHTML";
-                    case "firefox":
-                        return "FirefoxURL";
-                    case "msedge":
-                        return "MSEdgeHTM";
-                    case "iexplore":
-                        return "IE.HTTP";
-                    case "opera":
-                        return "OperaStable";
-                    case "brave":
-                        return "BraveHTML";
-                    default:
-                        return "";
-                }
-            }
-            catch
-            {
-                return "";
-            }
-        }
-
         /// <summary>
         /// デフォルトブラウザの設定をリセットします
         /// </summary>
@@ -560,43 +500,25 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
         /// <returns>成功した場合はtrue</returns>
         private static bool SetProtocolHandler(string protocol, string browserChooserPath)
         {
-            try
-            {
-                var command = $"\"{browserChooserPath}\" \"%1\"";
-                
-                // メインコマンドを設定
-                using var commandKey = Registry.ClassesRoot.CreateSubKey($"{protocol}\\shell\\open\\command");
-                if (commandKey != null)
-                {
-                    commandKey.SetValue("", command);
-                }
-
-                // DDE設定をクリア（Windows 11対応）
-                try
-                {
-                    Registry.ClassesRoot.DeleteSubKey($"{protocol}\\shell\\open\\ddeexec", false);
-                }
-                catch
-                {
-                    // DDEキーが存在しない場合は無視
-                }
-
-                // プロトコルハンドラーの説明を設定
-                using var protocolKey = Registry.ClassesRoot.CreateSubKey(protocol);
-                if (protocolKey != null)
+            return SetShellOpenCommandHandler(
+                logCaller: "DefaultBrowserChecker.SetProtocolHandler",
+                keyName: protocol,
+                browserChooserPath: browserChooserPath,
+                configureKey: protocolKey =>
                 {
                     protocolKey.SetValue("", "URL:BrowserChooser3 Protocol");
                     protocolKey.SetValue("URL Protocol", "");
-                }
 
-                Logger.LogDebug("DefaultBrowserChecker.SetProtocolHandler", "プロトコルハンドラー設定完了", protocol);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("DefaultBrowserChecker.SetProtocolHandler", "プロトコルハンドラー設定エラー", protocol, ex.Message);
-                return false;
-            }
+                    // DDE設定をクリア（Windows 11対応）
+                    try
+                    {
+                        Registry.ClassesRoot.DeleteSubKey($"{protocol}\\shell\\open\\ddeexec", false);
+                    }
+                    catch
+                    {
+                        // DDEキーが存在しない場合は無視
+                    }
+                });
         }
 
         /// <summary>
@@ -607,30 +529,45 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
         /// <returns>成功した場合はtrue</returns>
         private static bool SetFileExtensionHandler(string extension, string browserChooserPath)
         {
+            return SetShellOpenCommandHandler(
+                logCaller: "DefaultBrowserChecker.SetFileExtensionHandler",
+                keyName: extension,
+                browserChooserPath: browserChooserPath,
+                configureKey: extensionKey => extensionKey.SetValue("", "HTML Document"));
+        }
+
+        /// <summary>
+        /// レジストリの "{keyName}\shell\open\command" にBrowserChooser3の起動コマンドを登録し、
+        /// "{keyName}" キー自体は configureKey で呼び出し元固有の値を設定する。
+        /// プロトコルハンドラーとファイル拡張子ハンドラーの登録処理はキー配下の追加設定以外は同一のため、
+        /// ここに集約している。
+        /// </summary>
+        private static bool SetShellOpenCommandHandler(string logCaller, string keyName, string browserChooserPath, Action<RegistryKey> configureKey)
+        {
             try
             {
                 var command = $"\"{browserChooserPath}\" \"%1\"";
-                
-                // コマンドを設定
-                using var commandKey = Registry.ClassesRoot.CreateSubKey($"{extension}\\shell\\open\\command");
+
+                // メインコマンドを設定
+                using var commandKey = Registry.ClassesRoot.CreateSubKey($"{keyName}\\shell\\open\\command");
                 if (commandKey != null)
                 {
                     commandKey.SetValue("", command);
                 }
 
-                // ファイルタイプの説明を設定
-                using var extensionKey = Registry.ClassesRoot.CreateSubKey(extension);
-                if (extensionKey != null)
+                // 呼び出し元固有のキー設定
+                using var key = Registry.ClassesRoot.CreateSubKey(keyName);
+                if (key != null)
                 {
-                    extensionKey.SetValue("", "HTML Document");
+                    configureKey(key);
                 }
 
-                Logger.LogDebug("DefaultBrowserChecker.SetFileExtensionHandler", "ファイル拡張子ハンドラー設定完了", extension);
+                Logger.LogDebug(logCaller, "ハンドラー設定完了", keyName);
                 return true;
             }
             catch (Exception ex)
             {
-                Logger.LogError("DefaultBrowserChecker.SetFileExtensionHandler", "ファイル拡張子ハンドラー設定エラー", extension, ex.Message);
+                Logger.LogError(logCaller, "ハンドラー設定エラー", keyName, ex.Message);
                 return false;
             }
         }

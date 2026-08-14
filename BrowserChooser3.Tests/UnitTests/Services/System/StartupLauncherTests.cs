@@ -417,19 +417,6 @@ namespace BrowserChooser3.Tests
         }
 
         [Fact]
-        public void CheckDefaultBrowser_ShouldReturnBoolean()
-        {
-            // Act
-            var result = StartupLauncher.CheckDefaultBrowser();
-
-            // Assert
-            // Boolean result should be either true or false
-            (result == true || result == false).Should().BeTrue();
-        }
-
-
-
-        [Fact]
         public void Initialize_WithEmptyArgs_ShouldReturnTrue()
         {
             // Arrange
@@ -614,17 +601,6 @@ namespace BrowserChooser3.Tests
 
             // Assert
             result.Should().BeTrue();
-        }
-
-        [Fact]
-        public void CheckDefaultBrowser_WithException_ShouldHandleGracefully()
-        {
-            // Act
-            var result = StartupLauncher.CheckDefaultBrowser();
-
-            // Assert
-            // Boolean result should be either true or false
-            (result == true || result == false).Should().BeTrue();
         }
 
         [Fact]

@@ -32,44 +32,12 @@ namespace BrowserChooser3.Classes.Utilities
         #endregion
 
         /// <summary>
-        /// テスト環境かどうかを判定する
+        /// テスト環境かどうかを判定する（判定結果はプロセス起動中一度だけ評価してキャッシュされる）
         /// </summary>
         /// <returns>テスト環境の場合はtrue</returns>
         private static bool IsTestEnvironment()
         {
-            try
-            {
-                // 環境変数でテスト環境が明示的に設定されている場合のみ
-                var testEnvironment = Environment.GetEnvironmentVariable("TEST_ENVIRONMENT");
-                if (!string.IsNullOrEmpty(testEnvironment) && testEnvironment.Equals("true", StringComparison.OrdinalIgnoreCase))
-                    return true;
-
-                // 環境変数でダイアログ無効化が設定されている場合
-                var disableDialogs = Environment.GetEnvironmentVariable("DISABLE_DIALOGS");
-                if (!string.IsNullOrEmpty(disableDialogs) && disableDialogs.Equals("true", StringComparison.OrdinalIgnoreCase))
-                    return true;
-
-                // プロセス名にテストランナーが含まれている場合
-                var processName = System.Diagnostics.Process.GetCurrentProcess().ProcessName;
-                if (processName.Contains("testhost", StringComparison.OrdinalIgnoreCase) ||
-                    processName.Contains("vstest", StringComparison.OrdinalIgnoreCase))
-                {
-                    return true;
-                }
-
-                // アセンブリ名に"Test"が含まれている場合（テストプロジェクトの場合のみ）
-                var assemblyName = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
-                if (assemblyName?.Contains("Test", StringComparison.OrdinalIgnoreCase) == true)
-                    return true;
-
-                return false;
-            }
-            catch (Exception ex)
-            {
-                // エラーが発生した場合は、テスト環境ではないと判断
-                Console.WriteLine($"IsTestEnvironment check failed: {ex.Message}");
-                return false;
-            }
+            return TestEnvironmentDetector.IsTestEnvironment();
         }
 
         /// <summary>
@@ -88,7 +56,6 @@ namespace BrowserChooser3.Classes.Utilities
                 return false;
             }
 
-#pragma warning disable CS8602 // null 参照の可能性があるものの逆参照です
             Logger.LogDebug("BrowserUtilities.LaunchBrowser", "Start", browser.Name, browser.Target, url ?? "null", terminate);
 
             bool shouldTerminate = false;
@@ -127,15 +94,14 @@ namespace BrowserChooser3.Classes.Utilities
             catch (Exception ex)
             {
                 Logger.LogError("BrowserUtilities.LaunchBrowser", "起動エラー", ex.Message, ex.StackTrace ?? "");
-                if (!IsTestEnvironment() && browser != null)
+                if (!IsTestEnvironment())
                 {
-                                    MessageBox.Show($"ブラウザ {browser.Name ?? "Unknown"} の起動に失敗しました。", "起動エラー",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show($"ブラウザ {browser.Name ?? "Unknown"} の起動に失敗しました。", "起動エラー",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
 
             Logger.LogDebug("BrowserUtilities.LaunchBrowser", "End", browser.Name ?? "Unknown", url ?? "null", terminate);
-#pragma warning restore CS8602
             return shouldTerminate;
         }
 
@@ -177,15 +143,9 @@ namespace BrowserChooser3.Classes.Utilities
             }
             catch (Exception ex)
             {
+                // DoLaunch自体が例外を投げた場合にここで再度DoLaunchを呼ぶと、
+                // 既に起動済みのブラウザが二重起動する可能性があるため、再試行はしない
                 Logger.LogError("BrowserUtilities.LaunchIE", "IE起動エラー", ex.Message, ex.StackTrace ?? "");
-                // フォールバック: 一般的な起動処理
-                if (DoLaunch(browser, url ?? "", terminate))
-                {
-                    if (terminate)
-                    {
-                        return true;
-                    }
-                }
                 return false;
             }
         }
@@ -195,7 +155,7 @@ namespace BrowserChooser3.Classes.Utilities
         /// microsoft-edge:プロトコルでの起動をサポートします
         /// </summary>
         /// <returns>起動に成功し、かつterminateがtrueだった場合はtrue</returns>
-        private static bool LaunchEdge(Browser browser, string url, bool terminate)
+        private static bool LaunchEdge(Browser browser, string? url, bool terminate)
         {
             // nullチェック
             if (browser == null)
@@ -204,9 +164,10 @@ namespace BrowserChooser3.Classes.Utilities
                 return false;
             }
 
-            Logger.LogDebug("BrowserUtilities.LaunchEdge", "Start", browser.Name ?? "null", url ?? "null", terminate);
+            url ??= string.Empty;
 
-#pragma warning disable CS8602 // null 参照の可能性があるものの逆参照です
+            Logger.LogDebug("BrowserUtilities.LaunchEdge", "Start", browser.Name ?? "null", url, terminate);
+
             bool shouldTerminate = false;
             try
             {
@@ -253,7 +214,6 @@ namespace BrowserChooser3.Classes.Utilities
             }
 
             Logger.LogDebug("BrowserUtilities.LaunchEdge", "End", browser.Name ?? "null", url ?? "null", terminate);
-#pragma warning restore CS8602
             return shouldTerminate;
         }
 
@@ -271,7 +231,6 @@ namespace BrowserChooser3.Classes.Utilities
 
             Logger.LogDebug("BrowserUtilities.DoLaunch", "Start", browser.Name ?? "null", url ?? "null", terminate);
 
-#pragma warning disable CS8602 // null 参照の可能性があるものの逆参照です
             try
             {
                 // テスト環境では実際のプロセス起動をスキップ
@@ -370,32 +329,41 @@ namespace BrowserChooser3.Classes.Utilities
                     int processId = process.Id;
                     Logger.LogInfo("BrowserUtilities.DoLaunch", "Process started", processId.ToString());
 
+                    // プロセス起動自体はここまでで成功しているため、以降の「前面に移動」処理で
+                    // 例外が発生しても起動失敗として扱わない（起動成否の判定範囲を狭める）
                     try
                     {
-                        process.WaitForInputIdle(1000);
-                    }
-                    catch
-                    {
-                        // 無視
-                    }
-
-                    if (!process.HasExited)
-                    {
-                        // プロセスを前面に移動
                         try
                         {
-                            SetForegroundWindow(process.Handle);
+                            process.WaitForInputIdle(1000);
                         }
                         catch
                         {
-                            // フォールバック: プロセス名で検索
+                            // 無視
+                        }
+
+                        if (!process.HasExited)
+                        {
+                            // プロセスを前面に移動
+                            try
+                            {
+                                SetForegroundWindow(process.Handle);
+                            }
+                            catch
+                            {
+                                // フォールバック: プロセス名で検索
+                                TryToBringToFront(browserPath);
+                            }
+                        }
+                        else
+                        {
+                            Logger.LogError("BrowserUtilities.DoLaunch", "Process exited immediately", processId.ToString());
                             TryToBringToFront(browserPath);
                         }
                     }
-                    else
+                    catch (Exception postLaunchEx)
                     {
-                        Logger.LogError("BrowserUtilities.DoLaunch", "Process exited immediately", processId.ToString());
-                        TryToBringToFront(browserPath);
+                        Logger.LogWarning("BrowserUtilities.DoLaunch", "起動後の前面移動処理でエラーが発生しましたが、起動自体は成功しています", postLaunchEx.Message);
                     }
 
                     if (terminate)
@@ -411,13 +379,12 @@ namespace BrowserChooser3.Classes.Utilities
                 Logger.LogError("BrowserUtilities.DoLaunch", "起動エラー", ex.Message, ex.StackTrace ?? "");
             }
 
-            if (!IsTestEnvironment() && browser != null)
+            if (!IsTestEnvironment())
             {
-                MessageBox.Show($"ブラウザ {browser.Name ?? "Unknown"} の起動に失敗しました。\nパス: {browser.Target}\n引数: {browser.Arguments}", "起動エラー", 
+                MessageBox.Show($"ブラウザ {browser.Name ?? "Unknown"} の起動に失敗しました。\nパス: {browser.Target}\n引数: {browser.Arguments}", "起動エラー",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             Logger.LogError("BrowserUtilities.DoLaunch", "重大な失敗", browser.Name ?? "Unknown", url ?? "null", terminate);
-#pragma warning restore CS8602
             return false;
         }
 
@@ -433,27 +400,36 @@ namespace BrowserChooser3.Classes.Utilities
                 // プロセス名を抽出
                 string target = Path.GetFileNameWithoutExtension(browserPath);
                 Process[] processes = Process.GetProcessesByName(target);
-
-                if (processes.Length == 1)
+                try
                 {
-                    // 単一プロセスの場合
-                    SetForegroundWindow(processes[0].Handle);
-                }
-                else
-                {
-                    // 複数プロセスの場合、メインウィンドウを持つプロセスを検索
-                    var candidates = new List<Process>();
-                    foreach (var proc in processes)
+                    if (processes.Length == 1)
                     {
-                        if (!string.IsNullOrEmpty(proc.MainWindowTitle))
+                        // 単一プロセスの場合
+                        SetForegroundWindow(processes[0].Handle);
+                    }
+                    else
+                    {
+                        // 複数プロセスの場合、メインウィンドウを持つプロセスを検索
+                        var candidates = new List<Process>();
+                        foreach (var proc in processes)
                         {
-                            candidates.Add(proc);
+                            if (!string.IsNullOrEmpty(proc.MainWindowTitle))
+                            {
+                                candidates.Add(proc);
+                            }
+                        }
+
+                        if (candidates.Count == 1)
+                        {
+                            SetForegroundWindow(candidates[0].Handle);
                         }
                     }
-
-                    if (candidates.Count == 1)
+                }
+                finally
+                {
+                    foreach (var proc in processes)
                     {
-                        SetForegroundWindow(candidates[0].Handle);
+                        proc.Dispose();
                     }
                 }
             }
@@ -537,26 +513,7 @@ namespace BrowserChooser3.Classes.Utilities
         /// </summary>
         public static Browser? GetBrowserByGUID(Guid guid)
         {
-            Logger.LogInfo("BrowserUtilities.GetBrowserByGUID", "Start", guid.ToString());
-
-            try
-            {
-                foreach (var browser in Settings.Current?.Browsers ?? new List<Browser>())
-                {
-                    if (browser.Guid == guid)
-                    {
-                        Logger.LogInfo("BrowserUtilities.GetBrowserByGUID", "GUID found", guid.ToString());
-                        return browser;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("BrowserUtilities.GetBrowserByGUID", "検索エラー", ex.Message, ex.StackTrace ?? "");
-            }
-
-            Logger.LogInfo("BrowserUtilities.GetBrowserByGUID", "GUID not found", guid.ToString());
-            return null;
+            return GetBrowserByGUID(guid, Settings.Current?.Browsers ?? new List<Browser>());
         }
 
         /// <summary>

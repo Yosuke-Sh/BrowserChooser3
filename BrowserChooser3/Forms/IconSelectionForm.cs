@@ -397,8 +397,15 @@ namespace BrowserChooser3.Forms
                 // 32x32のアイコンサイズにリサイズ
                 var resizedBitmap = new Bitmap(originalBitmap, new Size(32, 32));
                 
-                // Bitmapからアイコンを作成
-                var icon = Icon.FromHandle(resizedBitmap.GetHicon());
+                // Bitmapからアイコンを作成（GetHicon()のHICONはIcon.FromHandleでは所有されないため、
+                // Cloneしたコピーを保持し元のハンドルは解放する）
+                var iconHandle = resizedBitmap.GetHicon();
+                Icon icon;
+                using (var handleIcon = Icon.FromHandle(iconHandle))
+                {
+                    icon = (Icon)handleIcon.Clone();
+                }
+                ImageUtilities.DestroyIconHandle(iconHandle);
                 _icons.Add(icon);
                 
                 // ImageListにアイコンを追加
@@ -483,15 +490,26 @@ namespace BrowserChooser3.Forms
                 {
                     var largeIcons = new IntPtr[iconCount];
                     var smallIcons = new IntPtr[iconCount];
-                    
+
                     ExtractIconEx(filePath, 0, largeIcons, smallIcons, iconCount);
-                    
+
                     for (int i = 0; i < iconCount; i++)
                     {
                         if (largeIcons[i] != IntPtr.Zero)
                         {
-                            var icon = Icon.FromHandle(largeIcons[i]);
-                            icons.Add(icon);
+                            // Icon.FromHandleはハンドルを所有しないため、Cloneしたコピーを保持し
+                            // 元のHICONハンドルはDestroyIconで解放する
+                            using (var handleIcon = Icon.FromHandle(largeIcons[i]))
+                            {
+                                icons.Add((Icon)handleIcon.Clone());
+                            }
+                            ImageUtilities.DestroyIconHandle(largeIcons[i]);
+                        }
+
+                        // small側は使用しないため、取得したハンドルは即座に解放する
+                        if (smallIcons[i] != IntPtr.Zero)
+                        {
+                            ImageUtilities.DestroyIconHandle(smallIcons[i]);
                         }
                     }
                 }

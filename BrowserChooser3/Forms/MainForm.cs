@@ -46,6 +46,13 @@ namespace BrowserChooser3.Forms
         private NotifyIcon? _notifyIcon;
         private bool _isInTray = false;
 
+        // RefreshForm等で繰り返し生成されるフォントは、GDIハンドルの積み上がりを避けるため共有する
+        private static readonly Font FormFont = new("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0);
+        private static readonly Font ButtonFont = new("Segoe UI", 6.0f, FontStyle.Regular, GraphicsUnit.Point, 0);
+        private static readonly Font OverlayBoldFont = new("Segoe UI", 8.0f, FontStyle.Bold, GraphicsUnit.Point, 0);
+        private static readonly Font UrlDisplayFont = new("Segoe UI", 7.0f, FontStyle.Regular, GraphicsUnit.Point, 0);
+        private static readonly Font CountdownLabelFont = new("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0);
+
         /// <summary>
         /// MainFormクラスの新しいインスタンスを初期化します
         /// </summary>
@@ -117,10 +124,7 @@ namespace BrowserChooser3.Forms
                 // キーボードイベントの設定
                 KeyPreview = true;
                 KeyDown += MainForm_KeyDown;
-                
-                // フォームリサイズイベントの設定
-                Resize += MainForm_Resize;
-                
+
                 // フォームLoadイベントの設定
                 Load += MainForm_Load;
 
@@ -137,8 +141,12 @@ namespace BrowserChooser3.Forms
             }
             catch (Exception ex)
             {
+                // ここで例外を握りつぶすと、初期化が半分だけ終わった操作可能なウィンドウが
+                // そのまま表示されてしまう。呼び出し元（Program.Main）まで例外を伝播させ、
+                // アプリケーションを起動失敗として扱わせる（fail-fast）。
                 Logger.LogError("MainForm.InitializeApplication", "初期化エラー", ex.Message, ex.StackTrace ?? "");
                 MessageBoxService.ShowErrorStatic($"アプリケーションの初期化に失敗しました: {ex.Message}", "エラー");
+                throw;
             }
         }
 
@@ -354,19 +362,22 @@ namespace BrowserChooser3.Forms
             KeyPreview = true;
             
             // フォントの設定（現代的で日本語・英語両対応）
-            Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0);
+            Font = FormFont;
             
             // サイズの設定（動的サイズ変更対応）
             MinimumSize = new Size(600, 300);  // 最小サイズを設定
             
-            // 背景グラデーション設定
+            // 背景グラデーション設定（RefreshFormから複数回呼ばれても購読が積み上がらないよう、
+            // 一旦解除してから必要な場合のみ再購読する）
+            this.Paint -= MainForm_Paint;
             if (_settings?.EnableBackgroundGradient == true)
             {
                 this.Paint += MainForm_Paint;
             }
             ClientSize = new Size(600, 300);   // 初期サイズ
-            
-            // サイズ変更イベントの設定
+
+            // サイズ変更イベントの設定（同上の理由で解除してから再購読する）
+            Resize -= MainForm_Resize;
             Resize += MainForm_Resize;
             
             // 透明化設定の適用（Windows11スタイルも含む）
@@ -376,19 +387,11 @@ namespace BrowserChooser3.Forms
             if (_settings?.EnableTransparency != true)
             {
                 Logger.LogDebug("MainForm.ConfigureForm", "背景色設定開始", $"現在の背景色: {BackColor}");
-                
-                // 変更前のブラウザボタン数を記録
-                var browserButtonsBefore = Controls.OfType<Button>().Where(b => b.Tag is Browser).ToList();
-                Logger.LogDebug("MainForm.ConfigureForm", "変更前のブラウザボタン数", browserButtonsBefore.Count);
-                
+
                 // 設定値をそのまま反映（Settings.BackgroundColorValue は常に不透明で正規化済み）
                 BackColor = _settings?.BackgroundColorValue ?? Color.FromArgb(185, 209, 234);
                 Logger.LogDebug("MainForm.ConfigureForm", $"Applied BackColor: {BackColor}");
-                
-                // 変更後のブラウザボタン数を記録
-                var browserButtonsAfter = Controls.OfType<Button>().Where(b => b.Tag is Browser).ToList();
-                Logger.LogDebug("MainForm.ConfigureForm", "変更後のブラウザボタン数", browserButtonsAfter.Count);
-                
+
                 StyleXP(); // 透明化が無効の場合のスタイル設定
                 // 子コントロールは既定色に保ち、フォーム背景色の影響を受けにくくする
                 ApplyDefaultBackColorToChildControls();
@@ -644,10 +647,10 @@ namespace BrowserChooser3.Forms
                 
                 // リサイズ処理を再開
                 this.ResumeLayout(false);
-                
-                // フォームの再描画を強制（透明化解除後の描画問題を解決）
-                this.Refresh();
-                
+
+                // 再描画が必要な領域のみ無効化する（Refresh()は全面再描画のためリサイズのたびに重い）
+                this.Invalidate();
+
                 Logger.LogTrace("MainForm.MainForm_Resize", "フォームサイズ変更完了", ClientSize.Width, ClientSize.Height);
             }
             catch (Exception ex)
@@ -863,7 +866,7 @@ namespace BrowserChooser3.Forms
                     BackColor = Color.Transparent,
                     ImageAlign = ContentAlignment.MiddleCenter,
                     UseVisualStyleBackColor = false,
-                    Font = new Font("Segoe UI", 6.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                    Font = ButtonFont,
                     TextAlign = ContentAlignment.MiddleCenter,
                     ShowFocusBox = _settings?.ShowFocus ?? true,
                     ShowVisualFocus = _settings?.ShowVisualFocus ?? false,
@@ -957,7 +960,7 @@ namespace BrowserChooser3.Forms
                 AutoSize = true,
                 BackColor = Color.Transparent, // 背景を透過
                 ForeColor = Color.Black, // 文字色を黒に変更
-                Font = new Font("Segoe UI", 8.0f, FontStyle.Bold, GraphicsUnit.Point, 0),
+                Font = OverlayBoldFont,
                 TextAlign = ContentAlignment.MiddleCenter,
                 Text = browser.Name
             };
@@ -990,7 +993,7 @@ namespace BrowserChooser3.Forms
                     AutoSize = true,
                     BackColor = Color.Black,
                     ForeColor = Color.White,
-                    Font = new Font("Segoe UI", 8.0f, FontStyle.Bold, GraphicsUnit.Point, 0),
+                    Font = OverlayBoldFont,
                     TextAlign = ContentAlignment.MiddleCenter
                 };
 
@@ -1054,21 +1057,11 @@ namespace BrowserChooser3.Forms
             
             try
             {
-                // 設定を再読み込み（既存の設定を保持、パスは使用されず常にユーザーディレクトリから読み込み）
-                var newSettings = Settings.Load("");
-                if (newSettings != null)
-                {
-                    _settings = newSettings;
-                    Settings.Current = _settings;
-                    _browsers = _settings?.Browsers ?? new List<Browser>();
-                    
-                    Logger.LogDebug("MainForm.RefreshForm", "設定再読み込み完了", _browsers?.Count ?? 0);
-                }
-                else
-                {
-                    Logger.LogWarning("MainForm.RefreshForm", "設定の再読み込みに失敗しました");
-                }
-                
+                // OptionsFormは呼び出し元から渡された_settingsインスタンスをそのまま書き換えて保存するため、
+                // ここでXMLを再パースしなくてもメモリ上の_settingsは既に最新の内容になっている
+                _browsers = _settings?.Browsers ?? new List<Browser>();
+                Logger.LogDebug("MainForm.RefreshForm", "設定はメモリ上の値をそのまま使用", _browsers?.Count ?? 0);
+
                 // デフォルトブラウザの再検索
                 _defaultBrowser = _browsers?.FirstOrDefault(b => b.IsDefault);
                 
@@ -1159,25 +1152,6 @@ namespace BrowserChooser3.Forms
                     MessageBoxService.ShowErrorStatic($"ブラウザの起動に失敗しました: {ex.Message}", "エラー");
                 }
             }
-        }
-
-        /// <summary>
-        /// ブラウザを起動
-        /// </summary>
-        private void LaunchBrowser(Browser browser, string url)
-        {
-            Logger.LogDebug("MainForm.LaunchBrowser", "Start", browser.Name, url);
-            
-            var startInfo = new System.Diagnostics.ProcessStartInfo
-            {
-                FileName = browser.Target,
-                Arguments = string.IsNullOrEmpty(url) ? browser.Arguments : $"{browser.Arguments} \"{url}\"",
-                UseShellExecute = true
-            };
-            
-            System.Diagnostics.Process.Start(startInfo);
-            
-            Logger.LogDebug("MainForm.LaunchBrowser", "End", browser.Name);
         }
 
         /// <summary>
@@ -1786,18 +1760,28 @@ namespace BrowserChooser3.Forms
                     btnOptions.Image = Properties.Resources.Icon128;
                 }
                 
-                // コピーボタンのアイコン読み込み
+                // コピーボタンのアイコン読み込み（RefreshFormから再読込される場合、旧Imageを破棄してから差し替える）
                 if (btnCopyToClipboard != null)
                 {
+                    var oldImage = btnCopyToClipboard.Image;
                     var pasteIcon = Properties.Resources.PasteIcon;
                     btnCopyToClipboard.Image = ImageUtilities.ResizeImage(pasteIcon, 28, 28);
+                    if (oldImage != null && !ReferenceEquals(oldImage, btnCopyToClipboard.Image))
+                    {
+                        oldImage.Dispose();
+                    }
                 }
-                
-                // コピー＆クローズボタンのアイコン読み込み
+
+                // コピー＆クローズボタンのアイコン読み込み（同上）
                 if (btnCopyToClipboardAndClose != null)
                 {
+                    var oldImage = btnCopyToClipboardAndClose.Image;
                     var pasteAndCloseIcon = Properties.Resources.PasteAndCloseIcon;
                     btnCopyToClipboardAndClose.Image = ImageUtilities.ResizeImage(pasteAndCloseIcon, 28, 28);
+                    if (oldImage != null && !ReferenceEquals(oldImage, btnCopyToClipboardAndClose.Image))
+                    {
+                        oldImage.Dispose();
+                    }
                 }
                 
                 Logger.LogDebug("MainForm.LoadIcons", "アイコン読み込み完了");
@@ -1831,6 +1815,8 @@ namespace BrowserChooser3.Forms
         /// </summary>
         private void InitializeToolTips()
         {
+            // RefreshFormから再度呼ばれた場合、旧インスタンスを確実に破棄してから作り直す
+            _toolTip?.Dispose();
             _toolTip = new ToolTip();
             _toolTip.IsBalloon = false;
             _toolTip.ToolTipTitle = "Browser Chooser";
@@ -1881,7 +1867,7 @@ namespace BrowserChooser3.Forms
                 ReadOnly = true,
                 Location = new Point(20, ClientSize.Height - 110),
                 Size = new Size(ClientSize.Width - 60, 25),
-                Font = new Font("Segoe UI", 7.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                Font = UrlDisplayFont,
                 BackColor = Color.LightGray,
                 ForeColor = Color.Black,
                 BorderStyle = BorderStyle.FixedSingle,
@@ -1898,6 +1884,14 @@ namespace BrowserChooser3.Forms
         /// </summary>
         private void CreateCountdownLabel()
         {
+            // RefreshFormから再度呼ばれた場合、旧ラベルをControlsから除去・破棄してから作り直す
+            if (_countdownLabel != null)
+            {
+                Controls.Remove(_countdownLabel);
+                _countdownLabel.Dispose();
+                _countdownLabel = null;
+            }
+
             _countdownLabel = new Label
             {
                 Name = "lblCountdown",
@@ -1905,7 +1899,7 @@ namespace BrowserChooser3.Forms
                 AutoSize = true,
                 Location = new Point(20, ClientSize.Height - 20),
                 Visible = false,
-                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                Font = CountdownLabelFont,
                 ForeColor = Color.DarkBlue,
                 BackColor = Color.LightYellow
             };
@@ -1961,7 +1955,7 @@ namespace BrowserChooser3.Forms
             if (_currentDelay <= 0)
             {
                 _countdownTimer?.Stop();
-                LaunchBrowser(_defaultBrowser!, _currentUrl);
+                BrowserUtilities.LaunchBrowser(_defaultBrowser!, _currentUrl, chkAutoClose?.Checked ?? true);
                 RequestClose();
             }
         }
@@ -2562,9 +2556,19 @@ namespace BrowserChooser3.Forms
             {
                 if (_notifyIcon != null) return;
 
+                // GetHicon()が返すHICONはIcon.FromHandleでは所有されないため、
+                // Cloneしたコピーを使い元のハンドルはDestroyIconで解放する
+                var trayIconHandle = Properties.Resources.BrowserChooser3.GetHicon();
+                Icon trayIcon;
+                using (var handleIcon = Icon.FromHandle(trayIconHandle))
+                {
+                    trayIcon = (Icon)handleIcon.Clone();
+                }
+                ImageUtilities.DestroyIconHandle(trayIconHandle);
+
                 _notifyIcon = new NotifyIcon
                 {
-                    Icon = Icon.FromHandle(Properties.Resources.BrowserChooser3.GetHicon()),
+                    Icon = trayIcon,
                     Text = "Browser Chooser 3",
                     Visible = false
                 };

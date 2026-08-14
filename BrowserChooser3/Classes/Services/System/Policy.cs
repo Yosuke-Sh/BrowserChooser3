@@ -48,22 +48,34 @@ namespace BrowserChooser3.Classes.Services.SystemServices
         public static bool AccessibleRendering { get; private set; } = false;
 
         /// <summary>
+        /// 初期化済みかどうか（起動経路上で複数回呼ばれても実処理は一度だけにするためのガード）
+        /// </summary>
+        private static bool _initialized = false;
+
+        /// <summary>
         /// ポリシーを初期化します
         /// </summary>
         public static void Initialize()
         {
+            if (_initialized)
+            {
+                return;
+            }
+
             Logger.LogDebug("Policy.Initialize", "ポリシー初期化開始");
 
             try
             {
                 // レジストリからポリシー設定を読み込み
                 LoadRegistryPolicies();
-                
+
                 // グループポリシーから設定を読み込み
                 LoadGroupPolicies();
-                
+
                 // 環境変数から設定を読み込み
                 LoadEnvironmentPolicies();
+
+                _initialized = true;
 
                 Logger.LogDebug("Policy.Initialize", "ポリシー初期化完了");
             }
@@ -155,10 +167,8 @@ namespace BrowserChooser3.Classes.Services.SystemServices
                 using var key = Registry.LocalMachine.OpenSubKey(groupPolicyKey);
                 if (key != null)
                 {
-                    // グループポリシー固有の設定を読み込み
-                    // 現在はレジストリポリシーと同じ構造を使用
-                    LoadRegistryPolicies();
-                    
+                    // グループポリシー固有のキーが存在する場合のみ、通常のポリシーキーと同じ構造で上書き読み込みする
+                    // （LoadRegistryPoliciesは直前のInitializeで既に一度実行済みのため、ここでの再実行は行わない）
                     Logger.LogDebug("Policy.LoadGroupPolicies", "グループポリシー読み込み完了");
                 }
             }

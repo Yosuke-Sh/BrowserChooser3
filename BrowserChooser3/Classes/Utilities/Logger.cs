@@ -45,35 +45,9 @@ namespace BrowserChooser3.Classes.Utilities
         private static bool _isLogLevelInitialized = false;
 
         /// <summary>
-        /// テスト環境かどうかを判定
+        /// テスト環境かどうか（プロセス起動中に一度だけ評価してキャッシュする）
         /// </summary>
-        public static bool IsTestEnvironment
-        {
-            get
-            {
-                // テスト実行中かどうかを判定
-                var testAssemblyNames = new[] { "xunit", "nunit", "mstest", "testhost" };
-                var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-                
-                foreach (var assembly in assemblies)
-                {
-                    var assemblyName = assembly.GetName().Name?.ToLowerInvariant();
-                    if (assemblyName != null && testAssemblyNames.Any(testName => assemblyName.Contains(testName)))
-                    {
-                        return true;
-                    }
-                }
-                
-                // 環境変数でテスト環境かどうかを判定
-                var testEnvironment = Environment.GetEnvironmentVariable("TEST_ENVIRONMENT");
-                if (!string.IsNullOrEmpty(testEnvironment) && testEnvironment.ToLowerInvariant() == "true")
-                {
-                    return true;
-                }
-                
-                return false;
-            }
-        }
+        public static bool IsTestEnvironment { get; } = TestEnvironmentDetector.IsTestEnvironment();
 
 
 
@@ -119,15 +93,25 @@ namespace BrowserChooser3.Classes.Utilities
         }
         
         /// <summary>
+        /// 解決済みログディレクトリのキャッシュ（初回解決後は再チェックしない）
+        /// </summary>
+        private static string? _cachedLogDirectory;
+
+        /// <summary>
         /// ログディレクトリのパス
         /// </summary>
         private static string LogDirectory
         {
             get
             {
+                if (_cachedLogDirectory != null)
+                {
+                    return _cachedLogDirectory;
+                }
+
                 // PathManagerを使用してログディレクトリを取得
                 var logDir = PathManager.GetLogDirectory();
-                
+
                 // ディレクトリが存在しない場合は作成
                 if (!Directory.Exists(logDir))
                 {
@@ -138,11 +122,12 @@ namespace BrowserChooser3.Classes.Utilities
                     catch (Exception ex)
                     {
                         Console.WriteLine($"Failed to create log directory: {ex.Message}");
-                        // 作成に失敗した場合はTempPathにフォールバック
+                        // 作成に失敗した場合はTempPathにフォールバック（キャッシュはしない。次回リトライを許す）
                         return Path.GetTempPath();
                     }
                 }
-                
+
+                _cachedLogDirectory = logDir;
                 return logDir;
             }
         }
@@ -328,6 +313,7 @@ namespace BrowserChooser3.Classes.Utilities
         /// </summary>
         private static void WriteLogsToFile()
         {
+            List<string>? pendingEntries = null;
             try
             {
                 lock (_logQueue)
@@ -336,37 +322,75 @@ namespace BrowserChooser3.Classes.Utilities
                     {
                         return;
                     }
-                }
 
-                var logPath = LogFilePath;
-                var writer = new StreamWriter(logPath, true, Encoding.UTF8);
-
-                lock (_logQueue)
-                {
-                    while (_logQueue.Count > 0)
-                    {
-                        var logEntry = _logQueue.Dequeue();
-                        writer.WriteLine(logEntry);
-                    }
+                    pendingEntries = new List<string>(_logQueue);
+                    _logQueue.Clear();
                     _lastFlushTime = DateTime.Now;
                 }
 
-                writer.Close();
-                
-                // 定期的に古いログファイルをクリーンアップ（1日1回程度）
-                var lastCleanupKey = "LastLogCleanupDate";
-                var lastCleanupDate = Environment.GetEnvironmentVariable(lastCleanupKey);
-                var today = DateTime.Now.ToString("yyyy-MM-dd");
-                
-                if (lastCleanupDate != today)
+                var logPath = LogFilePath;
+                using (var writer = new StreamWriter(logPath, true, Encoding.UTF8))
                 {
-                    CleanupOldLogFiles();
-                    Environment.SetEnvironmentVariable(lastCleanupKey, today);
+                    foreach (var logEntry in pendingEntries)
+                    {
+                        writer.WriteLine(logEntry);
+                    }
                 }
+
+                pendingEntries = null;
+
+                // 定期的に古いログファイルをクリーンアップ（1日1回程度、マーカーファイルで永続化）
+                RunCleanupIfDue();
             }
             catch (Exception)
             {
-                // エラーが発生した場合は何もしない、ログは次回にキューイングされる
+                // 書き込みに失敗した場合は、デキューしたログをキューへ戻し次回のフラッシュで再試行する
+                if (pendingEntries != null)
+                {
+                    lock (_logQueue)
+                    {
+                        foreach (var logEntry in pendingEntries)
+                        {
+                            _logQueue.Enqueue(logEntry);
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 前回クリーンアップ日を記録するマーカーファイル名
+        /// </summary>
+        private const string CleanupMarkerFileName = ".last_cleanup";
+
+        /// <summary>
+        /// 1日1回を目安に古いログファイルをクリーンアップする。
+        /// 実行日はプロセス寿命を超えて永続化するため、環境変数ではなくマーカーファイルを使う。
+        /// </summary>
+        private static void RunCleanupIfDue()
+        {
+            try
+            {
+                var today = DateTime.Now.ToString("yyyy-MM-dd");
+                var markerPath = Path.Combine(LogDirectory, CleanupMarkerFileName);
+
+                string? lastCleanupDate = null;
+                if (File.Exists(markerPath))
+                {
+                    lastCleanupDate = File.ReadAllText(markerPath).Trim();
+                }
+
+                if (lastCleanupDate == today)
+                {
+                    return;
+                }
+
+                CleanupOldLogFiles();
+                File.WriteAllText(markerPath, today);
+            }
+            catch (Exception)
+            {
+                // クリーンアップ判定に失敗してもログ出力自体は継続する
             }
         }
 

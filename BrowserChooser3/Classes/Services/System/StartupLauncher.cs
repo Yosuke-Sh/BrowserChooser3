@@ -23,7 +23,6 @@ namespace BrowserChooser3.Classes.Services.SystemServices
         private static Browser? _browser = null;
         private static UpdateURL? _delegate = null;
         private static List<Guid> _supportingBrowsers = new();
-        private static System.Threading.Thread? _worker = null;
         private static bool _silentMode = false;
         private static bool _autoLaunch = false;
         private static bool _delaySpecifiedOnCommandLine = false;
@@ -114,9 +113,7 @@ namespace BrowserChooser3.Classes.Services.SystemServices
                     _url.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
                 {
                     Logger.LogDebug("StartupLauncher.SetURL", "HTTP/HTTPS URLを検出、短縮URL展開ワーカーを開始");
-                    _worker = new System.Threading.Thread(() => Worker_DoWork_HTTP(generation, _url, _delegate));
-                    _worker.IsBackground = true;
-                    _worker.Start();
+                    _ = Task.Run(() => Worker_DoWork_HTTP(generation, _url, _delegate));
                     return true;
                 }
 
@@ -152,9 +149,7 @@ namespace BrowserChooser3.Classes.Services.SystemServices
                 if (_url.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
                     _url.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
                 {
-                    _worker = new System.Threading.Thread(() => Worker_DoWork_HTTP(generation, _url, _delegate));
-                    _worker.IsBackground = true;
-                    _worker.Start();
+                    _ = Task.Run(() => Worker_DoWork_HTTP(generation, _url, _delegate));
                 }
             }
         }
@@ -297,37 +292,6 @@ namespace BrowserChooser3.Classes.Services.SystemServices
         }
 
         /// <summary>
-        /// デフォルトブラウザチェックを実行します
-        /// </summary>
-        /// <returns>デフォルトブラウザが設定されている場合はtrue</returns>
-        public static bool CheckDefaultBrowser()
-        {
-            Logger.LogInfo("StartupLauncher.CheckDefaultBrowser", "デフォルトブラウザチェック開始");
-
-            try
-            {
-                var hasDefaultBrowser = DefaultBrowserChecker.HasDefaultBrowser();
-                
-                if (hasDefaultBrowser)
-                {
-                    var defaultBrowserInfo = DefaultBrowserChecker.GetDefaultBrowser();
-                    Logger.LogInfo("StartupLauncher.CheckDefaultBrowser", "デフォルトブラウザを検出", defaultBrowserInfo.Name);
-                }
-                else
-                {
-                    Logger.LogWarning("StartupLauncher.CheckDefaultBrowser", "デフォルトブラウザが設定されていません");
-                }
-
-                return hasDefaultBrowser;
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("StartupLauncher.CheckDefaultBrowser", "デフォルトブラウザチェックエラー", ex.Message);
-                return false;
-            }
-        }
-
-        /// <summary>
         /// BrowserChooser3が既定のブラウザとして設定されているかチェックします
         /// </summary>
         private static void CheckBrowserChooserDefaultStatus()
@@ -376,9 +340,8 @@ namespace BrowserChooser3.Classes.Services.SystemServices
         {
             try
             {
-                var appDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BrowserChooser3");
-                var configPath = Path.Combine(appDataPath, "BrowserChooser3Config.xml");
-                
+                var configPath = PathManager.GetConfigFilePath(Settings.BrowserChooserConfigFileName);
+
                 // 設定ファイルが存在しない場合は初回起動とみなす
                 return !File.Exists(configPath);
             }
@@ -430,8 +393,9 @@ namespace BrowserChooser3.Classes.Services.SystemServices
                 // ポリシーの初期化
                 Policy.Initialize();
 
-                // BrowserChooser3が既定のブラウザとして設定されているかチェック
-                CheckBrowserChooserDefaultStatus();
+                // BrowserChooser3が既定のブラウザとして設定されているかのチェック（初回起動時は自動設定も行う）は
+                // 起動レイテンシに直結しないため、ウィンドウ表示をブロックしないようバックグラウンドへ後退させる
+                _ = Task.Run(CheckBrowserChooserDefaultStatus);
 
                 // コマンドライン引数の処理
                 var result = ProcessCommandLineArgs(commandLineArgs);
@@ -455,10 +419,10 @@ namespace BrowserChooser3.Classes.Services.SystemServices
         /// <param name="generation">呼び出し時点の世代番号。完了時にこれが最新でなければ結果を破棄する</param>
         /// <param name="url">展開対象のURL（呼び出し時点でキャプチャした値）</param>
         /// <param name="updateDelegate">結果を通知するデリゲート（呼び出し時点でキャプチャした値）</param>
-        private static async void Worker_DoWork_HTTP(int generation, string url, UpdateURL? updateDelegate)
+        private static async Task Worker_DoWork_HTTP(int generation, string url, UpdateURL? updateDelegate)
         {
-            // async voidはThreadのエントリポイントから呼ばれており、捕捉されない例外は
-            // アプリ全体をクラッシュさせうるため、メソッド全体を確実にtry/catchで囲む
+            // Task.Run経由で呼ばれるが、例外を外へ伝播させてもTask自体を誰も待たないため、
+            // 念のためメソッド全体を確実にtry/catchで囲む
             try
             {
                 using var httpClient = new HttpClient();
@@ -519,10 +483,6 @@ namespace BrowserChooser3.Classes.Services.SystemServices
                 {
                     updateDelegate?.Invoke(url);
                 }
-            }
-            finally
-            {
-                _worker = null;
             }
         }
         #endregion

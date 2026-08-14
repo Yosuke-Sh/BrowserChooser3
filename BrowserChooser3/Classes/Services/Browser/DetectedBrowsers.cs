@@ -6,6 +6,7 @@ using System.Net;
 using System.Text.Json;
 using System.Net.Http;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using BrowserChooser3.Classes.Models;
 using BrowserChooser3.Classes.Utilities;
 using System.Linq;
@@ -26,10 +27,7 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
         /// <summary>
         /// ローカル定義ファイルのパス
         /// </summary>
-        private static string LocalDefinitionsPath => Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            "BrowserChooser3",
-            "browser-definitions.json");
+        private static string LocalDefinitionsPath => PathManager.GetConfigFilePath("browser-definitions.json");
 
         /// <summary>
         /// ブラウザ検出を実行
@@ -66,6 +64,18 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
                 Logger.LogError("DetectedBrowsers.DoBrowserDetection", "ブラウザ検出エラー", ex.Message);
                 return new List<Browser>();
             }
+        }
+
+        /// <summary>
+        /// ブラウザ検出を非同期で実行します。
+        /// オンライン定義チェックのHTTP通信をUIスレッドでブロックしないようにするため、
+        /// UIから呼び出す場合はこちらを使用してください（同期版のDoBrowserDetectionはテスト・内部処理用に維持）。
+        /// </summary>
+        /// <param name="webBrowsersOnly">Webブラウザのみを検出するかどうか</param>
+        /// <returns>検出されたブラウザのリスト</returns>
+        public static Task<List<Browser>> DoBrowserDetectionAsync(bool webBrowsersOnly = false)
+        {
+            return Task.Run(() => DoBrowserDetection(webBrowsersOnly));
         }
 
         /// <summary>
@@ -171,10 +181,7 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
             try
             {
                 // 最後のチェック時刻を確認
-                var lastCheckFile = Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                    "BrowserChooser3",
-                    "last-online-check.txt");
+                var lastCheckFile = PathManager.GetConfigFilePath("last-online-check.txt");
 
                 if (File.Exists(lastCheckFile))
                 {

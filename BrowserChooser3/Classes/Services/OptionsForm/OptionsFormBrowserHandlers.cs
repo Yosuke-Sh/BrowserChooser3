@@ -268,7 +268,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
         /// <summary>
         /// ブラウザ検出ボタンのクリックイベント
         /// </summary>
-        public void DetectBrowsers_Click(object? sender, EventArgs e)
+        public async void DetectBrowsers_Click(object? sender, EventArgs e)
         {
             Logger.LogDebug("OptionsFormBrowserHandlers.DetectBrowsers_Click", "ブラウザ検出を開始");
             try
@@ -286,9 +286,18 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 }
 
                 var webBrowsersOnly = (result == DialogResult.Yes);
-                
-                // ブラウザ検出を実行
-                var detectedBrowsers = DetectedBrowsers.DoBrowserDetection(webBrowsersOnly);
+
+                // ブラウザ検出を実行（オンライン定義チェックのHTTP通信でUIスレッドをブロックしないよう非同期で実行）
+                _form.UseWaitCursor = true;
+                List<Browser> detectedBrowsers;
+                try
+                {
+                    detectedBrowsers = await DetectedBrowsers.DoBrowserDetectionAsync(webBrowsersOnly);
+                }
+                finally
+                {
+                    _form.UseWaitCursor = false;
+                }
                 Logger.LogDebug("OptionsFormBrowserHandlers.DetectBrowsers_Click", $"検出されたブラウザ数: {detectedBrowsers.Count}", webBrowsersOnly);
                 
                 var missingBrowsers = new List<Browser>();

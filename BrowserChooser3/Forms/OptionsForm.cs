@@ -37,9 +37,6 @@ namespace BrowserChooser3.Forms
         // ImageList
         private ImageList? _imBrowserIcons => _panels?.GetBrowserIcons();
 
-        // フォーカス設定
-        private FocusSettings _mFocusSettings = new();
-
         /// <summary>
         /// OptionsFormクラスの新しいインスタンスを初期化します
         /// </summary>

@@ -217,65 +217,6 @@
             ブラウザがアクティブかどうか
             </summary>
         </member>
-        <member name="T:BrowserChooser3.Classes.Models.DisplayDictionary">
-            <summary>
-            表示位置設定クラス
-            </summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Models.DisplayDictionary.Index">
-            <summary>
-            表示位置のインデックス
-            </summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Models.DisplayDictionary.Name">
-            <summary>
-            表示位置の名前
-            </summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Models.DisplayDictionary.Description">
-            <summary>
-            表示位置の説明
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Models.DisplayDictionary.#ctor">
-            <summary>
-            表示位置設定の新しいインスタンスを初期化します
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Models.DisplayDictionary.#ctor(System.Int32,System.String,System.String)">
-            <summary>
-            表示位置設定の新しいインスタンスを初期化します
-            </summary>
-            <param name="index">インデックス</param>
-            <param name="name">名前</param>
-            <param name="description">説明</param>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Models.DisplayDictionary.ToString">
-            <summary>
-            文字列表現を返します
-            </summary>
-            <returns>名前</returns>
-        </member>
-        <member name="T:BrowserChooser3.Classes.Models.FocusSettings">
-            <summary>
-            フォーカス設定クラス
-            </summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Models.FocusSettings.ShowFocus">
-            <summary>
-            フォーカス表示フラグ
-            </summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Models.FocusSettings.BoxColor">
-            <summary>
-            フォーカスボックスの色
-            </summary>
-        </member>
-        <member name="P:BrowserChooser3.Classes.Models.FocusSettings.BoxWidth">
-            <summary>
-            フォーカスボックスの線幅
-            </summary>
-        </member>
         <member name="T:BrowserChooser3.Classes.Models.Protocol">
             <summary>
             プロトコル情報を管理するクラス
@@ -500,6 +441,13 @@
             </summary>
             <returns>成功した場合はtrue</returns>
         </member>
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.DefaultBrowserChecker.ShowDefaultAppsSettingsInternal(System.String)">
+            <summary>
+            デフォルトアプリ設定画面を表示する実処理。
+            ShowDefaultAppsSettings/ShowHttpProtocolSettingsはログの呼び出し元名以外は同一の処理のため、
+            ここに集約している（Windows 11では実際には同じms-settings:defaultapps画面を開く）。
+            </summary>
+        </member>
         <member name="M:BrowserChooser3.Classes.Services.BrowserServices.DefaultBrowserChecker.SetDefaultBrowser(System.String,System.String)">
             <summary>
             デフォルトブラウザの設定を更新します（非推奨 - Windows 11では設定画面を表示することを推奨）
@@ -521,13 +469,6 @@
             <param name="browserPath">ブラウザのパス</param>
             <param name="protocol">プロトコル</param>
             <returns>成功した場合はtrue</returns>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.DefaultBrowserChecker.GetAppIdFromPath(System.String)">
-            <summary>
-            パスからAppIdを取得
-            </summary>
-            <param name="browserPath">ブラウザのパス</param>
-            <returns>AppId</returns>
         </member>
         <member name="M:BrowserChooser3.Classes.Services.BrowserServices.DefaultBrowserChecker.ResetDefaultBrowser(System.String)">
             <summary>
@@ -565,6 +506,14 @@
             <param name="browserChooserPath">BrowserChooser3のパス</param>
             <returns>成功した場合はtrue</returns>
         </member>
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.DefaultBrowserChecker.SetShellOpenCommandHandler(System.String,System.String,System.String,System.Action{Microsoft.Win32.RegistryKey})">
+            <summary>
+            レジストリの "{keyName}\shell\open\command" にBrowserChooser3の起動コマンドを登録し、
+            "{keyName}" キー自体は configureKey で呼び出し元固有の値を設定する。
+            プロトコルハンドラーとファイル拡張子ハンドラーの登録処理はキー配下の追加設定以外は同一のため、
+            ここに集約している。
+            </summary>
+        </member>
         <member name="M:BrowserChooser3.Classes.Services.BrowserServices.DefaultBrowserChecker.IsBrowserChooserDefault(System.String)">
             <summary>
             現在の既定ブラウザがBrowserChooser3かどうかを確認します
@@ -598,6 +547,15 @@
         <member name="M:BrowserChooser3.Classes.Services.BrowserServices.DetectedBrowsers.DoBrowserDetection(System.Boolean)">
             <summary>
             ブラウザ検出を実行
+            </summary>
+            <param name="webBrowsersOnly">Webブラウザのみを検出するかどうか</param>
+            <returns>検出されたブラウザのリスト</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.DetectedBrowsers.DoBrowserDetectionAsync(System.Boolean)">
+            <summary>
+            ブラウザ検出を非同期で実行します。
+            オンライン定義チェックのHTTP通信をUIスレッドでブロックしないようにするため、
+            UIから呼び出す場合はこちらを使用してください（同期版のDoBrowserDetectionはテスト・内部処理用に維持）。
             </summary>
             <param name="webBrowsersOnly">Webブラウザのみを検出するかどうか</param>
             <returns>検出されたブラウザのリスト</returns>
@@ -1207,6 +1165,11 @@
             アクセシビリティレンダリングのポリシー
             </summary>
         </member>
+        <member name="F:BrowserChooser3.Classes.Services.SystemServices.Policy._initialized">
+            <summary>
+            初期化済みかどうか（起動経路上で複数回呼ばれても実処理は一度だけにするためのガード）
+            </summary>
+        </member>
         <member name="M:BrowserChooser3.Classes.Services.SystemServices.Policy.Initialize">
             <summary>
             ポリシーを初期化します
@@ -1377,12 +1340,6 @@
             コンソールに接続してから出力する。
             </summary>
             <param name="message">出力するメッセージ</param>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Services.SystemServices.StartupLauncher.CheckDefaultBrowser">
-            <summary>
-            デフォルトブラウザチェックを実行します
-            </summary>
-            <returns>デフォルトブラウザが設定されている場合はtrue</returns>
         </member>
         <member name="M:BrowserChooser3.Classes.Services.SystemServices.StartupLauncher.CheckBrowserChooserDefaultStatus">
             <summary>
@@ -1559,6 +1516,11 @@
         <member name="F:BrowserChooser3.Classes.Settings.CURRENT_FILE_VERSION">
             <summary>
             現在の設定ファイルバージョン
+            </summary>
+        </member>
+        <member name="F:BrowserChooser3.Classes.Settings._xmlSerializer">
+            <summary>
+            XMLシリアライザ（生成コストが高いため使い回す）
             </summary>
         </member>
         <member name="T:BrowserChooser3.Classes.Settings.DefaultField">
@@ -1868,7 +1830,7 @@
         </member>
         <member name="M:BrowserChooser3.Classes.Utilities.BrowserUtilities.IsTestEnvironment">
             <summary>
-            テスト環境かどうかを判定する
+            テスト環境かどうかを判定する（判定結果はプロセス起動中一度だけ評価してキャッシュされる）
             </summary>
             <returns>テスト環境の場合はtrue</returns>
         </member>
@@ -2007,10 +1969,28 @@
             アイコン抽出、スケーリング、画像変換などの機能を提供します
             </summary>
         </member>
+        <member name="M:BrowserChooser3.Classes.Utilities.ImageUtilities.DestroyIconHandle(System.IntPtr)">
+            <summary>
+            HICONハンドルを解放する。Icon.FromHandleが所有権を持たない
+            GetHicon()/ExtractIcon系のハンドルを解放するために、呼び出し元から利用できるよう公開する。
+            </summary>
+        </member>
+        <member name="F:BrowserChooser3.Classes.Utilities.ImageUtilities.MaxCachedImages">
+            <summary>
+            キャッシュ1つあたりの保持上限。この数を超えたら最も長く使われていないエントリをDisposeして退避する。
+            ブラウザ台数は現実的に数十以内のため、上限に達することは稀だが無制限な増加は避ける。
+            </summary>
+        </member>
         <member name="F:BrowserChooser3.Classes.Utilities.ImageUtilities._iconCache">
             <summary>
             抽出済みアイコンのキャッシュ（キー: ファイルパス+アイコンインデックス）
-            同じ実行ファイルへの再アクセス・Win32でのアイコン再抽出を避けるため、プロセス生存期間中保持する
+            同じ実行ファイルへの再アクセス・Win32でのアイコン再抽出を避けるため、プロセス生存期間中保持する。
+            上限を超えたエントリはLRUで退避しDisposeする。
+            </summary>
+        </member>
+        <member name="T:BrowserChooser3.Classes.Utilities.ImageUtilities.LruImageCache">
+            <summary>
+            単純なLRU画像キャッシュ。上限を超えたら最も長く未使用のエントリをDisposeして削除する。
             </summary>
         </member>
         <member name="M:BrowserChooser3.Classes.Utilities.ImageUtilities.GetImage(BrowserChooser3.Classes.Models.Browser,System.Boolean)">
@@ -2024,7 +2004,8 @@
         <member name="F:BrowserChooser3.Classes.Utilities.ImageUtilities._resizedIconCache">
             <summary>
             リサイズ済みアイコンのキャッシュ（キー: ファイルパス+アイコンインデックス+サイズ）
-            ボタン表示のたびに同じサイズへのリサイズ（GDI+描画）を繰り返さないよう、プロセス生存期間中保持する
+            ボタン表示のたびに同じサイズへのリサイズ（GDI+描画）を繰り返さないよう、プロセス生存期間中保持する。
+            上限を超えたエントリはLRUで退避しDisposeする。
             </summary>
         </member>
         <member name="M:BrowserChooser3.Classes.Utilities.ImageUtilities.GetResizedImage(BrowserChooser3.Classes.Models.Browser,System.Boolean,System.Int32)">
@@ -2038,6 +2019,12 @@
             <param name="size">リサイズ後のサイズ（正方形）</param>
             <returns>リサイズ済み画像</returns>
         </member>
+        <member name="M:BrowserChooser3.Classes.Utilities.ImageUtilities.BuildDiskCacheFileName(System.String,System.Int32,System.Int32)">
+            <summary>
+            ディスクアイコンキャッシュのキーを、exeパス＋最終更新日時＋要求サイズから求める。
+            元ファイルが更新された場合は最終更新日時が変わるため、自動的にキャッシュミスとなり再生成される。
+            </summary>
+        </member>
         <member name="M:BrowserChooser3.Classes.Utilities.ImageUtilities.ExtractIconFromFile(System.String,System.Int32)">
             <summary>
             ファイルからアイコンを抽出
@@ -2045,6 +2032,12 @@
             <param name="filePath">ファイルパス</param>
             <param name="iconIndex">アイコンインデックス</param>
             <returns>アイコン</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Utilities.ImageUtilities.ExtractIconExLarge(System.String,System.Int32)">
+            <summary>
+            ExtractIconExで「大アイコン」ハンドルを取得しIconへ変換する。
+            取得したハンドルは確実にDestroyIconで解放する。
+            </summary>
         </member>
         <member name="M:BrowserChooser3.Classes.Utilities.ImageUtilities.ScaleImageTo(System.Drawing.Image,System.Drawing.Size)">
             <summary>
@@ -2103,41 +2096,6 @@
             <param name="format">画像フォーマット</param>
             <returns>メモリストリーム</returns>
         </member>
-        <member name="T:BrowserChooser3.Classes.Utilities.IniFileReader">
-            <summary>
-            INIファイルを読み込むためのユーティリティクラス
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Utilities.IniFileReader.ReadValue(System.String,System.String,System.String,System.String)">
-            <summary>
-            INIファイルから値を読み込む
-            </summary>
-            <param name="filePath">INIファイルのパス</param>
-            <param name="section">セクション名</param>
-            <param name="key">キー名</param>
-            <param name="defaultValue">デフォルト値</param>
-            <returns>読み込まれた値、見つからない場合はデフォルト値</returns>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Utilities.IniFileReader.ReadBoolValue(System.String,System.String,System.String,System.Boolean)">
-            <summary>
-            INIファイルからブール値を読み込む
-            </summary>
-            <param name="filePath">INIファイルのパス</param>
-            <param name="section">セクション名</param>
-            <param name="key">キー名</param>
-            <param name="defaultValue">デフォルト値</param>
-            <returns>読み込まれたブール値、見つからない場合はデフォルト値</returns>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Utilities.IniFileReader.ReadPathValue(System.String,System.String,System.String,System.String)">
-            <summary>
-            INIファイルからパスを読み込み、必要に応じて展開する
-            </summary>
-            <param name="filePath">INIファイルのパス</param>
-            <param name="section">セクション名</param>
-            <param name="key">キー名</param>
-            <param name="defaultValue">デフォルト値</param>
-            <returns>展開されたパス</returns>
-        </member>
         <member name="T:BrowserChooser3.Classes.Utilities.Logger">
             <summary>
             ログ記録を管理するクラス
@@ -2180,7 +2138,7 @@
         </member>
         <member name="P:BrowserChooser3.Classes.Utilities.Logger.IsTestEnvironment">
             <summary>
-            テスト環境かどうかを判定
+            テスト環境かどうか（プロセス起動中に一度だけ評価してキャッシュする）
             </summary>
         </member>
         <member name="F:BrowserChooser3.Classes.Utilities.Logger._logQueue">
@@ -2203,6 +2161,11 @@
             インストーラー経由でインストールされたかどうかを判定
             </summary>
             <returns>インストーラー経由の場合はtrue</returns>
+        </member>
+        <member name="F:BrowserChooser3.Classes.Utilities.Logger._cachedLogDirectory">
+            <summary>
+            解決済みログディレクトリのキャッシュ（初回解決後は再チェックしない）
+            </summary>
         </member>
         <member name="P:BrowserChooser3.Classes.Utilities.Logger.LogDirectory">
             <summary>
@@ -2269,6 +2232,17 @@
             ログをファイルに書き込む処理を分離
             </summary>
         </member>
+        <member name="F:BrowserChooser3.Classes.Utilities.Logger.CleanupMarkerFileName">
+            <summary>
+            前回クリーンアップ日を記録するマーカーファイル名
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Utilities.Logger.RunCleanupIfDue">
+            <summary>
+            1日1回を目安に古いログファイルをクリーンアップする。
+            実行日はプロセス寿命を超えて永続化するため、環境変数ではなくマーカーファイルを使う。
+            </summary>
+        </member>
         <member name="M:BrowserChooser3.Classes.Utilities.Logger.InitializeLogLevel">
             <summary>
             app.configと設定値からログレベルを初期化する
@@ -2316,6 +2290,12 @@
             </summary>
             <returns>ログファイルの出力先ディレクトリ</returns>
         </member>
+        <member name="M:BrowserChooser3.Classes.Utilities.PathManager.GetIconCacheDirectory">
+            <summary>
+            アイコンのディスクキャッシュの出力先ディレクトリを取得します
+            </summary>
+            <returns>アイコンキャッシュの出力先ディレクトリ</returns>
+        </member>
         <member name="M:BrowserChooser3.Classes.Utilities.PathManager.GetConfigFilePath(System.String)">
             <summary>
             設定ファイルの完全パスを取得します
@@ -2340,9 +2320,15 @@
             テスト環境の検出を行うユーティリティクラス
             </summary>
         </member>
+        <member name="F:BrowserChooser3.Classes.Utilities.TestEnvironmentDetector._isTestEnvironment">
+            <summary>
+            テスト環境判定結果のキャッシュ（プロセス起動中に一度だけ評価する）
+            </summary>
+        </member>
         <member name="M:BrowserChooser3.Classes.Utilities.TestEnvironmentDetector.IsTestEnvironment">
             <summary>
-            現在の実行環境がテスト環境かどうかを判定します
+            現在の実行環境がテスト環境かどうかを判定します。
+            判定結果はプロセス起動中一度だけ評価してキャッシュされます。
             </summary>
             <returns>テスト環境の場合はtrue、それ以外はfalse</returns>
         </member>
@@ -3147,11 +3133,6 @@
         <member name="M:BrowserChooser3.Forms.MainForm.BrowserButton_Click(System.Object,System.EventArgs)">
             <summary>
             ブラウザボタンのクリックイベント
-            </summary>
-        </member>
-        <member name="M:BrowserChooser3.Forms.MainForm.LaunchBrowser(BrowserChooser3.Classes.Models.Browser,System.String)">
-            <summary>
-            ブラウザを起動
             </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.MainForm.SetInitialURL(System.String)">
