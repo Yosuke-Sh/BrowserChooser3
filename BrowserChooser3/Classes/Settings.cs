@@ -545,6 +545,11 @@ namespace BrowserChooser3.Classes
                 Directory.CreateDirectory(path);
             }
 
+            // 上書き前に現行ファイルを世代バックアップ（bak1〜bak3）へ退避する。
+            // 保存が途中で失敗して設定を失った場合や、意図しない変更を保存してしまった場合に
+            // 直前の状態へ戻せるようにするためで、バックアップ自体の失敗は保存を妨げない。
+            SettingsTransferService.CreateGenerationalBackup(path, BrowserChooserConfigFileName);
+
             var filePath = Path.Combine(path, BrowserChooserConfigFileName);
 
             using var writer = new StreamWriter(filePath);

@@ -1143,6 +1143,18 @@
             <param name="setModified">変更フラグ設定アクション</param>
             <returns>作成されたTabPage</returns>
         </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormPanels.ExportSettings">
+            <summary>
+            設定ファイルをユーザー指定先へエクスポートします。
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormPanels.ImportSettings">
+            <summary>
+            ユーザーが指定した設定ファイルを検証してからインポートします。
+            適用前に現行設定が自動バックアップされます。
+            </summary>
+            <returns>インポートが実際に行われた場合はtrue（呼び出し元はOptions画面を閉じる）</returns>
+        </member>
         <member name="T:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormProtocolHandlers">
             <summary>
             プロトコルパネルのイベントハンドラー
@@ -1327,6 +1339,91 @@
             ポリシー設定の概要を取得します
             </summary>
             <returns>ポリシー設定の概要</returns>
+        </member>
+        <member name="T:BrowserChooser3.Classes.Services.SystemServices.SettingsTransferService">
+             <summary>
+             設定ファイルの世代バックアップと、インポート/エクスポートを担当します。
+            
+             ポータブル版は v0.1.4 で廃止されたため、別PCへ設定を持っていく手段が
+             存在しなくなっていた。この機能がその需要を満たす。
+             また、SafeMode（設定破損時の退避）と組で「バックアップから復元」を
+             提示できるようにするための土台でもある。
+             </summary>
+        </member>
+        <member name="F:BrowserChooser3.Classes.Services.SystemServices.SettingsTransferService.BackupGenerations">
+            <summary>
+            保持するバックアップの世代数
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.SystemServices.SettingsTransferService.GetBackupFileName(System.Int32)">
+            <summary>
+            指定した世代のバックアップファイル名を返します（例: BrowserChooser3Config.bak1.xml）。
+            </summary>
+            <param name="generation">世代番号（1が最新）</param>
+            <returns>バックアップファイル名</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.SystemServices.SettingsTransferService.CreateGenerationalBackup(System.String,System.String)">
+             <summary>
+             現行の設定ファイルを世代バックアップへ退避します。
+            
+             bak2→bak3、bak1→bak2 と繰り下げてから、現行ファイルを bak1 へコピーします
+             （移動ではなくコピーのため、現行ファイルはそのまま残ります）。
+             設定ファイルが存在しない場合は何もしません。
+             </summary>
+             <param name="configDirectory">設定ファイルのあるディレクトリ</param>
+             <param name="configFileName">設定ファイル名</param>
+             <returns>バックアップを作成した場合はtrue</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.SystemServices.SettingsTransferService.GetAvailableBackups(System.String)">
+            <summary>
+            存在する世代バックアップのパスを新しい順（bak1から）に列挙します。
+            </summary>
+            <param name="configDirectory">設定ファイルのあるディレクトリ</param>
+            <returns>存在するバックアップの完全パス</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.SystemServices.SettingsTransferService.Export(System.String,System.String,System.String)">
+            <summary>
+            設定ファイルを指定先へエクスポート（コピー）します。
+            </summary>
+            <param name="configDirectory">設定ファイルのあるディレクトリ</param>
+            <param name="configFileName">設定ファイル名</param>
+            <param name="destinationPath">エクスポート先の完全パス</param>
+            <returns>成功した場合はtrue</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.SystemServices.SettingsTransferService.TryValidate(System.String,BrowserChooser3.Classes.Settings@)">
+            <summary>
+            インポート候補のファイルが、設定ファイルとして読み込める内容かどうかを検証します。
+            実際に逆シリアライズを試みるため、XMLとして壊れているものや
+            別のスキーマのXMLはここで弾かれます。
+            </summary>
+            <param name="sourcePath">検証するファイルのパス</param>
+            <param name="settings">検証に成功した場合の設定オブジェクト</param>
+            <returns>読み込める場合はtrue</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.SystemServices.SettingsTransferService.Import(System.String,System.String,System.String,BrowserChooser3.Classes.Settings@)">
+             <summary>
+             設定ファイルをインポートします。
+            
+             適用前に必ず現行設定を世代バックアップへ退避するため、
+             インポートに失敗した場合や内容が意図と違った場合に元へ戻せます。
+             検証に失敗したファイルは適用されません。
+             </summary>
+             <param name="sourcePath">インポート元の完全パス</param>
+             <param name="configDirectory">設定ファイルのあるディレクトリ</param>
+             <param name="configFileName">設定ファイル名</param>
+             <param name="importedSettings">適用された設定オブジェクト</param>
+             <returns>成功した場合はtrue</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Services.SystemServices.SettingsTransferService.RestoreFromBackup(System.String,System.String,System.String,BrowserChooser3.Classes.Settings@)">
+            <summary>
+            世代バックアップから設定を復元します。
+            復元前に現行設定もバックアップされるため、復元操作自体もやり直せます。
+            </summary>
+            <param name="backupPath">復元元のバックアップファイルのパス</param>
+            <param name="configDirectory">設定ファイルのあるディレクトリ</param>
+            <param name="configFileName">設定ファイル名</param>
+            <param name="restoredSettings">復元された設定オブジェクト</param>
+            <returns>成功した場合はtrue</returns>
         </member>
         <member name="T:BrowserChooser3.Classes.Services.SystemServices.SingleInstanceManager">
             <summary>

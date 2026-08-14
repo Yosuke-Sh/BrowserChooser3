@@ -1868,7 +1868,62 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
                 ForeColor = Color.Gray
             };
+            currentY += 44;
+
+            // === Settings Import / Export ===
+            // ポータブル版の廃止で失われた「別PCへ設定を持っていく」手段を補う。
+            var lblTransferTitle = new Label
+            {
+                Text = "Import / Export",
+                Location = new Point(6, currentY),
+                Size = new Size(200, 25),
+                Font = new Font("Segoe UI", 10.0f, FontStyle.Bold, GraphicsUnit.Point, 0),
+                ForeColor = Color.DarkBlue
+            };
             currentY += 34;
+
+            var btnExportSettings = new Button
+            {
+                Name = "btnExportSettings",
+                Text = "設定をエクスポート",
+                Location = new Point(6, currentY),
+                Size = new Size(160, 30),
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+            btnExportSettings.Click += (s, e) => ExportSettings();
+
+            var btnImportSettings = new Button
+            {
+                Name = "btnImportSettings",
+                Text = "設定をインポート",
+                Location = new Point(176, currentY),
+                Size = new Size(160, 30),
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+            // インポート後にOKで閉じると、メモリ上の旧設定がインポート結果を上書きしてしまう。
+            // 成功時はOptions画面をキャンセル扱いで閉じ、保存経路を通さない。
+            btnImportSettings.Click += (s, e) =>
+            {
+                if (ImportSettings())
+                {
+                    var ownerForm = btnImportSettings.FindForm();
+                    if (ownerForm != null)
+                    {
+                        ownerForm.DialogResult = DialogResult.Cancel;
+                        ownerForm.Close();
+                    }
+                }
+            };
+
+            var lblTransferDesc = new Label
+            {
+                Text = "設定ファイルを書き出し／読み込みします。インポート前に現在の設定は自動バックアップされます",
+                Location = new Point(346, currentY + 6),
+                Size = new Size(430, 34),
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                ForeColor = Color.Gray
+            };
+            currentY += 40;
 
 
 
@@ -1895,6 +1950,10 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             panel.Controls.Add(lblDefaultMessage);
             panel.Controls.Add(txtDefaultMessage);
             panel.Controls.Add(lblDefaultMessageDesc);
+            panel.Controls.Add(lblTransferTitle);
+            panel.Controls.Add(btnExportSettings);
+            panel.Controls.Add(btnImportSettings);
+            panel.Controls.Add(lblTransferDesc);
 
             tabPage.Controls.Add(panel);
             return tabPage;
@@ -1903,6 +1962,107 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
         // CreateAccessibilityPanel（"Accessibility settings will be implemented here" という
         // ラベル1枚だけを持ち、TabControlに追加されることもなかったプレースホルダ）は削除した。
         // アクセシビリティ設定の実体は CreateFocusPanel が持つ Accessibility タブに集約している。
+
+        /// <summary>
+        /// 設定ファイルをユーザー指定先へエクスポートします。
+        /// </summary>
+        private void ExportSettings()
+        {
+            if (IsTestEnvironment()) return;
+
+            try
+            {
+                var dialogService = new Services.UI.FileDialogService();
+                var destination = dialogService.ShowSaveFileDialog(
+                    "設定をエクスポート",
+                    "設定ファイル (*.xml)|*.xml|すべてのファイル (*.*)|*.*",
+                    Settings.BrowserChooserConfigFileName);
+
+                if (string.IsNullOrEmpty(destination)) return;
+
+                var succeeded = Services.SystemServices.SettingsTransferService.Export(
+                    PathManager.GetConfigDirectory(),
+                    Settings.BrowserChooserConfigFileName,
+                    destination);
+
+                if (succeeded)
+                {
+                    Services.UI.MessageBoxService.ShowInfoStatic(
+                        $"設定をエクスポートしました。\n{destination}", "エクスポート完了");
+                }
+                else
+                {
+                    Services.UI.MessageBoxService.ShowErrorStatic(
+                        "設定のエクスポートに失敗しました。詳細はログを確認してください。", "エクスポート失敗");
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("OptionsFormPanels.ExportSettings", "設定エクスポートエラー", ex.Message);
+                Services.UI.MessageBoxService.ShowErrorStatic(
+                    $"設定のエクスポートに失敗しました: {ex.Message}", "エクスポート失敗");
+            }
+        }
+
+        /// <summary>
+        /// ユーザーが指定した設定ファイルを検証してからインポートします。
+        /// 適用前に現行設定が自動バックアップされます。
+        /// </summary>
+        /// <returns>インポートが実際に行われた場合はtrue（呼び出し元はOptions画面を閉じる）</returns>
+        private bool ImportSettings()
+        {
+            if (IsTestEnvironment()) return false;
+
+            try
+            {
+                var dialogService = new Services.UI.FileDialogService();
+                var source = dialogService.ShowOpenFileDialog(
+                    "設定をインポート",
+                    "設定ファイル (*.xml)|*.xml|すべてのファイル (*.*)|*.*");
+
+                if (string.IsNullOrEmpty(source)) return false;
+
+                // 適用前に検証し、壊れたファイルで現行設定を潰さないようにする
+                if (!Services.SystemServices.SettingsTransferService.TryValidate(source, out _))
+                {
+                    Services.UI.MessageBoxService.ShowErrorStatic(
+                        "選択されたファイルは有効な設定ファイルとして読み込めませんでした。\n" +
+                        "現在の設定は変更していません。", "インポート失敗");
+                    return false;
+                }
+
+                var confirmed = Services.UI.MessageBoxService.ShowQuestionStatic(
+                    "現在の設定をインポートした内容で置き換えます。\n" +
+                    "現在の設定は自動でバックアップされます。続行しますか？\n\n" +
+                    "※インポートを反映するにはアプリケーションを再起動してください。",
+                    "設定のインポート");
+                if (confirmed != DialogResult.Yes) return false;
+
+                var succeeded = Services.SystemServices.SettingsTransferService.Import(
+                    source,
+                    PathManager.GetConfigDirectory(),
+                    Settings.BrowserChooserConfigFileName,
+                    out _);
+
+                if (succeeded)
+                {
+                    Services.UI.MessageBoxService.ShowInfoStatic(
+                        "設定をインポートしました。\nアプリケーションを再起動すると反映されます。", "インポート完了");
+                    return true;
+                }
+
+                Services.UI.MessageBoxService.ShowErrorStatic(
+                    "設定のインポートに失敗しました。詳細はログを確認してください。", "インポート失敗");
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("OptionsFormPanels.ImportSettings", "設定インポートエラー", ex.Message);
+                Services.UI.MessageBoxService.ShowErrorStatic(
+                    $"設定のインポートに失敗しました: {ex.Message}", "インポート失敗");
+                return false;
+            }
+        }
 
 
     }
