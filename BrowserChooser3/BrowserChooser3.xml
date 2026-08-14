@@ -972,7 +972,11 @@
         </member>
         <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormPanels.CreateFocusPanel(BrowserChooser3.Classes.Settings,System.Action{System.Boolean})">
             <summary>
-            フォーカスパネルの作成
+            アクセシビリティパネルの作成。
+            従来「Focus」タブとしてフォーカスボックス関連のみを扱っていたが、
+            実装されていなかったAccessibilityタブ（プレースホルダのラベル1枚で、
+            TabControlに追加すらされていなかった）の役割を統合し、
+            Displayタブにあった Use Accessible Rendering もここへ移した。
             </summary>
             <param name="settings">設定オブジェクト</param>
             <param name="setModified">変更フラグ設定アクション</param>
@@ -1008,12 +1012,6 @@
             </summary>
             <param name="settings">設定オブジェクト</param>
             <param name="setModified">変更フラグ設定アクション</param>
-            <returns>作成されたTabPage</returns>
-        </member>
-        <member name="M:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormPanels.CreateAccessibilityPanel">
-            <summary>
-            アクセシビリティパネルの作成
-            </summary>
             <returns>作成されたTabPage</returns>
         </member>
         <member name="T:BrowserChooser3.Classes.Services.OptionsFormHandlers.OptionsFormProtocolHandlers">
@@ -1705,6 +1703,14 @@
         </member>
         <member name="P:BrowserChooser3.Classes.Settings.UseAccessibleRendering">
             <summary>アクセシブルレンダリング使用</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Settings.IsAccessibleRenderingActive">
+            <summary>
+            実際にアクセシブルレンダリングを適用するかどうか。
+            グループポリシー（<see cref="P:BrowserChooser3.Classes.Services.SystemServices.Policy.AccessibleRendering"/>）で強制されている場合は
+            ユーザー設定より優先して有効になる。従来ポリシー側の値はレジストリから
+            読み込まれるだけで一度も参照されていなかった。
+            </summary>
         </member>
         <member name="P:BrowserChooser3.Classes.Settings.FocusBoxLineWidth">
             <summary>フォーカスボックス線幅</summary>
@@ -2541,6 +2547,18 @@
         <member name="P:BrowserChooser3.CustomControls.FFButton.UseAero">
             <summary>
             Aero効果の有効/無効
+            </summary>
+        </member>
+        <member name="P:BrowserChooser3.CustomControls.FFButton.CurrentSettings">
+            <summary>
+            現在の設定（FFCheckBoxと同じくSettings.Currentを参照する）
+            </summary>
+        </member>
+        <member name="P:BrowserChooser3.CustomControls.FFButton.ShouldUseAeroRendering">
+            <summary>
+            Aero効果のグラデーション背景を実際に描画するかどうか。
+            UseAccessibleRendering が有効な場合は、FFCheckBox と同様に
+            装飾を抑えて単色描画にする（従来 FFButton だけがこの設定を無視していた）。
             </summary>
         </member>
         <member name="P:BrowserChooser3.CustomControls.FFButton.CustomBackColor">

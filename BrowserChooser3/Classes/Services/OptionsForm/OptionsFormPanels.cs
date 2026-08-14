@@ -628,53 +628,12 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             };
             currentY += 40;
 
-            // === Display Effects ===
-            // レイアウト変数の定義
-            const int displayBaseX = 6;           // 基本X位置
-            int displayBaseY = currentY;          // 基本Y位置
+            // 旧 "Display Effects" セクションは唯一の項目だった Use Accessible Rendering を
+            // Accessibility タブ（CreateFocusPanel）へ移したため、見出しごと削除した。
             const int displayItemSpacing = 35;    // アイテム間の間隔
-            const int displayDescOffset = 250;    // 説明文のXオフセット
-
-            var lblEffectsTitle = new Label
-            {
-                Text = "Display Effects",
-                Location = new Point(displayBaseX, displayBaseY),
-                Size = new Size(200, 25),
-                Font = new Font("Segoe UI", 10.0f, FontStyle.Bold, GraphicsUnit.Point, 0),
-                ForeColor = Color.DarkBlue
-            };
-            currentY += 34;
-
-
-
-            // アクセシブルレンダリング使用設定
-            var chkUseAccessibleRendering = new CheckBox
-            {
-                Name = "chkUseAccessibleRendering",
-                Text = "Use Accessible Rendering",
-                TextAlign = ContentAlignment.MiddleLeft,
-                Location = new Point(displayBaseX, currentY),
-                Size = new Size(240, 25),
-                Checked = settings.UseAccessibleRendering,
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            };
-            chkUseAccessibleRendering.CheckedChanged += (s, e) => setModified(true);
-
-            var lblUseAccessibleRenderingDesc = new Label
-            {
-                Text = "アクセシビリティ対応のレンダリングを使用します",
-                Location = new Point(displayDescOffset, currentY + 3),
-                Size = new Size(400, 23),
-                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
-                ForeColor = Color.Gray
-            };
-
 
             // コントロールの追加
             panel.Controls.Add(lblVisualTitle);
-            // panel.Controls.Add(accessibilityButton);
-            // panel.Controls.Add(lblAccessibilityDesc);
-            // panel.Controls.Add(backgroundColorButton);
             panel.Controls.Add(lblBackgroundColorDesc);
             panel.Controls.Add(pbBackgroundColor);
             panel.Controls.Add(chkEnableTransparency);
@@ -690,9 +649,6 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             panel.Controls.Add(chkEnableBackgroundGradient);
             panel.Controls.Add(lblEnableBackgroundGradientDesc);
             
-            panel.Controls.Add(lblEffectsTitle);
-            panel.Controls.Add(chkUseAccessibleRendering);
-            panel.Controls.Add(lblUseAccessibleRenderingDesc);
 
             // === URL Display Settings ===
             currentY += displayItemSpacing + 10;
@@ -764,15 +720,19 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
         }
 
         /// <summary>
-        /// フォーカスパネルの作成
+        /// アクセシビリティパネルの作成。
+        /// 従来「Focus」タブとしてフォーカスボックス関連のみを扱っていたが、
+        /// 実装されていなかったAccessibilityタブ（プレースホルダのラベル1枚で、
+        /// TabControlに追加すらされていなかった）の役割を統合し、
+        /// Displayタブにあった Use Accessible Rendering もここへ移した。
         /// </summary>
         /// <param name="settings">設定オブジェクト</param>
         /// <param name="setModified">変更フラグ設定アクション</param>
         /// <returns>作成されたTabPage</returns>
         public TabPage CreateFocusPanel(Settings settings, Action<bool> setModified)
         {
-            var tabPage = new TabPage("Focus");
-            tabPage.Name = "tabFocus";
+            var tabPage = new TabPage("Accessibility");
+            tabPage.Name = "tabAccessibility";
             
             var panel = new Panel
             {
@@ -790,10 +750,43 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             const int focusItemSpacing = 35;    // アイテム間の間隔
             const int focusDescOffset = 250;    // 説明文のXオフセット
 
+            var lblAccessibilityTitle = new Label
+            {
+                Text = "Accessibility Settings",
+                Location = new Point(focusBaseX, focusBaseY),
+                Size = new Size(250, 25),
+                Font = new Font("Segoe UI", 10.0f, FontStyle.Bold, GraphicsUnit.Point, 0),
+                ForeColor = Color.DarkBlue
+            };
+            currentY += 34;
+
+            // アクセシブルレンダリング使用設定（従来はDisplayタブにあった）
+            var chkUseAccessibleRendering = new CheckBox
+            {
+                Name = "chkUseAccessibleRendering",
+                Text = "Use Accessible Rendering",
+                TextAlign = ContentAlignment.MiddleLeft,
+                Location = new Point(focusBaseX, currentY),
+                Size = new Size(240, 25),
+                Checked = settings.UseAccessibleRendering,
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+            chkUseAccessibleRendering.CheckedChanged += (s, e) => setModified(true);
+
+            var lblUseAccessibleRenderingDesc = new Label
+            {
+                Text = "Aero効果を抑え、スクリーンリーダー向けの情報を付与します",
+                Location = new Point(focusDescOffset, currentY + 3),
+                Size = new Size(400, 23),
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                ForeColor = Color.Gray
+            };
+            currentY += focusItemSpacing;
+
             var lblFocusTitle = new Label
             {
                 Text = "Focus Settings",
-                Location = new Point(focusBaseX, focusBaseY),
+                Location = new Point(focusBaseX, currentY),
                 Size = new Size(200, 25),
                 Font = new Font("Segoe UI", 10.0f, FontStyle.Bold, GraphicsUnit.Point, 0),
                 ForeColor = Color.DarkBlue
@@ -955,6 +948,9 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             };
 
             // コントロールの追加
+            panel.Controls.Add(lblAccessibilityTitle);
+            panel.Controls.Add(chkUseAccessibleRendering);
+            panel.Controls.Add(lblUseAccessibleRenderingDesc);
             panel.Controls.Add(lblFocusTitle);
             panel.Controls.Add(chkShowFocus);
             panel.Controls.Add(lblShowFocusDesc);
@@ -1904,36 +1900,9 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             return tabPage;
         }
 
-        /// <summary>
-        /// アクセシビリティパネルの作成
-        /// </summary>
-        /// <returns>作成されたTabPage</returns>
-        public TabPage CreateAccessibilityPanel()
-        {
-            var tabPage = new TabPage("Accessibility");
-            tabPage.Name = "tabAccessibility";
-            
-            var panel = new Panel
-            {
-                Dock = DockStyle.Fill,
-                Padding = new Padding(10)
-            };
-
-            // アクセシビリティ設定のコントロールを追加
-            var label = new Label
-            {
-                Text = "Accessibility settings will be implemented here",
-                Location = new Point(6, 6),
-                Size = new Size(300, 23),
-                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
-            };
-
-            panel.Controls.Add(label);
-
-            tabPage.Controls.Add(panel);
-            return tabPage;
-        }
-
+        // CreateAccessibilityPanel（"Accessibility settings will be implemented here" という
+        // ラベル1枚だけを持ち、TabControlに追加されることもなかったプレースホルダ）は削除した。
+        // アクセシビリティ設定の実体は CreateFocusPanel が持つ Accessibility タブに集約している。
 
 
     }

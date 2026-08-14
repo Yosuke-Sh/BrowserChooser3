@@ -96,7 +96,7 @@ namespace BrowserChooser3.CustomControls
         {
             if (DesignMode) return; // デザインモードでは何もしない
 
-            if (GeneralUtilities.IsAeroEnabled() && _usesAero && !(_settings?.UseAccessibleRendering ?? false))
+            if (GeneralUtilities.IsAeroEnabled() && _usesAero && !(_settings?.IsAccessibleRenderingActive ?? false))
             {
                 // Aero効果を使用した描画（バッファードグラフィックスでちらつき防止）
                 using var g = Parent?.CreateGraphics();
@@ -138,7 +138,7 @@ namespace BrowserChooser3.CustomControls
                 {
                     using var pen = new Pen(Brushes.Black, 2);
                     
-                    if (GeneralUtilities.IsAeroEnabled() && !(_settings?.UseAccessibleRendering ?? false))
+                    if (GeneralUtilities.IsAeroEnabled() && !(_settings?.IsAccessibleRenderingActive ?? false))
                     {
                         g.DrawRectangle(pen, Location.X - 5, Location.Y - 5, _oldWidth + 10, _oldHeight);
                     }
@@ -157,7 +157,7 @@ namespace BrowserChooser3.CustomControls
         /// </summary>
         private void Parent_MouseUp(object? sender, MouseEventArgs e)
         {
-            if (_usesAero && !(_settings?.UseAccessibleRendering ?? false))
+            if (_usesAero && !(_settings?.IsAccessibleRenderingActive ?? false))
             {
                 // チェックボックス領域のヒットテスト
                 if (e.Location.X > Location.X + Width && e.Location.X < Location.X + _oldWidth)

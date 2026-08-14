@@ -998,7 +998,7 @@ namespace BrowserChooser3.Forms
                 }
 
                 // アクセシブルレンダリング設定が有効な場合、スクリーンリーダー向けの情報を付与する
-                if (_settings?.UseAccessibleRendering ?? false)
+                if (_settings?.IsAccessibleRenderingActive ?? false)
                 {
                     button.AccessibleName = browser.Name;
                     button.AccessibleDescription = $"{browser.Name}でURLを開く";

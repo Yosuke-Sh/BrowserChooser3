@@ -1,5 +1,6 @@
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using BrowserChooser3.Classes;
 
 namespace BrowserChooser3.CustomControls
 {
@@ -53,6 +54,19 @@ namespace BrowserChooser3.CustomControls
         /// Aero効果の有効/無効
         /// </summary>
         public bool UseAero { get; set; } = true;
+
+        /// <summary>
+        /// 現在の設定（FFCheckBoxと同じくSettings.Currentを参照する）
+        /// </summary>
+        private Settings? CurrentSettings => Settings.Current;
+
+        /// <summary>
+        /// Aero効果のグラデーション背景を実際に描画するかどうか。
+        /// UseAccessibleRendering が有効な場合は、FFCheckBox と同様に
+        /// 装飾を抑えて単色描画にする（従来 FFButton だけがこの設定を無視していた）。
+        /// </summary>
+        private bool ShouldUseAeroRendering =>
+            UseAero && !(CurrentSettings?.IsAccessibleRenderingActive ?? false);
 
         /// <summary>
         /// カスタム背景色
@@ -292,7 +306,7 @@ namespace BrowserChooser3.CustomControls
                 backgroundColor = BackColor;
             }
 
-            if (UseAero && !_isPressed && !_isHovered)
+            if (ShouldUseAeroRendering && !_isPressed && !_isHovered)
             {
                 // Aero効果のグラデーション背景
                 using var brush = new LinearGradientBrush(rect, GradientStartColor, GradientEndColor, LinearGradientMode.Vertical);

@@ -257,6 +257,15 @@ namespace BrowserChooser3.Classes
         
         /// <summary>アクセシブルレンダリング使用</summary>
         public bool UseAccessibleRendering { get; set; } = false;
+
+        /// <summary>
+        /// 実際にアクセシブルレンダリングを適用するかどうか。
+        /// グループポリシー（<see cref="Policy.AccessibleRendering"/>）で強制されている場合は
+        /// ユーザー設定より優先して有効になる。従来ポリシー側の値はレジストリから
+        /// 読み込まれるだけで一度も参照されていなかった。
+        /// </summary>
+        [XmlIgnore]
+        public bool IsAccessibleRenderingActive => UseAccessibleRendering || Policy.AccessibleRendering;
         
         /// <summary>フォーカスボックス線幅</summary>
         public int FocusBoxLineWidth { get; set; } = 1;
@@ -641,6 +650,13 @@ namespace BrowserChooser3.Classes
             if (defaultSettings.Protocols.Count == 0)
             {
                 CreateDefaultProtocols(defaultSettings);
+            }
+            // 初回起動時にスクリーンリーダーが動作している場合は、アクセシブルレンダリングを
+            // 既定で有効にする（以降はユーザーがOptionsで自由に変更でき、その値が保存される）。
+            if (GeneralUtilities.HasScreenReader())
+            {
+                defaultSettings.UseAccessibleRendering = true;
+                Logger.LogInfo("Settings.Load", "スクリーンリーダーを検出したためUseAccessibleRenderingを有効化しました");
             }
             Logger.LogDebug("Settings.Load", "デフォルト設定作成・検出完了", defaultSettings.Browsers?.Count ?? 0);
             return defaultSettings;
