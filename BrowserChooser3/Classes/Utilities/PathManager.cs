@@ -20,6 +20,12 @@ namespace BrowserChooser3.Classes.Utilities
         internal static string? ConfigDirectoryOverrideForTests { get; set; }
 
         /// <summary>
+        /// テスト専用：アイコンキャッシュディレクトリを一時的に上書きします。
+        /// 通常運用では使用されません（nullのままなら%LOCALAPPDATA%\BrowserChooser3\iconcacheを使用）。
+        /// </summary>
+        internal static string? IconCacheDirectoryOverrideForTests { get; set; }
+
+        /// <summary>
         /// パス管理を初期化します
         /// </summary>
         public static void Initialize()
@@ -91,6 +97,11 @@ namespace BrowserChooser3.Classes.Utilities
         /// <returns>アイコンキャッシュの出力先ディレクトリ</returns>
         public static string GetIconCacheDirectory()
         {
+            if (!string.IsNullOrEmpty(IconCacheDirectoryOverrideForTests))
+            {
+                return IconCacheDirectoryOverrideForTests;
+            }
+
             return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "BrowserChooser3", "iconcache");
         }
 

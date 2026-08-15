@@ -5,9 +5,6 @@
       <DataCollector friendlyName="XPlat Code Coverage">
         <Configuration>
           <Format>cobertura</Format>
-          <Exclude>[*]*.Program</Exclude>
-          <Exclude>[*]*.Startup</Exclude>
-          <Exclude>[*]*.Migrations.*</Exclude>
           <Exclude>[*]*.Tests.*</Exclude>
           <Exclude>[*]*.Test.*</Exclude>
           <Include>[BrowserChooser3]*</Include>

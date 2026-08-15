@@ -755,5 +755,153 @@ namespace BrowserChooser3.Tests
         }
 
         #endregion
+
+        #region アイコンディスクキャッシュテスト
+        //
+        // GetResizedImageはプロセス寿命のメモリキャッシュ(_resizedIconCache)を先にチェックするため、
+        // 同一Browser.Target・同一sizeで複数回呼ぶテストはメモリキャッシュに隠れてディスクキャッシュを
+        // 検証できない。このため各テストで一意なTargetパス（TempDirectoryFixture配下）を使い、
+        // 必ずディスクキャッシュ層まで到達させる。
+        // PathManager.IconCacheDirectoryOverrideForTestsで%LOCALAPPDATA%配下の実キャッシュに触れず隔離する。
+
+        [Fact]
+        public void GetResizedImage_OnCacheMiss_ShouldWriteResizedImageToDiskCache()
+        {
+            // Arrange
+            var cacheDir = _tempDir.GetFilePath("iconcache");
+            var originalOverride = PathManager.IconCacheDirectoryOverrideForTests;
+            PathManager.IconCacheDirectoryOverrideForTests = cacheDir;
+
+            try
+            {
+                var browser = new Browser
+                {
+                    Name = "Test Browser",
+                    Target = _testImagePath,
+                    IconIndex = 0
+                };
+
+                // Act
+                var result = ImageUtilities.GetResizedImage(browser, false, 32);
+
+                // Assert: 結果が返り、ディスクキャッシュディレクトリに1件のPNGが書き出される
+                result.Should().NotBeNull();
+                Directory.Exists(cacheDir).Should().BeTrue();
+                var cachedFiles = Directory.GetFiles(cacheDir, "*.png");
+                cachedFiles.Should().ContainSingle();
+            }
+            finally
+            {
+                PathManager.IconCacheDirectoryOverrideForTests = originalOverride;
+            }
+        }
+
+        [Fact]
+        public void GetResizedImage_WithPreExistingDiskCacheFile_ShouldLoadFromDiskCacheRatherThanRegenerate()
+        {
+            // Arrange: 同一キー導出ロジック（exeパス+IconIndex+size+最終更新日時のSHA256）で
+            // 期待されるキャッシュファイル名を事前に計算し、ダミー画像を先に配置しておく
+            var cacheDir = _tempDir.GetFilePath("iconcache");
+            Directory.CreateDirectory(cacheDir);
+            var originalOverride = PathManager.IconCacheDirectoryOverrideForTests;
+            PathManager.IconCacheDirectoryOverrideForTests = cacheDir;
+
+            try
+            {
+                var lastWriteTicks = File.GetLastWriteTimeUtc(_testImagePath).Ticks;
+                var rawKey = $"{_testImagePath}|0|32|{lastWriteTicks}";
+                using var sha = System.Security.Cryptography.SHA256.Create();
+                var hash = Convert.ToHexString(sha.ComputeHash(System.Text.Encoding.UTF8.GetBytes(rawKey)));
+                var expectedCacheFile = Path.Combine(cacheDir, $"{hash}.png");
+
+                using (var placeholder = new Bitmap(32, 32))
+                using (var g = Graphics.FromImage(placeholder))
+                {
+                    g.Clear(Color.LimeGreen);
+                    placeholder.Save(expectedCacheFile, ImageFormat.Png);
+                }
+
+                var browser = new Browser
+                {
+                    Name = "Test Browser",
+                    Target = _testImagePath,
+                    IconIndex = 0
+                };
+
+                // Act
+                var result = ImageUtilities.GetResizedImage(browser, false, 32);
+
+                // Assert: プレースホルダ色(LimeGreen)がそのまま返る = ディスクキャッシュから読み込まれ、
+                // GetImage経由の再生成（赤/青の元画像）は行われていない
+                result.Should().NotBeNull();
+                using var resultBitmap = new Bitmap(result!);
+                var pixel = resultBitmap.GetPixel(0, 0);
+                pixel.R.Should().Be(Color.LimeGreen.R);
+                pixel.G.Should().Be(Color.LimeGreen.G);
+                pixel.B.Should().Be(Color.LimeGreen.B);
+            }
+            finally
+            {
+                PathManager.IconCacheDirectoryOverrideForTests = originalOverride;
+            }
+        }
+
+        [Fact]
+        public void BuildDiskCacheFileName_AfterSourceFileIsModified_ShouldProduceDifferentKey()
+        {
+            // GetResizedImage自体は_resizedIconCache（プロセス寿命・exeパス+IconIndex+sizeのみがキーで
+            // 最終更新日時を含まない）を先にチェックするため、同一プロセス内で元ファイルを更新して
+            // 2回呼んでも2回目はメモリキャッシュに隠れてしまいディスクキャッシュ層まで到達しない。
+            // ここではディスクキャッシュのキー生成ロジック（BuildDiskCacheFileName）そのものを
+            // リフレクション経由で直接呼び、最終更新日時が変わるとキーが変わる（＝無効化される）ことを検証する。
+            var method = typeof(ImageUtilities).GetMethod("BuildDiskCacheFileName",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+            method.Should().NotBeNull();
+
+            // Act
+            var keyBefore = (string?)method!.Invoke(null, new object?[] { _testImagePath, 0, 48 });
+
+            File.SetLastWriteTimeUtc(_testImagePath, DateTime.UtcNow.AddMinutes(10));
+            var keyAfter = (string?)method!.Invoke(null, new object?[] { _testImagePath, 0, 48 });
+
+            // Assert: 両方とも有効なキーが生成され、最終更新日時の変化によりキーそのものが変わる
+            keyBefore.Should().NotBeNull();
+            keyAfter.Should().NotBeNull();
+            keyAfter.Should().NotBe(keyBefore);
+        }
+
+        [Fact]
+        public void GetResizedImage_TwoDifferentSizesOfSameBrowser_ShouldWriteSeparateDiskCacheEntries()
+        {
+            // Arrange
+            var cacheDir = _tempDir.GetFilePath("iconcache");
+            var originalOverride = PathManager.IconCacheDirectoryOverrideForTests;
+            PathManager.IconCacheDirectoryOverrideForTests = cacheDir;
+
+            try
+            {
+                var browser = new Browser
+                {
+                    Name = "Test Browser",
+                    Target = _testImagePath,
+                    IconIndex = 0
+                };
+
+                // Act: サイズ違いは要求サイズがキャッシュキーに含まれるため、それぞれ別ファイルとして
+                // キャッシュミス扱いになりディスクへ書き出される
+                ImageUtilities.GetResizedImage(browser, false, 16).Should().NotBeNull();
+                ImageUtilities.GetResizedImage(browser, false, 64).Should().NotBeNull();
+
+                // Assert
+                var cachedFiles = Directory.GetFiles(cacheDir, "*.png");
+                cachedFiles.Should().HaveCount(2);
+            }
+            finally
+            {
+                PathManager.IconCacheDirectoryOverrideForTests = originalOverride;
+            }
+        }
+
+        #endregion
     }
 }

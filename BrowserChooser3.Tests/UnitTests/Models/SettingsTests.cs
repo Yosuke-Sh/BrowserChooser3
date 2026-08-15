@@ -1284,5 +1284,95 @@ namespace BrowserChooser3.Tests
             result.Should().NotBeNullOrEmpty();
             result.Should().Contain("Settings");
         }
+
+        #region 前方/後方互換性テスト
+
+        [Fact]
+        public void Load_XmlMissingNewerProperties_ShouldFillDefaultsWithoutThrowing()
+        {
+            // 旧バージョンが書き出した設定ファイル（新しいプロパティが存在しない）を
+            // 新しいコードで読み込んだ場合を再現する。
+            RealConfigFileMutex.WaitOne();
+
+            var configDir = Path.Combine(Path.GetTempPath(), "BrowserChooser3Tests_" + Guid.NewGuid());
+            Directory.CreateDirectory(configDir);
+            var configFile = Path.Combine(configDir, Settings.BrowserChooserConfigFileName);
+            File.WriteAllText(configFile,
+                "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                "<Settings>\n" +
+                "  <ShowURL>false</ShowURL>\n" +
+                "</Settings>");
+
+            var originalOverride = PathManager.ConfigDirectoryOverrideForTests;
+            var originalIgnoreSettingsFile = Policy.IgnoreSettingsFile;
+            PathManager.ConfigDirectoryOverrideForTests = configDir;
+            Policy.IgnoreSettingsFile = false;
+
+            try
+            {
+                // Act
+                var settings = Settings.Load("");
+
+                // Assert: 例外を投げず、存在した値は反映され、存在しないプロパティは
+                // クラス側の既定値にフォールバックする
+                settings.Should().NotBeNull();
+                settings.ShowURL.Should().BeFalse();
+                settings.Width.Should().Be(Settings.DefaultWindowWidth);
+                settings.Height.Should().Be(Settings.DefaultWindowHeight);
+                settings.FileVersion.Should().Be(Settings.CURRENT_FILE_VERSION);
+            }
+            finally
+            {
+                PathManager.ConfigDirectoryOverrideForTests = originalOverride;
+                Policy.IgnoreSettingsFile = originalIgnoreSettingsFile;
+                if (Directory.Exists(configDir)) Directory.Delete(configDir, true);
+                RealConfigFileMutex.ReleaseMutex();
+            }
+        }
+
+        [Fact]
+        public void Load_XmlWithUnknownFutureElements_ShouldIgnoreThemAndLoadSuccessfully()
+        {
+            // 新バージョンが書き出した設定ファイル（現行コードが知らない要素を含む）を
+            // 読み込んでも壊れないことを確認する。XmlSerializerは未知要素を既定で無視する。
+            RealConfigFileMutex.WaitOne();
+
+            var configDir = Path.Combine(Path.GetTempPath(), "BrowserChooser3Tests_" + Guid.NewGuid());
+            Directory.CreateDirectory(configDir);
+            var configFile = Path.Combine(configDir, Settings.BrowserChooserConfigFileName);
+            File.WriteAllText(configFile,
+                "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                "<Settings>\n" +
+                "  <ShowURL>true</ShowURL>\n" +
+                "  <SomeFutureProperty>future-value</SomeFutureProperty>\n" +
+                "  <AnotherUnknownSection><Nested>1</Nested></AnotherUnknownSection>\n" +
+                "</Settings>");
+
+            var originalOverride = PathManager.ConfigDirectoryOverrideForTests;
+            var originalIgnoreSettingsFile = Policy.IgnoreSettingsFile;
+            PathManager.ConfigDirectoryOverrideForTests = configDir;
+            Policy.IgnoreSettingsFile = false;
+
+            try
+            {
+                // Act
+                var settings = Settings.Load("");
+
+                // Assert: 未知要素があってもクォランティンされず、既知の値は正しく読める
+                settings.Should().NotBeNull();
+                settings.SafeMode.Should().BeFalse();
+                settings.ShowURL.Should().BeTrue();
+                Directory.GetFiles(configDir, "BrowserChooser3Config.corrupt-*.xml").Should().BeEmpty();
+            }
+            finally
+            {
+                PathManager.ConfigDirectoryOverrideForTests = originalOverride;
+                Policy.IgnoreSettingsFile = originalIgnoreSettingsFile;
+                if (Directory.Exists(configDir)) Directory.Delete(configDir, true);
+                RealConfigFileMutex.ReleaseMutex();
+            }
+        }
+
+        #endregion
     }
 }

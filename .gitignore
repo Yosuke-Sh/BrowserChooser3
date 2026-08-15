@@ -18,3 +18,11 @@ TestResults
 # ビルド成果物（リリースのたびに変わるため追跡しない）
 /dist
 /Release
+
+# テスト・カバレッジの実行成果物（実行のたびに変わるため追跡しない）
+/coverage-report
+BrowserChooser3.Tests/TestResults/
+*.trx
+
+# ビルドのたびに再生成されるXMLドキュメントコメント成果物
+BrowserChooser3/BrowserChooser3.xml
