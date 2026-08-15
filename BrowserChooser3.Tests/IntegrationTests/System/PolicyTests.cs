@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using BrowserChooser3.Classes.Services.SystemServices;
+using BrowserChooser3.Tests.TestHelpers.Fixtures;
 using FluentAssertions;
 using Xunit;
 
@@ -8,8 +9,13 @@ namespace BrowserChooser3.Tests
 {
     /// <summary>
     /// Policyクラスのテスト
-    /// ガバレッジ100%を目指して全メソッドをテストします
     /// </summary>
+    /// <remarks>
+    /// Policyの各プロパティ・_initializedフラグはプロセス寿命のstaticであり、
+    /// RemainingTestsが並行アクセスの検証で同じ状態を激しく書き換えるため、
+    /// PolicyStateCollectionで直列化する。
+    /// </remarks>
+    [Collection(PolicyStateCollection.Name)]
     public class PolicyTests
     {
         /// <summary>

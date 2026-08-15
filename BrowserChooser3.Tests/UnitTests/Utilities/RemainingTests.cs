@@ -5,6 +5,7 @@ using BrowserChooser3.Classes.Models;
 using BrowserChooser3.Classes.Services.SystemServices;
 using BrowserChooser3.Classes.Utilities;
 using BrowserChooser3.Tests;
+using BrowserChooser3.Tests.TestHelpers.Fixtures;
 using FluentAssertions;
 using Xunit;
 
@@ -13,6 +14,12 @@ namespace BrowserChooser3.Tests
     /// <summary>
     /// 残りのクラスのテスト
     /// </summary>
+    /// <remarks>
+    /// Policy.Initialize()/Reset()を並行アクセスの検証で激しく書き換えるテストを
+    /// 含むため、同じPolicy静的状態を検証するPolicyTestsとPolicyStateCollectionで
+    /// 直列化する。
+    /// </remarks>
+    [Collection(PolicyStateCollection.Name)]
     public class RemainingTests : IDisposable
     {
         public void Dispose()

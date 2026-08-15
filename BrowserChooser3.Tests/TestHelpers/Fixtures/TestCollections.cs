@@ -35,4 +35,23 @@ namespace BrowserChooser3.Tests.TestHelpers.Fixtures
         /// <summary>コレクション名</summary>
         public const string Name = "BrowserDetectorState";
     }
+
+    /// <summary>
+    /// <see cref="BrowserChooser3.Classes.Services.System.Policy"/>
+    /// （プロセス寿命の static プロパティ群）に触れるテストクラスをまとめるコレクション。
+    /// </summary>
+    /// <remarks>
+    /// PolicyTestsが環境変数からの読み込みを実値で検証するようになったところ、
+    /// SettingsTests/StartupLauncherTests/RemainingTestsが別クラスとして並列に
+    /// Policy.Initialize()/Reset()や各プロパティを触っていたため、他クラスの
+    /// Resetがちょうど割り込んでアサーション直前に値が変わるフレーキーな失敗が
+    /// 発生した（4-1のPolicyTestsクリーンアップで表面化）。このコレクションに
+    /// 属するクラスは互いに直列化される。
+    /// </remarks>
+    [CollectionDefinition(Name)]
+    public sealed class PolicyStateCollection
+    {
+        /// <summary>コレクション名</summary>
+        public const string Name = "PolicyState";
+    }
 }
