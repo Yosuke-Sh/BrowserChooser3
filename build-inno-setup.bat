@@ -1,9 +1,9 @@
 @echo off
 echo Building BrowserChooser3 with Inno Setup...
 
-REM リリースビルド
+REM リリースビルド（ReadyToRun / publish ベース）
 echo Building application...
-dotnet build BrowserChooser3/BrowserChooser3.csproj -c Release
+dotnet publish BrowserChooser3/BrowserChooser3.csproj -c Release -r win-x64 --self-contained false
 
 if %ERRORLEVEL% NEQ 0 (
     echo Application build failed!
