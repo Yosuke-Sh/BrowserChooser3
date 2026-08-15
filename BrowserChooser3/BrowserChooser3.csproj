@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net10.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -26,6 +26,13 @@
     <IncludeNativeLibrariesForSelfExtract>false</IncludeNativeLibrariesForSelfExtract>
   </PropertyGroup>
 
+  <!-- インストーラー配布物用のReadyToRun設定（dotnet publish時のみ有効。dotnet buildの出力構成には影響しない） -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Release' AND '$(_IsPublishing)' == 'true'">
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>false</SelfContained>
+    <PublishReadyToRun>true</PublishReadyToRun>
+  </PropertyGroup>
+
   <!-- PDBファイルを明示的に除外 -->
   <ItemGroup Condition="'$(Configuration)' == 'Release'">
     <None Remove="**/*.pdb" />
@@ -41,11 +48,6 @@
     <Delete Files="@(PdbFiles)" ContinueOnError="true" />
     <Message Text="PDBファイルを削除しました: @(PdbFiles)" Importance="high" />
   </Target>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="8.0.0" />
-  </ItemGroup>
 
   <!-- テストプロジェクトからinternalメンバー（テスト専用シーム等）を参照可能にする -->
   <ItemGroup>
