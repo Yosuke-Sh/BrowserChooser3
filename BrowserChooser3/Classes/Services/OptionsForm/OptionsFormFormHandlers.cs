@@ -1,3 +1,5 @@
+using BrowserChooser3.Classes.Services.UI;
+using BrowserChooser3.Classes.Interfaces;
 using BrowserChooser3.Classes;
 using BrowserChooser3.Classes.Utilities;
 using BrowserChooser3.Forms;
@@ -9,7 +11,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
     /// </summary>
     public class OptionsFormFormHandlers
     {
-        private readonly OptionsForm _form;
+        private readonly IOptionsFormContext _form;
         private readonly Action _loadSettingsToControls;
         private readonly Action _saveSettings;
         private readonly Func<bool> _getIsModified;
@@ -22,7 +24,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
         /// <param name="saveSettings">設定を保存するアクション</param>
         /// <param name="getIsModified">変更フラグを取得する関数</param>
         public OptionsFormFormHandlers(
-            OptionsForm form,
+            IOptionsFormContext form,
             Action loadSettingsToControls,
             Action saveSettings,
             Func<bool> getIsModified)
@@ -48,8 +50,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             catch (Exception ex)
             {
                 Logger.LogError("OptionsFormFormHandlers.SaveButton_Click", "保存エラー", ex.Message);
-                MessageBox.Show($"設定の保存に失敗しました: {ex.Message}", "エラー", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBoxService.ShowErrorStatic($"設定の保存に失敗しました: {ex.Message}", "エラー");
             }
         }
         
@@ -81,8 +82,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             catch (Exception ex)
             {
                 Logger.LogError("OptionsFormFormHandlers.HelpButton_Click", "ヘルプ表示エラー", ex.Message);
-                MessageBox.Show($"ヘルプの表示に失敗しました: {ex.Message}", "エラー", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBoxService.ShowErrorStatic($"ヘルプの表示に失敗しました: {ex.Message}", "エラー");
             }
         }
 
@@ -105,11 +105,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             {
                 if (_getIsModified())
                 {
-                    var result = MessageBox.Show(
-                        "設定が変更されています。保存しますか？",
-                        "確認",
-                        MessageBoxButtons.YesNoCancel,
-                        MessageBoxIcon.Question);
+                    var result = MessageBoxService.ShowQuestionWithCancelStatic("設定が変更されています。保存しますか？", "確認");
 
                     switch (result)
                     {

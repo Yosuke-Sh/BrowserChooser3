@@ -89,6 +89,14 @@ namespace BrowserChooser3.Classes.Interfaces
         /// <param name="caption">キャプション</param>
         /// <returns>ダイアログ結果</returns>
         DialogResult ShowQuestion(string text, string caption = "確認");
+
+        /// <summary>
+        /// はい/いいえ/キャンセルの確認メッセージを表示
+        /// </summary>
+        /// <param name="text">メッセージテキスト</param>
+        /// <param name="caption">キャプション</param>
+        /// <returns>ダイアログ結果（テスト環境では No を返し、閉じる操作を妨げない）</returns>
+        DialogResult ShowQuestionWithCancel(string text, string caption = "確認");
     }
 
     /// <summary>

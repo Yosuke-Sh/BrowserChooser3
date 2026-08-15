@@ -1,3 +1,4 @@
+using BrowserChooser3.Classes.Interfaces;
 using BrowserChooser3.Classes.Models;
 using BrowserChooser3.Classes.Utilities;
 using BrowserChooser3.Forms;
@@ -9,7 +10,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
     /// </summary>
     public class OptionsFormCheckBoxHandlers
     {
-        private readonly OptionsForm _form;
+        private readonly IOptionsFormContext _form;
         private readonly Settings _settings;
         private readonly Action<bool> _setModified;
 
@@ -19,7 +20,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
         /// <param name="form">親フォーム</param>
         /// <param name="settings">設定オブジェクト</param>
         /// <param name="setModified">変更フラグ設定アクション</param>
-        public OptionsFormCheckBoxHandlers(OptionsForm form, Settings settings, Action<bool> setModified)
+        public OptionsFormCheckBoxHandlers(IOptionsFormContext form, Settings settings, Action<bool> setModified)
         {
             _form = form;
             _settings = settings;

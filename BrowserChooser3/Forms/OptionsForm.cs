@@ -1,4 +1,5 @@
 using BrowserChooser3.Classes;
+using BrowserChooser3.Classes.Interfaces;
 using BrowserChooser3.Classes.Models;
 using BrowserChooser3.Classes.Services.OptionsFormHandlers;
 using BrowserChooser3.Classes.Utilities;
@@ -9,8 +10,14 @@ namespace BrowserChooser3.Forms
     /// オプション設定画面
     /// ブラウザ設定、URL設定、一般設定などを管理します
     /// </summary>
-    public partial class OptionsForm : Form
+    public partial class OptionsForm : Form, IOptionsFormContext
     {
+        /// <summary>
+        /// 設定タブのTabControl（<see cref="IOptionsFormContext"/> の実装）。
+        /// ハンドラー群はこのインターフェース経由でアクセスする。
+        /// </summary>
+        TabControl IOptionsFormContext.TabSettings => tabSettings;
+
         private Settings _settings;
         private bool _isModified = false;
         

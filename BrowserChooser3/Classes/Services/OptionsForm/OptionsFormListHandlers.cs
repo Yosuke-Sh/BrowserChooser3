@@ -1,3 +1,4 @@
+using BrowserChooser3.Classes.Interfaces;
 using BrowserChooser3.Classes;
 using BrowserChooser3.Classes.Utilities;
 using BrowserChooser3.Forms;
@@ -9,13 +10,13 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
     /// </summary>
     public class OptionsFormListHandlers
     {
-        private readonly OptionsForm _form;
+        private readonly IOptionsFormContext _form;
 
         /// <summary>
         /// OptionsFormListHandlersクラスの新しいインスタンスを初期化します
         /// </summary>
         /// <param name="form">親フォーム</param>
-        public OptionsFormListHandlers(OptionsForm form)
+        public OptionsFormListHandlers(IOptionsFormContext form)
         {
             _form = form;
         }
@@ -81,7 +82,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             if (listView.SelectedIndices.Count > 0)
             {
                 // Auto URLsタブを取得
-                var autoUrlsTab = _form.tabSettings.TabPages["tabAutoURLs"];
+                var autoUrlsTab = _form.TabSettings.TabPages["tabAutoURLs"];
                 if (autoUrlsTab != null)
                 {
                     // ボタンを有効化
@@ -119,7 +120,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             else
             {
                 // Auto URLsタブを取得
-                var autoUrlsTab = _form.tabSettings.TabPages["tabAutoURLs"];
+                var autoUrlsTab = _form.TabSettings.TabPages["tabAutoURLs"];
                 if (autoUrlsTab != null)
                 {
                     // ボタンを無効化

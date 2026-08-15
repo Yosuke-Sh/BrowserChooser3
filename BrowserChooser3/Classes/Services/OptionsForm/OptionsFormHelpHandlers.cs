@@ -1,3 +1,5 @@
+using BrowserChooser3.Classes.Services.UI;
+using BrowserChooser3.Classes.Interfaces;
 using BrowserChooser3.Classes.Models;
 using BrowserChooser3.Classes.Utilities;
 using BrowserChooser3.Forms;
@@ -10,13 +12,13 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
     /// </summary>
     public class OptionsFormHelpHandlers
     {
-        private readonly OptionsForm _form;
+        private readonly IOptionsFormContext _form;
 
         /// <summary>
         /// OptionsFormHelpHandlersクラスの新しいインスタンスを初期化します
         /// </summary>
         /// <param name="form">親フォーム</param>
-        public OptionsFormHelpHandlers(OptionsForm form)
+        public OptionsFormHelpHandlers(IOptionsFormContext form)
         {
             _form = form;
         }
@@ -43,8 +45,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Help page cannot be reached!\n\n{ex.Message}", "Error", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBoxService.ShowErrorStatic($"Help page cannot be reached!\n\n{ex.Message}", "Error");
             }
         }
 

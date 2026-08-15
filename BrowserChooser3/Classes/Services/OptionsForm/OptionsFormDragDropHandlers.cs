@@ -1,3 +1,5 @@
+using BrowserChooser3.Classes.Services.UI;
+using BrowserChooser3.Classes.Interfaces;
 using BrowserChooser3.Classes;
 using BrowserChooser3.Classes.Models;
 using BrowserChooser3.Classes.Utilities;
@@ -10,7 +12,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
     /// </summary>
     public class OptionsFormDragDropHandlers
     {
-        private readonly OptionsForm _form;
+        private readonly IOptionsFormContext _form;
         private readonly Settings _settings;
         private readonly Dictionary<int, Browser> _mBrowser;
         private readonly Dictionary<int, Protocol> _mProtocols;
@@ -34,7 +36,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
         /// <param name="setModified">変更フラグ設定アクション</param>
         /// <param name="rebuildAutoURLs">Auto URLs再構築アクション</param>
         public OptionsFormDragDropHandlers(
-            OptionsForm form,
+            IOptionsFormContext form,
             Settings settings,
             Dictionary<int, Browser> mBrowser,
             Dictionary<int, Protocol> mProtocols,
@@ -261,8 +263,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                     catch (Exception ex)
                     {
                         Logger.LogError("OptionsFormDragDropHandlers.LstBrowsers_DragDrop", "ブラウザ追加エラー", ex.Message);
-                        MessageBox.Show($"ブラウザ追加に失敗しました: {ex.Message}", "エラー", 
-                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBoxService.ShowErrorStatic($"ブラウザ追加に失敗しました: {ex.Message}", "エラー");
                     }
                 }
             }
@@ -412,8 +413,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             catch (Exception ex)
             {
                 Logger.LogError("OptionsFormDragDropHandlers.ListViewBrowsers_DragDrop", "ブラウザ追加エラー", ex.Message);
-                MessageBox.Show($"ブラウザ追加に失敗しました: {ex.Message}", "エラー", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBoxService.ShowErrorStatic($"ブラウザ追加に失敗しました: {ex.Message}", "エラー");
             }
         }
 

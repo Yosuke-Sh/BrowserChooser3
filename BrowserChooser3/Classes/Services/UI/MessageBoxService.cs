@@ -142,6 +142,37 @@ namespace BrowserChooser3.Classes.Services.UI
         }
 
         /// <summary>
+        /// はい/いいえ/キャンセルの確認メッセージを表示
+        /// </summary>
+        /// <param name="text">メッセージテキスト</param>
+        /// <param name="caption">キャプション</param>
+        /// <returns>ダイアログ結果</returns>
+        public DialogResult ShowQuestionWithCancel(string text, string caption = "確認")
+        {
+            return ShowQuestionWithCancelStatic(text, caption);
+        }
+
+        /// <summary>
+        /// はい/いいえ/キャンセルの確認メッセージを表示（静的メソッド）
+        /// </summary>
+        /// <param name="text">メッセージテキスト</param>
+        /// <param name="caption">キャプション</param>
+        /// <returns>ダイアログ結果</returns>
+        public static DialogResult ShowQuestionWithCancelStatic(string text, string caption = "確認")
+        {
+            // テスト環境ではメッセージボックスを表示しない。
+            // ここでYesを返すと保存処理が走り、Cancelを返すとフォームが閉じられなくなるため、
+            // 「保存せずに閉じる」= No を返すのが副作用の無い選択。
+            if (Logger.IsTestEnvironment)
+            {
+                Logger.LogInfo("MessageBoxService.ShowQuestionWithCancel", $"テスト環境のためメッセージボックスをスキップ（Noを返す）: {text}");
+                return DialogResult.No;
+            }
+
+            return MessageBox.Show(text, caption, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+        }
+
+        /// <summary>
         /// 確認メッセージを表示（静的メソッド）
         /// </summary>
         /// <param name="text">メッセージテキスト</param>

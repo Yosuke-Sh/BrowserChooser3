@@ -1,3 +1,5 @@
+using BrowserChooser3.Classes.Services.UI;
+using BrowserChooser3.Classes.Interfaces;
 using BrowserChooser3.Classes.Models;
 using BrowserChooser3.Classes.Utilities;
 using BrowserChooser3.Forms;
@@ -9,7 +11,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
     /// </summary>
     public class OptionsFormProtocolHandlers
     {
-        private readonly OptionsForm _form;
+        private readonly IOptionsFormContext _form;
         private readonly Dictionary<int, Protocol> _mProtocols;
         private readonly Dictionary<int, Browser> _mBrowser;
         private readonly Action<bool> _setModified;
@@ -22,7 +24,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
         /// <param name="mBrowser">ブラウザの辞書</param>
         /// <param name="setModified">変更フラグを設定するアクション</param>
         public OptionsFormProtocolHandlers(
-            OptionsForm form,
+            IOptionsFormContext form,
             Dictionary<int, Protocol> mProtocols,
             Dictionary<int, Browser> mBrowser,
             Action<bool> setModified)
@@ -50,7 +52,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                     _mProtocols.Add(newId, newProtocol);
                     
                     // ListViewにアイテムを追加
-                    var protocolsTab = _form.tabSettings.TabPages["tabProtocols"];
+                    var protocolsTab = _form.TabSettings.TabPages["tabProtocols"];
                     var listView = protocolsTab?.Controls.Find("lstProtocols", true).FirstOrDefault() as ListView;
                     if (listView != null)
                     {
@@ -74,8 +76,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             catch (Exception ex)
             {
                 Logger.LogError("OptionsFormProtocolHandlers.AddProtocol_Click", "プロトコル追加エラー", ex.Message);
-                MessageBox.Show($"プロトコルの追加に失敗しました: {ex.Message}", "エラー",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBoxService.ShowErrorStatic($"プロトコルの追加に失敗しました: {ex.Message}", "エラー");
             }
         }
 
@@ -88,7 +89,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             {
                 Logger.LogInfo("OptionsFormProtocolHandlers.EditProtocol_Click", "プロトコル編集開始 - イベントが呼び出されました");
 
-                var protocolsTab = _form.tabSettings.TabPages["tabProtocols"];
+                var protocolsTab = _form.TabSettings.TabPages["tabProtocols"];
                 if (protocolsTab != null)
                 {
                     var listView = protocolsTab.Controls.Find("lstProtocols", true).FirstOrDefault() as ListView;
@@ -115,16 +116,14 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                     }
                     else
                     {
-                        MessageBox.Show("編集するプロトコルを選択してください。", "情報",
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBoxService.ShowInfoStatic("編集するプロトコルを選択してください。", "情報");
                     }
                 }
             }
             catch (Exception ex)
             {
                 Logger.LogError("OptionsFormProtocolHandlers.EditProtocol_Click", "プロトコル編集エラー", ex.Message);
-                MessageBox.Show($"プロトコルの編集に失敗しました: {ex.Message}", "エラー",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBoxService.ShowErrorStatic($"プロトコルの編集に失敗しました: {ex.Message}", "エラー");
             }
         }
 
@@ -137,7 +136,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             {
                 Logger.LogInfo("OptionsFormProtocolHandlers.DeleteProtocol_Click", "プロトコル削除開始 - イベントが呼び出されました");
 
-                var protocolsTab = _form.tabSettings.TabPages["tabProtocols"];
+                var protocolsTab = _form.TabSettings.TabPages["tabProtocols"];
                 if (protocolsTab != null)
                 {
                     var listView = protocolsTab.Controls.Find("lstProtocols", true).FirstOrDefault() as ListView;
@@ -148,8 +147,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                         if (selectedIndex != -1 && _mProtocols.ContainsKey(selectedIndex))
                         {
                             var protocol = _mProtocols[selectedIndex];
-                            var result = MessageBox.Show($"プロトコル '{protocol.Name}' を削除しますか？", "確認",
-                                MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                            var result = MessageBoxService.ShowQuestionStatic($"プロトコル '{protocol.Name}' を削除しますか？", "確認");
 
                             if (result == DialogResult.Yes)
                             {
@@ -162,16 +160,14 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                     }
                     else
                     {
-                        MessageBox.Show("削除するプロトコルを選択してください。", "情報",
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBoxService.ShowInfoStatic("削除するプロトコルを選択してください。", "情報");
                     }
                 }
             }
             catch (Exception ex)
             {
                 Logger.LogError("OptionsFormProtocolHandlers.DeleteProtocol_Click", "プロトコル削除エラー", ex.Message);
-                MessageBox.Show($"プロトコルの削除に失敗しました: {ex.Message}", "エラー",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBoxService.ShowErrorStatic($"プロトコルの削除に失敗しました: {ex.Message}", "エラー");
             }
         }
 
@@ -182,7 +178,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
         {
             try
             {
-                var protocolsTab = _form.tabSettings.TabPages["tabProtocols"];
+                var protocolsTab = _form.TabSettings.TabPages["tabProtocols"];
                 if (protocolsTab != null)
                 {
                     var listView = protocolsTab.Controls.Find("lstProtocols", true).FirstOrDefault() as ListView;

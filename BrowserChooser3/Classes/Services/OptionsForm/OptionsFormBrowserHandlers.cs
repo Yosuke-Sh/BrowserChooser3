@@ -1,3 +1,5 @@
+using BrowserChooser3.Classes.Services.UI;
+using BrowserChooser3.Classes.Interfaces;
 using BrowserChooser3.Classes;
 using BrowserChooser3.Classes.Models;
 using BrowserChooser3.Classes.Utilities;
@@ -11,7 +13,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
     /// </summary>
     public class OptionsFormBrowserHandlers
     {
-        private readonly OptionsForm _form;
+        private readonly IOptionsFormContext _form;
         private readonly Settings _settings;
         private readonly Dictionary<int, Browser> _mBrowser;
         private readonly Dictionary<int, Protocol> _mProtocols;
@@ -30,7 +32,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
         /// <param name="imBrowserIcons">ブラウザアイコンリスト</param>
         /// <param name="setModified">変更フラグ設定アクション</param>
         public OptionsFormBrowserHandlers(
-            OptionsForm form,
+            IOptionsFormContext form,
             Settings settings,
             Dictionary<int, Browser> mBrowser,
             Dictionary<int, Protocol> mProtocols,
@@ -70,7 +72,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                     _mBrowser.Add(newIndex, newBrowser);
                     
                     // ListViewにアイテムを追加（タブページ内から検索）
-                    var browsersTab = _form.tabSettings.TabPages["tabBrowsers"];
+                    var browsersTab = _form.TabSettings.TabPages["tabBrowsers"];
                     var listView = browsersTab?.Controls.Find("lstBrowsers", true).FirstOrDefault() as ListView;
                     if (listView != null)
                     {
@@ -100,8 +102,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             catch (Exception ex)
             {
                 Logger.LogError("OptionsFormBrowserHandlers.AddBrowser_Click", "ブラウザ追加エラー", ex.Message, ex.StackTrace ?? "");
-                MessageBox.Show($"ブラウザ追加に失敗しました: {ex.Message}", "エラー", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBoxService.ShowErrorStatic($"ブラウザ追加に失敗しました: {ex.Message}", "エラー");
             }
         }
 
@@ -112,7 +113,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
         {
             try
             {
-                var browsersTab = _form.tabSettings.TabPages["tabBrowsers"];
+                var browsersTab = _form.TabSettings.TabPages["tabBrowsers"];
                 var listView = browsersTab?.Controls.Find("lstBrowsers", true).FirstOrDefault() as ListView;
                 if (listView?.SelectedItems.Count > 0)
                 {
@@ -149,15 +150,13 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 }
                 else
                 {
-                    MessageBox.Show("編集するブラウザを選択してください。", "情報", 
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBoxService.ShowInfoStatic("編集するブラウザを選択してください。", "情報");
                 }
             }
             catch (Exception ex)
             {
                 Logger.LogError("OptionsFormBrowserHandlers.EditBrowser_Click", "ブラウザ編集エラー", ex.Message, ex.StackTrace ?? "");
-                MessageBox.Show($"ブラウザ編集に失敗しました: {ex.Message}", "エラー", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBoxService.ShowErrorStatic($"ブラウザ編集に失敗しました: {ex.Message}", "エラー");
             }
         }
 
@@ -168,13 +167,12 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
         {
             try
             {
-                var browsersTab = _form.tabSettings.TabPages["tabBrowsers"];
+                var browsersTab = _form.TabSettings.TabPages["tabBrowsers"];
                 var listView = browsersTab?.Controls.Find("lstBrowsers", true).FirstOrDefault() as ListView;
                 if (listView?.SelectedItems.Count > 0)
                 {
                     var browserName = listView.SelectedItems[0].Text;
-                    var result = MessageBox.Show($"Are you sure you want to delete the {browserName} browser?", 
-                        "Confirm Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    var result = MessageBoxService.ShowQuestionStatic($"Are you sure you want to delete the {browserName} browser?", "Confirm Delete");
                     
                     if (result == DialogResult.Yes)
                     {
@@ -189,15 +187,13 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 }
                 else
                 {
-                    MessageBox.Show("削除するブラウザを選択してください。", "情報", 
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBoxService.ShowInfoStatic("削除するブラウザを選択してください。", "情報");
                 }
             }
             catch (Exception ex)
             {
                 Logger.LogError("OptionsFormBrowserHandlers.DeleteBrowser_Click", "ブラウザ削除エラー", ex.Message, ex.StackTrace ?? "");
-                MessageBox.Show($"ブラウザ削除に失敗しました: {ex.Message}", "エラー", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBoxService.ShowErrorStatic($"ブラウザ削除に失敗しました: {ex.Message}", "エラー");
             }
         }
 
@@ -208,7 +204,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
         {
             try
             {
-                var browsersTab = _form.tabSettings.TabPages["tabBrowsers"];
+                var browsersTab = _form.TabSettings.TabPages["tabBrowsers"];
                 var listView = browsersTab?.Controls.Find("lstBrowsers", true).FirstOrDefault() as ListView;
                 if (listView?.SelectedItems.Count > 0)
                 {
@@ -253,15 +249,13 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                 }
                 else
                 {
-                    MessageBox.Show("複製するブラウザを選択してください。", "情報", 
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBoxService.ShowInfoStatic("複製するブラウザを選択してください。", "情報");
                 }
             }
             catch (Exception ex)
             {
                 Logger.LogError("OptionsFormBrowserHandlers.CloneBrowser_Click", "ブラウザ複製エラー", ex.Message, ex.StackTrace ?? "");
-                MessageBox.Show($"ブラウザ複製に失敗しました: {ex.Message}", "エラー", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBoxService.ShowErrorStatic($"ブラウザ複製に失敗しました: {ex.Message}", "エラー");
             }
         }
 
@@ -274,11 +268,7 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             try
             {
                 // Webブラウザのみを検出するかどうかを確認
-                var result = MessageBox.Show(
-                    "Webブラウザのみを検出しますか？\n\n「はい」: Webブラウザのみ\n「いいえ」: すべてのアプリケーション",
-                    "ブラウザ検出オプション",
-                    MessageBoxButtons.YesNoCancel,
-                    MessageBoxIcon.Question);
+                var result = MessageBoxService.ShowQuestionWithCancelStatic("Webブラウザのみを検出しますか？\n\n「はい」: Webブラウザのみ\n「いいえ」: すべてのアプリケーション", "ブラウザ検出オプション");
 
                 if (result == DialogResult.Cancel)
                 {
@@ -325,16 +315,12 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
 
                 if (missingBrowsers.Count > 0)
                 {
-                    var addResult = MessageBox.Show(
-                        $"{missingBrowsers.Count}個の新しいブラウザが見つかりました。追加しますか？",
-                        "ブラウザ検出",
-                        MessageBoxButtons.YesNo,
-                        MessageBoxIcon.Question);
+                    var addResult = MessageBoxService.ShowQuestionStatic($"{missingBrowsers.Count}個の新しいブラウザが見つかりました。追加しますか？", "ブラウザ検出");
 
                     if (result == DialogResult.Yes)
                     {
                         // 正しいListViewを取得（タブページ内から検索）
-                        var browsersTab = _form.tabSettings.TabPages["tabBrowsers"];
+                        var browsersTab = _form.TabSettings.TabPages["tabBrowsers"];
                         var listView = browsersTab?.Controls.Find("lstBrowsers", true).FirstOrDefault() as ListView;
                         Logger.LogDebug("OptionsFormBrowserHandlers.DetectBrowsers_Click", $"ListView: {(listView != null ? "見つかりました" : "見つかりませんでした")}");
                         
@@ -371,28 +357,24 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
                              }
                             
                             _setModified(true);
-                            MessageBox.Show($"{missingBrowsers.Count}個のブラウザを追加しました。", "完了", 
-                                MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            MessageBoxService.ShowInfoStatic($"{missingBrowsers.Count}個のブラウザを追加しました。", "完了");
                         }
                         else
                         {
                             Logger.LogError("OptionsFormBrowserHandlers.DetectBrowsers_Click", "ListViewが見つかりませんでした");
-                            MessageBox.Show("ブラウザリストが見つかりませんでした。", "エラー", 
-                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            MessageBoxService.ShowErrorStatic("ブラウザリストが見つかりませんでした。", "エラー");
                         }
                     }
                 }
                 else
                 {
-                    MessageBox.Show("新しいブラウザは見つかりませんでした。", "ブラウザ検出", 
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBoxService.ShowInfoStatic("新しいブラウザは見つかりませんでした。", "ブラウザ検出");
                 }
             }
             catch (Exception ex)
             {
                 Logger.LogError("OptionsFormBrowserHandlers.DetectBrowsers_Click", "ブラウザ検出エラー", ex.Message, ex.StackTrace ?? "");
-                MessageBox.Show($"ブラウザ検出に失敗しました: {ex.Message}", "エラー", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBoxService.ShowErrorStatic($"ブラウザ検出に失敗しました: {ex.Message}", "エラー");
             }
         }
 

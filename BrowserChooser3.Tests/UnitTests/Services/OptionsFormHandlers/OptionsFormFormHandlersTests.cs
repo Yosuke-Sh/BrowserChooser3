@@ -1,523 +1,148 @@
+using System;
+using System.Windows.Forms;
+using BrowserChooser3.Classes.Services.OptionsFormHandlers;
+using BrowserChooser3.Tests.TestHelpers.Fixtures;
 using FluentAssertions;
 using Xunit;
-using BrowserChooser3.Classes.Services.OptionsFormHandlers;
-using BrowserChooser3.Forms;
-using Moq;
-using System.Windows.Forms;
 
 namespace BrowserChooser3.Tests
 {
     /// <summary>
     /// OptionsFormFormHandlersクラスの単体テスト
-    /// ガバレッジ100%を目指して全メソッドをテストします
     /// </summary>
+    /// <remarks>
+    /// 従来28件が <c>new Mock&lt;OptionsForm&gt;()</c> を理由に全てスキップされていた。
+    /// IOptionsFormContextの導入により、保存時にDialogResultとCloseが実際に
+    /// 呼ばれること、変更が無ければ確認ダイアログ経路に入らないことなどを検証できる。
+    ///
+    /// 注意: OptionsForm_FormClosing は変更ありの場合に実際のMessageBoxを表示するため、
+    /// 「変更なし」経路のみをテストする（テスト実行が無応答のモーダルで停止するのを避ける。
+    /// Phase 3で実際に発生した事象）。
+    /// </remarks>
     public class OptionsFormFormHandlersTests
     {
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void Constructor_WithValidParameters_ShouldInitializeCorrectly()
+        [Fact]
+        public void SaveButton_Click_ShouldSaveSettingsAndCloseWithOk()
         {
             // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            Action loadSettingsToControls = () => { };
-            Action saveSettings = () => { };
-            Func<bool> getIsModified = () => false;
+            using var context = new FakeOptionsFormContext();
+            var saveCalled = 0;
+            var handlers = new OptionsFormFormHandlers(
+                context,
+                loadSettingsToControls: () => { },
+                saveSettings: () => saveCalled++,
+                getIsModified: () => false);
 
             // Act
-            var handlers = new OptionsFormFormHandlers(mockForm.Object, loadSettingsToControls, saveSettings, getIsModified);
+            handlers.SaveButton_Click(null, EventArgs.Empty);
 
             // Assert
-            handlers.Should().NotBeNull();
+            saveCalled.Should().Be(1, "保存処理が1回だけ呼ばれる");
+            context.DialogResult.Should().Be(DialogResult.OK);
+            context.CloseCallCount.Should().Be(1, "保存後にフォームが閉じられる");
         }
 
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void Constructor_WithNullForm_ShouldInitializeCorrectly()
+        [Fact]
+        public void SaveButton_Click_WhenSaveThrows_ShouldNotCloseForm()
         {
             // Arrange
-            Action loadSettingsToControls = () => { };
-            Action saveSettings = () => { };
-            Func<bool> getIsModified = () => false;
+            using var context = new FakeOptionsFormContext();
+            var handlers = new OptionsFormFormHandlers(
+                context,
+                loadSettingsToControls: () => { },
+                saveSettings: () => throw new InvalidOperationException("保存失敗"),
+                getIsModified: () => false);
 
             // Act
-            var handlers = new OptionsFormFormHandlers(null!, loadSettingsToControls, saveSettings, getIsModified);
+            // 例外はハンドラー内で捕捉される（ユーザーにはダイアログで通知される）
+            handlers.SaveButton_Click(null, EventArgs.Empty);
 
             // Assert
-            handlers.Should().NotBeNull();
+            // 保存に失敗した以上、OKとして閉じてはならない
+            context.DialogResult.Should().NotBe(DialogResult.OK);
+            context.CloseCallCount.Should().Be(0);
         }
 
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void Constructor_WithNullActions_ShouldInitializeCorrectly()
+        [Fact]
+        public void OptionsForm_Shown_ShouldLoadSettingsToControls()
         {
             // Arrange
-            var mockForm = new Mock<OptionsForm>();
+            using var context = new FakeOptionsFormContext();
+            var loadCalled = 0;
+            var handlers = new OptionsFormFormHandlers(
+                context,
+                loadSettingsToControls: () => loadCalled++,
+                saveSettings: () => { },
+                getIsModified: () => false);
 
             // Act
-            var handlers = new OptionsFormFormHandlers(mockForm.Object, null!, null!, null!);
+            handlers.OptionsForm_Shown(null, EventArgs.Empty);
 
             // Assert
-            handlers.Should().NotBeNull();
+            loadCalled.Should().Be(1);
         }
 
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void SaveButton_Click_ShouldCallSaveSettings()
+        [Fact]
+        public void OptionsForm_Shown_WhenLoadThrows_ShouldSwallowException()
         {
             // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var saveSettingsCalled = false;
-            Action loadSettingsToControls = () => { };
-            Action saveSettings = () => saveSettingsCalled = true;
-            Func<bool> getIsModified = () => false;
-            var handlers = new OptionsFormFormHandlers(mockForm.Object, loadSettingsToControls, saveSettings, getIsModified);
-            var sender = new object();
-            var e = new EventArgs();
+            // 表示時の読み込み失敗でフォーム表示自体が落ちないことを保証する
+            using var context = new FakeOptionsFormContext();
+            var handlers = new OptionsFormFormHandlers(
+                context,
+                loadSettingsToControls: () => throw new InvalidOperationException("読み込み失敗"),
+                saveSettings: () => { },
+                getIsModified: () => false);
 
             // Act
-            handlers.SaveButton_Click(sender, e);
+            var action = () => handlers.OptionsForm_Shown(null, EventArgs.Empty);
 
             // Assert
-            saveSettingsCalled.Should().BeTrue();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void SaveButton_Click_WithNullSender_ShouldCallSaveSettings()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var saveSettingsCalled = false;
-            Action loadSettingsToControls = () => { };
-            Action saveSettings = () => saveSettingsCalled = true;
-            Func<bool> getIsModified = () => false;
-            var handlers = new OptionsFormFormHandlers(mockForm.Object, loadSettingsToControls, saveSettings, getIsModified);
-            var e = new EventArgs();
-
-            // Act
-            handlers.SaveButton_Click(null!, e);
-
-            // Assert
-            saveSettingsCalled.Should().BeTrue();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void SaveButton_Click_WithNullEventArgs_ShouldCallSaveSettings()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var saveSettingsCalled = false;
-            Action loadSettingsToControls = () => { };
-            Action saveSettings = () => saveSettingsCalled = true;
-            Func<bool> getIsModified = () => false;
-            var handlers = new OptionsFormFormHandlers(mockForm.Object, loadSettingsToControls, saveSettings, getIsModified);
-            var sender = new object();
-
-            // Act
-            handlers.SaveButton_Click(sender, null!);
-
-            // Assert
-            saveSettingsCalled.Should().BeTrue();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void SaveButton_Click_WithException_ShouldHandleGracefully()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            Action loadSettingsToControls = () => { };
-            Action saveSettings = () => throw new Exception("Test exception");
-            Func<bool> getIsModified = () => false;
-            var handlers = new OptionsFormFormHandlers(mockForm.Object, loadSettingsToControls, saveSettings, getIsModified);
-            var sender = new object();
-            var e = new EventArgs();
-
-            // Act & Assert
-            var action = () => handlers.SaveButton_Click(sender, e);
             action.Should().NotThrow();
         }
 
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void HelpButton_Click_ShouldNotThrowException()
+        [Fact]
+        public void OptionsForm_FormClosing_WhenNotModified_ShouldNotSaveOrCancel()
         {
             // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            Action loadSettingsToControls = () => { };
-            Action saveSettings = () => { };
-            Func<bool> getIsModified = () => false;
-            var handlers = new OptionsFormFormHandlers(mockForm.Object, loadSettingsToControls, saveSettings, getIsModified);
-            var sender = new object();
-            var e = new EventArgs();
+            using var context = new FakeOptionsFormContext();
+            var saveCalled = 0;
+            var handlers = new OptionsFormFormHandlers(
+                context,
+                loadSettingsToControls: () => { },
+                saveSettings: () => saveCalled++,
+                getIsModified: () => false);
 
-            // Act & Assert
-            var action = () => handlers.HelpButton_Click(sender, e);
-            action.Should().NotThrow();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void HelpButton_Click_WithNullSender_ShouldNotThrowException()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            Action loadSettingsToControls = () => { };
-            Action saveSettings = () => { };
-            Func<bool> getIsModified = () => false;
-            var handlers = new OptionsFormFormHandlers(mockForm.Object, loadSettingsToControls, saveSettings, getIsModified);
-            var e = new EventArgs();
-
-            // Act & Assert
-            var action = () => handlers.HelpButton_Click(null!, e);
-            action.Should().NotThrow();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void HelpButton_Click_WithNullEventArgs_ShouldNotThrowException()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            Action loadSettingsToControls = () => { };
-            Action saveSettings = () => { };
-            Func<bool> getIsModified = () => false;
-            var handlers = new OptionsFormFormHandlers(mockForm.Object, loadSettingsToControls, saveSettings, getIsModified);
-            var sender = new object();
-
-            // Act & Assert
-            var action = () => handlers.HelpButton_Click(sender, null!);
-            action.Should().NotThrow();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void HelpButton_Click_WithException_ShouldHandleGracefully()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            Action loadSettingsToControls = () => { };
-            Action saveSettings = () => { };
-            Func<bool> getIsModified = () => false;
-            var handlers = new OptionsFormFormHandlers(mockForm.Object, loadSettingsToControls, saveSettings, getIsModified);
-            var sender = new object();
-            var e = new EventArgs();
-
-            // Act & Assert
-            var action = () => handlers.HelpButton_Click(sender, e);
-            action.Should().NotThrow();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void OptionsForm_FormClosing_WithModifiedSettings_ShouldCallSaveSettings()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            Action loadSettingsToControls = () => { };
-            Action saveSettings = () => { };
-            Func<bool> getIsModified = () => true;
-            var handlers = new OptionsFormFormHandlers(mockForm.Object, loadSettingsToControls, saveSettings, getIsModified);
-            var sender = new object();
-            var e = new FormClosingEventArgs(CloseReason.UserClosing, false);
+            var args = new FormClosingEventArgs(CloseReason.UserClosing, false);
 
             // Act
-            handlers.OptionsForm_FormClosing(sender, e);
+            handlers.OptionsForm_FormClosing(null, args);
 
             // Assert
-            // メッセージボックスが表示されるため、実際の動作は環境に依存
-            // 例外が発生しないことを確認
+            // 変更が無ければ確認ダイアログを出さず、保存もキャンセルもしない
+            saveCalled.Should().Be(0);
+            args.Cancel.Should().BeFalse();
         }
 
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void OptionsForm_FormClosing_WithUnmodifiedSettings_ShouldNotCallSaveSettings()
+        [Fact]
+        public void OptionsForm_FormClosing_WhenIsModifiedThrows_ShouldNotCancelClose()
         {
             // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var saveSettingsCalled = false;
-            Action loadSettingsToControls = () => { };
-            Action saveSettings = () => saveSettingsCalled = true;
-            Func<bool> getIsModified = () => false;
-            var handlers = new OptionsFormFormHandlers(mockForm.Object, loadSettingsToControls, saveSettings, getIsModified);
-            var sender = new object();
-            var e = new FormClosingEventArgs(CloseReason.UserClosing, false);
+            using var context = new FakeOptionsFormContext();
+            var handlers = new OptionsFormFormHandlers(
+                context,
+                loadSettingsToControls: () => { },
+                saveSettings: () => { },
+                getIsModified: () => throw new InvalidOperationException("判定失敗"));
+
+            var args = new FormClosingEventArgs(CloseReason.UserClosing, false);
 
             // Act
-            handlers.OptionsForm_FormClosing(sender, e);
+            handlers.OptionsForm_FormClosing(null, args);
 
             // Assert
-            saveSettingsCalled.Should().BeFalse();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void OptionsForm_FormClosing_WithNullSender_ShouldHandleGracefully()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            Action loadSettingsToControls = () => { };
-            Action saveSettings = () => { };
-            Func<bool> getIsModified = () => false;
-            var handlers = new OptionsFormFormHandlers(mockForm.Object, loadSettingsToControls, saveSettings, getIsModified);
-            var e = new FormClosingEventArgs(CloseReason.UserClosing, false);
-
-            // Act & Assert
-            var action = () => handlers.OptionsForm_FormClosing(null!, e);
-            action.Should().NotThrow();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void OptionsForm_FormClosing_WithNullEventArgs_ShouldHandleGracefully()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            Action loadSettingsToControls = () => { };
-            Action saveSettings = () => { };
-            Func<bool> getIsModified = () => false;
-            var handlers = new OptionsFormFormHandlers(mockForm.Object, loadSettingsToControls, saveSettings, getIsModified);
-            var sender = new object();
-
-            // Act & Assert
-            var action = () => handlers.OptionsForm_FormClosing(sender, null!);
-            action.Should().NotThrow();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void OptionsForm_FormClosing_WithException_ShouldHandleGracefully()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            Action loadSettingsToControls = () => { };
-            Action saveSettings = () => throw new Exception("Test exception");
-            Func<bool> getIsModified = () => true;
-            var handlers = new OptionsFormFormHandlers(mockForm.Object, loadSettingsToControls, saveSettings, getIsModified);
-            var sender = new object();
-            var e = new FormClosingEventArgs(CloseReason.UserClosing, false);
-
-            // Act & Assert
-            var action = () => handlers.OptionsForm_FormClosing(sender, e);
-            action.Should().NotThrow();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void OptionsForm_Shown_ShouldCallLoadSettingsToControls()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var loadSettingsCalled = false;
-            Action loadSettingsToControls = () => loadSettingsCalled = true;
-            Action saveSettings = () => { };
-            Func<bool> getIsModified = () => false;
-            var handlers = new OptionsFormFormHandlers(mockForm.Object, loadSettingsToControls, saveSettings, getIsModified);
-            var sender = new object();
-            var e = new EventArgs();
-
-            // Act
-            handlers.OptionsForm_Shown(sender, e);
-
-            // Assert
-            loadSettingsCalled.Should().BeTrue();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void OptionsForm_Shown_WithNullSender_ShouldCallLoadSettingsToControls()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var loadSettingsCalled = false;
-            Action loadSettingsToControls = () => loadSettingsCalled = true;
-            Action saveSettings = () => { };
-            Func<bool> getIsModified = () => false;
-            var handlers = new OptionsFormFormHandlers(mockForm.Object, loadSettingsToControls, saveSettings, getIsModified);
-            var e = new EventArgs();
-
-            // Act
-            handlers.OptionsForm_Shown(null!, e);
-
-            // Assert
-            loadSettingsCalled.Should().BeTrue();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void OptionsForm_Shown_WithNullEventArgs_ShouldCallLoadSettingsToControls()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var loadSettingsCalled = false;
-            Action loadSettingsToControls = () => loadSettingsCalled = true;
-            Action saveSettings = () => { };
-            Func<bool> getIsModified = () => false;
-            var handlers = new OptionsFormFormHandlers(mockForm.Object, loadSettingsToControls, saveSettings, getIsModified);
-            var sender = new object();
-
-            // Act
-            handlers.OptionsForm_Shown(sender, null!);
-
-            // Assert
-            loadSettingsCalled.Should().BeTrue();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void OptionsForm_Shown_WithException_ShouldHandleGracefully()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            Action loadSettingsToControls = () => throw new Exception("Test exception");
-            Action saveSettings = () => { };
-            Func<bool> getIsModified = () => false;
-            var handlers = new OptionsFormFormHandlers(mockForm.Object, loadSettingsToControls, saveSettings, getIsModified);
-            var sender = new object();
-            var e = new EventArgs();
-
-            // Act & Assert
-            var action = () => handlers.OptionsForm_Shown(sender, e);
-            action.Should().NotThrow();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void SaveButton_Click_WithNullActions_ShouldNotThrowException()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var handlers = new OptionsFormFormHandlers(mockForm.Object, null!, null!, null!);
-            var sender = new object();
-            var e = new EventArgs();
-
-            // Act & Assert
-            var action = () => handlers.SaveButton_Click(sender, e);
-            action.Should().NotThrow();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void HelpButton_Click_WithNullActions_ShouldNotThrowException()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var handlers = new OptionsFormFormHandlers(mockForm.Object, null!, null!, null!);
-            var sender = new object();
-            var e = new EventArgs();
-
-            // Act & Assert
-            var action = () => handlers.HelpButton_Click(sender, e);
-            action.Should().NotThrow();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void OptionsForm_FormClosing_WithNullActions_ShouldNotThrowException()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var handlers = new OptionsFormFormHandlers(mockForm.Object, null!, null!, null!);
-            var sender = new object();
-            var e = new FormClosingEventArgs(CloseReason.UserClosing, false);
-
-            // Act & Assert
-            var action = () => handlers.OptionsForm_FormClosing(sender, e);
-            action.Should().NotThrow();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void OptionsForm_Shown_WithNullActions_ShouldNotThrowException()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var handlers = new OptionsFormFormHandlers(mockForm.Object, null!, null!, null!);
-            var sender = new object();
-            var e = new EventArgs();
-
-            // Act & Assert
-            var action = () => handlers.OptionsForm_Shown(sender, e);
-            action.Should().NotThrow();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public async Task SaveButton_Click_ShouldBeThreadSafe()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var saveSettingsCallCount = 0;
-            Action loadSettingsToControls = () => { };
-            Action saveSettings = () => Interlocked.Increment(ref saveSettingsCallCount);
-            Func<bool> getIsModified = () => false;
-            var handlers = new OptionsFormFormHandlers(mockForm.Object, loadSettingsToControls, saveSettings, getIsModified);
-            var sender = new object();
-            var e = new EventArgs();
-
-            // Act
-            var tasks = new List<Task>();
-            for (int i = 0; i < 10; i++)
-            {
-                tasks.Add(Task.Run(() => handlers.SaveButton_Click(sender, e)));
-            }
-            await Task.WhenAll(tasks.ToArray());
-
-            // Assert
-            saveSettingsCallCount.Should().Be(10);
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public async Task HelpButton_Click_ShouldBeThreadSafe()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            Action loadSettingsToControls = () => { };
-            Action saveSettings = () => { };
-            Func<bool> getIsModified = () => false;
-            var handlers = new OptionsFormFormHandlers(mockForm.Object, loadSettingsToControls, saveSettings, getIsModified);
-            var sender = new object();
-            var e = new EventArgs();
-
-            // Act & Assert
-            var action = async () =>
-            {
-                var tasks = new List<Task>();
-                for (int i = 0; i < 10; i++)
-                {
-                    tasks.Add(Task.Run(() => handlers.HelpButton_Click(sender, e)));
-                }
-                await Task.WhenAll(tasks.ToArray());
-            };
-
-            await action.Should().NotThrowAsync();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public async Task OptionsForm_FormClosing_ShouldBeThreadSafe()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            Action loadSettingsToControls = () => { };
-            Action saveSettings = () => { };
-            Func<bool> getIsModified = () => false;
-            var handlers = new OptionsFormFormHandlers(mockForm.Object, loadSettingsToControls, saveSettings, getIsModified);
-            var sender = new object();
-            var e = new FormClosingEventArgs(CloseReason.UserClosing, false);
-
-            // Act & Assert
-            var action = async () =>
-            {
-                var tasks = new List<Task>();
-                for (int i = 0; i < 5; i++)
-                {
-                    tasks.Add(Task.Run(() => handlers.OptionsForm_FormClosing(sender, e)));
-                }
-                await Task.WhenAll(tasks.ToArray());
-            };
-
-            await action.Should().NotThrowAsync();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public async Task OptionsForm_Shown_ShouldBeThreadSafe()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var loadSettingsCallCount = 0;
-            Action loadSettingsToControls = () => Interlocked.Increment(ref loadSettingsCallCount);
-            Action saveSettings = () => { };
-            Func<bool> getIsModified = () => false;
-            var handlers = new OptionsFormFormHandlers(mockForm.Object, loadSettingsToControls, saveSettings, getIsModified);
-            var sender = new object();
-            var e = new EventArgs();
-
-            // Act
-            var tasks = new List<Task>();
-            for (int i = 0; i < 10; i++)
-            {
-                tasks.Add(Task.Run(() => handlers.OptionsForm_Shown(sender, e)));
-            }
-            await Task.WhenAll(tasks.ToArray());
-
-            // Assert
-            loadSettingsCallCount.Should().Be(10);
+            // 例外は捕捉され、閉じる操作を妨げない（閉じられなくなる方が有害）
+            args.Cancel.Should().BeFalse();
         }
     }
 }
