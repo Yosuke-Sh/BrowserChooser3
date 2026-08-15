@@ -69,226 +69,7 @@ namespace BrowserChooser3.Tests
 
         #endregion
 
-        #region 初期化テスト
-
-        [Fact]
-        public void InitializeComponent_ShouldNotThrowException()
-        {
-            // Act & Assert - テスト環境ではフォームを表示せず、コンストラクタの動作のみをテスト
-            _form.Should().NotBeNull();
-            _form.IsDisposed.Should().BeFalse();
-        }
-
-        [Fact]
-        public void LoadSettings_ShouldNotThrowException()
-        {
-            // Act & Assert - テスト環境ではフォームを表示せず、コンストラクタの動作のみをテスト
-            _form.Should().NotBeNull();
-            _form.IsDisposed.Should().BeFalse();
-        }
-
-        [Fact]
-        public void AdjustLayout_ShouldNotThrowException()
-        {
-            // Act & Assert - テスト環境ではフォームを表示せず、コンストラクタの動作のみをテスト
-            _form.Should().NotBeNull();
-            _form.IsDisposed.Should().BeFalse();
-        }
-
-        #endregion
-
-        #region 設定読み込みテスト
-
-        [Fact]
-        public void LoadSettings_WithValidSettings_ShouldNotThrowException()
-        {
-            // Arrange
-            _settings.IconWidth = 32;
-            _settings.IconHeight = 32;
-            _settings.IconGapWidth = 10;
-            _settings.IconGapHeight = 10;
-            _settings.ShowFocus = true;
-
-            // Act & Assert - テスト環境ではフォームを表示せず、コンストラクタの動作のみをテスト
-            _form.Should().NotBeNull();
-            _form.IsDisposed.Should().BeFalse();
-        }
-
-        [Fact]
-        public void LoadSettings_WithEmptySettings_ShouldNotThrowException()
-        {
-            // Arrange
-            var emptySettings = new Settings();
-
-            // Act & Assert
-            var action = () => new OptionsForm(emptySettings);
-            action.Should().NotThrow();
-        }
-
-        #endregion
-
-        #region イベントテスト
-
-        [Fact]
-        public void FormLoad_ShouldNotThrowException()
-        {
-            // Act & Assert - テスト環境ではフォームを表示せず、コンストラクタの動作のみをテスト
-            _form.Should().NotBeNull();
-            _form.IsDisposed.Should().BeFalse();
-        }
-
-        [Fact]
-        public void FormClosing_ShouldNotThrowException()
-        {
-            // Act & Assert - テスト環境ではフォームを表示せず、コンストラクタの動作のみをテスト
-            _form.Should().NotBeNull();
-            _form.IsDisposed.Should().BeFalse();
-        }
-
-        [Fact]
-        public void FormShown_ShouldNotThrowException()
-        {
-            // Act & Assert - テスト環境ではフォームを表示せず、コンストラクタの動作のみをテスト
-            _form.Should().NotBeNull();
-            _form.IsDisposed.Should().BeFalse();
-        }
-
-        #endregion
-
-        #region TreeViewテスト
-
-        [Fact]
-        public void TreeSettings_AfterSelect_ShouldNotThrowException()
-        {
-            // Act & Assert - テスト環境ではフォームを表示せず、コンストラクタの動作のみをテスト
-            _form.Should().NotBeNull();
-            _form.IsDisposed.Should().BeFalse();
-        }
-
-        [Fact]
-        public void TreeSettings_WithValidNode_ShouldNotThrowException()
-        {
-            // Act & Assert - テスト環境ではフォームを表示せず、コンストラクタの動作のみをテスト
-            _form.Should().NotBeNull();
-            _form.IsDisposed.Should().BeFalse();
-        }
-
-        #endregion
-
-        #region TabControlテスト
-
-        [Fact]
-        public void TabSettings_SelectedIndexChanged_ShouldNotThrowException()
-        {
-            // Act & Assert - テスト環境ではフォームを表示せず、コンストラクタの動作のみをテスト
-            _form.Should().NotBeNull();
-            _form.IsDisposed.Should().BeFalse();
-        }
-
-        [Fact]
-        public void TabSettings_WithMultipleTabs_ShouldNotThrowException()
-        {
-            // Act & Assert - テスト環境ではフォームを表示せず、コンストラクタの動作のみをテスト
-            _form.Should().NotBeNull();
-            _form.IsDisposed.Should().BeFalse();
-        }
-
-        #endregion
-
-        #region ボタンテスト
-
-        [Fact]
-        public void SaveButton_Click_ShouldNotThrowException()
-        {
-            // Act & Assert - テスト環境ではフォームを表示せず、コンストラクタの動作のみをテスト
-            _form.Should().NotBeNull();
-            _form.IsDisposed.Should().BeFalse();
-        }
-
-        [Fact]
-        public void CancelButton_Click_ShouldNotThrowException()
-        {
-            // Act & Assert - テスト環境ではフォームを表示せず、コンストラクタの動作のみをテスト
-            _form.Should().NotBeNull();
-            _form.IsDisposed.Should().BeFalse();
-        }
-
-        [Fact]
-        public void HelpButton_Click_ShouldNotThrowException()
-        {
-            // Act & Assert - テスト環境ではフォームを表示せず、コンストラクタの動作のみをテスト
-            _form.Should().NotBeNull();
-            _form.IsDisposed.Should().BeFalse();
-
-        }
-
-        #endregion
-
-        #region レイアウトテスト
-
-        [Fact]
-        public void Layout_ShouldNotThrowException()
-        {
-            // Act & Assert - テスト環境ではフォームを表示せず、コンストラクタの動作のみをテスト
-            _form.Should().NotBeNull();
-            _form.IsDisposed.Should().BeFalse();
-        }
-
-        [Fact]
-        public void Resize_ShouldNotThrowException()
-        {
-            // Act & Assert - テスト環境ではフォームを表示せず、コンストラクタの動作のみをテスト
-            _form.Should().NotBeNull();
-            _form.IsDisposed.Should().BeFalse();
-        }
-
-        [Fact]
-        public void Resize_WithLargeSize_ShouldNotThrowException()
-        {
-            // Act & Assert - テスト環境ではフォームを表示せず、コンストラクタの動作のみをテスト
-            _form.Should().NotBeNull();
-            _form.IsDisposed.Should().BeFalse();
-        }
-
-        #endregion
-
-        #region 描画テスト
-
-        [Fact]
-        public void Paint_ShouldNotThrowException()
-        {
-            // Act & Assert - テスト環境ではフォームを表示せず、コンストラクタの動作のみをテスト
-            _form.Should().NotBeNull();
-            _form.IsDisposed.Should().BeFalse();
-        }
-
-        [Fact]
-        public void Paint_WithCustomSize_ShouldNotThrowException()
-        {
-            // Act & Assert - テスト環境ではフォームを表示せず、コンストラクタの動作のみをテスト
-            _form.Should().NotBeNull();
-            _form.IsDisposed.Should().BeFalse();
-        }
-
-        #endregion
-
         #region 設定保存テスト
-
-        [Fact]
-        public void SaveSettings_ShouldNotThrowException()
-        {
-            // Act & Assert - テスト環境ではフォームを表示せず、コンストラクタの動作のみをテスト
-            _form.Should().NotBeNull();
-            _form.IsDisposed.Should().BeFalse();
-        }
-
-        [Fact]
-        public void SaveSettings_WithModifiedSettings_ShouldNotThrowException()
-        {
-            // Act & Assert - テスト環境ではフォームを表示せず、コンストラクタの動作のみをテスト
-            _form.Should().NotBeNull();
-            _form.IsDisposed.Should().BeFalse();
-        }
 
         private static void InvokeSaveSettings(OptionsForm form)
         {
@@ -353,14 +134,6 @@ namespace BrowserChooser3.Tests
         }
 
         [Fact]
-        public void Dispose_ShouldNotThrowException()
-        {
-            // Act & Assert
-            var action = () => _form.Dispose();
-            action.Should().NotThrow();
-        }
-
-        [Fact]
         public void Dispose_ShouldSetIsDisposedToTrue()
         {
             // Act
@@ -368,34 +141,6 @@ namespace BrowserChooser3.Tests
 
             // Assert
             _form.IsDisposed.Should().BeTrue();
-        }
-
-        #endregion
-
-        #region 異常系テスト
-
-        [Fact]
-        public void Constructor_WithException_ShouldHandleGracefully()
-        {
-            // Act & Assert
-            var action = () => new OptionsForm(_settings);
-            action.Should().NotThrow();
-        }
-
-        [Fact]
-        public void Show_WithException_ShouldHandleGracefully()
-        {
-            // Act & Assert - テスト環境ではフォームを表示せず、コンストラクタの動作のみをテスト
-            _form.Should().NotBeNull();
-            _form.IsDisposed.Should().BeFalse();
-        }
-
-        [Fact]
-        public void Close_WithException_ShouldHandleGracefully()
-        {
-            // Act & Assert - テスト環境ではフォームを表示せず、コンストラクタの動作のみをテスト
-            _form.Should().NotBeNull();
-            _form.IsDisposed.Should().BeFalse();
         }
 
         #endregion
@@ -415,14 +160,6 @@ namespace BrowserChooser3.Tests
             // Act
             form.Dispose();
             form.IsDisposed.Should().BeTrue();
-        }
-
-        [Fact]
-        public void MultipleOperations_ShouldWorkCorrectly()
-        {
-            // Act & Assert - テスト環境ではフォームを表示せず、コンストラクタの動作のみをテスト
-            _form.Should().NotBeNull();
-            _form.IsDisposed.Should().BeFalse();
         }
 
         #endregion
@@ -445,42 +182,6 @@ namespace BrowserChooser3.Tests
 
             // Assert
             stopwatch.ElapsedMilliseconds.Should().BeLessThan(5000); // 5秒未満
-        }
-
-        [Fact]
-        public void Show_ShouldBeFast()
-        {
-            // Act & Assert - テスト環境ではフォームを表示せず、コンストラクタの動作のみをテスト
-            _form.Should().NotBeNull();
-            _form.IsDisposed.Should().BeFalse();
-        }
-
-        #endregion
-
-        #region エッジケーステスト
-
-        [Fact]
-        public void Constructor_WithMinimalResources_ShouldWork()
-        {
-            // Act & Assert
-            var action = () => new OptionsForm(_settings);
-            action.Should().NotThrow();
-        }
-
-        [Fact]
-        public void Show_WithMinimalWindow_ShouldWork()
-        {
-            // Act & Assert - テスト環境ではフォームを表示せず、コンストラクタの動作のみをテスト
-            _form.Should().NotBeNull();
-            _form.IsDisposed.Should().BeFalse();
-        }
-
-        [Fact]
-        public void Show_WithMaximizedWindow_ShouldWork()
-        {
-            // Act & Assert - テスト環境ではフォームを表示せず、コンストラクタの動作のみをテスト
-            _form.Should().NotBeNull();
-            _form.IsDisposed.Should().BeFalse();
         }
 
         #endregion
@@ -520,18 +221,18 @@ namespace BrowserChooser3.Tests
             // Arrange
             var settings = new Settings();
             using var optionsForm = new OptionsForm(settings);
-            
+
             // 背景色を変更
             var newColor = Color.Red;
             settings.BackgroundColorValue = newColor;
-            
+
             // メイン画面の背景色を即時更新（OptionsFormの処理を模擬）
             var mainForm = Application.OpenForms.OfType<MainForm>().FirstOrDefault();
             if (mainForm != null)
             {
                 mainForm.BackColor = settings.BackgroundColorValue;
                 mainForm.Invalidate(); // 再描画を強制
-                
+
                 // 背景色が正しく設定されていることを確認
                 mainForm.BackColor.ToArgb().Should().Be(newColor.ToArgb());
             }
@@ -543,11 +244,11 @@ namespace BrowserChooser3.Tests
             // Arrange
             var settings = new Settings();
             using var optionsForm = new OptionsForm(settings);
-            
+
             // 背景色変更処理をテスト
             var newColor = Color.Blue;
             settings.BackgroundColorValue = newColor;
-            
+
             // メイン画面の背景色を即時更新（OptionsFormの処理を模擬）
             var mainForm = Application.OpenForms.OfType<MainForm>().FirstOrDefault();
             if (mainForm != null)
@@ -556,7 +257,7 @@ namespace BrowserChooser3.Tests
                 var originalBackColor = mainForm.BackColor;
                 mainForm.BackColor = settings.BackgroundColorValue;
                 mainForm.Invalidate(); // 再描画を強制
-                
+
                 // 背景色が変更されていることを確認
                 mainForm.BackColor.ToArgb().Should().Be(newColor.ToArgb());
                 mainForm.BackColor.ToArgb().Should().NotBe(originalBackColor.ToArgb());

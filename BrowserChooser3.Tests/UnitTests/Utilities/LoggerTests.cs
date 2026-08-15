@@ -106,27 +106,16 @@ namespace BrowserChooser3.Tests
         }
 
         [Fact]
-        public void AddToLog_WithNullCaller_ShouldNotThrowException()
+        public void AddToLog_WithNullCallerOrMessage_ShouldNotThrowException()
         {
             // Arrange
             var level = Logger.LogLevel.Info;
-            var message = "Test message";
 
             // Act & Assert
-            var action = () => Logger.AddToLog(level, null!, message);
-            action.Should().NotThrow();
-        }
-
-        [Fact]
-        public void AddToLog_WithNullMessage_ShouldNotThrowException()
-        {
-            // Arrange
-            var level = Logger.LogLevel.Info;
-            var caller = "TestCaller";
-
-            // Act & Assert
-            var action = () => Logger.AddToLog(level, caller, null!);
-            action.Should().NotThrow();
+            var action1 = () => Logger.AddToLog(level, null!, "Test message");
+            var action2 = () => Logger.AddToLog(level, "TestCaller", null!);
+            action1.Should().NotThrow();
+            action2.Should().NotThrow();
         }
 
         [Fact]
@@ -159,146 +148,25 @@ namespace BrowserChooser3.Tests
 
         #endregion
 
-        #region LogErrorテスト
+        #region Log*ヘルパーメソッドテスト
 
         [Fact]
-        public void LogError_ShouldNotThrowException()
+        public void LogHelperMethods_WithOrWithoutExtraVars_ShouldNotThrowException()
         {
             // Arrange
             var caller = "TestCaller";
-            var message = "Error message";
 
-            // Act & Assert
-            var action = () => Logger.LogError(caller, message);
-            action.Should().NotThrow();
-        }
-
-        [Fact]
-        public void LogError_WithExtraVars_ShouldNotThrowException()
-        {
-            // Arrange
-            var caller = "TestCaller";
-            var message = "Error message";
-            var extraVars = new object[] { "errorCode", 500 };
-
-            // Act & Assert
-            var action = () => Logger.LogError(caller, message, extraVars);
-            action.Should().NotThrow();
-        }
-
-        #endregion
-
-        #region LogWarningテスト
-
-        [Fact]
-        public void LogWarning_ShouldNotThrowException()
-        {
-            // Arrange
-            var caller = "TestCaller";
-            var message = "Warning message";
-
-            // Act & Assert
-            var action = () => Logger.LogWarning(caller, message);
-            action.Should().NotThrow();
-        }
-
-        [Fact]
-        public void LogWarning_WithExtraVars_ShouldNotThrowException()
-        {
-            // Arrange
-            var caller = "TestCaller";
-            var message = "Warning message";
-            var extraVars = new object[] { "warningType", "deprecated" };
-
-            // Act & Assert
-            var action = () => Logger.LogWarning(caller, message, extraVars);
-            action.Should().NotThrow();
-        }
-
-        #endregion
-
-        #region LogInfoテスト
-
-        [Fact]
-        public void LogInfo_ShouldNotThrowException()
-        {
-            // Arrange
-            var caller = "TestCaller";
-            var message = "Info message";
-
-            // Act & Assert
-            var action = () => Logger.LogInfo(caller, message);
-            action.Should().NotThrow();
-        }
-
-        [Fact]
-        public void LogInfo_WithExtraVars_ShouldNotThrowException()
-        {
-            // Arrange
-            var caller = "TestCaller";
-            var message = "Info message";
-            var extraVars = new object[] { "userId", 12345 };
-
-            // Act & Assert
-            var action = () => Logger.LogInfo(caller, message, extraVars);
-            action.Should().NotThrow();
-        }
-
-        #endregion
-
-        #region LogDebugテスト
-
-        [Fact]
-        public void LogDebug_ShouldNotThrowException()
-        {
-            // Arrange
-            var caller = "TestCaller";
-            var message = "Debug message";
-
-            // Act & Assert
-            var action = () => Logger.LogDebug(caller, message);
-            action.Should().NotThrow();
-        }
-
-        [Fact]
-        public void LogDebug_WithExtraVars_ShouldNotThrowException()
-        {
-            // Arrange
-            var caller = "TestCaller";
-            var message = "Debug message";
-            var extraVars = new object[] { "debugLevel", 2 };
-
-            // Act & Assert
-            var action = () => Logger.LogDebug(caller, message, extraVars);
-            action.Should().NotThrow();
-        }
-
-        #endregion
-
-        #region LogTraceテスト
-
-        [Fact]
-        public void LogTrace_ShouldNotThrowException()
-        {
-            // Arrange
-            var caller = "TestCaller";
-            var message = "Trace message";
-
-            // Act & Assert
-            var action = () => Logger.LogTrace(caller, message);
-            action.Should().NotThrow();
-        }
-
-        [Fact]
-        public void LogTrace_WithExtraVars_ShouldNotThrowException()
-        {
-            // Arrange
-            var caller = "TestCaller";
-            var message = "Trace message";
-            var extraVars = new object[] { "traceId", "abc123" };
-
-            // Act & Assert
-            var action = () => Logger.LogTrace(caller, message, extraVars);
+            // Act & Assert - LogError/LogWarning/LogInfo/LogDebug/LogTraceはすべてAddToLogへの
+            // 薄いラッパーであり、テスト環境ではAddToLogが早期リターンするため、
+            // 各メソッドが例外なく委譲できることのみを1テストにまとめて確認する。
+            var action = () =>
+            {
+                Logger.LogError(caller, "Error message", "errorCode", 500);
+                Logger.LogWarning(caller, "Warning message", "warningType", "deprecated");
+                Logger.LogInfo(caller, "Info message", "userId", 12345);
+                Logger.LogDebug(caller, "Debug message", "debugLevel", 2);
+                Logger.LogTrace(caller, "Trace message", "traceId", "abc123");
+            };
             action.Should().NotThrow();
         }
 
@@ -390,29 +258,19 @@ namespace BrowserChooser3.Tests
         }
 
         [Fact]
-        public void AddToLog_WithVeryLongMessage_ShouldNotThrowException()
+        public void AddToLog_WithVeryLongOrSpecialCharacterMessage_ShouldNotThrowException()
         {
             // Arrange
             var level = Logger.LogLevel.Info;
             var caller = "TestCaller";
-            var message = new string('A', 10000); // 非常に長いメッセージ
+            var longMessage = new string('A', 10000); // 非常に長いメッセージ
+            var specialMessage = "Special chars: \"quotes\", \n newline, \t tab, \\ backslash";
 
             // Act & Assert
-            var action = () => Logger.AddToLog(level, caller, message);
-            action.Should().NotThrow();
-        }
-
-        [Fact]
-        public void AddToLog_WithSpecialCharacters_ShouldNotThrowException()
-        {
-            // Arrange
-            var level = Logger.LogLevel.Info;
-            var caller = "TestCaller";
-            var message = "Special chars: \"quotes\", \n newline, \t tab, \\ backslash";
-
-            // Act & Assert
-            var action = () => Logger.AddToLog(level, caller, message);
-            action.Should().NotThrow();
+            var action1 = () => Logger.AddToLog(level, caller, longMessage);
+            var action2 = () => Logger.AddToLog(level, caller, specialMessage);
+            action1.Should().NotThrow();
+            action2.Should().NotThrow();
         }
 
         #endregion
@@ -420,7 +278,7 @@ namespace BrowserChooser3.Tests
         #region 異常系テスト
 
         [Fact]
-        public void AddToLog_WithNullExtraVars_ShouldNotThrowException()
+        public void AddToLog_WithNullOrEmptyOrNullElementExtraVars_ShouldNotThrowException()
         {
             // Arrange
             var level = Logger.LogLevel.Info;
@@ -428,60 +286,17 @@ namespace BrowserChooser3.Tests
             var message = "Test message";
 
             // Act & Assert
-            var action = () => Logger.AddToLog(level, caller, message, null!);
-            action.Should().NotThrow();
-        }
-
-        [Fact]
-        public void AddToLog_WithEmptyExtraVars_ShouldNotThrowException()
-        {
-            // Arrange
-            var level = Logger.LogLevel.Info;
-            var caller = "TestCaller";
-            var message = "Test message";
-            var extraVars = new object[0];
-
-            // Act & Assert
-            var action = () => Logger.AddToLog(level, caller, message, extraVars);
-            action.Should().NotThrow();
-        }
-
-        [Fact]
-        public void AddToLog_WithNullExtraVarsElements_ShouldNotThrowException()
-        {
-            // Arrange
-            var level = Logger.LogLevel.Info;
-            var caller = "TestCaller";
-            var message = "Test message";
-            var extraVars = new object[] { null!, "valid", null! };
-
-            // Act & Assert
-            var action = () => Logger.AddToLog(level, caller, message, extraVars);
-            action.Should().NotThrow();
+            var action1 = () => Logger.AddToLog(level, caller, message, null!);
+            var action2 = () => Logger.AddToLog(level, caller, message, new object[0]);
+            var action3 = () => Logger.AddToLog(level, caller, message, new object[] { null!, "valid", null! });
+            action1.Should().NotThrow();
+            action2.Should().NotThrow();
+            action3.Should().NotThrow();
         }
 
         #endregion
 
         #region 統合テスト
-
-        [Fact]
-        public void Logger_ShouldHandleMultipleLogLevels()
-        {
-            // Arrange
-            Logger.CurrentLogLevel = Logger.LogLevel.Trace; // すべてのレベルを有効化
-            var caller = "TestCaller";
-
-            // Act & Assert
-            var action = () =>
-            {
-                Logger.LogError(caller, "Error message");
-                Logger.LogWarning(caller, "Warning message");
-                Logger.LogInfo(caller, "Info message");
-                Logger.LogDebug(caller, "Debug message");
-                Logger.LogTrace(caller, "Trace message");
-            };
-            action.Should().NotThrow();
-        }
 
         [Fact]
         public void Logger_ShouldHandleConcurrentAccess()
@@ -583,25 +398,6 @@ namespace BrowserChooser3.Tests
 
             // Act & Assert
             var action = () => Logger.LogError(caller, message);
-            action.Should().NotThrow();
-        }
-
-        [Fact]
-        public void Logger_WithTraceLevel_ShouldLogEverything()
-        {
-            // Arrange
-            Logger.CurrentLogLevel = Logger.LogLevel.Trace;
-            var caller = "TestCaller";
-
-            // Act & Assert
-            var action = () =>
-            {
-                Logger.LogError(caller, "Error");
-                Logger.LogWarning(caller, "Warning");
-                Logger.LogInfo(caller, "Info");
-                Logger.LogDebug(caller, "Debug");
-                Logger.LogTrace(caller, "Trace");
-            };
             action.Should().NotThrow();
         }
 

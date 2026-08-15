@@ -918,20 +918,6 @@ namespace BrowserChooser3.Tests
         #region エラーハンドリングテスト
 
         [Fact]
-        public void ParseArguments_WithException_ShouldHandleGracefully()
-        {
-            // Arrange
-            var args = new[] { "--delay", "10" };
-
-            // Act
-            var result = CommandLineProcessor.ParseArguments(args);
-
-            // Assert
-            result.Should().NotBeNull();
-            // 例外が発生してもnullを返さないことを確認
-        }
-
-        [Fact]
         public void ValidateArguments_WithException_ShouldReturnFalse()
         {
             // Arrange
@@ -1003,22 +989,5 @@ namespace BrowserChooser3.Tests
 
         #endregion
 
-        #region 完全カバレッジテスト
-
-        [Fact]
-        public void ParseArguments_ShouldCoverAllCodePaths()
-        {
-            // Arrange
-            var args = new[] { "--delay", "5", "--browser", Guid.NewGuid().ToString(), "--debug", "https://example.com" };
-
-            // Act
-            var result = CommandLineProcessor.ParseArguments(args);
-
-            // Assert
-            result.Should().NotBeNull();
-            // すべてのコードパスをカバーすることを確認
-        }
-
-        #endregion
     }
 }
