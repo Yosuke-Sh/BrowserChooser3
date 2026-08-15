@@ -95,18 +95,6 @@ namespace BrowserChooser3.Tests
         }
 
         [Fact]
-        public void Program_ApplicationConfiguration_ShouldInitializeCorrectly()
-        {
-            // Arrange & Act
-            // ApplicationConfigurationはinternalクラスなので、
-            // 型の存在を確認するのみ
-            var configTypeName = "ApplicationConfiguration";
-
-            // Assert
-            configTypeName.Should().Be("ApplicationConfiguration");
-        }
-
-        [Fact]
         public void Program_MainFormCreation_ShouldBePossible()
         {
             // Arrange & Act
@@ -132,62 +120,6 @@ namespace BrowserChooser3.Tests
             args.Should().HaveCount(2);
             args[0].Should().Be("https://test.com");
             args[1].Should().Be("--option");
-        }
-
-        [Fact]
-        public void Program_LoggerDebugLogging_ShouldWorkCorrectly()
-        {
-            // Arrange & Act
-            // ログ出力が正常に動作することを確認
-            Logger.LogDebug("ProgramTests", "テストログメッセージ");
-
-            // Assert
-            // ログ出力が例外を投げないことを確認（実際のログ内容は環境依存）
-            true.Should().BeTrue(); // ログ出力が成功したことを示す
-        }
-
-        [Fact]
-        public void Program_LoggerTraceLogging_ShouldWorkCorrectly()
-        {
-            // Arrange & Act
-            Logger.LogTrace("ProgramTests", "トレースログメッセージ", "追加データ");
-
-            // Assert
-            // ログ出力が例外を投げないことを確認
-            true.Should().BeTrue();
-        }
-
-        [Fact]
-        public void Program_LoggerWarningLogging_ShouldWorkCorrectly()
-        {
-            // Arrange & Act
-            Logger.LogWarning("ProgramTests", "警告ログメッセージ");
-
-            // Assert
-            // ログ出力が例外を投げないことを確認
-            true.Should().BeTrue();
-        }
-
-        [Fact]
-        public void Program_LoggerErrorLogging_ShouldWorkCorrectly()
-        {
-            // Arrange & Act
-            Logger.LogError("ProgramTests", "エラーログメッセージ");
-
-            // Assert
-            // ログ出力が例外を投げないことを確認
-            true.Should().BeTrue();
-        }
-
-        [Fact]
-        public void Program_LoggerInfoLogging_ShouldWorkCorrectly()
-        {
-            // Arrange & Act
-            Logger.LogInfo("ProgramTests", "情報ログメッセージ");
-
-            // Assert
-            // ログ出力が例外を投げないことを確認
-            true.Should().BeTrue();
         }
 
         [Fact]
@@ -254,30 +186,6 @@ namespace BrowserChooser3.Tests
         }
 
         [Fact]
-        public void Program_Threading_ShouldSupportSTAThread()
-        {
-            // Arrange & Act
-            // Programクラスはinternalなので、型の存在を確認するのみ
-            var programTypeName = "Program";
-
-            // Assert
-            programTypeName.Should().Be("Program");
-        }
-
-        [Fact]
-        public void Program_ExceptionHandling_ShouldBeImplemented()
-        {
-            // Arrange & Act
-            // 例外処理が実装されていることを確認
-            // 実際の例外処理はProgram.Main()内で実装されているため、
-            // ここでは例外処理の概念が存在することを確認
-            var hasExceptionHandling = true; // Program.Main()にはtry-catchがある
-
-            // Assert
-            hasExceptionHandling.Should().BeTrue();
-        }
-
-        [Fact]
         public void Program_ResourceCleanup_ShouldBeConsidered()
         {
             // Arrange & Act
@@ -288,30 +196,6 @@ namespace BrowserChooser3.Tests
 
             // Assert
             isDisposable.Should().BeTrue();
-        }
-
-        [Fact]
-        public void Program_Configuration_ShouldBeInitialized()
-        {
-            // Arrange & Act
-            // アプリケーション設定が初期化されることを確認
-            var configTypeName = "ApplicationConfiguration";
-
-            // Assert
-            configTypeName.Should().Be("ApplicationConfiguration");
-        }
-
-        [Fact]
-        public void Program_FormCreation_ShouldBeThreadSafe()
-        {
-            // Arrange & Act
-            // フォーム作成がスレッドセーフであることを確認
-            // Windows Formsアプリケーションでは、UIスレッドでフォームを作成する必要がある
-            var mainFormType = typeof(BrowserChooser3.Forms.MainForm);
-            var hasThreadSafety = true; // Windows FormsはUIスレッドで実行される
-
-            // Assert
-            hasThreadSafety.Should().BeTrue();
         }
 
         [Fact]
@@ -342,18 +226,6 @@ namespace BrowserChooser3.Tests
 
             // Assert
             result1.Should().Be(result2);
-        }
-
-        [Fact]
-        public void Program_ErrorRecovery_ShouldBeImplemented()
-        {
-            // Arrange & Act
-            // エラー回復が実装されていることを確認
-            // Program.Main()には例外処理があるため、エラー回復が可能
-            var hasErrorRecovery = true;
-
-            // Assert
-            hasErrorRecovery.Should().BeTrue();
         }
     }
 }
