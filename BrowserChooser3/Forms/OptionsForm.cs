@@ -105,7 +105,7 @@ namespace BrowserChooser3.Forms
 
                 var settingsNode = new TreeNode("Settings");
                 settingsNode.Nodes.Add(new TreeNode("Display") { Tag = "tabDisplay" });
-                settingsNode.Nodes.Add(new TreeNode("Focus") { Tag = "tabFocus" });
+                settingsNode.Nodes.Add(new TreeNode("Focus") { Tag = "tabAccessibility" });
                 settingsNode.Nodes.Add(new TreeNode("Grid") { Tag = "tabGrid" });
                 settingsNode.Nodes.Add(new TreeNode("Privacy") { Tag = "tabPrivacy" });
                 settingsNode.Nodes.Add(new TreeNode("Startup") { Tag = "tabStartup" });
@@ -762,6 +762,9 @@ namespace BrowserChooser3.Forms
             switch (currentTab.Name)
             {
                 case "tabDisplay":
+                    ResetDisplayPanelToDefaults(currentTab);
+                    break;
+                case "tabAccessibility":
                     ResetDisplayPanelToDefaults(currentTab);
                     break;
                 case "tabGrid":
