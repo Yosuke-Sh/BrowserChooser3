@@ -12,6 +12,23 @@ namespace BrowserChooser3.Tests
     /// </summary>
     public class PolicyTests
     {
+        /// <summary>
+        /// <see cref="Policy._initialized"/>（private static）をリフレクションで直接false化します。
+        /// </summary>
+        /// <remarks>
+        /// Phase 2-2で<see cref="Policy.Initialize"/>に多重初期化防止ガードが入ったため、
+        /// プロセス内で一度でもInitialize()が呼ばれた後は、環境変数を変更してから
+        /// 再度Initialize()を呼んでも再読み込みされない。これに気づかずテストの
+        /// アサーションを「Boolean値であること」という無意味な同語反復に弱めていた
+        /// 箇所があったため、直接ガードを解除して実際に環境変数が反映されることを検証する。
+        /// </remarks>
+        private static void ResetPolicyInitializedFlag()
+        {
+            var field = typeof(Policy).GetField("_initialized",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+            field!.SetValue(null, false);
+        }
+
         #region 正常系テスト
 
         [Fact]
@@ -425,10 +442,13 @@ namespace BrowserChooser3.Tests
         [Fact]
         public void Initialize_WithEnvironmentVariables_ShouldLoadCorrectly()
         {
-            // Arrange - まずポリシーをリセット
+            // Arrange
+            // Initialize()は一度でも成功すると多重初期化防止ガード(_initialized)が立ち、
+            // 以降の呼び出しでは環境変数の再読み込みが起きない。プロセス内の他テストで
+            // 既にInitialize()が呼ばれている可能性があるため、ガードを直接解除してから検証する。
             Policy.Reset();
-            
-            // 環境変数を設定
+            ResetPolicyInitializedFlag();
+
             Environment.SetEnvironmentVariable("BROWSERCHOOSER_IGNORE_SETTINGS", "true");
             Environment.SetEnvironmentVariable("BROWSERCHOOSER_ICON_SCALE", "2.0");
             Environment.SetEnvironmentVariable("BROWSERCHOOSER_CANONICALIZE", "true");
@@ -436,17 +456,14 @@ namespace BrowserChooser3.Tests
 
             try
             {
-                // Act - 環境変数を読み込む
+                // Act
                 Policy.Initialize();
 
-                // Assert
-                // 環境変数が正しく読み込まれることを確認
-                // 環境変数の読み込みが確実でない場合があるため、より寛容なテストに変更
-                // Boolean値はtrueまたはfalseのいずれかであることを確認
-                (Policy.IgnoreSettingsFile == true || Policy.IgnoreSettingsFile == false).Should().BeTrue();
-                Policy.IconScale.Should().BeGreaterThan(0);
-                (Policy.Canonicalize == true || Policy.Canonicalize == false).Should().BeTrue();
-                Policy.CanonicalizeAppendedText.Should().NotBeNull();
+                // Assert: 設定した環境変数の値が実際に反映されること
+                Policy.IgnoreSettingsFile.Should().BeTrue();
+                Policy.IconScale.Should().Be(2.0);
+                Policy.Canonicalize.Should().BeTrue();
+                Policy.CanonicalizeAppendedText.Should().Be("test");
             }
             finally
             {
@@ -455,17 +472,17 @@ namespace BrowserChooser3.Tests
                 Environment.SetEnvironmentVariable("BROWSERCHOOSER_ICON_SCALE", null);
                 Environment.SetEnvironmentVariable("BROWSERCHOOSER_CANONICALIZE", null);
                 Environment.SetEnvironmentVariable("BROWSERCHOOSER_CANONICALIZE_TEXT", null);
-                
-                // ポリシーをリセット
                 Policy.Reset();
+                ResetPolicyInitializedFlag();
             }
         }
 
         [Fact]
-        public void Initialize_WithInvalidEnvironmentVariables_ShouldHandleGracefully()
+        public void Initialize_WithInvalidEnvironmentVariables_ShouldIgnoreAndKeepDefaults()
         {
             // Arrange
-            Policy.Reset(); // 初期状態にリセット
+            Policy.Reset();
+            ResetPolicyInitializedFlag();
             Environment.SetEnvironmentVariable("BROWSERCHOOSER_IGNORE_SETTINGS", "invalid");
             Environment.SetEnvironmentVariable("BROWSERCHOOSER_ICON_SCALE", "invalid");
 
@@ -475,458 +492,37 @@ namespace BrowserChooser3.Tests
                 Policy.Initialize();
 
                 // Assert
-                // 無効な環境変数が適切に処理されることを確認
-                // IgnoreSettingsFileの値は環境変数やレジストリによって変更される可能性があるため、
-                // Boolean値として有効であることを確認する
-                (Policy.IgnoreSettingsFile == true || Policy.IgnoreSettingsFile == false).Should().BeTrue();
+                // bool.TryParse/double.TryParseが失敗する値は無視され、既定値が維持される
+                Policy.IgnoreSettingsFile.Should().BeFalse();
+                Policy.IconScale.Should().Be(1.0);
             }
             finally
             {
                 // Cleanup
                 Environment.SetEnvironmentVariable("BROWSERCHOOSER_IGNORE_SETTINGS", null);
                 Environment.SetEnvironmentVariable("BROWSERCHOOSER_ICON_SCALE", null);
-                Policy.Reset(); // テスト後にリセット
+                Policy.Reset();
+                ResetPolicyInitializedFlag();
             }
         }
 
         #endregion
 
-        #region レジストリテスト
-
-        [Fact]
-        public void Initialize_WithRegistryAccess_ShouldHandleGracefully()
-        {
-            // Act
-            Policy.Initialize();
-
-            // Assert
-            // レジストリアクセスが適切に処理されることを確認
-            // IgnoreSettingsFileの値は環境変数やレジストリによって変更される可能性があるため、
-            // Boolean値として有効であることを確認する
-            (Policy.IgnoreSettingsFile == true || Policy.IgnoreSettingsFile == false).Should().BeTrue();
-        }
-
-        #endregion
-
-        #region グループポリシーテスト
-
-        [Fact]
-        public void Initialize_WithGroupPolicyAccess_ShouldHandleGracefully()
-        {
-            // Act
-            Policy.Initialize();
-
-            // Assert
-            // グループポリシーアクセスが適切に処理されることを確認
-            // IgnoreSettingsFileの値は環境変数やレジストリによって変更される可能性があるため、
-            // Boolean値として有効であることを確認する
-            (Policy.IgnoreSettingsFile == true || Policy.IgnoreSettingsFile == false).Should().BeTrue();
-        }
-
-        #endregion
-
         #region 完全カバレッジテスト
 
         [Fact]
-        public void Initialize_ShouldCoverAllCodePaths()
-        {
-            // Act
-            Policy.Initialize();
-
-            // Assert
-            // すべてのコードパスをカバーすることを確認
-            // 実際の値は環境によって異なる可能性がある
-            // Boolean result should be either true or false
-            (Policy.IgnoreSettingsFile == true || Policy.IgnoreSettingsFile == false).Should().BeTrue();
-        }
-
-        [Fact]
-        public void Reset_ShouldCoverAllCodePaths()
-        {
-            // Act
-            Policy.Reset();
-
-            // Assert
-            // すべてのコードパスをカバーすることを確認
-            // IgnoreSettingsFileの値は環境変数やレジストリによって変更される可能性があるため、
-            // Boolean値として有効であることを確認する
-            (Policy.IgnoreSettingsFile == true || Policy.IgnoreSettingsFile == false).Should().BeTrue();
-        }
-
-        [Fact]
-        public void GetPolicySummary_ShouldCoverAllCodePaths()
+        public void GetPolicySummary_ShouldReflectCurrentPropertyValues()
         {
             // Arrange
-            Policy.Initialize();
+            Policy.Reset();
 
             // Act
             var result = Policy.GetPolicySummary();
 
             // Assert
-            // すべてのコードパスをカバーすることを確認
-            result.Should().NotBeNull();
-        }
-
-        #endregion
-
-        #region エラー回復テスト
-
-        [Fact]
-        public void Initialize_ShouldRecoverFromErrors()
-        {
-            // Act
-            Policy.Initialize();
-
-            // Assert
-            // エラーから回復することを確認
-            // IgnoreSettingsFileの値は環境変数やレジストリによって変更される可能性があるため、
-            // Boolean値として有効であることを確認する
-            (Policy.IgnoreSettingsFile == true || Policy.IgnoreSettingsFile == false).Should().BeTrue();
-        }
-
-        [Fact]
-        public void Reset_ShouldRecoverFromErrors()
-        {
-            // Act
-            Policy.Reset();
-
-            // Assert
-            // エラーから回復することを確認
-            // IgnoreSettingsFileの値は環境変数やレジストリによって変更される可能性があるため、
-            // Boolean値として有効であることを確認する
-            (Policy.IgnoreSettingsFile == true || Policy.IgnoreSettingsFile == false).Should().BeTrue();
-        }
-
-        #endregion
-
-        #region データ検証テスト
-
-        [Fact]
-        public void Initialize_ShouldValidateData()
-        {
-            // Act
-            Policy.Initialize();
-
-            // Assert
-            // データの検証を確認
-            // IgnoreSettingsFileの値は環境変数やレジストリによって変更される可能性があるため、
-            // Boolean値として有効であることを確認する
-            (Policy.IgnoreSettingsFile == true || Policy.IgnoreSettingsFile == false).Should().BeTrue();
-        }
-
-        [Fact]
-        public void Reset_ShouldValidateData()
-        {
-            // Act
-            Policy.Reset();
-
-            // Assert
-            // データの検証を確認
-            // IgnoreSettingsFileの値は環境変数やレジストリによって変更される可能性があるため、
-            // Boolean値として有効であることを確認する
-            (Policy.IgnoreSettingsFile == true || Policy.IgnoreSettingsFile == false).Should().BeTrue();
-        }
-
-        #endregion
-
-        #region セキュリティテスト
-
-        [Fact]
-        public void Initialize_ShouldHandleSecurity()
-        {
-            // Act
-            Policy.Initialize();
-
-            // Assert
-            // セキュリティの処理を確認
-            // Policy.IgnoreSettingsFileの値は環境変数やレジストリによって変更される可能性があるため、
-            // 単純にfalseであることを期待するのではなく、初期化が完了することを確認
-            // 静的クラスなので、初期化が完了したことを確認
-            Policy.IconScale.Should().Be(1.0);
-        }
-
-        [Fact]
-        public void Reset_ShouldHandleSecurity()
-        {
-            // Act
-            Policy.Reset();
-
-            // Assert
-            // セキュリティの処理を確認
-            // IgnoreSettingsFileの値は環境変数やレジストリによって変更される可能性があるため、
-            // Boolean値として有効であることを確認する
-            (Policy.IgnoreSettingsFile == true || Policy.IgnoreSettingsFile == false).Should().BeTrue();
-        }
-
-        #endregion
-
-        #region 互換性テスト
-
-        [Fact]
-        public void Initialize_ShouldBeCompatible()
-        {
-            // Act
-            Policy.Initialize();
-
-            // Assert
-            // 互換性を確認
-            // 実際の値は環境によって異なる可能性がある
-            // Boolean result should be either true or false
-            (Policy.IgnoreSettingsFile == true || Policy.IgnoreSettingsFile == false).Should().BeTrue();
-        }
-
-        [Fact]
-        public void Reset_ShouldBeCompatible()
-        {
-            // Act
-            Policy.Reset();
-
-            // Assert
-            // 互換性を確認
-            // 実際の値は環境によって異なる可能性がある
-            // Boolean result should be either true or false
-            (Policy.IgnoreSettingsFile == true || Policy.IgnoreSettingsFile == false).Should().BeTrue();
-        }
-
-        #endregion
-
-        #region 拡張性テスト
-
-        [Fact]
-        public void Initialize_ShouldBeExtensible()
-        {
-            // Act
-            Policy.Initialize();
-
-            // Assert
-            // 拡張性を確認
-            // 実際の値は環境によって異なる可能性がある
-            // Boolean result should be either true or false
-            (Policy.IgnoreSettingsFile == true || Policy.IgnoreSettingsFile == false).Should().BeTrue();
-        }
-
-        [Fact]
-        public void Reset_ShouldBeExtensible()
-        {
-            // Act
-            Policy.Reset();
-
-            // Assert
-            // 拡張性を確認
-            // 実際の値は環境によって異なる可能性がある
-            // Boolean result should be either true or false
-            (Policy.IgnoreSettingsFile == true || Policy.IgnoreSettingsFile == false).Should().BeTrue();
-        }
-
-        #endregion
-
-        #region 保守性テスト
-
-        [Fact]
-        public void Initialize_ShouldBeMaintainable()
-        {
-            // Act
-            Policy.Initialize();
-
-            // Assert
-            // 保守性を確認
-            // 実際の値は環境によって異なる可能性がある
-            // Boolean result should be either true or false
-            (Policy.IgnoreSettingsFile == true || Policy.IgnoreSettingsFile == false).Should().BeTrue();
-        }
-
-        [Fact]
-        public void Reset_ShouldBeMaintainable()
-        {
-            // Act
-            Policy.Reset();
-
-            // Assert
-            // 保守性を確認
-            // 実際の値は環境によって異なる可能性がある
-            // Boolean result should be either true or false
-            (Policy.IgnoreSettingsFile == true || Policy.IgnoreSettingsFile == false).Should().BeTrue();
-        }
-
-        #endregion
-
-        #region テストカバレッジ確認
-
-        [Fact]
-        public void Initialize_ShouldCoverAllCodePathsCompletely()
-        {
-            // Act
-            Policy.Initialize();
-
-            // Assert
-            // すべてのコードパスをカバーすることを確認
-            // 実際の値は環境によって異なる可能性がある
-            // Boolean result should be either true or false
-            (Policy.IgnoreSettingsFile == true || Policy.IgnoreSettingsFile == false).Should().BeTrue();
-        }
-
-        [Fact]
-        public void Reset_ShouldCoverAllCodePathsCompletely()
-        {
-            // Act
-            Policy.Reset();
-
-            // Assert
-            // すべてのコードパスをカバーすることを確認
-            // 実際の値は環境によって異なる可能性がある
-            // Boolean result should be either true or false
-            (Policy.IgnoreSettingsFile == true || Policy.IgnoreSettingsFile == false).Should().BeTrue();
-        }
-
-        [Fact]
-        public void GetPolicySummary_ShouldCoverAllCodePathsCompletely()
-        {
-            // Arrange
-            Policy.Initialize();
-
-            // Act
-            var result = Policy.GetPolicySummary();
-
-            // Assert
-            // すべてのコードパスをカバーすることを確認
-            result.Should().NotBeNull();
-        }
-
-        #endregion
-
-        #region パフォーマンス最適化テスト
-
-        [Fact]
-        public void Initialize_ShouldBeOptimized()
-        {
-            // Arrange
-            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
-
-            // Act
-            Policy.Initialize();
-            stopwatch.Stop();
-
-            // Assert
-            stopwatch.ElapsedMilliseconds.Should().BeLessThan(2000);
-        }
-
-        #endregion
-
-        #region エラー回復テスト
-
-        [Fact]
-        public void Initialize_ShouldRecoverFromAllErrors()
-        {
-            // Act
-            Policy.Initialize();
-
-            // Assert
-            // すべてのエラーから回復することを確認
-            // 実際の値は環境によって異なる可能性がある
-            // Boolean result should be either true or false
-            (Policy.IgnoreSettingsFile == true || Policy.IgnoreSettingsFile == false).Should().BeTrue();
-        }
-
-        #endregion
-
-        #region データ検証テスト
-
-        [Fact]
-        public void Initialize_ShouldValidateDataIntegrity()
-        {
-            // Act
-            Policy.Initialize();
-
-            // Assert
-            // データの整合性検証を確認
-            // 実際の値は環境によって異なる可能性がある
-            // Boolean result should be either true or false
-            (Policy.IgnoreSettingsFile == true || Policy.IgnoreSettingsFile == false).Should().BeTrue();
-        }
-
-        #endregion
-
-        #region セキュリティアクセステスト
-
-        [Fact]
-        public void Initialize_ShouldHandleSecurityAccess()
-        {
-            // Act
-            Policy.Initialize();
-
-            // Assert
-            // セキュリティアクセスの処理を確認
-            // 実際の値は環境によって異なる可能性がある
-            // Boolean result should be either true or false
-            (Policy.IgnoreSettingsFile == true || Policy.IgnoreSettingsFile == false).Should().BeTrue();
-        }
-
-        #endregion
-
-        #region システム互換性テスト
-
-        [Fact]
-        public void Initialize_ShouldBeCompatibleWithSystem()
-        {
-            // Act
-            Policy.Initialize();
-
-            // Assert
-            // システムとの互換性を確認
-            // IgnoreSettingsFileの値は環境変数やレジストリによって変更される可能性があるため、
-            // Boolean値として有効であることを確認する
-            (Policy.IgnoreSettingsFile == true || Policy.IgnoreSettingsFile == false).Should().BeTrue();
-        }
-
-        #endregion
-
-        #region 将来拡張性テスト
-
-        [Fact]
-        public void Initialize_ShouldBeExtensibleForFuture()
-        {
-            // Act
-            Policy.Initialize();
-
-            // Assert
-            // 将来の拡張性を確認
-            // IgnoreSettingsFileの値は環境変数やレジストリによって変更される可能性があるため、
-            // Boolean値として有効であることを確認する
-            (Policy.IgnoreSettingsFile == true || Policy.IgnoreSettingsFile == false).Should().BeTrue();
-        }
-
-        #endregion
-
-        #region 長期保守性テスト
-
-        [Fact]
-        public void Initialize_ShouldBeMaintainableForLongTerm()
-        {
-            // Act
-            Policy.Initialize();
-
-            // Assert
-            // 長期保守性を確認
-            // IgnoreSettingsFileの値は環境変数やレジストリによって変更される可能性があるため、
-            // Boolean値として有効であることを確認する
-            (Policy.IgnoreSettingsFile == true || Policy.IgnoreSettingsFile == false).Should().BeTrue();
-        }
-
-        #endregion
-
-        #region 完全カバレッジテスト
-
-        [Fact]
-        public void Initialize_ShouldCoverAllCodePathsCompletely_Policy()
-        {
-            // Act
-            Policy.Initialize();
-
-            // Assert
-            // すべてのコードパスをカバーすることを確認
-            // 実際の値は環境によって異なる可能性がある
-            // Boolean result should be either true or false
-            (Policy.IgnoreSettingsFile == true || Policy.IgnoreSettingsFile == false).Should().BeTrue();
+            // Resetで確定した値がそのまま文字列に現れること
+            result.Should().Be("IgnoreSettingsFile: False, IconScale: 1, Canonicalize: False, " +
+                "ShowFocus: True, UseAero: False, AccessibleRendering: False");
         }
 
         #endregion
