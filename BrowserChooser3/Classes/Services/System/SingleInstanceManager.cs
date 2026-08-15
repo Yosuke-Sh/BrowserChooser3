@@ -149,8 +149,11 @@ namespace BrowserChooser3.Classes.Services.SystemServices
         {
             _serverCancellation?.Cancel();
 
-            // サーバースレッドが停止するまで少し待つ（テストでのリーク・干渉を避けるため）
-            _serverThread?.Join(TimeSpan.FromSeconds(2));
+            // サーバースレッドが停止するまで待つ（テストでのリーク・干渉を避けるため）。
+            // WaitForConnectionAsync(token)がキャンセルで即座に抜けるため通常は待たずに
+            // 終わる。ここでの待ち時間は「万一抜けなかった場合の上限」であり、
+            // 終了処理を長引かせないよう短くしている。
+            _serverThread?.Join(TimeSpan.FromMilliseconds(500));
 
             _mutex?.ReleaseMutex();
             _mutex?.Dispose();

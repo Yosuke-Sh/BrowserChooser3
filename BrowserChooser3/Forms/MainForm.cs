@@ -41,6 +41,16 @@ namespace BrowserChooser3.Forms
         /// </summary>
         private Label? _startupMessageLabel;
 
+        /// <summary>
+        /// 設定の遅延保存用タイマー（連続操作をまとめるためのデバウンス）
+        /// </summary>
+        private System.Windows.Forms.Timer? _deferredSaveTimer;
+
+        /// <summary>
+        /// 遅延保存までの待ち時間（ミリ秒）
+        /// </summary>
+        private const int DeferredSaveDelayMs = 800;
+
         private string _currentText = string.Empty;
 
         private ContextMenuStrip? _cmOptions;
@@ -425,29 +435,22 @@ namespace BrowserChooser3.Forms
                 
                 if (_settings?.EnableTransparency == true)
                 {
-                    // 透明化が有効な場合
+                    // 透明化が有効な場合。
+                    // TransparencyKeyは使わない。従来はMagentaを固定の透明色にしていたが、
+                    // ブラウザアイコン内にマゼンタの画素があるとそこだけ穴が開き、
+                    // クリックが背後のウィンドウへ抜けてしまっていた。
+                    // ウィンドウ全体の半透明化はOpacityだけで実現できる。
                     this.SetStyle(ControlStyles.SupportsTransparentBackColor, true);
-                    this.TransparencyKey = Color.Magenta; // 固定の透明色を使用
+                    this.TransparencyKey = Color.Empty;
                     this.Opacity = _settings.Opacity;
-                    
-                    // 背景色は通常の背景色を維持（TransparencyKeyで指定した色のみ透明化）
+
                     var bg = _settings?.BackgroundColorValue ?? Color.FromArgb(185, 209, 234);
                     this.BackColor = bg;
-                    
-                    Logger.LogTrace("MainForm.ApplyTransparencySettings", "透明化設定を適用", 
+
+                    Logger.LogTrace("MainForm.ApplyTransparencySettings", "透明化設定を適用",
                         $"EnableTransparency: {_settings?.EnableTransparency}, " +
                         $"Opacity: {_settings?.Opacity}, " +
-                        $"BackColor: {this.BackColor}, " +
-                        $"TransparencyKey: {this.TransparencyKey}");
-                    
-                    // 角を丸くする設定
-                    if (_settings?.RoundedCornersRadius > 0)
-                    {
-                        ApplyRoundedCorners(_settings.RoundedCornersRadius);
-                    }
-                    
-                    Logger.LogDebug("MainForm.ApplyTransparencySettings", 
-                        $"透明化設定を適用: Opacity={_settings?.Opacity}, TransparencyKey=Magenta, HideTitleBar={_settings?.HideTitleBar}, RoundedCornersRadius={_settings?.RoundedCornersRadius}");
+                        $"BackColor: {this.BackColor}");
                 }
                 else
                 {
@@ -459,21 +462,30 @@ namespace BrowserChooser3.Forms
                     var bg = _settings?.BackgroundColorValue ?? Color.FromArgb(185, 209, 234);
                     if (bg.A != 255) bg = Color.FromArgb(255, bg.R, bg.G, bg.B);
                     this.BackColor = bg;
-                    
-                    Logger.LogTrace("MainForm.ApplyTransparencySettings", "透明化を無効に設定", 
+
+                    Logger.LogTrace("MainForm.ApplyTransparencySettings", "透明化を無効に設定",
                         $"EnableTransparency: {_settings?.EnableTransparency}, " +
                         $"Opacity: {this.Opacity}, " +
                         $"BackColor: {this.BackColor}");
-                    
-                    // リージョンをクリア（角を丸くする設定を無効化）
-                    this.Region = null;
-                    
+
                     // 透明化解除後の描画問題を解決するため、フォームを強制再描画
                     this.Refresh();
                     
                     Logger.LogDebug("MainForm.ApplyTransparencySettings", "透明化を無効にしました");
                 }
                 
+                // 角丸は透明化とは独立した設定として扱う。
+                // 従来は EnableTransparency が有効なときしか適用されず、
+                // 角丸だけを使いたい場合に設定が効かなかった。
+                if (_settings?.RoundedCornersRadius > 0)
+                {
+                    ApplyRoundedCorners(_settings.RoundedCornersRadius);
+                }
+                else
+                {
+                    this.Region = null;
+                }
+
                 // Windows 11スタイルの適用
                 ApplyWindows11Style();
 
@@ -688,8 +700,8 @@ namespace BrowserChooser3.Forms
                 // リサイズ中の描画を一時的に無効化（パフォーマンス向上）
                 this.SuspendLayout();
                 
-                // 透明化が有効で角を丸くする設定がある場合、リージョンを更新
-                if (_settings?.EnableTransparency == true && _settings.RoundedCornersRadius > 0)
+                // 角丸設定がある場合はリージョンを更新（透明化の有無とは独立）
+                if (_settings?.RoundedCornersRadius > 0)
                 {
                     ApplyRoundedCorners(_settings.RoundedCornersRadius);
                 }
@@ -1456,7 +1468,9 @@ namespace BrowserChooser3.Forms
                         Logger.LogInfo("MainForm.ProcessAutoURLsAndProtocols", "AutoURLsで処理完了",
                             url, routing.MatchedPattern, routing.Browser.Name);
 
-                        var autoClose = chkAutoClose?.Checked ?? true;
+                        // ルール側でAutoCloseが指定されている場合はそれを優先する
+                        // （URL.AutoCloseは従来保存されるだけで参照されていなかった）
+                        var autoClose = routing.ForceAutoClose || (chkAutoClose?.Checked ?? true);
                         if (routing.DelaySeconds > 0)
                         {
                             StartAutoURLsCountdown(routing.Browser, url, routing.DelaySeconds, autoClose);
@@ -2076,17 +2090,55 @@ namespace BrowserChooser3.Forms
             {
                 _settings.AllowStayOpen = !chkAutoClose.Checked;
                 Logger.LogDebug("MainForm.chkAutoClose_CheckedChanged", "AllowStayOpen設定を更新", _settings.AllowStayOpen);
-                
-                // 設定を保存
-                try
-                {
-                    _settings.DoSave();
-                    Logger.LogDebug("MainForm.chkAutoClose_CheckedChanged", "設定を保存しました");
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError("MainForm.chkAutoClose_CheckedChanged", "設定の保存に失敗", ex.Message);
-                }
+
+                // トグルのたびにXML全体をUIスレッドで同期書き込みすると、
+                // 連続操作でそのぶんUIが固まる。少し待ってからまとめて保存する。
+                ScheduleDeferredSettingsSave();
+            }
+        }
+
+        /// <summary>
+        /// 設定の保存を遅延実行します。短時間に複数回呼ばれた場合は最後の1回だけ保存されます。
+        /// </summary>
+        private void ScheduleDeferredSettingsSave()
+        {
+            if (_deferredSaveTimer == null)
+            {
+                _deferredSaveTimer = new System.Windows.Forms.Timer { Interval = DeferredSaveDelayMs };
+                _deferredSaveTimer.Tick += DeferredSaveTimer_Tick;
+            }
+
+            // 既に動いていれば作り直さずタイマーを引き延ばす（デバウンス）
+            _deferredSaveTimer.Stop();
+            _deferredSaveTimer.Start();
+        }
+
+        /// <summary>
+        /// 遅延保存タイマーの満了時に、実際の保存を行います。
+        /// </summary>
+        private void DeferredSaveTimer_Tick(object? sender, EventArgs e)
+        {
+            _deferredSaveTimer?.Stop();
+
+            try
+            {
+                _settings?.DoSave();
+                Logger.LogDebug("MainForm.DeferredSaveTimer_Tick", "設定を保存しました");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("MainForm.DeferredSaveTimer_Tick", "設定の保存に失敗", ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// 保留中の遅延保存があれば、即座に実行します（フォームを閉じる際に使用）。
+        /// </summary>
+        private void FlushDeferredSettingsSave()
+        {
+            if (_deferredSaveTimer?.Enabled == true)
+            {
+                DeferredSaveTimer_Tick(null, EventArgs.Empty);
             }
         }
 
@@ -2538,6 +2590,16 @@ namespace BrowserChooser3.Forms
                     _notifyIcon = null;
                 }
 
+                // 保留中の遅延保存があれば、閉じる前に確実に書き出す
+                FlushDeferredSettingsSave();
+                if (_deferredSaveTimer != null)
+                {
+                    _deferredSaveTimer.Stop();
+                    _deferredSaveTimer.Tick -= DeferredSaveTimer_Tick;
+                    _deferredSaveTimer.Dispose();
+                    _deferredSaveTimer = null;
+                }
+
                 // タイマーのクリーンアップ
                 if (_countdownTimer != null)
                 {
@@ -2569,6 +2631,71 @@ namespace BrowserChooser3.Forms
         }
 
         /// <summary>
+        /// トレイメニューから使用する既定ブラウザを取得します。
+        /// 明示的な既定ブラウザが無い場合は、表示中の最初のブラウザで代用します。
+        /// </summary>
+        /// <returns>既定ブラウザ。該当が無い場合はnull</returns>
+        private Browser? GetDefaultBrowserForTray()
+        {
+            return _defaultBrowser
+                   ?? _browsers?.FirstOrDefault(b => b.IsDefault)
+                   ?? _browsers?.FirstOrDefault(b => b.Visible && b.IsActive);
+        }
+
+        /// <summary>
+        /// トレイメニューから、保持中のURLを既定ブラウザで開きます。
+        /// </summary>
+        private void LaunchDefaultBrowserFromTray()
+        {
+            var browser = GetDefaultBrowserForTray();
+            if (browser == null || string.IsNullOrEmpty(_currentUrl))
+            {
+                Logger.LogDebug("MainForm.LaunchDefaultBrowserFromTray", "起動対象のブラウザまたはURLがありません");
+                return;
+            }
+
+            try
+            {
+                Logger.LogInfo("MainForm.LaunchDefaultBrowserFromTray", "既定ブラウザで起動", browser.Name, _currentUrl);
+
+                // 常駐を続けるため、起動後にアプリケーションを終了させない
+                BrowserUtilities.LaunchBrowser(browser, _currentUrl, false);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("MainForm.LaunchDefaultBrowserFromTray", "ブラウザ起動エラー", browser.Name, ex.Message);
+                MessageBoxService.ShowErrorStatic($"ブラウザの起動に失敗しました: {ex.Message}", "エラー");
+            }
+        }
+
+        /// <summary>
+        /// トレイメニューから設定画面を開きます。
+        /// 設定画面はモーダルのため、トレイに隠れたままだと操作できなくなることがある。
+        /// 一度ウィンドウを表示してから開き、元がトレイ常駐なら閉じた後に戻す。
+        /// </summary>
+        private void ShowOptionsFromTray()
+        {
+            var wasInTray = _isInTray;
+
+            try
+            {
+                if (wasInTray)
+                {
+                    ShowFromTray();
+                }
+
+                OpenOptionsForm();
+            }
+            finally
+            {
+                if (wasInTray && _settings?.AlwaysResidentInTray == true)
+                {
+                    MinimizeToTray();
+                }
+            }
+        }
+
+        /// <summary>
         /// システムトレイを初期化します
         /// </summary>
         private void InitializeSystemTray()
@@ -2596,16 +2723,32 @@ namespace BrowserChooser3.Forms
 
                 // コンテキストメニューの作成
                 var contextMenu = new ContextMenuStrip();
-                
+
                 var showItem = new ToolStripMenuItem("表示(&S)");
                 showItem.Click += (sender, e) => ShowFromTray();
                 contextMenu.Items.Add(showItem);
-                
+
+                // 保持中のURLを既定ブラウザで開く。URLが無い場合は選べないようにする。
+                var openDefaultItem = new ToolStripMenuItem("既定ブラウザで開く(&D)");
+                openDefaultItem.Click += (sender, e) => LaunchDefaultBrowserFromTray();
+                contextMenu.Items.Add(openDefaultItem);
+
+                var optionsItem = new ToolStripMenuItem("設定(&O)...");
+                optionsItem.Click += (sender, e) => ShowOptionsFromTray();
+                contextMenu.Items.Add(optionsItem);
+
                 contextMenu.Items.Add(new ToolStripSeparator());
-                
+
                 var exitItem = new ToolStripMenuItem("終了(&X)");
                 exitItem.Click += (sender, e) => Application.Exit();
                 contextMenu.Items.Add(exitItem);
+
+                // メニューを開くたびに、その時点の状態で有効/無効を切り替える
+                contextMenu.Opening += (sender, e) =>
+                {
+                    openDefaultItem.Enabled =
+                        !string.IsNullOrEmpty(_currentUrl) && GetDefaultBrowserForTray() != null;
+                };
 
                 _notifyIcon.ContextMenuStrip = contextMenu;
                 _notifyIcon.DoubleClick += (sender, e) => ShowFromTray();

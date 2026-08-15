@@ -802,8 +802,13 @@
             <param name="RuleName">マッチしたルールの名前</param>
             <param name="Browser">起動されるブラウザ（該当しない場合はnull）</param>
             <param name="DelaySeconds">起動までの遅延秒数（AutoURL以外は0）</param>
+            <param name="ForceAutoClose">
+            ルール側で自動終了が指定されている場合はtrue。
+            <see cref="P:BrowserChooser3.Classes.Models.URL.AutoClose"/> は保存されるだけで参照されていなかったため、
+            有効なときだけメイン画面のチェックボックスより優先させる。
+            </param>
         </member>
-        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.URLRoutingResult.#ctor(BrowserChooser3.Classes.Services.BrowserServices.URLRoutingKind,System.String,System.String,BrowserChooser3.Classes.Models.Browser,System.Int32)">
+        <member name="M:BrowserChooser3.Classes.Services.BrowserServices.URLRoutingResult.#ctor(BrowserChooser3.Classes.Services.BrowserServices.URLRoutingKind,System.String,System.String,BrowserChooser3.Classes.Models.Browser,System.Int32,System.Boolean)">
             <summary>
             URLルーティングの判定結果
             </summary>
@@ -812,6 +817,11 @@
             <param name="RuleName">マッチしたルールの名前</param>
             <param name="Browser">起動されるブラウザ（該当しない場合はnull）</param>
             <param name="DelaySeconds">起動までの遅延秒数（AutoURL以外は0）</param>
+            <param name="ForceAutoClose">
+            ルール側で自動終了が指定されている場合はtrue。
+            <see cref="P:BrowserChooser3.Classes.Models.URL.AutoClose"/> は保存されるだけで参照されていなかったため、
+            有効なときだけメイン画面のチェックボックスより優先させる。
+            </param>
         </member>
         <member name="P:BrowserChooser3.Classes.Services.BrowserServices.URLRoutingResult.Kind">
             <summary>判定の種類</summary>
@@ -827,6 +837,13 @@
         </member>
         <member name="P:BrowserChooser3.Classes.Services.BrowserServices.URLRoutingResult.DelaySeconds">
             <summary>起動までの遅延秒数（AutoURL以外は0）</summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Services.BrowserServices.URLRoutingResult.ForceAutoClose">
+            <summary>
+            ルール側で自動終了が指定されている場合はtrue。
+            <see cref="P:BrowserChooser3.Classes.Models.URL.AutoClose"/> は保存されるだけで参照されていなかったため、
+            有効なときだけメイン画面のチェックボックスより優先させる。
+            </summary>
         </member>
         <member name="M:BrowserChooser3.Classes.Services.BrowserServices.URLRoutingResult.NoMatch">
             <summary>どのルールにもマッチしなかったことを表す結果を生成します。</summary>
@@ -2344,12 +2361,6 @@
             </summary>
             <returns>Aero効果が有効な場合はtrue</returns>
         </member>
-        <member name="M:BrowserChooser3.Classes.Utilities.GeneralUtilities.MakeFormGlassy(System.Windows.Forms.Form)">
-            <summary>
-            フォームにAero効果を適用します
-            </summary>
-            <param name="form">対象のフォーム</param>
-        </member>
         <member name="M:BrowserChooser3.Classes.Utilities.GeneralUtilities.ApplyMicaEffect(System.Windows.Forms.Form)">
             <summary>
             フォームにMica効果を適用します（Windows 11）
@@ -3492,6 +3503,16 @@
             起動メッセージ（Settings.StartupMessage）表示用ラベル
             </summary>
         </member>
+        <member name="F:BrowserChooser3.Forms.MainForm._deferredSaveTimer">
+            <summary>
+            設定の遅延保存用タイマー（連続操作をまとめるためのデバウンス）
+            </summary>
+        </member>
+        <member name="F:BrowserChooser3.Forms.MainForm.DeferredSaveDelayMs">
+            <summary>
+            遅延保存までの待ち時間（ミリ秒）
+            </summary>
+        </member>
         <member name="M:BrowserChooser3.Forms.MainForm.#ctor">
             <summary>
             MainFormクラスの新しいインスタンスを初期化します
@@ -3845,6 +3866,21 @@
             自動クローズチェックボックスの変更イベント
             </summary>
         </member>
+        <member name="M:BrowserChooser3.Forms.MainForm.ScheduleDeferredSettingsSave">
+            <summary>
+            設定の保存を遅延実行します。短時間に複数回呼ばれた場合は最後の1回だけ保存されます。
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.MainForm.DeferredSaveTimer_Tick(System.Object,System.EventArgs)">
+            <summary>
+            遅延保存タイマーの満了時に、実際の保存を行います。
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.MainForm.FlushDeferredSettingsSave">
+            <summary>
+            保留中の遅延保存があれば、即座に実行します（フォームを閉じる際に使用）。
+            </summary>
+        </member>
         <member name="M:BrowserChooser3.Forms.MainForm.tmrDelay_Tick(System.Object,System.EventArgs)">
             <summary>
             遅延タイマーの処理
@@ -3968,6 +4004,25 @@
         <member name="M:BrowserChooser3.Forms.MainForm.OnFormClosing(System.Windows.Forms.FormClosingEventArgs)">
             <summary>
             フォームを閉じる際の処理
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.MainForm.GetDefaultBrowserForTray">
+            <summary>
+            トレイメニューから使用する既定ブラウザを取得します。
+            明示的な既定ブラウザが無い場合は、表示中の最初のブラウザで代用します。
+            </summary>
+            <returns>既定ブラウザ。該当が無い場合はnull</returns>
+        </member>
+        <member name="M:BrowserChooser3.Forms.MainForm.LaunchDefaultBrowserFromTray">
+            <summary>
+            トレイメニューから、保持中のURLを既定ブラウザで開きます。
+            </summary>
+        </member>
+        <member name="M:BrowserChooser3.Forms.MainForm.ShowOptionsFromTray">
+            <summary>
+            トレイメニューから設定画面を開きます。
+            設定画面はモーダルのため、トレイに隠れたままだと操作できなくなることがある。
+            一度ウィンドウを表示してから開き、元がトレイ常駐なら閉じた後に戻す。
             </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.MainForm.InitializeSystemTray">

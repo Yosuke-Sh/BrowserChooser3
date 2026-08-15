@@ -149,6 +149,33 @@ namespace BrowserChooser3.Tests
         }
 
         [Fact]
+        public void Resolve_ShouldSurfaceRuleAutoCloseSetting()
+        {
+            // URL.AutoClose は従来保存されるだけで参照されていなかった（3-10）。
+            // ルール側で指定されている場合、メイン画面のチェックボックスより優先される。
+            var settings = BuildSettings(new[]
+            {
+                new URL { Name = "R", URLPattern = "example.com", BrowserGuid = ChromeGuid, AutoClose = true }
+            });
+
+            URLRoutingResolver.Resolve(settings, "https://example.com/")
+                .ForceAutoClose.Should().BeTrue();
+        }
+
+        [Fact]
+        public void Resolve_WithoutRuleAutoClose_ShouldNotForceIt()
+        {
+            // 既定は false。既存設定の挙動（画面のチェックボックスに従う）を変えない。
+            var settings = BuildSettings(new[]
+            {
+                new URL { Name = "R", URLPattern = "example.com", BrowserGuid = ChromeGuid }
+            });
+
+            URLRoutingResolver.Resolve(settings, "https://example.com/")
+                .ForceAutoClose.Should().BeFalse();
+        }
+
+        [Fact]
         public void Resolve_WithMissingBrowser_ShouldReportMatchedButBrowserMissing()
         {
             var settings = BuildSettings(new[]

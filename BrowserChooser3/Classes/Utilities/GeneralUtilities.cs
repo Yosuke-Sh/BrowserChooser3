@@ -48,33 +48,10 @@ namespace BrowserChooser3.Classes.Utilities
             }
         }
 
-        /// <summary>
-        /// フォームにAero効果を適用します
-        /// </summary>
-        /// <param name="form">対象のフォーム</param>
-        public static void MakeFormGlassy(Form form)
-        {
-            try
-            {
-                var margins = new MARGINS
-                {
-                    leftWidth = 0,
-                    rightWidth = 0,
-                    topHeight = 0,
-                    bottomHeight = 0
-                };
-
-                DwmExtendFrameIntoClientArea(form.Handle, ref margins);
-                
-                // フォームの背景を透明にする
-                form.BackColor = Color.Transparent;
-                form.TransparencyKey = Color.Transparent;
-            }
-            catch (Exception ex)
-            {
-                Logger.LogWarning("GeneralUtilities.MakeFormGlassy", "Aero効果の適用に失敗", ex.Message);
-            }
-        }
+        // MakeFormGlassy は削除した。呼び出しがゼロだったうえ、BackColor と
+        // TransparencyKey の両方を Transparent にするため、実行するとフォーム全体が
+        // クリックスルーになって操作不能になる実装だった。
+        // Windows 11 の Mica 効果は ApplyMicaEffect が担当する。
 
         /// <summary>
         /// フォームにMica効果を適用します（Windows 11）

@@ -123,6 +123,10 @@ namespace BrowserChooser3.Forms
             var chkUsePrivateMode = Controls.Find("chkUsePrivateMode", true).FirstOrDefault() as CheckBox;
             if (chkUsePrivateMode != null) chkUsePrivateMode.Checked = _browser.UsePrivateMode;
 
+            // 選択画面に表示するかどうか（Visible と IsActive の両方が必要）
+            var chkBrowserVisible = Controls.Find("chkBrowserVisible", true).FirstOrDefault() as CheckBox;
+            if (chkBrowserVisible != null) chkBrowserVisible.Checked = _browser.Visible && _browser.IsActive;
+
             // アイコン表示を更新
             UpdateIconDisplay();
         }
@@ -293,6 +297,14 @@ namespace BrowserChooser3.Forms
             var chkUsePrivateMode = Controls.Find("chkUsePrivateMode", true).FirstOrDefault() as CheckBox;
             if (chkUsePrivateMode != null) _browser.UsePrivateMode = chkUsePrivateMode.Checked;
 
+            var chkBrowserVisible = Controls.Find("chkBrowserVisible", true).FirstOrDefault() as CheckBox;
+            if (chkBrowserVisible != null)
+            {
+                // MainFormは Visible && IsActive の両方を見るため、両方を揃えて設定する
+                _browser.Visible = chkBrowserVisible.Checked;
+                _browser.IsActive = chkBrowserVisible.Checked;
+            }
+
             return _browser;
         }
 
@@ -312,8 +324,8 @@ namespace BrowserChooser3.Forms
         private void InitializeComponent()
         {
             Text = "Add/Edit Browser";
-            // Profile / Private mode の2行ぶん縦に拡張している
-            Size = new Size(600, 545);
+            // Profile / Private mode / 表示 の3行ぶん縦に拡張している
+            Size = new Size(600, 571);
             StartPosition = FormStartPosition.CenterParent;
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
@@ -355,20 +367,31 @@ namespace BrowserChooser3.Forms
                 Size = new Size(340, 23)
             };
 
+            // 選択画面に表示するかどうか。Browser.IsActive / Visible はモデルにあるのに
+            // UIが無く常にtrueのままだったため、ここで編集できるようにする。
+            var chkBrowserVisible = new CheckBox
+            {
+                Name = "chkBrowserVisible",
+                Text = "ブラウザ選択画面に表示する",
+                Location = new Point(120, 236),
+                Size = new Size(340, 23),
+                Checked = true
+            };
+
             // アイコン表示用PictureBox
-            var lblIcon = new Label { Text = "Icon:", Location = new Point(10, 245), AutoSize = true };
-            var picIcon = new PictureBox { Name = "picIcon", Location = new Point(120, 242), Size = new Size(64, 64), SizeMode = PictureBoxSizeMode.Zoom, BorderStyle = BorderStyle.FixedSingle };
-            var btnEditIcon = new Button { Text = "Edit Icon", Location = new Point(200, 242), Size = new Size(85, 35) };
+            var lblIcon = new Label { Text = "Icon:", Location = new Point(10, 271), AutoSize = true };
+            var picIcon = new PictureBox { Name = "picIcon", Location = new Point(120, 268), Size = new Size(64, 64), SizeMode = PictureBoxSizeMode.Zoom, BorderStyle = BorderStyle.FixedSingle };
+            var btnEditIcon = new Button { Text = "Edit Icon", Location = new Point(200, 268), Size = new Size(85, 35) };
 
-            var lblRow = new Label { Text = "Row:", Location = new Point(10, 315), AutoSize = true };
-            var nudRow = new NumericUpDown { Name = "nudRow", Location = new Point(120, 312), Size = new Size(80, 23), Minimum = 0, Maximum = 100 };
+            var lblRow = new Label { Text = "Row:", Location = new Point(10, 341), AutoSize = true };
+            var nudRow = new NumericUpDown { Name = "nudRow", Location = new Point(120, 338), Size = new Size(80, 23), Minimum = 0, Maximum = 100 };
 
-            var lblCol = new Label { Text = "Column:", Location = new Point(220, 315), AutoSize = true };
-            var nudCol = new NumericUpDown { Name = "nudCol", Location = new Point(320, 312), Size = new Size(80, 23), Minimum = 0, Maximum = 100 };
+            var lblCol = new Label { Text = "Column:", Location = new Point(220, 341), AutoSize = true };
+            var nudCol = new NumericUpDown { Name = "nudCol", Location = new Point(320, 338), Size = new Size(80, 23), Minimum = 0, Maximum = 100 };
 
             // ボタン
-            var btnOK = new Button { Text = "OK", DialogResult = DialogResult.OK, Location = new Point(300, 415), Size = new Size(90, 30) };
-            var btnCancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, Location = new Point(400, 415), Size = new Size(90, 30) };
+            var btnOK = new Button { Text = "OK", DialogResult = DialogResult.OK, Location = new Point(300, 441), Size = new Size(90, 30) };
+            var btnCancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, Location = new Point(400, 441), Size = new Size(90, 30) };
             btnOK.FlatStyle = FlatStyle.System;
             btnCancel.FlatStyle = FlatStyle.System;
 
@@ -379,7 +402,7 @@ namespace BrowserChooser3.Forms
                 lblTarget, txtTarget, btnBrowse,
                 lblArguments, txtArguments,
                 lblHotkey, txtHotkey,
-                lblProfile, cmbProfile, chkUsePrivateMode,
+                lblProfile, cmbProfile, chkUsePrivateMode, chkBrowserVisible,
                 lblIcon, picIcon, btnEditIcon,
                 lblRow, nudRow,
                 lblCol, nudCol,
@@ -520,6 +543,9 @@ namespace BrowserChooser3.Forms
                     _browser.Arguments = txtArguments.Text;
                     _browser.ProfileName = cmbProfile.Text.Trim();
                     _browser.UsePrivateMode = chkUsePrivateMode.Checked;
+                    // MainFormは Visible && IsActive の両方を見るため、両方を揃えて設定する
+                    _browser.Visible = chkBrowserVisible.Checked;
+                    _browser.IsActive = chkBrowserVisible.Checked;
 
                     if (txtHotkey != null && txtHotkey.Text.Length > 0)
                     {

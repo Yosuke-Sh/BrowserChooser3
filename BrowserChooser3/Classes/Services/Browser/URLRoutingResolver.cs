@@ -32,12 +32,18 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
     /// <param name="RuleName">マッチしたルールの名前</param>
     /// <param name="Browser">起動されるブラウザ（該当しない場合はnull）</param>
     /// <param name="DelaySeconds">起動までの遅延秒数（AutoURL以外は0）</param>
+    /// <param name="ForceAutoClose">
+    /// ルール側で自動終了が指定されている場合はtrue。
+    /// <see cref="Models.URL.AutoClose"/> は保存されるだけで参照されていなかったため、
+    /// 有効なときだけメイン画面のチェックボックスより優先させる。
+    /// </param>
     public record URLRoutingResult(
         URLRoutingKind Kind,
         string MatchedPattern,
         string RuleName,
         Browser? Browser,
-        int DelaySeconds)
+        int DelaySeconds,
+        bool ForceAutoClose = false)
     {
         /// <summary>どのルールにもマッチしなかったことを表す結果を生成します。</summary>
         public static URLRoutingResult NoMatch()
@@ -115,7 +121,8 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
                     autoUrl.URLPattern,
                     autoUrl.Name,
                     browser,
-                    delay);
+                    delay,
+                    autoUrl.AutoClose);
             }
 
             return null;
