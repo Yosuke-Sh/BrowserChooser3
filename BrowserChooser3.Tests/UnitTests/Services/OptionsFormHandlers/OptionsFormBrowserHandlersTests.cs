@@ -1,467 +1,260 @@
-using FluentAssertions;
-using Xunit;
-using BrowserChooser3.Classes.Services.OptionsFormHandlers;
+using System;
+using System.Collections.Generic;
+using System.Windows.Forms;
 using BrowserChooser3.Classes;
 using BrowserChooser3.Classes.Models;
-using BrowserChooser3.Forms;
-using Moq;
-using System.Windows.Forms;
+using BrowserChooser3.Classes.Services.OptionsFormHandlers;
+using BrowserChooser3.Tests.TestHelpers.Fixtures;
+using BrowserChooser3.Tests.TestHelpers.MockFactories;
+using FluentAssertions;
+using Xunit;
 
 namespace BrowserChooser3.Tests
 {
     /// <summary>
     /// OptionsFormBrowserHandlersクラスの単体テスト
-    /// ガバレッジ100%を目指して全メソッドをテストします
     /// </summary>
-    public class OptionsFormBrowserHandlersTests
+    /// <remarks>
+    /// <para>
+    /// 従来24件が <c>new Mock&lt;OptionsForm&gt;()</c> を理由にスキップされていたうえ、
+    /// 唯一実行されていた分岐（<c>AddBrowser_Click</c>）は AddEditBrowserForm を
+    /// モーダル表示するため、ヘッドレスなテストではどのみち意味のある検証ができない。
+    /// </para>
+    /// <para>
+    /// IOptionsFormContextの抽出を機に、子フォームを開かずに完結する分岐——
+    /// 未選択時のガード、辞書に存在しないTagの防御、削除/複製の実際の副作用——を
+    /// 対象にする。<c>DetectBrowsers_Click</c> はレジストリ/Program Filesを直接
+    /// 走査する <c>DetectedBrowsers.DoBrowserDetectionAsync</c> を呼ぶため、
+    /// (4-2 の残課題である IRegistryReader/IFileSystemProbe 抽象化が無い現状では)
+    /// 引き続きスキップする。
+    /// </para>
+    /// </remarks>
+    public class OptionsFormBrowserHandlersTests : IDisposable
     {
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void Constructor_WithValidParameters_ShouldInitializeCorrectly()
+        private readonly FakeOptionsFormContext _context = new();
+        private readonly Dictionary<int, Browser> _browsers = new();
+        private readonly Dictionary<int, Protocol> _protocols = new();
+        private bool _modified;
+
+        private OptionsFormBrowserHandlers CreateHandlers(ImageList? icons = null) =>
+            new(_context, new Settings(), _browsers, _protocols, icons ?? new ImageList(), v => _modified = v);
+
+        /// <summary>
+        /// tabBrowsers配下にlstBrowsersを備えたコンテキストを構築します。
+        /// </summary>
+        /// <remarks>
+        /// ListViewはネイティブハンドル生成前だと選択状態を追跡しないため、
+        /// 親へ追加する前に <c>CreateControl()</c> する。
+        /// </remarks>
+        private ListView SetupBrowsersTab()
+        {
+            var tab = _context.AddTabPage("tabBrowsers");
+            var listView = new ListView { Name = "lstBrowsers", MultiSelect = false };
+            listView.Columns.Add("Name");
+            listView.Columns.Add("Target");
+            listView.Columns.Add("Row");
+            listView.Columns.Add("Column");
+            listView.Columns.Add("Hotkey");
+            listView.Columns.Add("Arguments");
+            listView.CreateControl();
+            tab.Controls.Add(listView);
+            return listView;
+        }
+
+        public void Dispose() => _context.Dispose();
+
+        #region EditBrowser_Click
+
+        [Fact]
+        public void EditBrowser_Click_WithoutSelection_ShouldNotModifyAndShouldNotThrow()
         {
             // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var settings = new Settings();
-            var mBrowser = new Dictionary<int, Browser>();
-            var mProtocols = new Dictionary<int, Protocol>();
-            var imBrowserIcons = new ImageList();
-            Action<bool> setModified = (modified) => { };
+            SetupBrowsersTab();
+            var handlers = CreateHandlers();
 
             // Act
-            var handlers = new OptionsFormBrowserHandlers(mockForm.Object, settings, mBrowser, mProtocols, imBrowserIcons, setModified);
+            // 未選択時は情報メッセージのみでAddEditBrowserFormを開かない
+            var action = () => handlers.EditBrowser_Click(null, EventArgs.Empty);
 
             // Assert
-            handlers.Should().NotBeNull();
+            action.Should().NotThrow();
+            _modified.Should().BeFalse();
         }
 
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void Constructor_WithNullForm_ShouldInitializeCorrectly()
+        [Fact]
+        public void EditBrowser_Click_WithSelectionButUnknownTag_ShouldNotModify()
         {
             // Arrange
-            var settings = new Settings();
-            var mBrowser = new Dictionary<int, Browser>();
-            var mProtocols = new Dictionary<int, Protocol>();
-            var imBrowserIcons = new ImageList();
-            Action<bool> setModified = (modified) => { };
+            // ListViewのTagが辞書に存在しないIDを指している防御的な分岐
+            var listView = SetupBrowsersTab();
+            var item = new ListViewItem("Orphan") { Tag = 999 };
+            listView.Items.Add(item);
+            item.Selected = true;
+            listView.SelectedItems.Count.Should().Be(1, "テストの前提として選択状態が成立していること");
+
+            var handlers = CreateHandlers();
 
             // Act
-            var handlers = new OptionsFormBrowserHandlers(null!, settings, mBrowser, mProtocols, imBrowserIcons, setModified);
+            var action = () => handlers.EditBrowser_Click(null, EventArgs.Empty);
 
             // Assert
-            handlers.Should().NotBeNull();
+            action.Should().NotThrow();
+            _modified.Should().BeFalse();
         }
 
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void Constructor_WithNullSettings_ShouldInitializeCorrectly()
+        [Fact]
+        public void EditBrowser_Click_WithoutBrowsersTab_ShouldNotThrow()
         {
             // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var mBrowser = new Dictionary<int, Browser>();
-            var mProtocols = new Dictionary<int, Protocol>();
-            var imBrowserIcons = new ImageList();
-            Action<bool> setModified = (modified) => { };
+            // タブが未構築の状態でも落ちないこと
+            var handlers = CreateHandlers();
 
             // Act
-            var handlers = new OptionsFormBrowserHandlers(mockForm.Object, null!, mBrowser, mProtocols, imBrowserIcons, setModified);
+            var action = () => handlers.EditBrowser_Click(null, EventArgs.Empty);
 
             // Assert
-            handlers.Should().NotBeNull();
+            action.Should().NotThrow();
         }
 
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void Constructor_WithNullDictionaries_ShouldInitializeCorrectly()
+        #endregion
+
+        #region DeleteBrowser_Click
+
+        [Fact]
+        public void DeleteBrowser_Click_WithoutSelection_ShouldNotRemoveAnything()
         {
             // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var settings = new Settings();
-            var imBrowserIcons = new ImageList();
-            Action<bool> setModified = (modified) => { };
+            var listView = SetupBrowsersTab();
+            var browser = BrowserFactory.Create("Chrome");
+            _browsers[1] = browser;
+            listView.Items.Add(new ListViewItem("Chrome") { Tag = 1 });
+
+            var handlers = CreateHandlers();
 
             // Act
-            var handlers = new OptionsFormBrowserHandlers(mockForm.Object, settings, null!, null!, imBrowserIcons, setModified);
+            handlers.DeleteBrowser_Click(null, EventArgs.Empty);
 
             // Assert
-            handlers.Should().NotBeNull();
+            _browsers.Should().ContainKey(1, "未選択なら削除されない");
+            listView.Items.Count.Should().Be(1);
+            _modified.Should().BeFalse();
         }
 
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void Constructor_WithNullImageList_ShouldInitializeCorrectly()
+        [Fact]
+        public void DeleteBrowser_Click_WithSelection_ShouldRemoveFromDictionaryAndListView()
         {
             // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var settings = new Settings();
-            var mBrowser = new Dictionary<int, Browser>();
-            var mProtocols = new Dictionary<int, Protocol>();
-            Action<bool> setModified = (modified) => { };
+            // テスト環境ではShowQuestionStaticはYesを返すため、実際に削除まで進む
+            var listView = SetupBrowsersTab();
+            var browser = BrowserFactory.Create("Chrome");
+            _browsers[1] = browser;
+            var item = new ListViewItem("Chrome") { Tag = 1 };
+            listView.Items.Add(item);
+            item.Selected = true;
+
+            var handlers = CreateHandlers();
 
             // Act
-            var handlers = new OptionsFormBrowserHandlers(mockForm.Object, settings, mBrowser, mProtocols, null, setModified);
+            handlers.DeleteBrowser_Click(null, EventArgs.Empty);
 
             // Assert
-            handlers.Should().NotBeNull();
+            _browsers.Should().NotContainKey(1, "選択されたブラウザは辞書から削除される");
+            listView.Items.Count.Should().Be(0, "ListViewからも削除される");
+            _modified.Should().BeTrue("削除は変更として記録される");
         }
 
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void Constructor_WithNullSetModified_ShouldInitializeCorrectly()
+        [Fact]
+        public void DeleteBrowser_Click_WithoutBrowsersTab_ShouldNotThrow()
         {
             // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var settings = new Settings();
-            var mBrowser = new Dictionary<int, Browser>();
-            var mProtocols = new Dictionary<int, Protocol>();
-            var imBrowserIcons = new ImageList();
+            var handlers = CreateHandlers();
 
             // Act
-            var handlers = new OptionsFormBrowserHandlers(mockForm.Object, settings, mBrowser, mProtocols, imBrowserIcons, null!);
+            var action = () => handlers.DeleteBrowser_Click(null, EventArgs.Empty);
 
             // Assert
-            handlers.Should().NotBeNull();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void AddBrowser_Click_ShouldNotThrowException()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var settings = new Settings();
-            var mBrowser = new Dictionary<int, Browser>();
-            var mProtocols = new Dictionary<int, Protocol>();
-            var imBrowserIcons = new ImageList();
-            Action<bool> setModified = (modified) => { };
-            var handlers = new OptionsFormBrowserHandlers(mockForm.Object, settings, mBrowser, mProtocols, imBrowserIcons, setModified);
-            var sender = new object();
-            var e = new EventArgs();
-
-            // Act & Assert
-            var action = () => handlers.AddBrowser_Click(sender, e);
             action.Should().NotThrow();
         }
 
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void AddBrowser_Click_WithNullSender_ShouldNotThrowException()
+        #endregion
+
+        #region CloneBrowser_Click
+
+        [Fact]
+        public void CloneBrowser_Click_WithoutSelection_ShouldNotModify()
         {
             // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var settings = new Settings();
-            var mBrowser = new Dictionary<int, Browser>();
-            var mProtocols = new Dictionary<int, Protocol>();
-            var imBrowserIcons = new ImageList();
-            Action<bool> setModified = (modified) => { };
-            var handlers = new OptionsFormBrowserHandlers(mockForm.Object, settings, mBrowser, mProtocols, imBrowserIcons, setModified);
-            var e = new EventArgs();
+            SetupBrowsersTab();
+            var handlers = CreateHandlers();
 
-            // Act & Assert
-            var action = () => handlers.AddBrowser_Click(null, e);
+            // Act
+            var action = () => handlers.CloneBrowser_Click(null, EventArgs.Empty);
+
+            // Assert
+            action.Should().NotThrow();
+            _modified.Should().BeFalse();
+        }
+
+        [Fact]
+        public void CloneBrowser_Click_WithSelectionButUnknownTag_ShouldNotModify()
+        {
+            // Arrange
+            var listView = SetupBrowsersTab();
+            var item = new ListViewItem("Orphan") { Tag = 999 };
+            listView.Items.Add(item);
+            item.Selected = true;
+
+            var handlers = CreateHandlers();
+
+            // Act
+            var action = () => handlers.CloneBrowser_Click(null, EventArgs.Empty);
+
+            // Assert
+            action.Should().NotThrow();
+            _modified.Should().BeFalse("辞書に存在しないTagでは複製元を取得できず中断する");
+        }
+
+        [Fact]
+        public void CloneBrowser_Click_WithoutBrowsersTab_ShouldNotThrow()
+        {
+            // Arrange
+            var handlers = CreateHandlers();
+
+            // Act
+            var action = () => handlers.CloneBrowser_Click(null, EventArgs.Empty);
+
+            // Assert
             action.Should().NotThrow();
         }
 
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void AddBrowser_Click_WithNullEventArgs_ShouldNotThrowException()
+        #endregion
+
+        #region コンストラクタ — 実際に使われる引数の組み合わせ
+
+        [Fact]
+        public void Constructor_WithNullImageList_ShouldAllowSubsequentCallsWithoutThrowing()
         {
             // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var settings = new Settings();
-            var mBrowser = new Dictionary<int, Browser>();
-            var mProtocols = new Dictionary<int, Protocol>();
-            var imBrowserIcons = new ImageList();
-            Action<bool> setModified = (modified) => { };
-            var handlers = new OptionsFormBrowserHandlers(mockForm.Object, settings, mBrowser, mProtocols, imBrowserIcons, setModified);
-            var sender = new object();
+            // アイコンリスト未生成（Browsersパネル未構築）の状態でも動作すること
+            SetupBrowsersTab();
+            var handlers = new OptionsFormBrowserHandlers(_context, new Settings(), _browsers, _protocols, null, v => _modified = v);
 
-            // Act & Assert
-            var action = () => handlers.AddBrowser_Click(sender, null!);
+            // Act
+            var action = () => handlers.DeleteBrowser_Click(null, EventArgs.Empty);
+
+            // Assert
             action.Should().NotThrow();
         }
 
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void AddBrowser_Click_WithException_ShouldHandleGracefully()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var settings = new Settings();
-            var mBrowser = new Dictionary<int, Browser>();
-            var mProtocols = new Dictionary<int, Protocol>();
-            var imBrowserIcons = new ImageList();
-            Action<bool> setModified = (modified) => throw new Exception("Test exception");
-            var handlers = new OptionsFormBrowserHandlers(mockForm.Object, settings, mBrowser, mProtocols, imBrowserIcons, setModified);
-            var sender = new object();
-            var e = new EventArgs();
+        #endregion
 
-            // Act & Assert
-            var action = () => handlers.AddBrowser_Click(sender, e);
-            action.Should().NotThrow();
-        }
+        #region DetectBrowsers_Click
 
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void AddBrowser_Click_ShouldBeThreadSafe()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var settings = new Settings();
-            var mBrowser = new Dictionary<int, Browser>();
-            var mProtocols = new Dictionary<int, Protocol>();
-            var imBrowserIcons = new ImageList();
-            Action<bool> setModified = (modified) => { };
-            var handlers = new OptionsFormBrowserHandlers(mockForm.Object, settings, mBrowser, mProtocols, imBrowserIcons, setModified);
-            var sender = new object();
-            var e = new EventArgs();
+        // DetectBrowsers_Click は DetectedBrowsers.DoBrowserDetectionAsync を通じて
+        // レジストリ/Program Files を直接走査するためヘッドレスなユニットテストでは
+        // 実行しない（IRegistryReader/IFileSystemProbe 抽象化が無い現状の既知の制約、
+        // 計画の 4-2 残課題を参照）。
 
-            // Act & Assert
-            var action = () =>
-            {
-                var tasks = new List<Task>();
-                for (int i = 0; i < 5; i++)
-                {
-                    tasks.Add(Task.Run(() => handlers.AddBrowser_Click(sender, e)));
-                }
-                Task.WaitAll(tasks.ToArray());
-            };
-
-            action.Should().NotThrow();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void AddBrowser_Click_WithEmptyBrowserDictionary_ShouldHandleGracefully()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var settings = new Settings();
-            var mBrowser = new Dictionary<int, Browser>();
-            var mProtocols = new Dictionary<int, Protocol>();
-            var imBrowserIcons = new ImageList();
-            Action<bool> setModified = (modified) => { };
-            var handlers = new OptionsFormBrowserHandlers(mockForm.Object, settings, mBrowser, mProtocols, imBrowserIcons, setModified);
-            var sender = new object();
-            var e = new EventArgs();
-
-            // Act & Assert
-            var action = () => handlers.AddBrowser_Click(sender, e);
-            action.Should().NotThrow();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void AddBrowser_Click_WithExistingBrowsers_ShouldHandleGracefully()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var settings = new Settings();
-            var mBrowser = new Dictionary<int, Browser>
-            {
-                { 1, new Browser { Name = "Test Browser", Y = 0, X = 0 } }
-            };
-            var mProtocols = new Dictionary<int, Protocol>();
-            var imBrowserIcons = new ImageList();
-            Action<bool> setModified = (modified) => { };
-            var handlers = new OptionsFormBrowserHandlers(mockForm.Object, settings, mBrowser, mProtocols, imBrowserIcons, setModified);
-            var sender = new object();
-            var e = new EventArgs();
-
-            // Act & Assert
-            var action = () => handlers.AddBrowser_Click(sender, e);
-            action.Should().NotThrow();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void AddBrowser_Click_WithNullActions_ShouldNotThrowException()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var settings = new Settings();
-            var mBrowser = new Dictionary<int, Browser>();
-            var mProtocols = new Dictionary<int, Protocol>();
-            var imBrowserIcons = new ImageList();
-            var handlers = new OptionsFormBrowserHandlers(mockForm.Object, settings, mBrowser, mProtocols, imBrowserIcons, null!);
-            var sender = new object();
-            var e = new EventArgs();
-
-            // Act & Assert
-            var action = () => handlers.AddBrowser_Click(sender, e);
-            action.Should().NotThrow();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void AddBrowser_Click_WithNullParameters_ShouldHandleGracefully()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var settings = new Settings();
-            var mBrowser = new Dictionary<int, Browser>();
-            var mProtocols = new Dictionary<int, Protocol>();
-            var imBrowserIcons = new ImageList();
-            Action<bool> setModified = (modified) => { };
-            var handlers = new OptionsFormBrowserHandlers(mockForm.Object, settings, mBrowser, mProtocols, imBrowserIcons, setModified);
-
-            // Act & Assert
-            var action = () => handlers.AddBrowser_Click(null!, null!);
-            action.Should().NotThrow();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void AddBrowser_Click_WithInvalidSettings_ShouldHandleGracefully()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var settings = new Settings { GridWidth = -1, GridHeight = -1 };
-            var mBrowser = new Dictionary<int, Browser>();
-            var mProtocols = new Dictionary<int, Protocol>();
-            var imBrowserIcons = new ImageList();
-            Action<bool> setModified = (modified) => { };
-            var handlers = new OptionsFormBrowserHandlers(mockForm.Object, settings, mBrowser, mProtocols, imBrowserIcons, setModified);
-            var sender = new object();
-            var e = new EventArgs();
-
-            // Act & Assert
-            var action = () => handlers.AddBrowser_Click(sender, e);
-            action.Should().NotThrow();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void AddBrowser_Click_WithLargeGridSettings_ShouldHandleGracefully()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var settings = new Settings { GridWidth = int.MaxValue, GridHeight = int.MaxValue };
-            var mBrowser = new Dictionary<int, Browser>();
-            var mProtocols = new Dictionary<int, Protocol>();
-            var imBrowserIcons = new ImageList();
-            Action<bool> setModified = (modified) => { };
-            var handlers = new OptionsFormBrowserHandlers(mockForm.Object, settings, mBrowser, mProtocols, imBrowserIcons, setModified);
-            var sender = new object();
-            var e = new EventArgs();
-
-            // Act & Assert
-            var action = () => handlers.AddBrowser_Click(sender, e);
-            action.Should().NotThrow();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void AddBrowser_Click_WithZeroGridSettings_ShouldHandleGracefully()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var settings = new Settings { GridWidth = 0, GridHeight = 0 };
-            var mBrowser = new Dictionary<int, Browser>();
-            var mProtocols = new Dictionary<int, Protocol>();
-            var imBrowserIcons = new ImageList();
-            Action<bool> setModified = (modified) => { };
-            var handlers = new OptionsFormBrowserHandlers(mockForm.Object, settings, mBrowser, mProtocols, imBrowserIcons, setModified);
-            var sender = new object();
-            var e = new EventArgs();
-
-            // Act & Assert
-            var action = () => handlers.AddBrowser_Click(sender, e);
-            action.Should().NotThrow();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void AddBrowser_Click_WithNullImageList_ShouldHandleGracefully()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var settings = new Settings();
-            var mBrowser = new Dictionary<int, Browser>();
-            var mProtocols = new Dictionary<int, Protocol>();
-            Action<bool> setModified = (modified) => { };
-            var handlers = new OptionsFormBrowserHandlers(mockForm.Object, settings, mBrowser, mProtocols, null, setModified);
-            var sender = new object();
-            var e = new EventArgs();
-
-            // Act & Assert
-            var action = () => handlers.AddBrowser_Click(sender, e);
-            action.Should().NotThrow();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void AddBrowser_Click_WithEmptyProtocols_ShouldHandleGracefully()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var settings = new Settings();
-            var mBrowser = new Dictionary<int, Browser>();
-            var mProtocols = new Dictionary<int, Protocol>();
-            var imBrowserIcons = new ImageList();
-            Action<bool> setModified = (modified) => { };
-            var handlers = new OptionsFormBrowserHandlers(mockForm.Object, settings, mBrowser, mProtocols, imBrowserIcons, setModified);
-            var sender = new object();
-            var e = new EventArgs();
-
-            // Act & Assert
-            var action = () => handlers.AddBrowser_Click(sender, e);
-            action.Should().NotThrow();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void AddBrowser_Click_WithExistingProtocols_ShouldHandleGracefully()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var settings = new Settings();
-            var mBrowser = new Dictionary<int, Browser>();
-            var mProtocols = new Dictionary<int, Protocol>
-            {
-                { 1, new Protocol { Name = "http", Header = "http://" } }
-            };
-            var imBrowserIcons = new ImageList();
-            Action<bool> setModified = (modified) => { };
-            var handlers = new OptionsFormBrowserHandlers(mockForm.Object, settings, mBrowser, mProtocols, imBrowserIcons, setModified);
-            var sender = new object();
-            var e = new EventArgs();
-
-            // Act & Assert
-            var action = () => handlers.AddBrowser_Click(sender, e);
-            action.Should().NotThrow();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void AddBrowser_Click_WithNullDictionaries_ShouldHandleGracefully()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var settings = new Settings();
-            var imBrowserIcons = new ImageList();
-            Action<bool> setModified = (modified) => { };
-            var handlers = new OptionsFormBrowserHandlers(mockForm.Object, settings, null!, null!, imBrowserIcons, setModified);
-            var sender = new object();
-            var e = new EventArgs();
-
-            // Act & Assert
-            var action = () => handlers.AddBrowser_Click(sender, e);
-            action.Should().NotThrow();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void AddBrowser_Click_WithNullSettings_ShouldHandleGracefully()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var mBrowser = new Dictionary<int, Browser>();
-            var mProtocols = new Dictionary<int, Protocol>();
-            var imBrowserIcons = new ImageList();
-            Action<bool> setModified = (modified) => { };
-            var handlers = new OptionsFormBrowserHandlers(mockForm.Object, null!, mBrowser, mProtocols, imBrowserIcons, setModified);
-            var sender = new object();
-            var e = new EventArgs();
-
-            // Act & Assert
-            var action = () => handlers.AddBrowser_Click(sender, e);
-            action.Should().NotThrow();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void AddBrowser_Click_WithNullForm_ShouldHandleGracefully()
-        {
-            // Arrange
-            var settings = new Settings();
-            var mBrowser = new Dictionary<int, Browser>();
-            var mProtocols = new Dictionary<int, Protocol>();
-            var imBrowserIcons = new ImageList();
-            Action<bool> setModified = (modified) => { };
-            var handlers = new OptionsFormBrowserHandlers(null!, settings, mBrowser, mProtocols, imBrowserIcons, setModified);
-            var sender = new object();
-            var e = new EventArgs();
-
-            // Act & Assert
-            var action = () => handlers.AddBrowser_Click(sender, e);
-            action.Should().NotThrow();
-        }
+        #endregion
     }
 }
