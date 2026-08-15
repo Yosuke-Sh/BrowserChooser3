@@ -2,16 +2,37 @@ using FluentAssertions;
 using Xunit;
 using BrowserChooser3.Classes.Services.BrowserServices;
 using BrowserChooser3.Classes.Models;
+using BrowserChooser3.Tests.TestHelpers.Fixtures;
 using System.IO;
 
 namespace BrowserChooser3.Tests
 {
     /// <summary>
     /// BrowserDetectorクラスの単体テスト
-    /// ガバレッジ100%を目指して全メソッドをテストします
     /// </summary>
-    public class BrowserDetectorTests
+    /// <remarks>
+    /// <see cref="BrowserDetector.DetectedBrowsers"/> はプロセス寿命の static List で、
+    /// <see cref="BrowserDetector.DetectBrowsers"/> は呼び出しのたびにこれを Clear
+    /// してから再構築する。他テストクラスと並列に走ると競合するため、
+    /// <see cref="BrowserDetectorStateCollection"/> で直列化する
+    /// （11件が「並列実行時の競合を避けるためスキップ」として無効化されていたのを解消）。
+    /// 各テストは実行前後で <see cref="BrowserDetector.DetectedBrowsers"/> のスナップショットを
+    /// 取り、終了時に復元することで、他テストへの汚染を防ぐ。
+    /// </remarks>
+    [Collection(BrowserDetectorStateCollection.Name)]
+    public class BrowserDetectorTests : IDisposable
     {
+        private readonly List<Browser> _snapshot = new(BrowserDetector.DetectedBrowsers);
+
+        /// <summary>
+        /// テスト開始時点の状態へ <see cref="BrowserDetector.DetectedBrowsers"/> を復元します。
+        /// </summary>
+        public void Dispose()
+        {
+            BrowserDetector.DetectedBrowsers.Clear();
+            BrowserDetector.DetectedBrowsers.AddRange(_snapshot);
+        }
+
         [Fact]
         public void DetectBrowsers_ShouldReturnListOfBrowsers()
         {
@@ -48,7 +69,7 @@ namespace BrowserChooser3.Tests
             browsers.Should().BeOfType<List<Browser>>();
         }
 
-        [Fact(Skip = "並列実行時の競合を避けるためスキップ")]
+        [Fact]
         public void AddCustomBrowser_WithValidPath_ShouldAddBrowser()
         {
             // Arrange
@@ -86,7 +107,7 @@ namespace BrowserChooser3.Tests
             }
         }
 
-        [Fact(Skip = "並列実行時の競合を避けるためスキップ")]
+        [Fact]
         public void AddCustomBrowser_WithInvalidPath_ShouldNotAddBrowser()
         {
             // Arrange
@@ -100,7 +121,7 @@ namespace BrowserChooser3.Tests
             BrowserDetector.DetectedBrowsers.Count.Should().Be(initialCount);
         }
 
-        [Fact(Skip = "並列実行時の競合を避けるためスキップ")]
+        [Fact]
         public void AddCustomBrowser_WithEmptyPath_ShouldNotAddBrowser()
         {
             // Arrange
@@ -128,7 +149,7 @@ namespace BrowserChooser3.Tests
             BrowserDetector.DetectedBrowsers.Count.Should().BeLessThanOrEqualTo(initialCount + 1);
         }
 
-        [Fact(Skip = "並列実行時の競合を避けるためスキップ")]
+        [Fact]
         public void AddCustomBrowser_WithEmptyArguments_ShouldAddBrowserWithEmptyArguments()
         {
             // Arrange
@@ -167,7 +188,7 @@ namespace BrowserChooser3.Tests
             }
         }
 
-        [Fact(Skip = "並列実行時の競合を避けるためスキップ")]
+        [Fact]
         public void AddCustomBrowser_WithNullArguments_ShouldAddBrowserWithNullArguments()
         {
             // Arrange
@@ -203,7 +224,7 @@ namespace BrowserChooser3.Tests
             }
         }
 
-        [Fact(Skip = "並列実行時の競合を避けるためスキップ")]
+        [Fact]
         public void AddCustomBrowser_WithEmptyName_ShouldAddBrowserWithEmptyName()
         {
             // Arrange
@@ -242,7 +263,7 @@ namespace BrowserChooser3.Tests
             }
         }
 
-        [Fact(Skip = "並列実行時の競合を避けるためスキップ")]
+        [Fact]
         public void AddCustomBrowser_WithNullName_ShouldAddBrowserWithNullName()
         {
             // Arrange
@@ -316,7 +337,7 @@ namespace BrowserChooser3.Tests
             result1.Should().BeSameAs(BrowserDetector.DetectedBrowsers);
         }
 
-        [Fact(Skip = "並列実行時の競合を避けるためスキップ")]
+        [Fact]
         public void BrowserProperties_ShouldBeSetCorrectly()
         {
             // Arrange
@@ -364,7 +385,7 @@ namespace BrowserChooser3.Tests
             }
         }
 
-        [Fact(Skip = "並列実行時の競合を避けるためスキップ")]
+        [Fact]
         public void DetectBrowsers_ShouldReturnSameInstanceAfterAddingCustomBrowser()
         {
             // Arrange
@@ -453,7 +474,7 @@ namespace BrowserChooser3.Tests
             action.Should().NotThrow();
         }
 
-        [Fact(Skip = "並列実行時の競合を避けるためスキップ（DetectedBrowsersは静的な共有状態のため、他テストクラスとの並列実行で件数が変動しうる）")]
+        [Fact]
         public void DetectBrowsers_CalledMultipleTimes_ShouldNotAccumulateDuplicates()
         {
             // Arrange
@@ -469,7 +490,7 @@ namespace BrowserChooser3.Tests
             secondResult.Count.Should().Be(firstCount);
         }
 
-        [Fact(Skip = "並列実行時の競合を避けるためスキップ（DetectedBrowsersは静的な共有状態のため、他テストクラスとの並列実行でCollection was modifiedが発生しうる）")]
+        [Fact]
         public void DetectBrowsers_ShouldNotDetectVivaldiWithLiteralUsernamePlaceholder()
         {
             // Arrange: Vivaldiのパス解決を%USERNAME%の文字列展開からEnvironment.SpecialFolder.LocalApplicationData

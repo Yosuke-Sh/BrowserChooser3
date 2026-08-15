@@ -70,10 +70,13 @@ namespace BrowserChooser3.Tests
             result.Should().BeNull("テスト環境ではフォーム表示をスキップしてnullを返すため");
         }
 
-        [Fact(Skip = "IconSelectionFormでメモリアクセス違反が発生するためスキップ")]
+        [Fact]
         public void ShowIconSelectionForm_WithNullPath_ShouldHandleGracefully()
         {
             // Arrange
+            // テスト環境ガード（IsTestEnvironment()）がfilePathに触れる前に早期returnするため、
+            // 実際にIconSelectionFormを構築することはない。以前のメモリアクセス違反は
+            // このガードが無かった当時の実装に起因すると見られ、現在は解消済み。
             string? nullPath = null;
 
             // Act
