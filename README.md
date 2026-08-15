@@ -1,6 +1,6 @@
 # BrowserChooser3
 
-![.NET](https://img.shields.io/badge/.NET-8.0-blue)
+![.NET](https://img.shields.io/badge/.NET-10.0-blue)
 ![Platform](https://img.shields.io/badge/Platform-Windows-lightgrey)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
@@ -55,7 +55,7 @@ BrowserChooser3は、Windows環境で複数のブラウザから選択してURL�
 ## 📋 システム要件
 
 - **OS**: Windows 10/11
-- **.NET**: .NET 8.0 Runtime
+- **.NET**: .NET 10.0 Desktop Runtime
 - **アーキテクチャ**: x64
 
 ## 🛠️ インストール
@@ -64,8 +64,8 @@ BrowserChooser3は、Windows環境で複数のブラウザから選択してURL�
 1. [Releases](https://github.com/Yosuke-Sh/BrowserChooser3/releases)ページから最新版をダウンロード
 2. `BrowserChooser3-v0.1.3.zip`をダウンロード
 3. ZIPファイルを展開して任意のフォルダに配置
-4. `.NET 8.0 Runtime`をインストール（未インストールの場合）
-   - [.NET 8.0 Runtime ダウンロード](https://dotnet.microsoft.com/download/dotnet/8.0)
+4. `.NET 10.0 Desktop Runtime`をインストール（未インストールの場合。インストーラー版は未インストール時に自動でダウンロード・インストールします）
+   - [.NET 10.0 Desktop Runtime ダウンロード](https://dotnet.microsoft.com/download/dotnet/10.0)
 5. `BrowserChooser3.exe`をダブルクリックして起動
 
 ### 🔧 ビルド（開発者向け）
@@ -167,7 +167,7 @@ A: オプション画面の「Browsers」タブで手動でブラウザを追加
 A: Windowsの透明化設定が有効になっているか確認してください。また、グラフィックドライバーが最新か確認してください。
 
 **Q: アプリケーションが起動しません**
-A: .NET 8.0 Runtimeがインストールされているか確認してください。
+A: .NET 10.0 Desktop Runtimeがインストールされているか確認してください。
 
 **Q: デフォルトブラウザの設定ができません**
 A: Windows 11では「Windows Default」タブのガイダンスに従って、Windowsの設定画面から設定してください。
@@ -182,7 +182,7 @@ A: Windows 11では「Windows Default」タブのガイダンスに従って、W
 ### 開発環境のセットアップ
 1. リポジトリをクローン
 2. Visual Studio 2022またはVS Codeでプロジェクトを開く
-3. .NET 8.0 SDKをインストール
+3. .NET 10.0 SDKをインストール
 4. プロジェクトをビルド
 
 ### テストの実行

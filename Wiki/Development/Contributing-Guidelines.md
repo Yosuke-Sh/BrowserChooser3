@@ -34,8 +34,8 @@ BrowserChooser3プロジェクトへの貢献をありがとうございます�
 # Gitのインストール
 # https://git-scm.com/download/win
 
-# .NET 8.0 SDKのインストール
-# https://dotnet.microsoft.com/download/dotnet/8.0
+# .NET 10.0 SDKのインストール
+# https://dotnet.microsoft.com/download/dotnet/10.0
 
 # Visual Studio 2022（推奨）
 # https://visualstudio.microsoft.com/

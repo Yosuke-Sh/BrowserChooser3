@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## プロジェクト概要
 
-BrowserChooser3は、Windows Forms（.NET 8.0、`net8.0-windows`）ベースのデスクトップアプリケーションで、ユーザーが指定したURLをどのブラウザで開くかを選択させるツールです。Browser Chooser 2の後継。設定はXML（`BrowserChooser3Config.xml`）で`%APPDATA%\BrowserChooser3`配下に保存されます。v0.1.4でポータブルモード機能（`UseExeDirectory`等）は完全に削除され、インストーラー版のみの配布に一本化されています。
+BrowserChooser3は、Windows Forms（.NET 10.0、`net10.0-windows`）ベースのデスクトップアプリケーションで、ユーザーが指定したURLをどのブラウザで開くかを選択させるツールです。Browser Chooser 2の後継。設定はXML（`BrowserChooser3Config.xml`）で`%APPDATA%\BrowserChooser3`配下に保存されます。v0.1.4でポータブルモード機能（`UseExeDirectory`等）は完全に削除され、インストーラー版のみの配布に一本化されています。
 
 ## よく使うコマンド
 
@@ -32,6 +32,9 @@ reportgenerator -reports:"BrowserChooser3.Tests\TestResults\*\coverage.cobertura
 # coverage-report/index.html を確認する
 
 # インストーラー作成（Inno Setup 6が必要）
+# build-inno-setup.bat内部では `dotnet publish BrowserChooser3/BrowserChooser3.csproj -c Release -r win-x64 --self-contained false`
+# （PublishReadyToRun=true）でReadyToRun最適化されたインストーラー用出力を生成する。
+# 通常の開発用ビルド・テスト・実行（dotnet build/dotnet test/dotnet run）はこれまで通り変更なし。
 .\build-inno-setup.bat
 ```
 

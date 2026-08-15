@@ -7,7 +7,7 @@
 ### 最小要件
 - **オペレーティングシステム**: Windows 10（バージョン1903以降）またはWindows 11
 - **アーキテクチャ**: x64（64ビット）
-- **.NETランタイム**: .NET 8.0 Runtime
+- **.NETランタイム**: .NET 10.0 Desktop Runtime
 - **RAM**: 100 MBの利用可能メモリ
 - **ストレージ**: 50 MBの空きディスク容量
 
@@ -42,11 +42,11 @@ dotnet build --configuration Release
 
 ## 🛠️ インストール手順
 
-### ステップ1: .NET 8.0 Runtimeのインストール
-BrowserChooser3の実行には.NET 8.0 Runtimeが必要です。
+### ステップ1: .NET 10.0 Desktop Runtimeのインストール
+BrowserChooser3の実行には.NET 10.0 Desktop Runtimeが必要です。インストーラー版（`BrowserChooser3-Setup.exe`）は未インストール時に自動でダウンロード・インストールするため、通常は手動でのインストール操作は不要です。
 
-1. [Microsoft .NET ダウンロード](https://dotnet.microsoft.com/download/dotnet/8.0)にアクセス
-2. Windows x64用の**.NET 8.0 Runtime**（SDKではない）をダウンロード
+1. [Microsoft .NET ダウンロード](https://dotnet.microsoft.com/download/dotnet/10.0)にアクセス
+2. Windows x64用の**.NET 10.0 Desktop Runtime**（SDKではない）をダウンロード
 3. インストーラーを実行し、セットアップウィザードに従う
 4. プロンプトが表示されたらコンピューターを再起動
 
@@ -134,7 +134,7 @@ BrowserChooser3.exe https://www.google.com
 ### よくある問題
 
 **問題: "アプリケーションの開始に失敗しました"**
-- **解決策**: .NET 8.0 Runtimeをインストール
+- **解決策**: .NET 10.0 Desktop Runtimeをインストール（インストーラー版は自動でインストールを試みます）
 - **確認**: `dotnet --version`で.NETインストールを確認
 
 **問題: "ファイルが見つかりません"エラー**

@@ -106,7 +106,7 @@ BrowserChooser3.exe https://google.com https://github.com
 ### よくある問題
 
 **問題**: アプリケーションが起動しない
-- **解決策**: .NET 8.0 Runtimeをインストール
+- **解決策**: .NET 10.0 Desktop Runtimeをインストール（インストーラー版は自動でインストールを試みます）
 
 **問題**: ブラウザが検出されない
 - **解決策**: 手動でブラウザを追加

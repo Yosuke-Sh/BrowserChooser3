@@ -6,7 +6,7 @@ BrowserChooser3をソースコードからビルドする方法を説明しま�
 
 ### 必要なソフトウェア
 - **Visual Studio 2022** (Community/Professional/Enterprise)
-- **.NET 8.0 SDK**
+- **.NET 10.0 SDK**
 - **Git**
 
 ### 推奨環境
@@ -16,10 +16,10 @@ BrowserChooser3をソースコードからビルドする方法を説明しま�
 
 ## 🔧 開発環境のセットアップ
 
-### 1. .NET 8.0 SDKのインストール
+### 1. .NET 10.0 SDKのインストール
 ```cmd
-# .NET 8.0 SDKのダウンロード
-# https://dotnet.microsoft.com/download/dotnet/8.0
+# .NET 10.0 SDKのダウンロード
+# https://dotnet.microsoft.com/download/dotnet/10.0
 
 # インストール確認
 dotnet --version
@@ -140,11 +140,11 @@ dotnet test --collect:"XPlat Code Coverage"
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net10.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
-    <Version>0.1.0</Version>
-    <AssemblyVersion>0.1.0.0</AssemblyVersion>
-    <FileVersion>0.1.0.0</FileVersion>
+    <Version>0.1.7</Version>
+    <AssemblyVersion>0.1.7.0</AssemblyVersion>
+    <FileVersion>0.1.7.0</FileVersion>
   </PropertyGroup>
 </Project>
 ```
@@ -171,18 +171,18 @@ dotnet test --collect:"XPlat Code Coverage"
 <!-- BrowserChooser3.Tests.csproj -->
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net10.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
-    <PackageReference Include="xunit" Version="2.6.6" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.5.6" />
-    <PackageReference Include="coverlet.collector" Version="6.0.0" />
-    <PackageReference Include="FluentAssertions" Version="6.12.0" />
-    <PackageReference Include="Moq" Version="4.20.70" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.9.0" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5" />
+    <PackageReference Include="coverlet.collector" Version="6.0.4" />
+    <PackageReference Include="FluentAssertions" Version="8.6.0" />
+    <PackageReference Include="Moq" Version="4.20.72" />
   </ItemGroup>
 </Project>
 ```

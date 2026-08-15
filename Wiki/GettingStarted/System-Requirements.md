@@ -10,9 +10,10 @@ BrowserChooser3を実行するために必要なシステム要件を説明し�
 - **アーキテクチャ**: x64（64ビット）のみ対応
 
 ### ランタイム環境
-- **.NET 8.0 Runtime** (必須)
-  - [Microsoft .NET 8.0 Runtime ダウンロード](https://dotnet.microsoft.com/download/dotnet/8.0)
+- **.NET 10.0 Desktop Runtime** (必須)
+  - [Microsoft .NET 10.0 Desktop Runtime ダウンロード](https://dotnet.microsoft.com/download/dotnet/10.0)
   - デスクトップアプリケーション用ランタイム
+  - インストーラー版は未インストール時に自動でダウンロード・インストールします
 
 ### ハードウェア要件
 - **RAM**: 100 MBの利用可能メモリ
@@ -142,7 +143,7 @@ BrowserChooser3を実行するために必要なシステム要件を説明し�
    winver
    ```
 
-2. **.NET 8.0 Runtime確認**
+2. **.NET 10.0 Desktop Runtime確認**
    ```cmd
    dotnet --list-runtimes
    ```

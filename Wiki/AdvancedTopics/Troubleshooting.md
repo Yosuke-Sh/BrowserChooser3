@@ -13,13 +13,14 @@ BrowserChooser3で発生する可能性のある問題とその解決方法を�
 
 #### 原因と解決策
 
-**1. .NET 8.0 Runtimeがインストールされていない**
+**1. .NET 10.0 Desktop Runtimeがインストールされていない**
 ```cmd
-# .NET 8.0 Runtimeの確認
+# .NET 10.0 Desktop Runtimeの確認
 dotnet --list-runtimes
 
-# インストールされていない場合
-# https://dotnet.microsoft.com/download/dotnet/8.0 からダウンロード
+# インストーラー版（BrowserChooser3-Setup.exe）は未インストール時に自動でダウンロード・インストールします
+# 自動インストールが失敗した場合や手動でインストールする場合は
+# https://dotnet.microsoft.com/download/dotnet/10.0 からダウンロード
 ```
 
 **2. ファイルが破損している**
@@ -87,9 +88,9 @@ reg query "HKEY_CURRENT_USER\Software\Microsoft\Windows\DWM" /v EnableAeroPeek
 # ハードウェアアクセラレーションを有効化
 ```
 
-**3. .NET 8.0の問題**
+**3. .NET 10.0の問題**
 ```cmd
-# .NET 8.0を再インストール
+# .NET 10.0 Desktop Runtimeを再インストール
 # または、アプリケーションを再インストール
 ```
 
@@ -397,7 +398,7 @@ type BrowserChooser3Config.xml
 #### 基本情報
 - **OS**: Windows 10/11のバージョン
 - **アプリケーション**: BrowserChooser3のバージョン
-- **.NET**: .NET 8.0のバージョン
+- **.NET**: .NET 10.0のバージョン
 - **アーキテクチャ**: x64/x86
 
 #### 問題の詳細
@@ -444,7 +445,7 @@ copy BrowserChooser3Config.xml BrowserChooser3Config_backup.xml
 ```cmd
 # Windows Updateを定期的に実行
 # グラフィックドライバーを更新
-# .NET 8.0を最新版に更新
+# .NET 10.0を最新版に更新
 ```
 
 ### パフォーマンス最適化

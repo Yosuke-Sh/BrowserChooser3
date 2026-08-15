@@ -16,7 +16,7 @@ BrowserChooser3.exe --log
 ### システム要件の確認
 システムが最小要件を満たしていることを確認してください：
 - Windows 10（1903以降）またはWindows 11
-- .NET 8.0 Runtimeがインストール済み
+- .NET 10.0 Desktop Runtimeがインストール済み
 - x64アーキテクチャ
 - 100 MBの利用可能RAM
 
@@ -27,16 +27,17 @@ BrowserChooser3.exe --log
 #### 問題: "アプリケーションの開始に失敗しました"または".NET Frameworkが見つかりません"
 **症状**: .NETが見つからないエラーメッセージまたはアプリケーションが起動しない
 **解決策**:
-1. **.NET 8.0 Runtimeをインストール**:
-   - [Microsoft .NET ダウンロード](https://dotnet.microsoft.com/download/dotnet/8.0)からダウンロード
-   - Windows x64用の"Runtime"（SDKではない）を選択
+1. **.NET 10.0 Desktop Runtimeをインストール**:
+   - インストーラー版（`BrowserChooser3-Setup.exe`）は未インストール時に自動でダウンロード・インストールします
+   - 手動でインストールする場合は[Microsoft .NET ダウンロード](https://dotnet.microsoft.com/download/dotnet/10.0)からダウンロード
+   - Windows x64用の"Desktop Runtime"（SDKではない）を選択
    - インストーラーを実行し、コンピューターを再起動
 
 2. **インストールを確認**:
    ```bash
    dotnet --version
    ```
-   バージョン8.0.xが表示されるはずです
+   バージョン10.0.xが表示されるはずです
 
 3. **アーキテクチャを確認**:
    - x64バージョンをダウンロードしたことを確認
@@ -76,7 +77,7 @@ BrowserChooser3.exe --log
    - 異なる角の丸みでテスト
 
 4. **.NETバージョンを確認**:
-   - .NET 8.0がインストールされていることを確認
+   - .NET 10.0がインストールされていることを確認
    - 必要に応じて.NETを再インストール
 
 #### 問題: 角の丸みがギザギザに見える
@@ -252,7 +253,7 @@ Dependency Walkerを使用して不足しているDLLを確認：
 ### 含めるべき情報
 問題を報告する際は、以下を含めてください：
 - **Windowsバージョン**: Windows 10/11バージョン
-- **.NETバージョン**: `dotnet --version`の出力
+- **.NETバージョン**: `dotnet --version`の出力（10.0.x）
 - **エラーメッセージ**: 正確なエラーテキスト
 - **再現手順**: 問題を引き起こす方法
 - **ログファイル**: 関連するログエントリ

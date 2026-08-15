@@ -1,8 +1,8 @@
 # BrowserChooser3 技術スタック
 
 ## フレームワーク・ランタイム
-- **.NET**: 8.0
-- **ターゲットフレームワーク**: net8.0-windows
+- **.NET**: 10.0
+- **ターゲットフレームワーク**: net10.0-windows
 - **アプリケーションタイプ**: Windows Forms デスクトップアプリケーション
 
 ## 主要ライブラリ・パッケージ
@@ -125,7 +125,7 @@ BrowserChooser3/
 ### 開発環境
 - **IDE**: Visual Studio 2022 / Visual Studio Code
 - **OS**: Windows 10/11
-- **.NET SDK**: 8.0.x
+- **.NET SDK**: 10.0.x
 
 ### テスト環境
 - **テストランナー**: xUnit

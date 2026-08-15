@@ -53,7 +53,7 @@
 
 #### 📋 システム要件
 - Windows 10/11 (x64)
-- .NET 8.0 Runtime
+- .NET 10.0 Desktop Runtime
 - 最小メモリ: 512MB
 - ディスク容量: 50MB
 

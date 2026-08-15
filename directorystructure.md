@@ -197,27 +197,34 @@ BrowserChooser3.Tests/
 ```
 bin/
 ├── Debug/
-│   └── net8.0-windows/               # デバッグビルド
+│   └── net10.0-windows/              # デバッグビルド
 │       ├── BrowserChooser3.exe       # 実行ファイル
 │       ├── BrowserChooser3.dll       # メインDLL
 │       ├── BrowserChooser3Config.xml # 設定ファイル
 │       ├── Logs/                     # ログファイル
 │       └── (依存DLL)
 └── Release/
-    └── net8.0-windows/               # リリースビルド
+    └── net10.0-windows/              # リリースビルド
         ├── BrowserChooser3.exe       # 実行ファイル
         ├── BrowserChooser3.dll       # メインDLL
         ├── BrowserChooser3Config.xml # 設定ファイル
-        └── (依存DLL)
+        ├── (依存DLL)
+        └── win-x64/
+            └── publish/               # dotnet publish出力（インストーラー用、ReadyToRun）
+                ├── BrowserChooser3.exe
+                ├── BrowserChooser3.dll
+                └── (依存DLL)
 ```
+
+`bin\Release\net10.0-windows\win-x64\publish\`は`dotnet publish -r win-x64 --self-contained false`（`PublishReadyToRun=true`）でのみ生成され、`build-inno-setup.bat`によるインストーラービルド専用の出力です。通常の`dotnet build`/`dotnet build --configuration Release`では`bin\Release\net10.0-windows\`直下にのみ出力されます。
 
 ### obj/ - 中間ファイル
 ```
 obj/
 ├── Debug/
-│   └── net8.0-windows/               # デバッグ中間ファイル
+│   └── net10.0-windows/              # デバッグ中間ファイル
 └── Release/
-    └── net8.0-windows/               # リリース中間ファイル
+    └── net10.0-windows/              # リリース中間ファイル
 ```
 
 ### dist/ - 配布ファイル
