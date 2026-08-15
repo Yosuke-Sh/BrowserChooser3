@@ -36,6 +36,7 @@ namespace BrowserChooser3.Forms
             lblForkedFrom = new Label();
             lblThisVersionHere = new Label();
             lblOriginalVersion = new LinkLabel();
+            llReleases = new LinkLabel();
             tpContrib = new TabPage();
             lblContributors = new Label();
             tpAttributions = new TabPage();
@@ -159,6 +160,7 @@ namespace BrowserChooser3.Forms
             tpInfo.Controls.Add(lblForkedFrom);
             tpInfo.Controls.Add(lblThisVersionHere);
             tpInfo.Controls.Add(lblOriginalVersion);
+            tpInfo.Controls.Add(llReleases);
             tpInfo.Location = new Point(4, 32);
             tpInfo.Name = "tpInfo";
             tpInfo.Padding = new Padding(3);
@@ -195,7 +197,18 @@ namespace BrowserChooser3.Forms
             lblOriginalVersion.TabStop = true;
             lblOriginalVersion.Text = "Browser Chooser 2";
             lblOriginalVersion.LinkClicked += lblOriginalVersion_LinkClicked;
-            // 
+            //
+            // llReleases
+            //
+            llReleases.AutoSize = true;
+            llReleases.Location = new Point(3, 58);
+            llReleases.Name = "llReleases";
+            llReleases.Size = new Size(120, 23);
+            llReleases.TabIndex = 3;
+            llReleases.TabStop = true;
+            llReleases.Text = "GitHub Releases";
+            llReleases.LinkClicked += llReleases_LinkClicked;
+            //
             // tpContrib
             // 
             tpContrib.Controls.Add(lblContributors);
@@ -356,6 +369,7 @@ namespace BrowserChooser3.Forms
         private System.Windows.Forms.Label lblForkedFrom = null!;
         private System.Windows.Forms.Label lblThisVersionHere = null!;
         private System.Windows.Forms.LinkLabel lblOriginalVersion = null!;
+        private System.Windows.Forms.LinkLabel llReleases = null!;
         private System.Windows.Forms.Button OKButton = null!;
          
 
@@ -538,6 +552,14 @@ namespace BrowserChooser3.Forms
         private void llSebCboLb_LinkClicked(object? sender, System.Windows.Forms.LinkLabelLinkClickedEventArgs e)
         {
             OpenExternalLink("https://github.com/Yosuke-Sh/BrowserChooser3/graphs/contributors", nameof(llSebCboLb_LinkClicked));
+        }
+
+        /// <summary>
+        /// GitHub Releasesリンクのクリックイベント
+        /// </summary>
+        private void llReleases_LinkClicked(object? sender, System.Windows.Forms.LinkLabelLinkClickedEventArgs e)
+        {
+            OpenExternalLink("https://github.com/Yosuke-Sh/BrowserChooser3/releases", nameof(llReleases_LinkClicked));
         }
 
         /// <summary>
