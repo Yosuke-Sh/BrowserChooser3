@@ -2,6 +2,7 @@ using FluentAssertions;
 using Xunit;
 using BrowserChooser3.Classes.Utilities;
 using BrowserChooser3.Classes.Models;
+using BrowserChooser3.Tests.TestHelpers.Fixtures;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -10,33 +11,32 @@ namespace BrowserChooser3.Tests
 {
     /// <summary>
     /// ImageUtilitiesクラスの単体テスト
-    /// ガバレッジ100%を目指して全メソッドをテストします
     /// </summary>
+    /// <remarks>
+    /// 以前は %TEMP%\test_image.png という固定パスを使っており、
+    /// xUnitが同クラスのテストを並列実行した際に互いのファイルを削除し合っていた。
+    /// TempDirectoryFixtureでテストごとに一意なディレクトリへ隔離する。
+    /// </remarks>
     public class ImageUtilitiesTests : IDisposable
     {
+        private readonly TempDirectoryFixture _tempDir;
         private readonly string _testImagePath;
         private readonly string _testOutputPath;
 
         public ImageUtilitiesTests()
         {
-            _testImagePath = Path.Combine(Path.GetTempPath(), "test_image.png");
-            _testOutputPath = Path.Combine(Path.GetTempPath(), "test_output.png");
-            
+            _tempDir = new TempDirectoryFixture();
+            _testImagePath = _tempDir.GetFilePath("test_image.png");
+            _testOutputPath = _tempDir.GetFilePath("test_output.png");
+
             // テスト用画像を作成
             CreateTestImage();
         }
 
         public void Dispose()
         {
-            // テスト用ファイルをクリーンアップ
-            if (File.Exists(_testImagePath))
-            {
-                File.Delete(_testImagePath);
-            }
-            if (File.Exists(_testOutputPath))
-            {
-                File.Delete(_testOutputPath);
-            }
+            // 一時ディレクトリごとまとめて削除される
+            _tempDir.Dispose();
         }
 
         private void CreateTestImage()

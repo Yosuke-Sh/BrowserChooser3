@@ -4,6 +4,7 @@ using BrowserChooser3.Classes;
 using BrowserChooser3.Classes.Models;
 using BrowserChooser3.Classes.Services.SystemServices;
 using BrowserChooser3.Classes.Utilities;
+using BrowserChooser3.Tests.TestHelpers.Fixtures;
 using System.IO;
 using System.Xml.Serialization;
 using System.Windows.Forms;
@@ -12,8 +13,14 @@ namespace BrowserChooser3.Tests
 {
     /// <summary>
     /// Settingsクラスの単体テスト
-    /// ガバレッジ100%を目指して全メソッド・プロパティをテストします
     /// </summary>
+    /// <remarks>
+    /// PathManager.ConfigDirectoryOverrideForTests はプロセス全体で共有されるstaticのため、
+    /// このクラスが設定ディレクトリをリダイレクトしている最中に他クラスが並行して
+    /// Settings.Load()を呼ぶと、そちらが誤って一時ディレクトリを見てしまう。
+    /// 実設定ファイル・Settings.Currentに触れるクラスを同一コレクションへ集約して直列化する。
+    /// </remarks>
+    [Collection(SettingsStateCollection.Name)]
     public class SettingsTests : IDisposable
     {
         private readonly string _testConfigPath;
@@ -29,29 +36,24 @@ namespace BrowserChooser3.Tests
         private static readonly System.Threading.Mutex RealConfigFileMutex =
             new System.Threading.Mutex(false, "Local\\BrowserChooser3Tests_RealConfigFile");
 
+        private readonly TempDirectoryFixture _tempDir;
+
         public SettingsTests()
         {
-            _testConfigPath = Path.Combine(Path.GetTempPath(), "BrowserChooser3Tests");
+            // 以前は %TEMP%\BrowserChooser3Tests という固定パスを作り、Disposeで
+            // Directory.Delete(recursive: true) していた。テストごとに新しいクラス
+            // インスタンスが作られるため、並行実行時に他のテストが使用中の
+            // ディレクトリを消してしまっていた（GDI+エラーの原因）。
+            // テストごとに一意なディレクトリへ隔離する。
+            _tempDir = new TempDirectoryFixture();
+            _testConfigPath = _tempDir.Path;
             _testConfigFile = Path.Combine(_testConfigPath, Settings.BrowserChooserConfigFileName);
-            
-            // テスト用ディレクトリを作成
-            if (!Directory.Exists(_testConfigPath))
-            {
-                Directory.CreateDirectory(_testConfigPath);
-            }
         }
 
         public void Dispose()
         {
-            // テスト用ファイルをクリーンアップ
-            if (File.Exists(_testConfigFile))
-            {
-                File.Delete(_testConfigFile);
-            }
-            if (Directory.Exists(_testConfigPath))
-            {
-                Directory.Delete(_testConfigPath, true);
-            }
+            // 一時ディレクトリごとまとめて削除される
+            _tempDir.Dispose();
         }
 
         #region コンストラクタテスト
@@ -483,13 +485,9 @@ namespace BrowserChooser3.Tests
         // （テスト専用のinternalシーム）でテストごとに一意な一時ディレクトリへ
         // リダイレクトし、他のテストと完全に分離する。
         //
-        // 注意: ConfigDirectoryOverrideForTestsはプロセス全体で共有されるstaticな値のため、
-        // このテストが値を設定している間に他のテストクラスが並行してSettings.Load()を
-        // 呼ぶと、そちらの呼び出しが誤ってこの一時ディレクトリを見てしまう可能性が
-        // 理論上残る（逆に実ファイルを壊すことはない）。RealConfigFileMutexで
-        // 同一クラス内の競合は排除できるが、他クラスとの競合の完全排除には
-        // Settings.Load全体をテスト用に注入可能にするリファクタが必要で、
-        // これはPhase 4のテスト基盤整備の範囲とする。
+        // ConfigDirectoryOverrideForTestsはプロセス全体で共有されるstaticな値のため、
+        // 同一クラス内の競合はRealConfigFileMutexで、他クラスとの競合は
+        // クラス属性の[Collection(SettingsStateCollection.Name)]による直列化で排除している。
 
         [Fact]
         public void Load_CorruptedConfigFile_ShouldQuarantineFileAndEnableSafeMode()

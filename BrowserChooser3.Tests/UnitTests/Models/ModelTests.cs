@@ -463,32 +463,64 @@ namespace BrowserChooser3.Tests
         }
         #endregion
 
-        #region メモリテスト
+        #region Cloneテスト
+
+        // 以前ここには Browser_Clone_ShouldNotLeakMemory があったが、
+        // GC.GetTotalMemory() はプロセス全体の値を返すため、並行実行中の
+        // 他テストのアロケーションを拾って低頻度で失敗していた（Phase 1から既知）。
+        // かつ Clone の振る舞いを何も検証していなかったため、
+        // 「独立したコピーが返ること」を実際に確かめるテストへ置き換える。
 
         [Fact]
-        public void Browser_Clone_ShouldNotLeakMemory()
+        public void Clone_ShouldReturnIndependentCopy()
         {
             // Arrange
-            var browser = new Browser
+            var original = new Browser
             {
                 Name = "Test Browser",
                 Target = "C:\\test\\browser.exe",
                 Arguments = "--test-arg"
             };
-            var initialMemory = GC.GetTotalMemory(true);
 
             // Act
-            for (int i = 0; i < 10000; i++)
-            {
-                browser.Clone();
-            }
-
-            GC.Collect();
-            var finalMemory = GC.GetTotalMemory(true);
+            var clone = original.Clone();
+            clone.Name = "Renamed";
+            clone.Arguments = "--changed";
 
             // Assert
-            var memoryIncrease = finalMemory - initialMemory;
-            memoryIncrease.Should().BeLessThan(1024 * 1024); // 1MB以内
+            clone.Should().NotBeSameAs(original);
+            original.Name.Should().Be("Test Browser", "クローンへの変更は元に波及しない");
+            original.Arguments.Should().Be("--test-arg");
+        }
+
+        [Fact]
+        public void Clone_ShouldCopyAllValues()
+        {
+            // Arrange
+            var original = new Browser
+            {
+                Name = "Test Browser",
+                Target = "C:\\test\\browser.exe",
+                Arguments = "--test-arg",
+                Hotkey = 'K',
+                ProfileName = "Work",
+                UsePrivateMode = true,
+                X = 3,
+                Y = 4
+            };
+
+            // Act
+            var clone = original.Clone();
+
+            // Assert
+            clone.Name.Should().Be(original.Name);
+            clone.Target.Should().Be(original.Target);
+            clone.Arguments.Should().Be(original.Arguments);
+            clone.Hotkey.Should().Be(original.Hotkey);
+            clone.ProfileName.Should().Be(original.ProfileName);
+            clone.UsePrivateMode.Should().Be(original.UsePrivateMode);
+            clone.X.Should().Be(original.X);
+            clone.Y.Should().Be(original.Y);
         }
         #endregion
     }

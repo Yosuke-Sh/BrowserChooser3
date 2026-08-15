@@ -1,6 +1,7 @@
 using System.Configuration;
 using System.Text;
 using BrowserChooser3.Classes.Utilities;
+using BrowserChooser3.Tests.TestHelpers.Fixtures;
 using FluentAssertions;
 using Xunit;
 
@@ -9,22 +10,28 @@ namespace BrowserChooser3.Tests
     /// <summary>
     /// Loggerクラスのテスト
     /// </summary>
+    /// <remarks>
+    /// Logger.CurrentLogLevelと内部の初期化済みフラグはstaticなので、
+    /// 同じ状態に触れるProgramTests（StartupLauncherSharedStateに所属）と
+    /// 同一コレクションにまとめて直列化する。
+    /// </remarks>
+    [Collection("StartupLauncherSharedState")]
     public class LoggerTests : IDisposable
     {
         private readonly string _originalLogLevel;
-        private readonly Logger.LogLevel _originalCurrentLogLevel;
+        private readonly LoggerFixture _loggerState;
 
         public LoggerTests()
         {
-            // テスト前の状態を保存
-            _originalCurrentLogLevel = Logger.CurrentLogLevel;
+            // テスト前の状態を保存（ログレベルと初期化済みフラグの両方）
+            _loggerState = new LoggerFixture();
             _originalLogLevel = ConfigurationManager.AppSettings["LogLevel"] ?? "";
         }
 
         public void Dispose()
         {
             // テスト後の状態を復元
-            Logger.CurrentLogLevel = _originalCurrentLogLevel;
+            _loggerState.Dispose();
         }
 
         #region コンストラクタ・プロパティテスト
@@ -494,6 +501,49 @@ namespace BrowserChooser3.Tests
                 Task.WaitAll(tasks.ToArray());
             };
             action.Should().NotThrow();
+        }
+
+        #endregion
+
+        #region LoggerFixture（テスト分離基盤）のテスト
+
+        [Fact]
+        public void LoggerFixture_Dispose_ShouldRestoreLogLevel()
+        {
+            // Arrange
+            var original = Logger.CurrentLogLevel;
+            var different = original == Logger.LogLevel.Trace
+                ? Logger.LogLevel.Error
+                : Logger.LogLevel.Trace;
+
+            // Act
+            using (var fixture = new LoggerFixture())
+            {
+                fixture.SetLevel(different);
+                Logger.CurrentLogLevel.Should().Be(different);
+            }
+
+            // Assert
+            Logger.CurrentLogLevel.Should().Be(original);
+        }
+
+        [Fact]
+        public void LoggerFixture_Dispose_ShouldRestoreInitializedFlag()
+        {
+            // Arrange
+            var originalFlag = Logger.IsLogLevelInitializedForTests;
+
+            // Act
+            // InitializeLogLevelは初期化済みフラグを立てる。Disposeでそれも戻ること。
+            // これが戻らないと「InitializeLogLevelを呼んだ後の状態」が後続テストへ漏れる。
+            using (var fixture = new LoggerFixture())
+            {
+                Logger.InitializeLogLevel();
+                Logger.IsLogLevelInitializedForTests.Should().BeTrue();
+            }
+
+            // Assert
+            Logger.IsLogLevelInitializedForTests.Should().Be(originalFlag);
         }
 
         #endregion

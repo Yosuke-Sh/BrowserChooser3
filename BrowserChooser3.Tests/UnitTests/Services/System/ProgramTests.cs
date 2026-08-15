@@ -1,6 +1,7 @@
 using BrowserChooser3.Classes;
 using BrowserChooser3.Classes.Utilities;
 using BrowserChooser3.Classes.Services.SystemServices;
+using BrowserChooser3.Tests.TestHelpers.Fixtures;
 using FluentAssertions;
 using Xunit;
 
@@ -29,11 +30,18 @@ namespace BrowserChooser3.Tests
         [Fact]
         public void Program_LoggerInitialization_ShouldWorkCorrectly()
         {
-            // Arrange & Act
+            // Arrange
+            // Logger.CurrentLogLevelはstaticであり、LoggerTestsが先に走ると
+            // 別の値が残ったままになる。フィクスチャで退避・復元して順序依存を断つ。
+            using var loggerState = new LoggerFixture();
+            loggerState.SetLevel(Logger.LogLevel.Trace);
+
+            // Act
             Logger.InitializeLogLevel();
 
             // Assert
-            Logger.CurrentLogLevel.Should().Be(Logger.LogLevel.Warning); // 実際のデフォルト値
+            // app.configにLogLevel指定が無いため、既定のWarningへ落ち着く
+            Logger.CurrentLogLevel.Should().Be(Logger.LogLevel.Warning);
         }
 
         [Fact]

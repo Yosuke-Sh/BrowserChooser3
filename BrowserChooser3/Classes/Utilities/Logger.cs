@@ -453,5 +453,24 @@ namespace BrowserChooser3.Classes.Utilities
             // 初期化完了後にログ出力
             LogInfo("Logger.InitializeLogLevel", "ログレベルを設定しました", CurrentLogLevel.ToString());
         }
+
+        /// <summary>
+        /// テスト専用：ログレベルの初期化状態を取得します。
+        /// LoggerFixtureがテスト間で状態を退避・復元するために使用します。
+        /// </summary>
+        internal static bool IsLogLevelInitializedForTests => _isLogLevelInitialized;
+
+        /// <summary>
+        /// テスト専用：ログレベルと初期化フラグを指定の状態へ復元します。
+        /// InitializeLogLevel()は「一度初期化したら再初期化しない」ことを前提とした
+        /// staticフラグを持つため、これを戻さないとテストの実行順で結果が変わる。
+        /// </summary>
+        /// <param name="level">復元するログレベル</param>
+        /// <param name="isInitialized">復元する初期化済みフラグ</param>
+        internal static void RestoreLogLevelStateForTests(LogLevel level, bool isInitialized)
+        {
+            CurrentLogLevel = level;
+            _isLogLevelInitialized = isInitialized;
+        }
     }
 }

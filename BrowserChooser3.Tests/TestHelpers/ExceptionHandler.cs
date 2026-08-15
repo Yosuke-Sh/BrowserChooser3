@@ -36,26 +36,19 @@ namespace BrowserChooser3.Tests
         }
 
         /// <summary>
-        /// STAスレッドエラーを無視してフォームを作成
+        /// フォームを作成します。
         /// </summary>
+        /// <remarks>
+        /// 以前はSTAスレッドエラー時に <c>null!</c> を返しており、呼び出し側の
+        /// <c>if (form != null)</c> ガードによって「フォームの構築に失敗したテスト」が
+        /// そのまま成功として通っていた。構築できないことは検証すべき失敗なので、
+        /// 例外はそのまま伝播させる。
+        /// </remarks>
+        /// <typeparam name="T">作成するフォームの型</typeparam>
+        /// <returns>作成したフォーム</returns>
         public static T CreateFormSafely<T>() where T : Form, new()
         {
-            try
-            {
-                return new T();
-            }
-            catch (InvalidOperationException ex) when (ex.Message.Contains("DragDrop 登録は成功しませんでした"))
-            {
-                // STAスレッドエラーを無視してnullを返す
-                Console.WriteLine("フォーム作成時のSTAスレッドエラーを無視しました: " + ex.Message);
-                return null!;
-            }
-            catch (ThreadStateException ex) when (ex.Message.Contains("OLE が呼び出される前に"))
-            {
-                // STAスレッドエラーを無視してnullを返す
-                Console.WriteLine("フォーム作成時のSTAスレッドエラーを無視しました: " + ex.Message);
-                return null!;
-            }
+            return new T();
         }
 
         /// <summary>
@@ -82,8 +75,13 @@ namespace BrowserChooser3.Tests
         }
 
         /// <summary>
-        /// フォームの破棄を安全に実行
+        /// フォームを破棄します。
         /// </summary>
+        /// <remarks>
+        /// 以前は最後に <c>catch (Exception)</c> があり、破棄処理中のあらゆる不具合を
+        /// 握り潰していた。STAスレッド由来の既知エラーのみ無視し、それ以外は伝播させる。
+        /// </remarks>
+        /// <param name="form">破棄するフォーム</param>
         public static void DisposeFormSafely(Form form)
         {
             if (form == null) return;
@@ -104,11 +102,6 @@ namespace BrowserChooser3.Tests
             {
                 // STAスレッドエラーを無視
                 Console.WriteLine("フォーム破棄時のSTAスレッドエラーを無視しました: " + ex.Message);
-            }
-            catch (Exception ex)
-            {
-                // その他の例外は無視
-                Console.WriteLine("フォーム破棄時のエラーを無視しました: " + ex.Message);
             }
         }
     }

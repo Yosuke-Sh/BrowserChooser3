@@ -3,6 +3,7 @@ using BrowserChooser3.Classes.Interfaces;
 using BrowserChooser3.Classes.Models;
 using BrowserChooser3.Classes.Services.UI;
 using BrowserChooser3.Classes.Utilities;
+using BrowserChooser3.Tests.TestHelpers.Fixtures;
 using FluentAssertions;
 using Moq;
 using System.ComponentModel;
@@ -12,6 +13,11 @@ namespace BrowserChooser3.Tests
     /// <summary>
     /// 例外処理とエラーハンドリングのテスト強化クラス
     /// </summary>
+    /// <remarks>
+    /// Settings.Load()を呼ぶため、設定ディレクトリをリダイレクトするSettingsTestsと
+    /// 並行実行されないよう同一コレクションに参加する。
+    /// </remarks>
+    [Collection(SettingsStateCollection.Name)]
     public class ErrorHandlingTests
     {
         private readonly Mock<IMessageBoxService> _mockMessageBoxService;
