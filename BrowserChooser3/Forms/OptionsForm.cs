@@ -1355,6 +1355,16 @@ namespace BrowserChooser3.Forms
                 var pbFocusBoxColor = Controls.Find("pbFocusBoxColor", true).FirstOrDefault() as PictureBox;
                 if (pbFocusBoxColor != null) pbFocusBoxColor.BackColor = Color.FromArgb(_settings.FocusBoxColor);
 
+                // トラッキングパラメータ除去設定（3-9）
+                var chkRemoveTracking = Controls.Find("chkRemoveTrackingParameters", true).FirstOrDefault() as CheckBox;
+                if (chkRemoveTracking != null) chkRemoveTracking.Checked = _settings.RemoveTrackingParameters;
+
+                var txtTrackingParameters = Controls.Find("txtTrackingParameters", true).FirstOrDefault() as TextBox;
+                if (txtTrackingParameters != null)
+                {
+                    txtTrackingParameters.Text = string.Join(Environment.NewLine, _settings.TrackingParameters);
+                }
+
                 // 透明化設定
                 var chkEnableTransparency = Controls.Find("chkEnableTransparency", true).FirstOrDefault() as CheckBox;
                 if (chkEnableTransparency != null) 
@@ -1446,10 +1456,15 @@ namespace BrowserChooser3.Forms
                             _settings.DefaultBrowserGuid = newGuid;
                         }
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
-                        MessageBox.Show("There is a problem with the default browser (GUID error)", "Error",
-                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        // 保存経路から呼ばれるため、テスト環境ではダイアログを出さない
+                        Logger.LogError("OptionsForm.SaveSettings", "既定ブラウザのGUIDが不正です", ex.Message);
+                        if (!IsTestEnvironment())
+                        {
+                            MessageBox.Show("There is a problem with the default browser (GUID error)", "Error",
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
                     }
                 }
 
@@ -1759,6 +1774,21 @@ namespace BrowserChooser3.Forms
                     Logger.LogInfo("OptionsForm.SaveSettings", "Enable Logging設定を保存しました", _settings.EnableLogging.ToString());
                 }
 
+                // トラッキングパラメータ除去設定（3-9）
+                var chkRemoveTracking = Controls.Find("chkRemoveTrackingParameters", true).FirstOrDefault() as CheckBox;
+                if (chkRemoveTracking != null) _settings.RemoveTrackingParameters = chkRemoveTracking.Checked;
+
+                var txtTrackingParameters = Controls.Find("txtTrackingParameters", true).FirstOrDefault() as TextBox;
+                if (txtTrackingParameters != null)
+                {
+                    // 1行1パラメータ。空行と前後の空白は取り除く。
+                    _settings.TrackingParameters = txtTrackingParameters.Text
+                        .Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+                        .Select(line => line.Trim())
+                        .Where(line => line.Length > 0)
+                        .ToList();
+                }
+
                 _settings.DoSave();
                 _isModified = false;
 
@@ -1767,8 +1797,14 @@ namespace BrowserChooser3.Forms
             catch (Exception ex)
             {
                 Logger.LogError("OptionsForm.SaveSettings", "保存エラー", ex.Message, ex.StackTrace ?? "");
-                MessageBox.Show($"設定の保存に失敗しました: {ex.Message}", "エラー",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                // テスト環境ではモーダルダイアログを出さない。このcatchだけ
+                // IsTestEnvironment()のガードが抜けていたため、保存が失敗すると
+                // 応答されないダイアログでテスト実行全体が停止していた。
+                if (!IsTestEnvironment())
+                {
+                    MessageBox.Show($"設定の保存に失敗しました: {ex.Message}", "エラー",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 

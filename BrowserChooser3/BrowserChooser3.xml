@@ -2092,6 +2092,23 @@
         <member name="P:BrowserChooser3.Classes.Settings.LogLevel">
             <summary>ログレベル</summary>
         </member>
+        <member name="P:BrowserChooser3.Classes.Settings.RemoveTrackingParameters">
+            <summary>
+            URLからトラッキングパラメータ（utm_* など）を除去するかどうか。
+            既定はOFFで、有効にした場合のみブラウザへ渡すURLが書き換わります。
+            </summary>
+        </member>
+        <member name="P:BrowserChooser3.Classes.Settings.TrackingParameters">
+            <summary>
+            除去するトラッキングパラメータ名のリスト。ユーザーがOptionsで編集できます。
+            末尾が * のものは前方一致として扱われます（例: utm_*）。
+            </summary>
+        </member>
+        <member name="F:BrowserChooser3.Classes.Settings.DefaultTrackingParameters">
+            <summary>
+            トラッキングパラメータの既定リスト
+            </summary>
+        </member>
         <member name="P:BrowserChooser3.Classes.Settings.ShowGrid">
             <summary>グリッド表示</summary>
         </member>
@@ -2772,6 +2789,54 @@
             </summary>
             <param name="operationName">実行しようとしている操作の名前</param>
             <exception cref="T:System.InvalidOperationException">テスト環境で実行された場合</exception>
+        </member>
+        <member name="T:BrowserChooser3.Classes.Utilities.URLSanitizer">
+             <summary>
+             ブラウザへ渡す前のURLを整えます。
+            
+             - トラッキングパラメータ（utm_* / fbclid / gclid 等）の除去
+             - ポリシー（<see cref="P:BrowserChooser3.Classes.Services.SystemServices.Policy.Canonicalize"/>）による正規化
+            
+             いずれも既定では無効で、明示的に有効化された場合のみURLを書き換えます。
+             書き換えに失敗した場合は必ず元のURLをそのまま返し、
+             「URLが壊れて開けない」状態を作らないことを優先します。
+             </summary>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Utilities.URLSanitizer.Sanitize(System.String,BrowserChooser3.Classes.Settings)">
+            <summary>
+            設定とポリシーに従ってURLを整えます。
+            </summary>
+            <param name="url">対象のURL</param>
+            <param name="settings">適用する設定（nullの場合は何もしない）</param>
+            <returns>整えられたURL。処理対象外・失敗時は元のURL</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Utilities.URLSanitizer.RemoveTrackingParameters(System.String,System.Collections.Generic.IEnumerable{System.String})">
+             <summary>
+             クエリ文字列からトラッキングパラメータを除去します。
+            
+             パラメータ名は大文字小文字を区別せず比較し、末尾が * のものは
+             前方一致として扱います（utm_* は utm_source / utm_medium などにマッチ）。
+             除去した結果クエリが空になった場合は "?" も残しません。
+             </summary>
+             <param name="url">対象のURL</param>
+             <param name="parameterNames">除去するパラメータ名のリスト</param>
+             <returns>トラッキングパラメータを除いたURL</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Utilities.URLSanitizer.IsTrackingParameter(System.String,System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            パラメータ名が除去対象かどうかを判定します。
+            </summary>
+            <param name="name">クエリパラメータ名</param>
+            <param name="patterns">除去対象のパターン</param>
+            <returns>除去対象の場合はtrue</returns>
+        </member>
+        <member name="M:BrowserChooser3.Classes.Utilities.URLSanitizer.Canonicalize(System.String,System.String)">
+            <summary>
+            URLを正規化し、必要に応じて指定のテキストを付加します。
+            </summary>
+            <param name="url">対象のURL</param>
+            <param name="appendedText">付加するテキスト（空なら付加しない）</param>
+            <returns>正規化されたURL。解析に失敗した場合は元のURL</returns>
         </member>
         <member name="T:BrowserChooser3.Classes.Utilities.URLUtilities">
             <summary>

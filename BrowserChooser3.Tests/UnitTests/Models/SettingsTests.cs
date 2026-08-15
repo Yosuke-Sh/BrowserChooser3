@@ -67,8 +67,10 @@ namespace BrowserChooser3.Tests
             settings.FileVersion.Should().Be(Settings.CURRENT_FILE_VERSION);
             settings.ShowURL.Should().BeTrue();
             settings.RevealShortURL.Should().BeFalse();
-            settings.Width.Should().Be(8);
-            settings.Height.Should().Be(1);
+            // Width/Height はメイン画面のウィンドウサイズ（ピクセル）。
+            // 旧バージョンではグリッドの列数・行数（8 / 1）だった。
+            settings.Width.Should().Be(Settings.DefaultWindowWidth);
+            settings.Height.Should().Be(Settings.DefaultWindowHeight);
             settings.Browsers.Should().NotBeNull();
             settings.URLs.Should().NotBeNull();
             settings.Protocols.Should().NotBeNull();
@@ -290,25 +292,65 @@ namespace BrowserChooser3.Tests
 
         #region 保存・読み込みテスト
 
+        /// <summary>
+        /// DoSave()を一意な一時ディレクトリへリダイレクトして実行します。
+        /// 従来はMutexで同一クラス内の競合だけを排除して実際の
+        /// %APPDATA%\BrowserChooser3\BrowserChooser3Config.xml へ書き込んでいたため、
+        /// 並行して同じ実ファイルを読む他のテストクラスと衝突して
+        /// IOException（別プロセスが使用中）で不定期に失敗していた。
+        /// </summary>
+        /// <param name="configure">保存する設定を組み立てるデリゲート</param>
+        /// <returns>保存に使用したSettingsと、実際に書き出されたファイルのパス</returns>
+        private static (Settings Settings, string ConfigFile) SaveToIsolatedDirectory(Action<Settings> configure)
+        {
+            var configDir = Path.Combine(Path.GetTempPath(), "BC3SettingsSave_" + Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(configDir);
+
+            var originalOverride = PathManager.ConfigDirectoryOverrideForTests;
+            PathManager.ConfigDirectoryOverrideForTests = configDir;
+            try
+            {
+                var settings = new Settings();
+                configure(settings);
+                settings.DoSave();
+
+                return (settings, Path.Combine(configDir, Settings.BrowserChooserConfigFileName));
+            }
+            finally
+            {
+                PathManager.ConfigDirectoryOverrideForTests = originalOverride;
+            }
+        }
+
         [Fact]
         public void DoSave_ShouldSaveSettings()
         {
             RealConfigFileMutex.WaitOne();
             try
             {
-                // Arrange
-                var settings = new Settings();
-                settings.ShowURL = false;
-                settings.Width = 6;
-                settings.Height = 4;
+                var (settings, configFile) = SaveToIsolatedDirectory(s =>
+                {
+                    s.ShowURL = false;
+                    s.Width = 800;
+                    s.Height = 600;
+                });
 
-                // Act
-                settings.DoSave();
-
-                // Assert
-                // テスト環境では実際のファイル保存が行われない可能性があるため、
-                // 例外が発生しないことを確認
+                // 実際にファイルが書き出され、内容が読み戻せること
+                File.Exists(configFile).Should().BeTrue();
                 settings.ShowURL.Should().BeFalse();
+
+                var serializer = new XmlSerializer(typeof(Settings));
+                Settings reloaded;
+                // ディレクトリ削除より前に必ずファイルを閉じる
+                using (var reader = new StreamReader(configFile))
+                {
+                    reloaded = (Settings)serializer.Deserialize(reader)!;
+                }
+                reloaded.ShowURL.Should().BeFalse();
+                reloaded.Width.Should().Be(800);
+                reloaded.Height.Should().Be(600);
+
+                Directory.Delete(Path.GetDirectoryName(configFile)!, true);
             }
             finally
             {
@@ -322,19 +364,27 @@ namespace BrowserChooser3.Tests
             RealConfigFileMutex.WaitOne();
             try
             {
-                // Arrange
-                var settings = new Settings();
-                settings.ShowURL = true;
-                settings.Width = 8;
-                settings.Height = 2;
+                var (settings, configFile) = SaveToIsolatedDirectory(s =>
+                {
+                    s.ShowURL = true;
+                    s.Width = 1024;
+                    s.Height = 768;
+                });
 
-                // Act
-                settings.DoSave();
-
-                // Assert
-                // テスト環境では実際のファイル保存が行われない可能性があるため、
-                // 例外が発生しないことを確認
+                File.Exists(configFile).Should().BeTrue();
                 settings.ShowURL.Should().BeTrue();
+
+                var serializer = new XmlSerializer(typeof(Settings));
+                Settings reloaded;
+                // ディレクトリ削除より前に必ずファイルを閉じる
+                using (var reader = new StreamReader(configFile))
+                {
+                    reloaded = (Settings)serializer.Deserialize(reader)!;
+                }
+                reloaded.ShowURL.Should().BeTrue();
+                reloaded.Width.Should().Be(1024);
+
+                Directory.Delete(Path.GetDirectoryName(configFile)!, true);
             }
             finally
             {

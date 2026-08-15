@@ -336,6 +336,27 @@ namespace BrowserChooser3.Classes
         /// <summary>ログレベル</summary>
         public int LogLevel { get; set; } = 2;
 
+        /// <summary>
+        /// URLからトラッキングパラメータ（utm_* など）を除去するかどうか。
+        /// 既定はOFFで、有効にした場合のみブラウザへ渡すURLが書き換わります。
+        /// </summary>
+        public bool RemoveTrackingParameters { get; set; } = false;
+
+        /// <summary>
+        /// 除去するトラッキングパラメータ名のリスト。ユーザーがOptionsで編集できます。
+        /// 末尾が * のものは前方一致として扱われます（例: utm_*）。
+        /// </summary>
+        public List<string> TrackingParameters { get; set; } = new(DefaultTrackingParameters);
+
+        /// <summary>
+        /// トラッキングパラメータの既定リスト
+        /// </summary>
+        public static readonly string[] DefaultTrackingParameters =
+        {
+            "utm_*", "fbclid", "gclid", "msclkid", "dclid", "twclid",
+            "igshid", "mc_eid", "mc_cid", "yclid", "_hsenc", "_hsmi"
+        };
+
         /// <summary>グリッド表示</summary>
         public bool ShowGrid { get; set; } = false;
 
@@ -460,8 +481,12 @@ namespace BrowserChooser3.Classes
             URLs = new List<URL>();
             RevealShortURL = false; // default
             ShowURL = true; // default
-            Width = 8; // default
-            Height = 1; // default
+            // メイン画面の初期ウィンドウサイズ（ピクセル）。
+            // 旧バージョンはここでグリッドの列数・行数（8 / 1）を入れていたが、
+            // それをそのままピクセル幅として適用すると8px四方のウィンドウになるため、
+            // 既定のウィンドウサイズを入れる（旧値は EffectiveWindowWidth/Height が救済する）。
+            Width = DefaultWindowWidth;
+            Height = DefaultWindowHeight;
             
             // インストール方法の自動判定は削除（iniファイルで管理）
             
@@ -548,7 +573,14 @@ namespace BrowserChooser3.Classes
             // 上書き前に現行ファイルを世代バックアップ（bak1〜bak3）へ退避する。
             // 保存が途中で失敗して設定を失った場合や、意図しない変更を保存してしまった場合に
             // 直前の状態へ戻せるようにするためで、バックアップ自体の失敗は保存を妨げない。
-            SettingsTransferService.CreateGenerationalBackup(path, BrowserChooserConfigFileName);
+            //
+            // テスト環境では実施しない。テストは実際の%APPDATA%の設定ファイルを共有して
+            // 保存を繰り返すため、保存のたびに同じディレクトリへコピーを増やすと
+            // ファイルの奪い合いが増えてテストが不安定になる。
+            if (!TestEnvironmentDetector.IsTestEnvironment())
+            {
+                SettingsTransferService.CreateGenerationalBackup(path, BrowserChooserConfigFileName);
+            }
 
             var filePath = Path.Combine(path, BrowserChooserConfigFileName);
 
@@ -604,16 +636,13 @@ namespace BrowserChooser3.Classes
                         Logger.InitializeLogLevel(output.LogLevel);
                     }
 
-                    // lock width and height to 10 max, 1 min - acts as overflow protection
-                    if (output.Width > 10)
-                        output.Width = 10;
-                    else if (output.Width < 1)
-                        output.Width = 1;
-
-                    if (output.Height > 10)
-                        output.Height = 10;
-                    else if (output.Height < 1)
-                        output.Height = 1;
+                    // Width/Height はメイン画面のウィンドウサイズ（ピクセル）。
+                    // 旧バージョンではグリッドの列数・行数として扱われ 1〜10 に丸められていたが、
+                    // その丸めを残すとユーザーがOptionsで指定したピクセル値が破棄されてしまう。
+                    // 旧形式の値（最小サイズ未満）は EffectiveWindowWidth/Height 側で
+                    // 既定値へフォールバックするため、ここでは異常な負値だけを弾く。
+                    if (output.Width < 0) output.Width = DefaultWindowWidth;
+                    if (output.Height < 0) output.Height = DefaultWindowHeight;
 
                     // BackgroundColorValueの初期化（XMLデシリアライゼーション後の処理）
                     // BackgroundColorValueが空の場合、BackgroundColorの値を使用して初期化

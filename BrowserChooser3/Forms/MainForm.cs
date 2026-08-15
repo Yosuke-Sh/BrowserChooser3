@@ -1395,6 +1395,12 @@ namespace BrowserChooser3.Forms
             }
 
             Logger.LogDebug("MainForm.UpdateURL", "URL更新", url);
+
+            // トラッキングパラメータの除去とポリシーによる正規化を、
+            // ルーティング判定・表示・起動のすべてより前段で一度だけ適用する。
+            // いずれも既定では無効で、有効時のみURLが書き換わる。
+            url = URLSanitizer.Sanitize(url, _settings);
+
             _currentUrl = url;
             UpdateURLLabel();
 

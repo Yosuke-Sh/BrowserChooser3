@@ -1574,12 +1574,96 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
 
 
 
+            // === トラッキングパラメータの除去（3-9）===
+            // 従来このタブの中身はログ設定だけで「プライバシー」という名前と実態が
+            // 一致していなかった。ここで名実ともに成立させる。既定はOFF。
+            var lblTrackingTitle = new Label
+            {
+                Text = "Tracking Parameters",
+                Location = new Point(6, 82),
+                Size = new Size(250, 25),
+                Font = new Font("Segoe UI", 10.0f, FontStyle.Bold, GraphicsUnit.Point, 0),
+                ForeColor = Color.DarkBlue
+            };
+
+            var chkRemoveTrackingParameters = new CheckBox
+            {
+                Name = "chkRemoveTrackingParameters",
+                Text = "トラッキングパラメータを除去する",
+                Location = new Point(6, 112),
+                Size = new Size(260, 25),
+                Checked = settings.RemoveTrackingParameters,
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+            chkRemoveTrackingParameters.CheckedChanged += (s, e) => setModified(true);
+
+            var lblRemoveTrackingDesc = new Label
+            {
+                Text = "ブラウザへ渡す前にURLから計測用パラメータを取り除きます（既定：オフ）",
+                Location = new Point(270, 115),
+                Size = new Size(440, 20),
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                ForeColor = Color.Gray
+            };
+
+            var lblTrackingParameters = new Label
+            {
+                Text = "除去するパラメータ（1行に1つ、末尾の * は前方一致）:",
+                Location = new Point(6, 145),
+                Size = new Size(400, 20),
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+
+            var txtTrackingParameters = new TextBox
+            {
+                Name = "txtTrackingParameters",
+                Location = new Point(6, 168),
+                Size = new Size(300, 160),
+                Multiline = true,
+                ScrollBars = ScrollBars.Vertical,
+                Text = string.Join(Environment.NewLine, settings.TrackingParameters),
+                Font = new Font("Consolas", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+            txtTrackingParameters.TextChanged += (s, e) => setModified(true);
+
+            var btnResetTrackingParameters = new Button
+            {
+                Name = "btnResetTrackingParameters",
+                Text = "既定値に戻す",
+                Location = new Point(316, 168),
+                Size = new Size(130, 30),
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+            btnResetTrackingParameters.Click += (s, e) =>
+            {
+                txtTrackingParameters.Text = string.Join(Environment.NewLine, Settings.DefaultTrackingParameters);
+                setModified(true);
+            };
+
+            var lblTrackingParametersDesc = new Label
+            {
+                Text = "例: utm_* は utm_source / utm_medium などをまとめて除去します。\n" +
+                       "除去してもリンク先のページ自体は変わりませんが、一部のサイトでは\n" +
+                       "遷移元の判別ができなくなります。",
+                Location = new Point(316, 206),
+                Size = new Size(400, 70),
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                ForeColor = Color.Gray
+            };
+
             // コントロールの追加
             panel.Controls.Add(chkEnableLogging);
             panel.Controls.Add(lblLogLevel);
             panel.Controls.Add(cmbLogLevel);
             panel.Controls.Add(lblEnableLoggingDesc);
             panel.Controls.Add(lblLogLevelDesc);
+            panel.Controls.Add(lblTrackingTitle);
+            panel.Controls.Add(chkRemoveTrackingParameters);
+            panel.Controls.Add(lblRemoveTrackingDesc);
+            panel.Controls.Add(lblTrackingParameters);
+            panel.Controls.Add(txtTrackingParameters);
+            panel.Controls.Add(btnResetTrackingParameters);
+            panel.Controls.Add(lblTrackingParametersDesc);
 
             tabPage.Controls.Add(panel);
             return tabPage;
