@@ -3568,6 +3568,16 @@
             フォームの設定
             </summary>
         </member>
+        <member name="M:BrowserChooser3.Forms.MainForm.ApplyConfiguredWindowSize">
+             <summary>
+             設定されたウィンドウサイズ（Settings.Width / Height）をClientSizeへ適用します。
+             旧形式の値（グリッドの列数・行数）はEffectiveWindowWidth/Heightが既定値へ
+             フォールバックさせます。
+            
+             FormBorderStyleを変更するとClientSizeがdesignerの値（434x126）へ再計算されるため、
+             ConfigureFormの最後とMainForm_Loadの両方から呼び、スタイル確定後の値を確実に反映させます。
+             </summary>
+        </member>
         <member name="M:BrowserChooser3.Forms.MainForm.ApplyTransparencySettings">
             <summary>
             透明化設定を適用
@@ -3630,7 +3640,19 @@
         </member>
         <member name="F:BrowserChooser3.Forms.MainForm.GridOriginY">
             <summary>
-            ブラウザボタン配置の原点Y。グリッド描画もこの原点に合わせる。
+            ブラウザボタン配置の既定の原点Y。グリッド描画もこの原点に合わせる。
+            </summary>
+        </member>
+        <member name="F:BrowserChooser3.Forms.MainForm.StartupMessageReservedHeight">
+            <summary>
+            起動メッセージを表示する場合に、ボタン配置を下へずらす量。
+            ホットキーのオーバーレイラベルはボタン上端の15px上に置かれるため、
+            この余白が無いとメッセージと重なってしまう。
+            </summary>
+        </member>
+        <member name="P:BrowserChooser3.Forms.MainForm.EffectiveGridOriginY">
+            <summary>
+            起動メッセージの有無を考慮した、実際のボタン配置の原点Y。
             </summary>
         </member>
         <member name="M:BrowserChooser3.Forms.MainForm.CalculateColumnsPerRow">

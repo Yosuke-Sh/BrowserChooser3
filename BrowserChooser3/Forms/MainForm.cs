@@ -394,15 +394,10 @@ namespace BrowserChooser3.Forms
             {
                 this.Paint += MainForm_Paint;
             }
-            // 初期サイズ（Settings.Width/Heightを反映。旧形式の値はEffective*が既定値へフォールバックする）
-            ClientSize = new Size(
-                _settings?.EffectiveWindowWidth ?? Settings.DefaultWindowWidth,
-                _settings?.EffectiveWindowHeight ?? Settings.DefaultWindowHeight);
-
             // サイズ変更イベントの設定（同上の理由で解除してから再購読する）
             Resize -= MainForm_Resize;
             Resize += MainForm_Resize;
-            
+
             // 透明化設定の適用（Windows11スタイルも含む）
             ApplyTransparencySettings();
             
@@ -419,8 +414,32 @@ namespace BrowserChooser3.Forms
                 // 子コントロールは既定色に保ち、フォーム背景色の影響を受けにくくする
                 ApplyDefaultBackColorToChildControls();
             }
-            
-            Logger.LogDebug("MainForm.ConfigureForm", "End");
+
+            ApplyConfiguredWindowSize();
+
+            Logger.LogDebug("MainForm.ConfigureForm", "End", ClientSize.Width, ClientSize.Height);
+        }
+
+        /// <summary>
+        /// 設定されたウィンドウサイズ（Settings.Width / Height）をClientSizeへ適用します。
+        /// 旧形式の値（グリッドの列数・行数）はEffectiveWindowWidth/Heightが既定値へ
+        /// フォールバックさせます。
+        ///
+        /// FormBorderStyleを変更するとClientSizeがdesignerの値（434x126）へ再計算されるため、
+        /// ConfigureFormの最後とMainForm_Loadの両方から呼び、スタイル確定後の値を確実に反映させます。
+        /// </summary>
+        private void ApplyConfiguredWindowSize()
+        {
+            var desired = new Size(
+                _settings?.EffectiveWindowWidth ?? Settings.DefaultWindowWidth,
+                _settings?.EffectiveWindowHeight ?? Settings.DefaultWindowHeight);
+
+            if (ClientSize != desired)
+            {
+                ClientSize = desired;
+                Logger.LogDebug("MainForm.ApplyConfiguredWindowSize", "ウィンドウサイズを適用",
+                    desired.Width, desired.Height);
+            }
         }
 
         /// <summary>
@@ -637,17 +656,19 @@ namespace BrowserChooser3.Forms
 
                 using var pen = new Pen(Color.FromArgb(_settings.GridColor), lineWidth);
 
+                var originY = EffectiveGridOriginY;
+
                 // 縦線（列の境界）
                 for (var col = 0; col <= columns; col++)
                 {
                     var x = GridOriginX + (col * cellWidth);
-                    graphics.DrawLine(pen, x, GridOriginY, x, GridOriginY + gridHeight);
+                    graphics.DrawLine(pen, x, originY, x, originY + gridHeight);
                 }
 
                 // 横線（行の境界）
                 for (var row = 0; row <= rows; row++)
                 {
-                    var y = GridOriginY + (row * cellHeight);
+                    var y = originY + (row * cellHeight);
                     graphics.DrawLine(pen, GridOriginX, y, GridOriginX + gridWidth, y);
                 }
             }
@@ -665,6 +686,11 @@ namespace BrowserChooser3.Forms
             try
             {
                 Logger.LogDebug("MainForm.MainForm_Load", "フォームLoad開始");
+
+                // 初期ウィンドウサイズ（Settings.Width/Height）を適用する。
+                // ConfigureForm内で設定してもFormBorderStyleの変更でClientSizeが
+                // designerの値へ再計算されてしまうため、スタイルが確定するLoadで適用する。
+                ApplyConfiguredWindowSize();
 
                 // Windows 11のダークモード設定に自動追従（DWM未対応環境では内部でtry/catchされ実害なし）
                 var isDarkMode = GeneralUtilities.IsSystemDarkModeEnabled();
@@ -745,9 +771,22 @@ namespace BrowserChooser3.Forms
         private const int GridOriginX = 50;
 
         /// <summary>
-        /// ブラウザボタン配置の原点Y。グリッド描画もこの原点に合わせる。
+        /// ブラウザボタン配置の既定の原点Y。グリッド描画もこの原点に合わせる。
         /// </summary>
         private const int GridOriginY = 30;
+
+        /// <summary>
+        /// 起動メッセージを表示する場合に、ボタン配置を下へずらす量。
+        /// ホットキーのオーバーレイラベルはボタン上端の15px上に置かれるため、
+        /// この余白が無いとメッセージと重なってしまう。
+        /// </summary>
+        private const int StartupMessageReservedHeight = 22;
+
+        /// <summary>
+        /// 起動メッセージの有無を考慮した、実際のボタン配置の原点Y。
+        /// </summary>
+        private int EffectiveGridOriginY =>
+            GridOriginY + (_settings?.IsStartupMessageVisible == true ? StartupMessageReservedHeight : 0);
 
         /// <summary>
         /// フォーム幅とアイコン設定から1行あたりのボタン列数を計算します。
@@ -799,7 +838,7 @@ namespace BrowserChooser3.Forms
                     var row = buttonIndex / columnsPerRow;
                     var col = buttonIndex % columnsPerRow;
                     var x = GridOriginX + (col * (buttonWidth + gapWidth)); // btnInfoの右側から開始
-                    var y = GridOriginY + (row * (buttonHeight + gapHeight));
+                    var y = EffectiveGridOriginY + (row * (buttonHeight + gapHeight));
 
                     button.Location = new Point(x, y);
 
@@ -1904,6 +1943,8 @@ namespace BrowserChooser3.Forms
                 Name = "lblStartupMessage",
                 Text = _settings.StartupMessage,
                 AutoSize = true,
+                // btnInfo(左上)の右に置く。ボタン行はEffectiveGridOriginYぶん
+                // 下へずれるため、ホットキーのオーバーレイラベルとは重ならない。
                 Location = new Point(GridOriginX, 6),
                 Font = StartupMessageFont,
                 BackColor = Color.Transparent,
