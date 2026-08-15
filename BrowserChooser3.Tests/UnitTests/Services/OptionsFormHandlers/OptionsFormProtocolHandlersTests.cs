@@ -1,526 +1,170 @@
+using System;
+using System.Collections.Generic;
+using System.Windows.Forms;
+using BrowserChooser3.Classes.Models;
+using BrowserChooser3.Classes.Services.OptionsFormHandlers;
+using BrowserChooser3.Tests.TestHelpers.Fixtures;
+using BrowserChooser3.Tests.TestHelpers.MockFactories;
 using FluentAssertions;
 using Xunit;
-using BrowserChooser3.Classes.Services.OptionsFormHandlers;
-using BrowserChooser3.Classes.Models;
-using BrowserChooser3.Forms;
-using Moq;
-using System.Windows.Forms;
 
 namespace BrowserChooser3.Tests
 {
     /// <summary>
     /// OptionsFormProtocolHandlersクラスの単体テスト
-    /// ガバレッジ100%を目指して全メソッドをテストします
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// 従来29件が <c>new Mock&lt;OptionsForm&gt;()</c> を理由にスキップされていた。
+    /// IOptionsFormContextの抽出により、選択されたプロトコルが実際に辞書と
+    /// ListViewの両方から削除されることなどを検証できるようになった。
+    /// </para>
+    /// <para>
+    /// 追加・編集は子フォーム（AddEditProtocolForm）をモーダル表示するため、
+    /// ヘッドレスなテストでは実行できない。ここでは削除経路と、
+    /// 未選択・タブ未構築といった防御的な分岐を対象にする。
+    /// </para>
+    /// </remarks>
     public class OptionsFormProtocolHandlersTests
     {
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void Constructor_WithValidParameters_ShouldInitializeCorrectly()
+        /// <summary>
+        /// プロトコルタブとlstProtocolsを備えたコンテキストを構築します。
+        /// </summary>
+        /// <remarks>
+        /// ListViewはネイティブハンドルが生成されていないと選択状態
+        /// （<see cref="ListView.SelectedItems"/>）を追跡しない。
+        /// TabPage配下に入れるとハンドルが生成されず選択が成立しないため、
+        /// 先に単体でハンドルを生成してからタブへ追加する。
+        /// </remarks>
+        private static ListView SetupProtocolsTab(FakeOptionsFormContext context)
+        {
+            var tab = context.AddTabPage("tabProtocols");
+            var listView = new ListView { Name = "lstProtocols", MultiSelect = false };
+
+            // 親へ追加する前にハンドルを生成する（追加後だと生成されない）
+            listView.CreateControl();
+            tab.Controls.Add(listView);
+            return listView;
+        }
+
+        [Fact]
+        public void DeleteProtocol_Click_WithSelection_ShouldRemoveFromDictionaryAndListView()
         {
             // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var mProtocols = new Dictionary<int, Protocol>();
-            var mBrowser = new Dictionary<int, Browser>();
-            Action<bool> setModified = (modified) => { };
+            using var context = new FakeOptionsFormContext();
+            var listView = SetupProtocolsTab(context);
+
+            var browser = BrowserFactory.Create("Target Browser");
+            var protocols = new Dictionary<int, Protocol>
+            {
+                { 1, new Protocol { Name = "mailto", BrowserGuid = browser.Guid } }
+            };
+            var browsers = new Dictionary<int, Browser> { { 1, browser } };
+
+            var item = new ListViewItem("mailto") { Tag = 1 };
+            listView.Items.Add(item);
+            item.Selected = true;
+            listView.SelectedItems.Count.Should().Be(1, "テストの前提として選択状態が成立していること");
+
+            var modified = false;
+            var handlers = new OptionsFormProtocolHandlers(context, protocols, browsers, v => modified = v);
 
             // Act
-            var handlers = new OptionsFormProtocolHandlers(mockForm.Object, mProtocols, mBrowser, setModified);
+            // テスト環境ではMessageBoxServiceの確認ダイアログはYesを返す
+            handlers.DeleteProtocol_Click(null, EventArgs.Empty);
 
             // Assert
-            handlers.Should().NotBeNull();
+            protocols.Should().NotContainKey(1, "選択されたプロトコルは辞書から削除される");
+            listView.Items.Count.Should().Be(0, "ListViewからも削除される");
+            modified.Should().BeTrue("削除は変更として記録される");
         }
 
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void Constructor_WithNullForm_ShouldInitializeCorrectly()
+        [Fact]
+        public void DeleteProtocol_Click_WithoutSelection_ShouldNotRemoveAnything()
         {
             // Arrange
-            var mProtocols = new Dictionary<int, Protocol>();
-            var mBrowser = new Dictionary<int, Browser>();
-            Action<bool> setModified = (modified) => { };
+            using var context = new FakeOptionsFormContext();
+            var listView = SetupProtocolsTab(context);
+
+            var protocols = new Dictionary<int, Protocol>
+            {
+                { 1, new Protocol { Name = "mailto" } }
+            };
+            listView.Items.Add(new ListViewItem("mailto") { Tag = 1 });
+
+            var modified = false;
+            var handlers = new OptionsFormProtocolHandlers(
+                context, protocols, new Dictionary<int, Browser>(), v => modified = v);
 
             // Act
-            var handlers = new OptionsFormProtocolHandlers(null!, mProtocols, mBrowser, setModified);
+            handlers.DeleteProtocol_Click(null, EventArgs.Empty);
 
             // Assert
-            handlers.Should().NotBeNull();
+            protocols.Should().ContainKey(1, "未選択なら削除されない");
+            listView.Items.Count.Should().Be(1);
+            modified.Should().BeFalse();
         }
 
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void Constructor_WithNullDictionaries_ShouldInitializeCorrectly()
+        [Fact]
+        public void DeleteProtocol_Click_WithUnknownTag_ShouldNotRemoveAnything()
         {
             // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            Action<bool> setModified = (modified) => { };
+            // ListViewのTagが辞書に存在しないIDを指している場合
+            using var context = new FakeOptionsFormContext();
+            var listView = SetupProtocolsTab(context);
+
+            var protocols = new Dictionary<int, Protocol>
+            {
+                { 1, new Protocol { Name = "mailto" } }
+            };
+
+            var item = new ListViewItem("orphan") { Tag = 999 };
+            listView.Items.Add(item);
+            item.Selected = true;
+
+            var handlers = new OptionsFormProtocolHandlers(
+                context, protocols, new Dictionary<int, Browser>(), _ => { });
 
             // Act
-            var handlers = new OptionsFormProtocolHandlers(mockForm.Object, null!, null!, setModified);
+            handlers.DeleteProtocol_Click(null, EventArgs.Empty);
 
             // Assert
-            handlers.Should().NotBeNull();
+            protocols.Should().ContainKey(1, "対応するプロトコルが無ければ何も削除しない");
         }
 
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void Constructor_WithNullSetModified_ShouldInitializeCorrectly()
+        [Fact]
+        public void DeleteProtocol_Click_WithoutProtocolsTab_ShouldNotThrow()
         {
             // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var mProtocols = new Dictionary<int, Protocol>();
-            var mBrowser = new Dictionary<int, Browser>();
+            // タブが未構築の状態でも落ちないこと
+            using var context = new FakeOptionsFormContext();
+            var handlers = new OptionsFormProtocolHandlers(
+                context, new Dictionary<int, Protocol>(), new Dictionary<int, Browser>(), _ => { });
 
             // Act
-            var handlers = new OptionsFormProtocolHandlers(mockForm.Object, mProtocols, mBrowser, null!);
+            var action = () => handlers.DeleteProtocol_Click(null, EventArgs.Empty);
 
             // Assert
-            handlers.Should().NotBeNull();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void AddProtocol_Click_ShouldNotThrowException()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var mProtocols = new Dictionary<int, Protocol>();
-            var mBrowser = new Dictionary<int, Browser>();
-            Action<bool> setModified = (modified) => { };
-            var handlers = new OptionsFormProtocolHandlers(mockForm.Object, mProtocols, mBrowser, setModified);
-            var sender = new object();
-            var e = new EventArgs();
-
-            // Act & Assert
-            var action = () => handlers.AddProtocol_Click(sender, e);
             action.Should().NotThrow();
         }
 
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void AddProtocol_Click_WithNullSender_ShouldNotThrowException()
+        [Fact]
+        public void EditProtocol_Click_WithoutSelection_ShouldNotModify()
         {
             // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var mProtocols = new Dictionary<int, Protocol>();
-            var mBrowser = new Dictionary<int, Browser>();
-            Action<bool> setModified = (modified) => { };
-            var handlers = new OptionsFormProtocolHandlers(mockForm.Object, mProtocols, mBrowser, setModified);
-            var e = new EventArgs();
+            using var context = new FakeOptionsFormContext();
+            SetupProtocolsTab(context);
 
-            // Act & Assert
-            var action = () => handlers.AddProtocol_Click(null, e);
-            action.Should().NotThrow();
-        }
+            var modified = false;
+            var handlers = new OptionsFormProtocolHandlers(
+                context, new Dictionary<int, Protocol>(), new Dictionary<int, Browser>(), v => modified = v);
 
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void AddProtocol_Click_WithNullEventArgs_ShouldNotThrowException()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var mProtocols = new Dictionary<int, Protocol>();
-            var mBrowser = new Dictionary<int, Browser>();
-            Action<bool> setModified = (modified) => { };
-            var handlers = new OptionsFormProtocolHandlers(mockForm.Object, mProtocols, mBrowser, setModified);
-            var sender = new object();
+            // Act
+            // 未選択なら子フォームを開かずに抜ける
+            handlers.EditProtocol_Click(null, EventArgs.Empty);
 
-            // Act & Assert
-            var action = () => handlers.AddProtocol_Click(sender, null!);
-            action.Should().NotThrow();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void AddProtocol_Click_WithException_ShouldHandleGracefully()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var mProtocols = new Dictionary<int, Protocol>();
-            var mBrowser = new Dictionary<int, Browser>();
-            Action<bool> setModified = (modified) => throw new Exception("Test exception");
-            var handlers = new OptionsFormProtocolHandlers(mockForm.Object, mProtocols, mBrowser, setModified);
-            var sender = new object();
-            var e = new EventArgs();
-
-            // Act & Assert
-            var action = () => handlers.AddProtocol_Click(sender, e);
-            action.Should().NotThrow();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void EditProtocol_Click_ShouldNotThrowException()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var mProtocols = new Dictionary<int, Protocol>();
-            var mBrowser = new Dictionary<int, Browser>();
-            Action<bool> setModified = (modified) => { };
-            var handlers = new OptionsFormProtocolHandlers(mockForm.Object, mProtocols, mBrowser, setModified);
-            var sender = new object();
-            var e = new EventArgs();
-
-            // Act & Assert
-            var action = () => handlers.EditProtocol_Click(sender, e);
-            action.Should().NotThrow();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void EditProtocol_Click_WithNullSender_ShouldNotThrowException()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var mProtocols = new Dictionary<int, Protocol>();
-            var mBrowser = new Dictionary<int, Browser>();
-            Action<bool> setModified = (modified) => { };
-            var handlers = new OptionsFormProtocolHandlers(mockForm.Object, mProtocols, mBrowser, setModified);
-            var e = new EventArgs();
-
-            // Act & Assert
-            var action = () => handlers.EditProtocol_Click(null, e);
-            action.Should().NotThrow();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void EditProtocol_Click_WithNullEventArgs_ShouldNotThrowException()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var mProtocols = new Dictionary<int, Protocol>();
-            var mBrowser = new Dictionary<int, Browser>();
-            Action<bool> setModified = (modified) => { };
-            var handlers = new OptionsFormProtocolHandlers(mockForm.Object, mProtocols, mBrowser, setModified);
-            var sender = new object();
-
-            // Act & Assert
-            var action = () => handlers.EditProtocol_Click(sender, null!);
-            action.Should().NotThrow();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void EditProtocol_Click_WithException_ShouldHandleGracefully()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var mProtocols = new Dictionary<int, Protocol>();
-            var mBrowser = new Dictionary<int, Browser>();
-            Action<bool> setModified = (modified) => throw new Exception("Test exception");
-            var handlers = new OptionsFormProtocolHandlers(mockForm.Object, mProtocols, mBrowser, setModified);
-            var sender = new object();
-            var e = new EventArgs();
-
-            // Act & Assert
-            var action = () => handlers.EditProtocol_Click(sender, e);
-            action.Should().NotThrow();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void DeleteProtocol_Click_ShouldNotThrowException()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var mProtocols = new Dictionary<int, Protocol>();
-            var mBrowser = new Dictionary<int, Browser>();
-            Action<bool> setModified = (modified) => { };
-            var handlers = new OptionsFormProtocolHandlers(mockForm.Object, mProtocols, mBrowser, setModified);
-            var sender = new object();
-            var e = new EventArgs();
-
-            // Act & Assert
-            var action = () => handlers.DeleteProtocol_Click(sender, e);
-            action.Should().NotThrow();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void DeleteProtocol_Click_WithNullSender_ShouldNotThrowException()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var mProtocols = new Dictionary<int, Protocol>();
-            var mBrowser = new Dictionary<int, Browser>();
-            Action<bool> setModified = (modified) => { };
-            var handlers = new OptionsFormProtocolHandlers(mockForm.Object, mProtocols, mBrowser, setModified);
-            var e = new EventArgs();
-
-            // Act & Assert
-            var action = () => handlers.DeleteProtocol_Click(null, e);
-            action.Should().NotThrow();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void DeleteProtocol_Click_WithNullEventArgs_ShouldNotThrowException()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var mProtocols = new Dictionary<int, Protocol>();
-            var mBrowser = new Dictionary<int, Browser>();
-            Action<bool> setModified = (modified) => { };
-            var handlers = new OptionsFormProtocolHandlers(mockForm.Object, mProtocols, mBrowser, setModified);
-            var sender = new object();
-
-            // Act & Assert
-            var action = () => handlers.DeleteProtocol_Click(sender, null!);
-            action.Should().NotThrow();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void DeleteProtocol_Click_WithException_ShouldHandleGracefully()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var mProtocols = new Dictionary<int, Protocol>();
-            var mBrowser = new Dictionary<int, Browser>();
-            Action<bool> setModified = (modified) => throw new Exception("Test exception");
-            var handlers = new OptionsFormProtocolHandlers(mockForm.Object, mProtocols, mBrowser, setModified);
-            var sender = new object();
-            var e = new EventArgs();
-
-            // Act & Assert
-            var action = () => handlers.DeleteProtocol_Click(sender, e);
-            action.Should().NotThrow();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void AddProtocol_Click_WithExistingProtocols_ShouldHandleGracefully()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var mProtocols = new Dictionary<int, Protocol>
-            {
-                { 1, new Protocol { Name = "http", Header = "http://" } }
-            };
-            var mBrowser = new Dictionary<int, Browser>();
-            Action<bool> setModified = (modified) => { };
-            var handlers = new OptionsFormProtocolHandlers(mockForm.Object, mProtocols, mBrowser, setModified);
-            var sender = new object();
-            var e = new EventArgs();
-
-            // Act & Assert
-            var action = () => handlers.AddProtocol_Click(sender, e);
-            action.Should().NotThrow();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void AddProtocol_Click_WithExistingBrowsers_ShouldHandleGracefully()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var mProtocols = new Dictionary<int, Protocol>();
-            var mBrowser = new Dictionary<int, Browser>
-            {
-                { 1, new Browser { Name = "Test Browser", Guid = Guid.NewGuid() } }
-            };
-            Action<bool> setModified = (modified) => { };
-            var handlers = new OptionsFormProtocolHandlers(mockForm.Object, mProtocols, mBrowser, setModified);
-            var sender = new object();
-            var e = new EventArgs();
-
-            // Act & Assert
-            var action = () => handlers.AddProtocol_Click(sender, e);
-            action.Should().NotThrow();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void EditProtocol_Click_WithExistingProtocols_ShouldHandleGracefully()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var mProtocols = new Dictionary<int, Protocol>
-            {
-                { 1, new Protocol { Name = "http", Header = "http://" } }
-            };
-            var mBrowser = new Dictionary<int, Browser>();
-            Action<bool> setModified = (modified) => { };
-            var handlers = new OptionsFormProtocolHandlers(mockForm.Object, mProtocols, mBrowser, setModified);
-            var sender = new object();
-            var e = new EventArgs();
-
-            // Act & Assert
-            var action = () => handlers.EditProtocol_Click(sender, e);
-            action.Should().NotThrow();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void DeleteProtocol_Click_WithExistingProtocols_ShouldHandleGracefully()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var mProtocols = new Dictionary<int, Protocol>
-            {
-                { 1, new Protocol { Name = "http", Header = "http://" } }
-            };
-            var mBrowser = new Dictionary<int, Browser>();
-            Action<bool> setModified = (modified) => { };
-            var handlers = new OptionsFormProtocolHandlers(mockForm.Object, mProtocols, mBrowser, setModified);
-            var sender = new object();
-            var e = new EventArgs();
-
-            // Act & Assert
-            var action = () => handlers.DeleteProtocol_Click(sender, e);
-            action.Should().NotThrow();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void AddProtocol_Click_WithNullActions_ShouldNotThrowException()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var mProtocols = new Dictionary<int, Protocol>();
-            var mBrowser = new Dictionary<int, Browser>();
-            var handlers = new OptionsFormProtocolHandlers(mockForm.Object, mProtocols, mBrowser, null!);
-            var sender = new object();
-            var e = new EventArgs();
-
-            // Act & Assert
-            var action = () => handlers.AddProtocol_Click(sender, e);
-            action.Should().NotThrow();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void EditProtocol_Click_WithNullActions_ShouldNotThrowException()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var mProtocols = new Dictionary<int, Protocol>();
-            var mBrowser = new Dictionary<int, Browser>();
-            var handlers = new OptionsFormProtocolHandlers(mockForm.Object, mProtocols, mBrowser, null!);
-            var sender = new object();
-            var e = new EventArgs();
-
-            // Act & Assert
-            var action = () => handlers.EditProtocol_Click(sender, e);
-            action.Should().NotThrow();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void DeleteProtocol_Click_WithNullActions_ShouldNotThrowException()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var mProtocols = new Dictionary<int, Protocol>();
-            var mBrowser = new Dictionary<int, Browser>();
-            var handlers = new OptionsFormProtocolHandlers(mockForm.Object, mProtocols, mBrowser, null!);
-            var sender = new object();
-            var e = new EventArgs();
-
-            // Act & Assert
-            var action = () => handlers.DeleteProtocol_Click(sender, e);
-            action.Should().NotThrow();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void AddProtocol_Click_WithNullParameters_ShouldHandleGracefully()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var mProtocols = new Dictionary<int, Protocol>();
-            var mBrowser = new Dictionary<int, Browser>();
-            Action<bool> setModified = (modified) => { };
-            var handlers = new OptionsFormProtocolHandlers(mockForm.Object, mProtocols, mBrowser, setModified);
-
-            // Act & Assert
-            var action = () => handlers.AddProtocol_Click(null!, null!);
-            action.Should().NotThrow();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void EditProtocol_Click_WithNullParameters_ShouldHandleGracefully()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var mProtocols = new Dictionary<int, Protocol>();
-            var mBrowser = new Dictionary<int, Browser>();
-            Action<bool> setModified = (modified) => { };
-            var handlers = new OptionsFormProtocolHandlers(mockForm.Object, mProtocols, mBrowser, setModified);
-
-            // Act & Assert
-            var action = () => handlers.EditProtocol_Click(null!, null!);
-            action.Should().NotThrow();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void DeleteProtocol_Click_WithNullParameters_ShouldHandleGracefully()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var mProtocols = new Dictionary<int, Protocol>();
-            var mBrowser = new Dictionary<int, Browser>();
-            Action<bool> setModified = (modified) => { };
-            var handlers = new OptionsFormProtocolHandlers(mockForm.Object, mProtocols, mBrowser, setModified);
-
-            // Act & Assert
-            var action = () => handlers.DeleteProtocol_Click(null!, null!);
-            action.Should().NotThrow();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void AddProtocol_Click_ShouldBeThreadSafe()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var mProtocols = new Dictionary<int, Protocol>();
-            var mBrowser = new Dictionary<int, Browser>();
-            Action<bool> setModified = (modified) => { };
-            var handlers = new OptionsFormProtocolHandlers(mockForm.Object, mProtocols, mBrowser, setModified);
-            var sender = new object();
-            var e = new EventArgs();
-
-            // Act & Assert
-            var action = () =>
-            {
-                var tasks = new List<Task>();
-                for (int i = 0; i < 5; i++)
-                {
-                    tasks.Add(Task.Run(() => handlers.AddProtocol_Click(sender, e)));
-                }
-                Task.WaitAll(tasks.ToArray());
-            };
-
-            action.Should().NotThrow();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void EditProtocol_Click_ShouldBeThreadSafe()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var mProtocols = new Dictionary<int, Protocol>();
-            var mBrowser = new Dictionary<int, Browser>();
-            Action<bool> setModified = (modified) => { };
-            var handlers = new OptionsFormProtocolHandlers(mockForm.Object, mProtocols, mBrowser, setModified);
-            var sender = new object();
-            var e = new EventArgs();
-
-            // Act & Assert
-            var action = () =>
-            {
-                var tasks = new List<Task>();
-                for (int i = 0; i < 5; i++)
-                {
-                    tasks.Add(Task.Run(() => handlers.EditProtocol_Click(sender, e)));
-                }
-                Task.WaitAll(tasks.ToArray());
-            };
-
-            action.Should().NotThrow();
-        }
-
-        [Fact(Skip = "OptionsFormのモック化が困難なためスキップ")]
-        public void DeleteProtocol_Click_ShouldBeThreadSafe()
-        {
-            // Arrange
-            var mockForm = new Mock<OptionsForm>();
-            var mProtocols = new Dictionary<int, Protocol>();
-            var mBrowser = new Dictionary<int, Browser>();
-            Action<bool> setModified = (modified) => { };
-            var handlers = new OptionsFormProtocolHandlers(mockForm.Object, mProtocols, mBrowser, setModified);
-            var sender = new object();
-            var e = new EventArgs();
-
-            // Act & Assert
-            var action = () =>
-            {
-                var tasks = new List<Task>();
-                for (int i = 0; i < 5; i++)
-                {
-                    tasks.Add(Task.Run(() => handlers.DeleteProtocol_Click(sender, e)));
-                }
-                Task.WaitAll(tasks.ToArray());
-            };
-
-            action.Should().NotThrow();
+            // Assert
+            modified.Should().BeFalse();
         }
     }
 }
