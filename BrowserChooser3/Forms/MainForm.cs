@@ -76,6 +76,7 @@ namespace BrowserChooser3.Forms
         public MainForm()
         {
             InitializeComponent();
+            DoubleBuffered = true;
             InitializeApplication();
         }
 

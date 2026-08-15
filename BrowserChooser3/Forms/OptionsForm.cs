@@ -51,6 +51,7 @@ namespace BrowserChooser3.Forms
         public OptionsForm(Settings settings)
         {
             _settings = settings;
+            DoubleBuffered = true;
 
             // イベントハンドラークラスの初期化
             _formHandlers = new OptionsFormFormHandlers(this, LoadSettingsToControls, SaveSettings, () => _isModified);
