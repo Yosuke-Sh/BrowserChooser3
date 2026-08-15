@@ -85,3 +85,133 @@ Root: HKLM; Subkey: "SOFTWARE\Classes\BrowserChooser3.html\shell\open\command"; 
 Filename: "{app}\BrowserChooser3.exe"; Description: "{cm:LaunchProgram,Browser Chooser 3}"; Flags: nowait postinstall skipifsilent
 Filename: "{cmd}"; Parameters: "/c start ms-settings:defaultapps"; Tasks: open_default_apps; Flags: postinstall skipifsilent nowait
 
+[Code]
+const
+  DotNetRuntimeDownloadUrl = 'https://aka.ms/dotnet/10.0/windowsdesktop-runtime-win-x64.exe';
+  DotNetRuntimeManualDownloadPage = 'https://dotnet.microsoft.com/download/dotnet/10.0';
+
+// {commonpf64}\dotnet\shared\Microsoft.WindowsDesktop.App 配下に "10." で始まるディレクトリがあるか確認する
+function FindFirstDotNet10SharedFxDir(): Boolean;
+var
+  FindRec: TFindRec;
+  BaseDir: string;
+begin
+  Result := False;
+  BaseDir := ExpandConstant('{commonpf64}\dotnet\shared\Microsoft.WindowsDesktop.App');
+
+  if FindFirst(BaseDir + '\10.*', FindRec) then
+  begin
+    try
+      Result := True;
+    finally
+      FindClose(FindRec);
+    end;
+  end;
+end;
+
+// Microsoft.WindowsDesktop.App 10.x が導入済みかどうかを判定する。
+// レジストリでの確認を主とし、フォルダー存在確認をフォールバックとして併用する。
+function IsWindowsDesktopRuntime10Installed(): Boolean;
+var
+  Names: TArrayOfString;
+  I: Integer;
+begin
+  Result := False;
+
+  if RegGetSubkeyNames(HKLM, 'SOFTWARE\dotnet\Setup\InstalledVersions\x64\sharedfx\Microsoft.WindowsDesktop.App', Names) then
+  begin
+    for I := 0 to GetArrayLength(Names) - 1 do
+    begin
+      if (Length(Names[I]) > 0) and (Names[I][1] = '1') then
+      begin
+        Result := True;
+        Exit;
+      end;
+    end;
+  end;
+
+  if DirExists(ExpandConstant('{commonpf64}\dotnet\shared\Microsoft.WindowsDesktop.App')) then
+  begin
+    if FindFirstDotNet10SharedFxDir() then
+    begin
+      Result := True;
+      Exit;
+    end;
+  end;
+end;
+
+function OnDownloadProgress(const Url, FileName: string; const Progress, ProgressMax: Int64): Boolean;
+begin
+  Result := True;
+end;
+
+// .NET Desktop Runtime 10 をダウンロードし、サイレントインストールする。
+// 失敗した場合は手動導入用のURLを提示してセットアップを中断する。
+function EnsureDotNetDesktopRuntimeInstalled(): Boolean;
+var
+  ResultCode: Integer;
+  DownloadOk: Boolean;
+begin
+  Result := True;
+
+  if IsWindowsDesktopRuntime10Installed() then
+    Exit;
+
+  if not WizardSilent() then
+  begin
+    if MsgBox('Browser Chooser 3 の実行には .NET 10 Desktop Runtime が必要です。' + #13#10 +
+              '未導入のため、ダウンロードしてインストールします。よろしいですか？',
+              mbConfirmation, MB_YESNO) = IDNO then
+    begin
+      Result := False;
+      Exit;
+    end;
+  end;
+
+  DownloadOk := False;
+  try
+    DownloadTemporaryFile(DotNetRuntimeDownloadUrl, 'windowsdesktop-runtime-win-x64.exe', '', @OnDownloadProgress);
+    DownloadOk := True;
+  except
+    DownloadOk := False;
+  end;
+
+  if not DownloadOk then
+  begin
+    MsgBox('.NET 10 Desktop Runtime のダウンロードに失敗しました。' + #13#10 +
+           '以下のURLから手動でダウンロード・インストールしてから、再度セットアップを実行してください:' + #13#10 +
+           DotNetRuntimeManualDownloadPage,
+           mbError, MB_OK);
+    Result := False;
+    Exit;
+  end;
+
+  if not Exec(ExpandConstant('{tmp}\windowsdesktop-runtime-win-x64.exe'), '/install /quiet /norestart', '',
+              SW_SHOW, ewWaitUntilTerminated, ResultCode) then
+  begin
+    MsgBox('.NET 10 Desktop Runtime のインストールに失敗しました。' + #13#10 +
+           '以下のURLから手動でダウンロード・インストールしてから、再度セットアップを実行してください:' + #13#10 +
+           DotNetRuntimeManualDownloadPage,
+           mbError, MB_OK);
+    Result := False;
+    Exit;
+  end;
+
+  if not IsWindowsDesktopRuntime10Installed() then
+  begin
+    MsgBox('.NET 10 Desktop Runtime のインストールを完了できませんでした。' + #13#10 +
+           '以下のURLから手動でダウンロード・インストールしてから、再度セットアップを実行してください:' + #13#10 +
+           DotNetRuntimeManualDownloadPage,
+           mbError, MB_OK);
+    Result := False;
+    Exit;
+  end;
+end;
+
+function PrepareToInstall(var NeedsRestart: Boolean): string;
+begin
+  Result := '';
+  if not EnsureDotNetDesktopRuntimeInstalled() then
+    Result := '.NET 10 Desktop Runtime が導入されなかったため、セットアップを中断しました。';
+end;
+
