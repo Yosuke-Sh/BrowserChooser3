@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
@@ -174,6 +175,7 @@ namespace BrowserChooser3.CustomControls
         /// <summary>
         /// 矢印キーのトラップ設定
         /// </summary>
+        [DefaultValue(true)]
         public bool TrapArrowKeys
         {
             get => _trapArrowKeys;
@@ -183,6 +185,7 @@ namespace BrowserChooser3.CustomControls
         /// <summary>
         /// フォーカスボックスの表示設定
         /// </summary>
+        [DefaultValue(true)]
         public bool ShowFocusBox
         {
             get => _showFocusBox;
@@ -192,6 +195,7 @@ namespace BrowserChooser3.CustomControls
         /// <summary>
         /// Aero効果の使用設定
         /// </summary>
+        [DefaultValue(true)]
         public bool UsesAero
         {
             get => _usesAero;

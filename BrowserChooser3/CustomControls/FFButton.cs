@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using BrowserChooser3.Classes;
@@ -18,41 +19,49 @@ namespace BrowserChooser3.CustomControls
         /// <summary>
         /// フォーカス表示の有効/無効
         /// </summary>
+        [DefaultValue(true)]
         public bool ShowFocus { get; set; } = true;
 
         /// <summary>
         /// フォーカスボックスの表示設定
         /// </summary>
+        [DefaultValue(true)]
         public bool ShowFocusBox { get; set; } = true;
 
         /// <summary>
         /// 視覚的フォーカス表示の有効/無効
         /// </summary>
+        [DefaultValue(false)]
         public bool ShowVisualFocus { get; set; } = false;
 
         /// <summary>
         /// 矢印キーのトラップ設定
         /// </summary>
+        [DefaultValue(true)]
         public bool TrapArrowKeys { get; set; } = true;
 
         /// <summary>
         /// フォーカスボックスの色
         /// </summary>
+        [DefaultValue(typeof(Color), "Blue")]
         public Color FocusBoxColor { get; set; } = Color.Blue;
 
         /// <summary>
         /// フォーカスボックスの線幅
         /// </summary>
+        [DefaultValue(2)]
         public int FocusBoxLineWidth { get; set; } = 2;
 
         /// <summary>
         /// フォーカスボックスとボタン外枠との間隔（マージン）
         /// </summary>
+        [DefaultValue(2)]
         public int FocusBoxWidth { get; set; } = 2;
 
         /// <summary>
         /// Aero効果の有効/無効
         /// </summary>
+        [DefaultValue(true)]
         public bool UseAero { get; set; } = true;
 
         /// <summary>
@@ -71,26 +80,31 @@ namespace BrowserChooser3.CustomControls
         /// <summary>
         /// カスタム背景色
         /// </summary>
+        [DefaultValue(typeof(Color), "Empty")]
         public Color CustomBackColor { get; set; } = Color.Empty;
 
         /// <summary>
         /// グラデーション開始色
         /// </summary>
+        [DefaultValue(typeof(Color), "LightBlue")]
         public Color GradientStartColor { get; set; } = Color.LightBlue;
 
         /// <summary>
         /// グラデーション終了色
         /// </summary>
+        [DefaultValue(typeof(Color), "White")]
         public Color GradientEndColor { get; set; } = Color.White;
 
         /// <summary>
         /// ホバー時の色
         /// </summary>
+        [DefaultValue(typeof(Color), "LightGray")]
         public Color HoverColor { get; set; } = Color.LightGray;
 
         /// <summary>
         /// 押下時の色
         /// </summary>
+        [DefaultValue(typeof(Color), "Gray")]
         public Color PressedColor { get; set; } = Color.Gray;
 
         /// <summary>
