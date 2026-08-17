@@ -240,8 +240,8 @@ namespace BrowserChooser3.Classes.Services.SystemServices
                 if (args.SilentMode || args.AutoLaunch)
                     return true;
 
-                // その他の場合は無効
-                return false;
+                // 引数なしでの起動（ショートカット等からの通常起動）も有効とする
+                return true;
             }
             catch (Exception ex)
             {

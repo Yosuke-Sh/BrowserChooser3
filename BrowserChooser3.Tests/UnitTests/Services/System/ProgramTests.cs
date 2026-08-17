@@ -65,7 +65,7 @@ namespace BrowserChooser3.Tests
             var result = StartupLauncher.Initialize(emptyArgs);
 
             // Assert
-            result.Should().BeFalse(); // 空の引数では初期化が失敗する可能性がある
+            result.Should().BeTrue(); // 引数なしでの通常起動は有効として扱う
         }
 
         [Fact]
@@ -78,7 +78,7 @@ namespace BrowserChooser3.Tests
             var result = StartupLauncher.Initialize(nullArgs!);
 
             // Assert
-            result.Should().BeFalse(); // null引数では初期化が失敗する可能性がある
+            result.Should().BeTrue(); // null引数（引数なし）での起動は有効として扱う
         }
 
         [Fact]

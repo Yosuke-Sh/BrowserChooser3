@@ -884,8 +884,8 @@ namespace BrowserChooser3.Forms
         /// </summary>
         private void StyleXP()
         {
-            // 透明化が無効な場合はサイズ変更可能にする
-            if (_settings?.EnableTransparency != true)
+            // 透明化が無効な場合はサイズ変更可能にする（ただしタイトルバー非表示設定は尊重する）
+            if (_settings?.EnableTransparency != true && _settings?.HideTitleBar != true)
             {
                 FormBorderStyle = FormBorderStyle.Sizable;
                 MaximizeBox = true;
@@ -923,8 +923,9 @@ namespace BrowserChooser3.Forms
                                 control.BackColor = Color.Transparent;
                                 Logger.LogDebug("MainForm.ApplyDefaultBackColorToChildControls", $"コントロール背景色を透明に設定", control.Name);
                             }
-                            catch (InvalidOperationException)
+                            catch (NotSupportedException)
                             {
+                                // TextBox等、透明な背景色をサポートしないコントロールでは想定内の失敗
                                 Logger.LogDebug("MainForm.ApplyDefaultBackColorToChildControls", $"コントロールは透明色をサポートしません", control.Name, control.GetType().Name);
                             }
                             break;

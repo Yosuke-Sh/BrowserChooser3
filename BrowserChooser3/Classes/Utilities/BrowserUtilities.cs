@@ -410,7 +410,9 @@ namespace BrowserChooser3.Classes.Utilities
                         }
                         else
                         {
-                            Logger.LogError("BrowserUtilities.DoLaunch", "Process exited immediately", processId.ToString());
+                            // Chrome/Edge等の単一プロセスモデルでは、起動プロセスが既存インスタンスへ
+                            // 委譲して即座に終了するのは正常な挙動のため、エラー扱いにはしない
+                            Logger.LogInfo("BrowserUtilities.DoLaunch", "Process exited immediately", processId.ToString());
                             TryToBringToFront(browserPath);
                         }
                     }

@@ -735,9 +735,10 @@ namespace BrowserChooser3.Tests
         }
 
         [Fact]
-        public void ValidateArguments_WithInvalidArgs_ShouldReturnFalse()
+        public void ValidateArguments_WithNoArgs_ShouldReturnTrue()
         {
             // Arrange
+            // 引数なしでの起動（ショートカット等からの通常起動）は有効な状態として扱う
             var args = new CommandLineProcessor.CommandLineArgs
             {
                 URL = null,
@@ -751,11 +752,11 @@ namespace BrowserChooser3.Tests
             var result = CommandLineProcessor.ValidateArguments(args);
 
             // Assert
-            result.Should().BeFalse();
+            result.Should().BeTrue();
         }
 
         [Fact]
-        public void ValidateArguments_WithEmptyURL_ShouldReturnFalse()
+        public void ValidateArguments_WithEmptyURL_ShouldReturnTrue()
         {
             // Arrange
             var args = new CommandLineProcessor.CommandLineArgs
@@ -767,7 +768,7 @@ namespace BrowserChooser3.Tests
             var result = CommandLineProcessor.ValidateArguments(args);
 
             // Assert
-            result.Should().BeFalse();
+            result.Should().BeTrue();
         }
 
         #endregion
@@ -918,7 +919,7 @@ namespace BrowserChooser3.Tests
         #region エラーハンドリングテスト
 
         [Fact]
-        public void ValidateArguments_WithException_ShouldReturnFalse()
+        public void ValidateArguments_WithDefaultArgs_ShouldReturnTrue()
         {
             // Arrange
             var args = new CommandLineProcessor.CommandLineArgs();
@@ -927,7 +928,7 @@ namespace BrowserChooser3.Tests
             var result = CommandLineProcessor.ValidateArguments(args);
 
             // Assert
-            result.Should().BeFalse();
+            result.Should().BeTrue();
         }
 
         [Fact]

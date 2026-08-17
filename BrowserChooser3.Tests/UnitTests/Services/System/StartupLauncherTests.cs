@@ -132,29 +132,31 @@ namespace BrowserChooser3.Tests
         }
 
         [Fact]
-        public void Initialize_WithInvalidArgs_ShouldReturnFalse()
+        public void Initialize_WithUnrecognizedOption_ShouldReturnTrue()
         {
             // Arrange
+            // 未知のオプションはURLとして扱われず無視されるだけで、通常起動と同様に有効とする
             var args = new[] { "--invalid-option" };
 
             // Act
             var result = StartupLauncher.Initialize(args);
 
             // Assert
-            result.Should().BeFalse();
+            result.Should().BeTrue();
         }
 
         [Fact]
-        public void Initialize_WithNullArgs_ShouldReturnFalse()
+        public void Initialize_WithNullArgs_ShouldReturnTrue()
         {
             // Arrange
+            // 引数なしでの起動（ショートカット等からの通常起動）は有効な状態として扱う
             string[]? args = null;
 
             // Act
             var result = StartupLauncher.Initialize(args!);
 
             // Assert
-            result.Should().BeFalse();
+            result.Should().BeTrue();
         }
 
         [Fact]
@@ -610,7 +612,7 @@ namespace BrowserChooser3.Tests
             var result = StartupLauncher.Initialize(null!);
 
             // Assert
-            result.Should().BeFalse();
+            result.Should().BeTrue();
         }
 
         [Fact]
