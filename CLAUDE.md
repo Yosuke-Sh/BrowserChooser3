@@ -86,5 +86,35 @@ TestData/, TestData/TestImages/
 
 - コミットはビルド・テストの両方が通り、警告が解消されてから行う。
 - コミットメッセージは日本語で、要約行＋変更内容の箇条書き＋修正対象ファイルの一覧という形式。
-- バージョン更新は2箇所を連動して更新する：`BrowserChooser3/BrowserChooser3.csproj`（`Version`、`AssemblyVersion`、`FileVersion`）、`BrowserChooser3-Setup.iss`（`AppVersion`）。
+- バージョン更新は**3箇所**を連動して更新する：
+  - `BrowserChooser3/BrowserChooser3.csproj`（`Version`、`AssemblyVersion`、`FileVersion`）
+  - `BrowserChooser3-Setup.iss`（3行目 `AppVersion`）
+  - `BrowserChooser3-Setup.iss`（`SOFTWARE\BrowserChooser3` レジストリキーに書き込む `ValueName: "Version"` の `ValueData`。過去にここだけ更新漏れし、インストール後のレジストリ値が古いバージョンのまま取り残された実績があるため要注意）
 - リリース成果物はインストーラーのみ（`build-inno-setup.bat` → `dist\BrowserChooser3-Setup.exe`、Inno Setup 6使用）。ポータブル版はv0.1.4で廃止済み。
+
+### リリース公開手順
+
+過去のリリースはこの手順を明文化していなかったためドリフトが発生していた（例：`v0.2.1`タグが誤ったコミットを指す、`GITHUB_RELEASE_GUIDE.md`が廃止済みのポータブル版や存在しないブランチを案内する等）。以降は以下の手順に従うこと。
+
+1. バージョンを上記3箇所すべて更新する。
+2. `RELEASE_NOTES_vX.Y.Z.md` を新規作成する。書式は直近の `RELEASE_NOTES_v0.2.1.md` を手本にする（`RELEASE_NOTES_TEMPLATE.md` は文字コード破損のため使用しない）。
+3. `dotnet build --configuration Release` と `dotnet test` が両方成功し、警告が0件であることを確認する。
+4. 上記の変更をコミットする（日本語、要約行＋箇条書き＋対象ファイル一覧）。
+5. `git push origin master` でリモートへ反映する。
+6. 注釈付きタグを作成してプッシュする：
+   ```bash
+   git tag -a vX.Y.Z -m "vX.Y.Z"
+   git push origin vX.Y.Z
+   ```
+   （軽量タグとの混在を避けるため、今後は注釈付きタグに統一する。）
+7. `.\build-inno-setup.bat` を実行し、`dist\BrowserChooser3-Setup.exe` を生成する。
+8. GitHub Releaseを作成して成果物を添付する：
+   ```bash
+   gh release create vX.Y.Z dist\BrowserChooser3-Setup.exe --notes-file RELEASE_NOTES_vX.Y.Z.md --title "vX.Y.Z"
+   ```
+9. `Wiki/` 配下の該当ドキュメント（特に `Wiki/Community/Release-Notes.md`、`Known-Issues.md`、変更内容に関連するユーザーガイド）を更新する。Wikiの更新もリリース作業の一部として扱うこと。
+
+上記のリリース公開手順（`git push origin master`、`git tag`作成・push、`build-inno-setup.bat`実行、`gh release create`、Wiki更新）は、ユーザーから明示的にリリース作業の実施を指示された場合は、都度の確認を挟まず一連の手順として実行してよい（v0.2.2リリース時にユーザーが承認済み）。ただし以下は毎回ユーザーへ確認すること：
+- 既存タグの削除・付け替え（`git tag -d` を伴う操作）
+- force push（`git push --force`）
+- その他、このドキュメントに手順化されていない例外的な操作

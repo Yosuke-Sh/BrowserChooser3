@@ -139,5 +139,33 @@ namespace BrowserChooser3.Tests
             var methodInfo = typeof(DefaultBrowserChecker).GetMethod("ResetDefaultBrowser");
             methodInfo.Should().NotBeNull();
         }
+
+        [Theory]
+        [InlineData("BrowserChooser3.http", true)]
+        [InlineData("BrowserChooser3.https", true)]
+        [InlineData("browserchooser3.http", true)]
+        [InlineData("ChromeHTML", false)]
+        [InlineData("MSEdgeHTM", false)]
+        [InlineData("", false)]
+        public void IsBrowserChooserProgId_ShouldMatchOnlyBrowserChooserProgIds(string progId, bool expected)
+        {
+            // Act
+            var result = DefaultBrowserChecker.IsBrowserChooserProgId(progId);
+
+            // Assert
+            result.Should().Be(expected);
+        }
+
+        [Fact]
+        public void IsBrowserChooserDefault_ShouldNotThrowAndShouldReturnBool()
+        {
+            // Windows 8以降の既定アプリはUserChoiceレジストリキー（読み取り専用）で判定するため、
+            // レジストリへの書き込みを伴わずに安全にテストできる。
+            // Act
+            var action = () => DefaultBrowserChecker.IsBrowserChooserDefault("C:\\dummy\\BrowserChooser3.exe");
+
+            // Assert
+            action.Should().NotThrow();
+        }
     }
 }

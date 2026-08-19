@@ -821,6 +821,8 @@ namespace BrowserChooser3.Forms
             SetControlValue<CheckBox>(tabPage, "chkEnableTransparency", c => c.Checked = _settings.EnableTransparency);
             SetControlValue<CheckBox>(tabPage, "chkHideTitleBar", c => c.Checked = _settings.HideTitleBar);
             SetControlValue<NumericUpDown>(tabPage, "nudOpacity", c => c.Value = (decimal)_settings.Opacity);
+            SetControlValue<ComboBox>(tabPage, "cmbStartupPosition", c => c.SelectedIndex =
+                _settings.StartupPosition == Settings.StartupPositionMode.PrimaryScreenCenter ? 1 : 0);
             SetControlValue<NumericUpDown>(tabPage, "nudRoundedCorners", c => c.Value = _settings.RoundedCornersRadius);
             SetControlValue<CheckBox>(tabPage, "chkEnableBackgroundGradient", c => c.Checked = _settings.EnableBackgroundGradient);
             SetControlValue<CheckBox>(tabPage, "chkShowFocus", c => c.Checked = _settings.ShowFocus);
@@ -1402,6 +1404,10 @@ namespace BrowserChooser3.Forms
                 var chkHideTitleBar = Controls.Find("chkHideTitleBar", true).FirstOrDefault() as CheckBox;
                 if (chkHideTitleBar != null) chkHideTitleBar.Checked = _settings.HideTitleBar;
 
+                var cmbStartupPosition = Controls.Find("cmbStartupPosition", true).FirstOrDefault() as ComboBox;
+                if (cmbStartupPosition != null)
+                    cmbStartupPosition.SelectedIndex = _settings.StartupPosition == Settings.StartupPositionMode.PrimaryScreenCenter ? 1 : 0;
+
                 var nudRoundedCorners = Controls.Find("nudRoundedCorners", true).FirstOrDefault() as NumericUpDown;
                 if (nudRoundedCorners != null) nudRoundedCorners.Value = _settings.RoundedCornersRadius;
 
@@ -1749,6 +1755,12 @@ namespace BrowserChooser3.Forms
 
                 var chkHideTitleBar = Controls.Find("chkHideTitleBar", true).FirstOrDefault() as CheckBox;
                 if (chkHideTitleBar != null) _settings.HideTitleBar = chkHideTitleBar.Checked;
+
+                var cmbStartupPosition = Controls.Find("cmbStartupPosition", true).FirstOrDefault() as ComboBox;
+                if (cmbStartupPosition != null)
+                    _settings.StartupPosition = cmbStartupPosition.SelectedIndex == 1
+                        ? Settings.StartupPositionMode.PrimaryScreenCenter
+                        : Settings.StartupPositionMode.CursorScreenCenter;
 
                 var nudRoundedCorners = Controls.Find("nudRoundedCorners", true).FirstOrDefault() as NumericUpDown;
                 if (nudRoundedCorners != null) _settings.RoundedCornersRadius = (int)nudRoundedCorners.Value;

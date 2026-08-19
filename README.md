@@ -62,11 +62,10 @@ BrowserChooser3は、Windows環境で複数のブラウザから選択してURL�
 
 ### 📦 リリース版のダウンロード（推奨）
 1. [Releases](https://github.com/Yosuke-Sh/BrowserChooser3/releases)ページから最新版をダウンロード
-2. `BrowserChooser3-v0.1.3.zip`をダウンロード
-3. ZIPファイルを展開して任意のフォルダに配置
-4. `.NET 10.0 Desktop Runtime`をインストール（未インストールの場合。インストーラー版は未インストール時に自動でダウンロード・インストールします）
-   - [.NET 10.0 Desktop Runtime ダウンロード](https://dotnet.microsoft.com/download/dotnet/10.0)
-5. `BrowserChooser3.exe`をダブルクリックして起動
+2. `BrowserChooser3-Setup.exe`をダウンロード
+3. 管理者権限で実行し、インストールウィザードに従ってインストール
+   - `.NET 10.0 Desktop Runtime`が未インストールの場合、インストーラーが自動的にダウンロード・インストールします
+4. インストール後、スタートメニューまたはデスクトップのショートカットから起動
 
 ### 🔧 ビルド（開発者向け）
 ```bash
@@ -111,6 +110,7 @@ dotnet build
 - **Hide Title Bar**: タイトルバーの非表示
 - **Rounded Corners Radius**: 角の丸み（0-50、デフォルト: 20）
 - **Enable Background Gradient**: 背景グラデーション（デフォルト: 有効）
+- **Startup Position**: 起動時の画面表示位置（マウスカーソルのある画面の中央／プライマリ画面の中央、デフォルト: マウスカーソルのある画面の中央）
 
 ### アクセシビリティ設定（Focusタブ）
 - **Show Focus**: フォーカス表示の有効/無効

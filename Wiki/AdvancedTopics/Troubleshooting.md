@@ -32,7 +32,6 @@ dotnet --list-runtimes
 **3. 権限の問題**
 ```cmd
 # 管理者権限で実行
-# または、ポータブル版を使用
 ```
 
 **4. アンチウイルスソフトの誤検知**
@@ -147,6 +146,24 @@ reg query "HKEY_CURRENT_USER\Software\Microsoft\Windows\DWM" /v EnableAeroPeek
 # 設定ファイルを削除して再作成
 # または、バックアップから復元
 ```
+
+### 既定のブラウザに設定したのに警告ログが出る（v0.2.2で修正）
+
+#### 症状
+- Windowsの設定でBrowserChooser3を既定のブラウザにしているにもかかわらず、ログに以下の警告が記録される
+  ```
+  "WARNING","StartupLauncher.CheckBrowserChooserDefaultStatus","BrowserChooser3が既定のブラウザとして設定されていません"
+  ```
+
+#### 原因
+v0.2.1以前は、既定ブラウザの判定にWindows 8以前の仕組み（`HKCR\http\shell\open\command`）のみを参照していました。Windows 11ではこの仕組みは既定切り替え時に更新されないため、実際には既定になっていても「設定されていない」と誤判定されていました。v0.2.2でWindows 11以降が実際に使用する`UserChoice`レジストリキーを参照するよう修正しています。
+
+#### 解決策
+1. まずBrowserChooser3をv0.2.2以降にアップデートしてください。
+2. それでも既定に設定されない場合は、Windowsの設定アプリから手動で設定してください（Windows 11ではアプリからのプログラム的な既定変更ができない仕様のため）：
+   - 「設定」→「アプリ」→「既定のアプリ」→「BrowserChooser3」を検索
+   - **HTTP**と**HTTPS**の両方を個別にBrowserChooser3へ設定する（どちらか一方だけでは既定と認識されません）
+3. v0.2.2以降、初回起動時にこの設定画面が自動的に開くようになりました。
 
 ## 🔍 デバッグ方法
 

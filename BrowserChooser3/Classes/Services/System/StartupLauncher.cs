@@ -292,7 +292,9 @@ namespace BrowserChooser3.Classes.Services.SystemServices
         }
 
         /// <summary>
-        /// BrowserChooser3が既定のブラウザとして設定されているかチェックします
+        /// BrowserChooser3が既定のブラウザとして設定されているかチェックします。
+        /// Windows 8以降、既定アプリはUserChoiceレジストリで管理されHKCRへの直接書き込みでは
+        /// 変更できないため、非既定時の自動設定は行わず、初回起動時のみ設定アプリを案内します。
         /// </summary>
         private static void CheckBrowserChooserDefaultStatus()
         {
@@ -300,29 +302,20 @@ namespace BrowserChooser3.Classes.Services.SystemServices
             {
                 var browserChooserPath = Application.ExecutablePath;
                 var isDefault = DefaultBrowserChecker.IsBrowserChooserDefault(browserChooserPath);
-                
+
                 if (isDefault)
                 {
                     Logger.LogInfo("StartupLauncher.CheckBrowserChooserDefaultStatus", "BrowserChooser3が既定のブラウザとして設定されています");
                 }
                 else
                 {
-                    Logger.LogWarning("StartupLauncher.CheckBrowserChooserDefaultStatus", "BrowserChooser3が既定のブラウザとして設定されていません");
-                    
-                    // 初回起動時は自動設定を試行
-                    if (IsFirstRun())
+                    Logger.LogInfo("StartupLauncher.CheckBrowserChooserDefaultStatus", "BrowserChooser3が既定のブラウザとして設定されていません");
+
+                    // 初回起動時のみ、既定アプリ設定画面を案内する（テスト環境では実プロセスを起動しない）
+                    if (IsFirstRun() && !Logger.IsTestEnvironment)
                     {
-                        Logger.LogInfo("StartupLauncher.CheckBrowserChooserDefaultStatus", "初回起動時のため、既定ブラウザ設定を試行");
-                        var success = DefaultBrowserChecker.SetBrowserChooserAsDefault(browserChooserPath);
-                        
-                        if (success)
-                        {
-                            Logger.LogInfo("StartupLauncher.CheckBrowserChooserDefaultStatus", "初回起動時の既定ブラウザ設定が完了しました");
-                        }
-                        else
-                        {
-                            Logger.LogWarning("StartupLauncher.CheckBrowserChooserDefaultStatus", "初回起動時の既定ブラウザ設定に失敗しました");
-                        }
+                        Logger.LogInfo("StartupLauncher.CheckBrowserChooserDefaultStatus", "初回起動時のため、既定アプリ設定画面を表示します");
+                        DefaultBrowserChecker.ShowHttpProtocolSettings();
                     }
                 }
             }

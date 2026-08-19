@@ -687,6 +687,38 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             };
             currentY += 40;
 
+            // 起動位置設定
+            var lblStartupPosition = new Label
+            {
+                Text = "Startup Position:",
+                Location = new Point(6, currentY + 3),
+                Size = new Size(120, 23),
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+
+            var cmbStartupPosition = new ComboBox
+            {
+                Name = "cmbStartupPosition",
+                Location = new Point(130, currentY),
+                Size = new Size(220, 25),
+                DropDownStyle = ComboBoxStyle.DropDownList,
+                Font = new Font("Segoe UI", 9.0f, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+            cmbStartupPosition.Items.Add("マウスカーソルのある画面の中央");
+            cmbStartupPosition.Items.Add("プライマリ画面の中央");
+            cmbStartupPosition.SelectedIndex = settings.StartupPosition == Settings.StartupPositionMode.PrimaryScreenCenter ? 1 : 0;
+            cmbStartupPosition.SelectedIndexChanged += (s, e) => setModified(true);
+
+            var lblStartupPositionDesc = new Label
+            {
+                Text = "メイン画面を起動する位置を設定します",
+                Location = new Point(360, currentY + 3),
+                Size = new Size(360, 23),
+                Font = new Font("Segoe UI", 8.0f, FontStyle.Regular, GraphicsUnit.Point, 0),
+                ForeColor = Color.Gray
+            };
+            currentY += 40;
+
             // 角を丸くする設定
             var lblRoundedCorners = new Label
             {
@@ -733,6 +765,9 @@ namespace BrowserChooser3.Classes.Services.OptionsFormHandlers
             panel.Controls.Add(lblOpacityDesc);
             panel.Controls.Add(chkHideTitleBar);
             panel.Controls.Add(lblHideTitleBarDesc);
+            panel.Controls.Add(lblStartupPosition);
+            panel.Controls.Add(cmbStartupPosition);
+            panel.Controls.Add(lblStartupPositionDesc);
             panel.Controls.Add(lblRoundedCorners);
             panel.Controls.Add(nudRoundedCorners);
             panel.Controls.Add(lblRoundedCornersDesc);

@@ -446,7 +446,10 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
         }
 
         /// <summary>
-        /// BrowserChooser3を既定のブラウザとして設定します
+        /// BrowserChooser3を既定のブラウザとして設定します。
+        /// 注意：Windows 8以降はHKCRへの直接書き込みではUserChoiceを変更できないため効果がありません。
+        /// Windows 11では <see cref="ShowHttpProtocolSettings"/> でms-settings:defaultappsを開き、
+        /// ユーザーに手動で設定してもらう方式を使用してください。
         /// </summary>
         /// <param name="browserChooserPath">BrowserChooser3の実行ファイルパス</param>
         /// <returns>成功した場合はtrue</returns>
@@ -573,28 +576,61 @@ namespace BrowserChooser3.Classes.Services.BrowserServices
         }
 
         /// <summary>
-        /// 現在の既定ブラウザがBrowserChooser3かどうかを確認します
+        /// インストーラー（BrowserChooser3-Setup.iss の URLAssociations 登録）が使用するProgIdの接頭辞。
+        /// http用は"BrowserChooser3.http"、https用は"BrowserChooser3.https"。
         /// </summary>
-        /// <param name="browserChooserPath">BrowserChooser3の実行ファイルパス</param>
-        /// <returns>BrowserChooser3が既定の場合はtrue</returns>
+        private const string ProgIdPrefix = "BrowserChooser3.";
+
+        /// <summary>
+        /// 現在の既定ブラウザがBrowserChooser3かどうかを確認します。
+        /// Windows 8以降の既定アプリはUserChoiceレジストリキーで決まり、旧来の
+        /// HKCR\{protocol}\shell\open\command は既定変更時に更新されないため参照しません。
+        /// そのためBrowserChooser3の実行ファイルパスそのものは判定に使用しません。
+        /// </summary>
+        /// <param name="browserChooserPath">BrowserChooser3の実行ファイルパス（互換性のため引数は維持）</param>
+        /// <returns>HTTP/HTTPSの両方でBrowserChooser3が既定の場合はtrue</returns>
         public static bool IsBrowserChooserDefault(string browserChooserPath)
         {
             try
             {
-                var httpCommand = GetProtocolCommand("http");
-                var httpsCommand = GetProtocolCommand("https");
-                
-                var normalizedPath = Path.GetFullPath(browserChooserPath).ToLower();
-                var normalizedHttpCommand = httpCommand?.ToLower();
-                var normalizedHttpsCommand = httpsCommand?.ToLower();
+                var isHttp = IsBrowserChooserProgId(GetUserChoiceProgId("http"));
+                var isHttps = IsBrowserChooserProgId(GetUserChoiceProgId("https"));
 
-                return normalizedHttpCommand?.Contains(normalizedPath) == true &&
-                       normalizedHttpsCommand?.Contains(normalizedPath) == true;
+                Logger.LogDebug("DefaultBrowserChecker.IsBrowserChooserDefault", "UserChoice判定",
+                    $"http={isHttp}", $"https={isHttps}");
+
+                return isHttp && isHttps;
             }
             catch (Exception ex)
             {
                 Logger.LogError("DefaultBrowserChecker.IsBrowserChooserDefault", "既定ブラウザ確認エラー", ex.Message);
                 return false;
+            }
+        }
+
+        /// <summary>
+        /// 指定プロトコルのProgIdがBrowserChooser3のものかどうかを判定します
+        /// </summary>
+        internal static bool IsBrowserChooserProgId(string progId)
+            => progId.StartsWith(ProgIdPrefix, StringComparison.OrdinalIgnoreCase);
+
+        /// <summary>
+        /// 指定プロトコルのUserChoice ProgIdを取得します。
+        /// </summary>
+        /// <param name="protocol">プロトコル名（"http"/"https"）</param>
+        /// <returns>ProgId文字列。取得できない場合は空文字列</returns>
+        private static string GetUserChoiceProgId(string protocol)
+        {
+            try
+            {
+                using var key = Registry.CurrentUser.OpenSubKey(
+                    $@"Software\Microsoft\Windows\Shell\Associations\UrlAssociations\{protocol}\UserChoice");
+                return key?.GetValue("ProgId") as string ?? "";
+            }
+            catch (Exception ex)
+            {
+                Logger.LogDebug("DefaultBrowserChecker.GetUserChoiceProgId", "UserChoice取得失敗", protocol, ex.Message);
+                return "";
             }
         }
 

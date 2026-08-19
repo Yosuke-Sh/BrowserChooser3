@@ -240,6 +240,7 @@ namespace BrowserChooser3.Forms
             {
                 Show();
                 WindowState = FormWindowState.Normal;
+                ApplyConfiguredStartupPosition();
                 Activate();
             }
         }
@@ -321,6 +322,7 @@ namespace BrowserChooser3.Forms
                 Show();
                 ShowInTaskbar = true;
                 WindowState = FormWindowState.Normal;
+                ApplyConfiguredStartupPosition();
                 Activate();
 
                 // トレイ格納中に止めたカウントダウンをリセットして再開する
@@ -358,6 +360,7 @@ namespace BrowserChooser3.Forms
             {
                 Show();
                 WindowState = FormWindowState.Normal;
+                ApplyConfiguredStartupPosition();
                 Activate();
             }
 
@@ -444,15 +447,38 @@ namespace BrowserChooser3.Forms
         }
 
         /// <summary>
+        /// 設定された起動位置（Settings.StartupPosition）に従ってウィンドウ位置を決定します。
+        /// ClientSize確定後に呼ぶこと（サイズが変わると中央位置がずれるため）。
+        /// </summary>
+        private void ApplyConfiguredStartupPosition()
+        {
+            var mode = _settings?.StartupPosition ?? Settings.StartupPositionMode.CursorScreenCenter;
+            var screen = mode == Settings.StartupPositionMode.CursorScreenCenter
+                ? Screen.FromPoint(Cursor.Position)
+                : Screen.PrimaryScreen;
+            if (screen == null)
+            {
+                return;
+            }
+
+            var area = screen.WorkingArea;
+            StartPosition = FormStartPosition.Manual;
+            Location = new Point(
+                area.Left + Math.Max(0, (area.Width - Width) / 2),
+                area.Top + Math.Max(0, (area.Height - Height) / 2));
+
+            Logger.LogDebug("MainForm.ApplyConfiguredStartupPosition", "起動位置を適用",
+                mode.ToString(), Location.X, Location.Y);
+        }
+
+        /// <summary>
         /// 透明化設定を適用
         /// </summary>
         private void ApplyTransparencySettings()
         {
             try
             {
-                // フォームの基本スタイル設定（最小化・最大化ボタンを含む）
-                StartPosition = FormStartPosition.CenterScreen;
-                
+
                 if (_settings?.EnableTransparency == true)
                 {
                     // 透明化が有効な場合。
@@ -692,6 +718,7 @@ namespace BrowserChooser3.Forms
                 // ConfigureForm内で設定してもFormBorderStyleの変更でClientSizeが
                 // designerの値へ再計算されてしまうため、スタイルが確定するLoadで適用する。
                 ApplyConfiguredWindowSize();
+                ApplyConfiguredStartupPosition();
 
                 // Windows 11のダークモード設定に自動追従（DWM未対応環境では内部でtry/catchされ実害なし）
                 var isDarkMode = GeneralUtilities.IsSystemDarkModeEnabled();

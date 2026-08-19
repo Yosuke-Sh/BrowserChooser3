@@ -1,128 +1,108 @@
 # GitHub Releases 配布ガイド
 
+配布物はインストーラーのみ。ポータブル版はv0.1.4で廃止済み。
+
 ## 📋 リリース手順
 
-### 1. リリースパッケージの作成
+### 1. バージョン更新
 
-#### インストーラー版
+以下3箇所を連動して更新する：
+
+- `BrowserChooser3/BrowserChooser3.csproj`（`Version`、`AssemblyVersion`、`FileVersion`）
+- `BrowserChooser3-Setup.iss`（3行目 `AppVersion`）
+- `BrowserChooser3-Setup.iss`（`SOFTWARE\BrowserChooser3` レジストリキーの `ValueName: "Version"` の `ValueData`）
+
+### 2. リリースノートの作成
+
+`RELEASE_NOTES_vX.Y.Z.md` を新規作成する。直近の `RELEASE_NOTES_v0.2.1.md` を書式の手本にする。
+
+### 3. ビルド・テスト確認
+
+```bash
+dotnet build --configuration Release
+dotnet test
+```
+
+両方成功し、警告が0件であることを確認する。
+
+### 4. コミット・プッシュ
+
+日本語で、要約行＋変更内容の箇条書き＋修正対象ファイルの一覧という形式でコミットし、`master` ブランチへプッシュする。
+
+```bash
+git push origin master
+```
+
+### 5. タグの作成
+
+注釈付きタグ（`-a`）を使う。軽量タグとの混在を避けるため統一する。
+
+```bash
+git tag -a vX.Y.Z -m "vX.Y.Z"
+git push origin vX.Y.Z
+```
+
+### 6. インストーラーのビルド
+
 ```cmd
-# Inno Setup 6が必要
+REM Inno Setup 6が必要
 .\build-inno-setup.bat
 ```
 
-#### ポータブル版
-```powershell
-# PowerShellで実行
-.\create-portable-release.ps1 -Version "0.1.0"
+`dist\BrowserChooser3-Setup.exe` が生成される（PublishReadyToRun=trueでReadyToRun最適化済み。ファイルサイズは約2.8MB前後）。
+
+### 7. GitHub Releaseの作成
+
+`gh` CLIで作成する（Webの手動操作でも可）。
+
+```bash
+gh release create vX.Y.Z dist\BrowserChooser3-Setup.exe --notes-file RELEASE_NOTES_vX.Y.Z.md --title "vX.Y.Z"
 ```
 
-### 2. GitHub Releases の作成
+Webから作成する場合：
 
-1. **GitHubリポジトリにアクセス**
-   - https://github.com/Yosuke-Sh/BrowserChooser3
+1. https://github.com/Yosuke-Sh/BrowserChooser3 の「Releases」→「Create a new release」
+2. Tag version: `vX.Y.Z`、Target: `master`
+3. Release title: `vX.Y.Z`
+4. Description: `RELEASE_NOTES_vX.Y.Z.md` の内容を貼り付け
+5. `dist\BrowserChooser3-Setup.exe` をアップロード
+6. 「Publish release」
 
-2. **Releasesページに移動**
-   - リポジトリページの右側「Releases」をクリック
-   - 「Create a new release」をクリック
+### 8. Wikiの更新
 
-3. **タグの作成**
-   - Tag version: `v0.1.0`
-   - Target: `developer` ブランチ（または適切なブランチ）
+`Wiki/` 配下、特に以下を更新する。Wikiの更新もリリース作業の一部。
 
-4. **リリース情報の入力**
-   - Release title: `BrowserChooser3 v0.1.0`
-   - Description: `RELEASE_NOTES_TEMPLATE.md`の内容をコピー&ペースト
+- `Wiki/Community/Release-Notes.md`
+- `Wiki/Community/Known-Issues.md`
+- 変更内容に関連するユーザーガイド（`Wiki/UserGuide/`、`Wiki/AdvancedTopics/`）
 
-5. **ファイルのアップロード**
-   - `dist/BrowserChooser3-Setup.exe`（インストーラー）をドラッグ&ドロップ
-   - または `Release/BrowserChooser3-v0.1.0.zip`（ポータブル版）をドラッグ&ドロップ
-   - ファイルサイズ: 約1.5MB（インストーラー）
+## ⚠️ 注意事項
 
-6. **リリースの公開**
-   - 「Publish release」をクリック
+`git tag`・`git push`（タグ含む）・`gh release create` はいずれもリモートへ公開する操作であり、実行前にユーザーへ確認すること。
 
 ## 📦 配布パッケージの内容
 
-### インストーラー版
 ```
 BrowserChooser3-Setup.exe        # Inno Setup インストーラー
 ```
 
-### ポータブル版
-```
-BrowserChooser3-v0.1.0/
-├── BrowserChooser3.exe          # メインアプリケーション
-├── BrowserChooser3.dll          # アプリケーションライブラリ
-├── BrowserChooser3.runtimeconfig.json  # ランタイム設定
-├── BrowserChooser3.deps.json    # 依存関係情報
-├── BrowserChooser3.dll.config   # アプリケーション設定
-├── BrowserChooser3.xml          # ドキュメント
-└── INSTALL.txt                  # インストール手順
-```
-
-## 🔧 自動化のヒント
-
-### バージョン管理
-- プロジェクトファイル（`.csproj`）のバージョンを更新
-- リリースノートの日付を更新
-- タグ名とバージョンを一致させる
-
-### 品質チェック
-- リリース前にアプリケーションの動作確認
-- 異なるWindows環境でのテスト
-- .NET 10.0 Desktop Runtimeの依存関係確認
-
-## 📊 配布統計
-
-### インストーラー版
-- **ファイルサイズ**: 約1.5MB（インストーラー）
-- **インストール後サイズ**: 約3MB
-- **依存関係**: .NET 10.0 Desktop Runtime（自動インストール）
+- **依存関係**: .NET 10.0 Desktop Runtime（未導入の場合はインストーラーが自動検出・導入）
 - **対応OS**: Windows 10/11 x64
-
-### ポータブル版
-- **ファイルサイズ**: 約1.26MB（ZIP圧縮後）
-- **展開後サイズ**: 約2.6MB
-- **依存関係**: .NET 10.0 Desktop Runtime（別途インストール必要）
-- **対応OS**: Windows 10/11 x64
-
-## 🚀 配布後の作業
-
-1. **READMEの更新**
-   - 最新バージョンへのリンク確認
-   - インストール手順の検証
-
-2. **ドキュメントの更新**
-   - 機能説明の更新
-   - スクリーンショットの更新
-
-3. **コミュニティへの告知**
-   - リリースノートの共有
-   - 新機能の紹介
 
 ## 🔍 トラブルシューティング
 
-### よくある問題
+### .NET SDKが見つからない
+- .NET 10.0 SDKのインストール確認
+- `dotnet --version`でバージョン確認
 
-1. **PowerShell実行ポリシーエラー**
-   ```powershell
-   Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-   ```
-
-2. **.NET SDKが見つからない**
-   - .NET 10.0 SDKのインストール確認
-   - `dotnet --version`でバージョン確認
-
-3. **ZIPファイルが作成されない**
-   - 出力ディレクトリの権限確認
-   - ディスク容量の確認
+### Inno Setup 6が見つからない
+- `build-inno-setup.bat` は `C:\Program Files (x86)\Inno Setup 6\ISCC.exe` または `C:\Program Files\Inno Setup 6\ISCC.exe` を探索する
+- インストールされていない場合は https://jrsoftware.org/isinfo.php から取得する
 
 ## 📈 今後の改善案
 
-- **自動化**: GitHub Actionsでの自動リリース
+- **自動化**: GitHub Actionsでの自動リリース（現状 `.github/workflows/ci.yml` はビルド・テストのみで、リリース作成は含まれない）
 - **署名**: コード署名の追加
 - **パッケージマネージャー**: Chocolatey/Scoop対応
-- **CI/CD**: 継続的インテグレーション・デプロイメント
-- **テスト自動化**: 自動テスト実行とカバレッジレポート
 - **自動アップデート機能**: アプリケーション内での自動更新チェック・ダウンロード・インストール
 - **多言語対応**: 日本語、英語、その他言語のサポート

@@ -226,7 +226,7 @@ namespace BrowserChooser3.Forms
             Name = "MainForm";
             ShowIcon = false;
             SizeGripStyle = SizeGripStyle.Hide;
-            StartPosition = FormStartPosition.CenterScreen;
+            StartPosition = FormStartPosition.Manual;
             Text = "Choose a Browser";
             TopMost = true;
             cmOptions.ResumeLayout(false);

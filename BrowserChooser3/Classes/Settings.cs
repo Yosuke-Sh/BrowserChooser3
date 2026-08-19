@@ -217,9 +217,21 @@ namespace BrowserChooser3.Classes
         /// </summary>
         [XmlIgnore]
         public int EffectiveWindowHeight => Height >= MinimumWindowHeight ? Height : DefaultWindowHeight;
-        
 
-        
+        /// <summary>メイン画面の起動位置の決定方法</summary>
+        public enum StartupPositionMode
+        {
+            /// <summary>マウスカーソルのあるモニターの中央（既定）</summary>
+            CursorScreenCenter = 0,
+            /// <summary>プライマリモニターの中央（v0.2.1以前の動作）</summary>
+            PrimaryScreenCenter = 1,
+        }
+
+        /// <summary>メイン画面の起動位置</summary>
+        public StartupPositionMode StartupPosition { get; set; } = StartupPositionMode.CursorScreenCenter;
+
+
+
         /// <summary>アイコン幅</summary>
         public int IconWidth { get; set; } = 100;
         
