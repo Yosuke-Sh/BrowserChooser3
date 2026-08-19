@@ -42,13 +42,8 @@
 
 ## 📚 関連情報
 
-- [インストールガイド](../GettingStarted/Installation-Guide)
-- [クイックスタート](../GettingStarted/Quick-Start-Tutorial)
-- [ユーザーガイド](../UserGuide/Basic-Usage)
-- [トラブルシューティング](../AdvancedTopics/Troubleshooting)
-- [既知の問題](Known-Issues)
-- [貢献ガイドライン](../Development/Contributing-Guidelines)
+- [使い方ガイド](../UserGuide/User-Guide)
+- [トラブルシューティング・FAQ](../AdvancedTopics/Troubleshooting-FAQ)
+- [開発ガイド](../Development/Development)
 
-### フィードバックチャンネル
-- **GitHub Issues**: バグ報告・機能リクエスト — https://github.com/Yosuke-Sh/BrowserChooser3/issues
-- **Wiki**: ドキュメント・ガイド — https://github.com/Yosuke-Sh/BrowserChooser3/wiki
+未実装の機能要望は[GitHub Issues](https://github.com/Yosuke-Sh/BrowserChooser3/issues)で管理しています。

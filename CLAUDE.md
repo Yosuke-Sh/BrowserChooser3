@@ -112,7 +112,7 @@ TestData/, TestData/TestImages/
    ```bash
    gh release create vX.Y.Z dist\BrowserChooser3-Setup.exe --notes-file RELEASE_NOTES_vX.Y.Z.md --title "vX.Y.Z"
    ```
-9. `Wiki/` 配下の該当ドキュメント（特に `Wiki/Community/Release-Notes.md`、`Known-Issues.md`、変更内容に関連するユーザーガイド）を更新する。Wikiの更新もリリース作業の一部として扱うこと。
+9. `Wiki/` 配下の該当ドキュメントを更新する。Wikiは5ページに集約されている：`Wiki/GettingStarted/Home.md`（トップページ）、`Wiki/UserGuide/User-Guide.md`（使い方・設定タブ・CLI）、`Wiki/AdvancedTopics/Troubleshooting-FAQ.md`（トラブルシューティング・FAQ・既知の制限）、`Wiki/Development/Development.md`（ビルド・テスト・リリース手順）、`Wiki/Community/Release-Notes.md`（バージョン別変更履歴）。各ページは詳細な網羅性よりも簡潔さを優先しており、新規ページを増やさず既存ページに追記する方針。Wikiの更新もリリース作業の一部として扱うこと。
 
 上記のリリース公開手順（`git push origin master`、`git tag`作成・push、`build-inno-setup.bat`実行、`gh release create`、Wiki更新）は、ユーザーから明示的にリリース作業の実施を指示された場合は、都度の確認を挟まず一連の手順として実行してよい（v0.2.2リリース時にユーザーが承認済み）。ただし以下は毎回ユーザーへ確認すること：
 - 既存タグの削除・付け替え（`git tag -d` を伴う操作）

@@ -70,11 +70,11 @@ Webから作成する場合：
 
 ### 8. Wikiの更新
 
-`Wiki/` 配下、特に以下を更新する。Wikiの更新もリリース作業の一部。
+`Wiki/`配下は5ページに集約されている。特に以下を更新する。Wikiの更新もリリース作業の一部。
 
-- `Wiki/Community/Release-Notes.md`
-- `Wiki/Community/Known-Issues.md`
-- 変更内容に関連するユーザーガイド（`Wiki/UserGuide/`、`Wiki/AdvancedTopics/`）
+- `Wiki/Community/Release-Notes.md`（バージョン別変更履歴）
+- `Wiki/UserGuide/User-Guide.md`（設定・機能に変更がある場合）
+- `Wiki/AdvancedTopics/Troubleshooting-FAQ.md`（既知の問題・トラブルシューティングに変更がある場合）
 
 ## ⚠️ 注意事項
 
